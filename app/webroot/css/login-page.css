@@ -1,0 +1,395 @@
+.page#login-page,
+.page#login-page-carousel,
+.page#login-page-color-bg,
+.page#login-page-coop,
+.page#login-page-logo,
+.page#login-page-with-text {
+  position: absolute;
+  /*height: 100%;*/
+  min-height: 100%;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+.page#login-page .login-bg, .page#login-page .login-bg-carousel,
+  .page#login-page-carousel .login-bg,
+  .page#login-page-carousel .login-bg-carousel,
+  .page#login-page-color-bg .login-bg,
+  .page#login-page-color-bg .login-bg-carousel,
+  .page#login-page-coop .login-bg,
+  .page#login-page-coop .login-bg-carousel,
+  .page#login-page-logo .login-bg,
+  .page#login-page-logo .login-bg-carousel,
+  .page#login-page-with-text .login-bg,
+  .page#login-page-with-text .login-bg-carousel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  height: 100%;
+  background: url("../images/login/bg/login-bg.jpg") repeat-y top center;
+  background-size: cover;
+}
+
+.page#login-page .page-content,
+  .page#login-page-carousel .page-content,
+  .page#login-page-color-bg .page-content,
+  .page#login-page-coop .page-content,
+  .page#login-page-logo .page-content,
+  .page#login-page-with-text .page-content {
+  height: 100%;
+  z-index: 2;
+  position: relative;
+  padding: 0 !important;
+}
+
+.page#login-page .page-content .container,
+    .page#login-page-carousel .page-content .container,
+    .page#login-page-color-bg .page-content .container,
+    .page#login-page-coop .page-content .container,
+    .page#login-page-logo .page-content .container,
+    .page#login-page-with-text .page-content .container {
+  height: 100%;
+}
+
+.page#login-page .page-content .container .panel,
+      .page#login-page-carousel .page-content .container .panel,
+      .page#login-page-color-bg .page-content .container .panel,
+      .page#login-page-coop .page-content .container .panel,
+      .page#login-page-logo .page-content .container .panel,
+      .page#login-page-with-text .page-content .container .panel {
+  border: 0;
+  border-radius: 0;
+  height: auto;
+  margin: 70px 0 70px 0;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+}
+
+.page#login-page .page-content .container .panel .panel-body,
+        .page#login-page-carousel .page-content .container .panel .panel-body,
+        .page#login-page-color-bg .page-content .container .panel .panel-body,
+        .page#login-page-coop .page-content .container .panel .panel-body,
+        .page#login-page-logo .page-content .container .panel .panel-body,
+        .page#login-page-with-text .page-content .container .panel .panel-body {
+  position: relative;
+  height: 100%;
+  padding: 0 15px;
+}
+
+.page#login-page .page-content .container .panel .panel-body .panel-controls,
+          .page#login-page-carousel .page-content .container .panel .panel-body .panel-controls,
+          .page#login-page-color-bg .page-content .container .panel .panel-body .panel-controls,
+          .page#login-page-coop .page-content .container .panel .panel-body .panel-controls,
+          .page#login-page-logo .page-content .container .panel .panel-body .panel-controls,
+          .page#login-page-with-text .page-content .container .panel .panel-body .panel-controls {
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 5;
+  padding: 10px;
+}
+
+.page#login-page .page-content .container .panel .panel-body .panel-controls i,
+            .page#login-page-carousel .page-content .container .panel .panel-body .panel-controls i,
+            .page#login-page-color-bg .page-content .container .panel .panel-body .panel-controls i,
+            .page#login-page-coop .page-content .container .panel .panel-body .panel-controls i,
+            .page#login-page-logo .page-content .container .panel .panel-body .panel-controls i,
+            .page#login-page-with-text .page-content .container .panel .panel-body .panel-controls i {
+  font-size: 1.6em;
+  color: #dddddd;
+  -webkit-transition: all 0.15s ease;
+  -moz-transition: all 0.15s ease;
+  -ms-transition: all 0.15s ease;
+  -o-transition: all 0.15s ease;
+  transition: all 0.15s ease;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.page#login-page .page-content .container .panel .panel-body .panel-controls i:hover,
+              .page#login-page-carousel .page-content .container .panel .panel-body .panel-controls i:hover,
+              .page#login-page-color-bg .page-content .container .panel .panel-body .panel-controls i:hover,
+              .page#login-page-coop .page-content .container .panel .panel-body .panel-controls i:hover,
+              .page#login-page-logo .page-content .container .panel .panel-body .panel-controls i:hover,
+              .page#login-page-with-text .page-content .container .panel .panel-body .panel-controls i:hover {
+  color: #1d71b8;
+}
+
+.page#login-page .page-content .container .panel .panel-body > .row,
+          .page#login-page-carousel .page-content .container .panel .panel-body > .row,
+          .page#login-page-color-bg .page-content .container .panel .panel-body > .row,
+          .page#login-page-coop .page-content .container .panel .panel-body > .row,
+          .page#login-page-logo .page-content .container .panel .panel-body > .row,
+          .page#login-page-with-text .page-content .container .panel .panel-body > .row {
+  height: 100%;
+  display: table;
+  margin-right: -16px;
+            /* Safari FIX */;
+}
+
+.page#login-page .page-content .container .panel .panel-body > .row > div,
+            .page#login-page-carousel .page-content .container .panel .panel-body > .row > div,
+            .page#login-page-color-bg .page-content .container .panel .panel-body > .row > div,
+            .page#login-page-coop .page-content .container .panel .panel-body > .row > div,
+            .page#login-page-logo .page-content .container .panel .panel-body > .row > div,
+            .page#login-page-with-text .page-content .container .panel .panel-body > .row > div {
+  height: 100%;
+  float: none;
+  display: table-cell;
+  vertical-align: top;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-left,
+          .page#login-page-carousel .page-content .container .panel .panel-body .login-left,
+          .page#login-page-color-bg .page-content .container .panel .panel-body .login-left,
+          .page#login-page-coop .page-content .container .panel .panel-body .login-left,
+          .page#login-page-logo .page-content .container .panel .panel-body .login-left,
+          .page#login-page-with-text .page-content .container .panel .panel-body .login-left {
+  padding: 0 50px;
+            /* Environment Display */;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-left h2,
+            .page#login-page-carousel .page-content .container .panel .panel-body .login-left h2,
+            .page#login-page-color-bg .page-content .container .panel .panel-body .login-left h2,
+            .page#login-page-coop .page-content .container .panel .panel-body .login-left h2,
+            .page#login-page-logo .page-content .container .panel .panel-body .login-left h2,
+            .page#login-page-with-text .page-content .container .panel .panel-body .login-left h2 {
+  color: #1d71b8;
+  font-size: 32px;
+  font-weight: normal;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-left a small,
+            .page#login-page-carousel .page-content .container .panel .panel-body .login-left a small,
+            .page#login-page-color-bg .page-content .container .panel .panel-body .login-left a small,
+            .page#login-page-coop .page-content .container .panel .panel-body .login-left a small,
+            .page#login-page-logo .page-content .container .panel .panel-body .login-left a small,
+            .page#login-page-with-text .page-content .container .panel .panel-body .login-left a small {
+  color: #444;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-left .login-logo img,
+            .page#login-page-carousel .page-content .container .panel .panel-body .login-left .login-logo img,
+            .page#login-page-color-bg .page-content .container .panel .panel-body .login-left .login-logo img,
+            .page#login-page-coop .page-content .container .panel .panel-body .login-left .login-logo img,
+            .page#login-page-logo .page-content .container .panel .panel-body .login-left .login-logo img,
+            .page#login-page-with-text .page-content .container .panel .panel-body .login-left .login-logo img {
+  height: 60px;
+  margin: 110px 0 60px 0;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-left .login-form,
+            .page#login-page-carousel .page-content .container .panel .panel-body .login-left .login-form,
+            .page#login-page-color-bg .page-content .container .panel .panel-body .login-left .login-form,
+            .page#login-page-coop .page-content .container .panel .panel-body .login-left .login-form,
+            .page#login-page-logo .page-content .container .panel .panel-body .login-left .login-form,
+            .page#login-page-with-text .page-content .container .panel .panel-body .login-left .login-form {
+  padding-bottom: 2em;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-left .login-toolbar,
+            .page#login-page-carousel .page-content .container .panel .panel-body .login-left .login-toolbar,
+            .page#login-page-color-bg .page-content .container .panel .panel-body .login-left .login-toolbar,
+            .page#login-page-coop .page-content .container .panel .panel-body .login-left .login-toolbar,
+            .page#login-page-logo .page-content .container .panel .panel-body .login-left .login-toolbar,
+            .page#login-page-with-text .page-content .container .panel .panel-body .login-left .login-toolbar {
+  padding: 70px 0 40px;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-left .login-toolbar i,
+              .page#login-page-carousel .page-content .container .panel .panel-body .login-left .login-toolbar i,
+              .page#login-page-color-bg .page-content .container .panel .panel-body .login-left .login-toolbar i,
+              .page#login-page-coop .page-content .container .panel .panel-body .login-left .login-toolbar i,
+              .page#login-page-logo .page-content .container .panel .panel-body .login-left .login-toolbar i,
+              .page#login-page-with-text .page-content .container .panel .panel-body .login-left .login-toolbar i {
+  font-size: 28px;
+  color: #009EE0;
+  padding: 0 4px 0 16px;
+  top: 7px;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-left #env-display,
+            .page#login-page-carousel .page-content .container .panel .panel-body .login-left #env-display,
+            .page#login-page-color-bg .page-content .container .panel .panel-body .login-left #env-display,
+            .page#login-page-coop .page-content .container .panel .panel-body .login-left #env-display,
+            .page#login-page-logo .page-content .container .panel .panel-body .login-left #env-display,
+            .page#login-page-with-text .page-content .container .panel .panel-body .login-left #env-display {
+  position: absolute;
+  top: 20px;
+  left: -14px;
+  bottom: auto;
+  right: auto;
+  box-shadow: 20px 1px 8px 0 rgba(0, 0, 0, 0.6);
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-left #env-display:before,
+              .page#login-page-carousel .page-content .container .panel .panel-body .login-left #env-display:before,
+              .page#login-page-color-bg .page-content .container .panel .panel-body .login-left #env-display:before,
+              .page#login-page-coop .page-content .container .panel .panel-body .login-left #env-display:before,
+              .page#login-page-logo .page-content .container .panel .panel-body .login-left #env-display:before,
+              .page#login-page-with-text .page-content .container .panel .panel-body .login-left #env-display:before {
+  content: "";
+  position: absolute;
+  width: 7px;
+  bottom: -13px;
+  border-width: 7px;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  z-index: -2;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-left #env-display:after,
+              .page#login-page-carousel .page-content .container .panel .panel-body .login-left #env-display:after,
+              .page#login-page-color-bg .page-content .container .panel .panel-body .login-left #env-display:after,
+              .page#login-page-coop .page-content .container .panel .panel-body .login-left #env-display:after,
+              .page#login-page-logo .page-content .container .panel .panel-body .login-left #env-display:after,
+              .page#login-page-with-text .page-content .container .panel .panel-body .login-left #env-display:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  bottom: 0;
+  box-shadow: 0px 1px 8px 0 rgba(0, 0, 0, 0.6);
+  z-index: -1;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-left #env-display #env-display-content,
+              .page#login-page-carousel .page-content .container .panel .panel-body .login-left #env-display #env-display-content,
+              .page#login-page-color-bg .page-content .container .panel .panel-body .login-left #env-display #env-display-content,
+              .page#login-page-coop .page-content .container .panel .panel-body .login-left #env-display #env-display-content,
+              .page#login-page-logo .page-content .container .panel .panel-body .login-left #env-display #env-display-content,
+              .page#login-page-with-text .page-content .container .panel .panel-body .login-left #env-display #env-display-content {
+  border-left-width: 2px;
+  box-shadow: none;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-left #env-display #env-display-content:before,
+                .page#login-page-carousel .page-content .container .panel .panel-body .login-left #env-display #env-display-content:before,
+                .page#login-page-color-bg .page-content .container .panel .panel-body .login-left #env-display #env-display-content:before,
+                .page#login-page-coop .page-content .container .panel .panel-body .login-left #env-display #env-display-content:before,
+                .page#login-page-logo .page-content .container .panel .panel-body .login-left #env-display #env-display-content:before,
+                .page#login-page-with-text .page-content .container .panel .panel-body .login-left #env-display #env-display-content:before {
+  box-shadow: none;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-right,
+          .page#login-page-carousel .page-content .container .panel .panel-body .login-right,
+          .page#login-page-color-bg .page-content .container .panel .panel-body .login-right,
+          .page#login-page-coop .page-content .container .panel .panel-body .login-right,
+          .page#login-page-logo .page-content .container .panel .panel-body .login-right,
+          .page#login-page-with-text .page-content .container .panel .panel-body .login-right {
+  position: relative;
+  background-color: #1184b9;
+  color: #FFFFFF;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-right .login-right-content,
+            .page#login-page-carousel .page-content .container .panel .panel-body .login-right .login-right-content,
+            .page#login-page-color-bg .page-content .container .panel .panel-body .login-right .login-right-content,
+            .page#login-page-coop .page-content .container .panel .panel-body .login-right .login-right-content,
+            .page#login-page-logo .page-content .container .panel .panel-body .login-right .login-right-content,
+            .page#login-page-with-text .page-content .container .panel .panel-body .login-right .login-right-content {
+  padding-top: 110px;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-right .login-right-content img,
+              .page#login-page-carousel .page-content .container .panel .panel-body .login-right .login-right-content img,
+              .page#login-page-color-bg .page-content .container .panel .panel-body .login-right .login-right-content img,
+              .page#login-page-coop .page-content .container .panel .panel-body .login-right .login-right-content img,
+              .page#login-page-logo .page-content .container .panel .panel-body .login-right .login-right-content img,
+              .page#login-page-with-text .page-content .container .panel .panel-body .login-right .login-right-content img {
+  margin-bottom: 317px;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-right .xunta-disclaimer,
+            .page#login-page-carousel .page-content .container .panel .panel-body .login-right .xunta-disclaimer,
+            .page#login-page-color-bg .page-content .container .panel .panel-body .login-right .xunta-disclaimer,
+            .page#login-page-coop .page-content .container .panel .panel-body .login-right .xunta-disclaimer,
+            .page#login-page-logo .page-content .container .panel .panel-body .login-right .xunta-disclaimer,
+            .page#login-page-with-text .page-content .container .panel .panel-body .login-right .xunta-disclaimer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-left: 15%;
+  padding-right: 15%;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-right .xunta-disclaimer .xunta-logo,
+              .page#login-page-carousel .page-content .container .panel .panel-body .login-right .xunta-disclaimer .xunta-logo,
+              .page#login-page-color-bg .page-content .container .panel .panel-body .login-right .xunta-disclaimer .xunta-logo,
+              .page#login-page-coop .page-content .container .panel .panel-body .login-right .xunta-disclaimer .xunta-logo,
+              .page#login-page-logo .page-content .container .panel .panel-body .login-right .xunta-disclaimer .xunta-logo,
+              .page#login-page-with-text .page-content .container .panel .panel-body .login-right .xunta-disclaimer .xunta-logo {
+  text-align: center;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-right .xunta-disclaimer .xunta-logo img,
+                .page#login-page-carousel .page-content .container .panel .panel-body .login-right .xunta-disclaimer .xunta-logo img,
+                .page#login-page-color-bg .page-content .container .panel .panel-body .login-right .xunta-disclaimer .xunta-logo img,
+                .page#login-page-coop .page-content .container .panel .panel-body .login-right .xunta-disclaimer .xunta-logo img,
+                .page#login-page-logo .page-content .container .panel .panel-body .login-right .xunta-disclaimer .xunta-logo img,
+                .page#login-page-with-text .page-content .container .panel .panel-body .login-right .xunta-disclaimer .xunta-logo img {
+  display: inline-block;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer,
+            .page#login-page-carousel .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer,
+            .page#login-page-color-bg .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer,
+            .page#login-page-coop .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer,
+            .page#login-page-logo .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer,
+            .page#login-page-with-text .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer {
+  padding-top: 100px;
+  padding-bottom: 80px;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .xunta-logo,
+              .page#login-page-carousel .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .xunta-logo,
+              .page#login-page-color-bg .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .xunta-logo,
+              .page#login-page-coop .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .xunta-logo,
+              .page#login-page-logo .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .xunta-logo,
+              .page#login-page-with-text .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .xunta-logo {
+  padding-bottom: 28px;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .entity-logo,
+              .page#login-page-carousel .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .entity-logo,
+              .page#login-page-color-bg .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .entity-logo,
+              .page#login-page-coop .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .entity-logo,
+              .page#login-page-logo .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .entity-logo,
+              .page#login-page-with-text .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .entity-logo {
+  padding-bottom: 15px;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .xunta-disclaimer-text,
+              .page#login-page-carousel .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .xunta-disclaimer-text,
+              .page#login-page-color-bg .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .xunta-disclaimer-text,
+              .page#login-page-coop .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .xunta-disclaimer-text,
+              .page#login-page-logo .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .xunta-disclaimer-text,
+              .page#login-page-with-text .page-content .container .panel .panel-body .login-right .login-right-content + .xunta-disclaimer .xunta-disclaimer-text {
+  font-size: 0.85em;
+}
+
+.page#login-page .page-content .container .panel .panel-body .login-right .version,
+            .page#login-page-carousel .page-content .container .panel .panel-body .login-right .version,
+            .page#login-page-color-bg .page-content .container .panel .panel-body .login-right .version,
+            .page#login-page-coop .page-content .container .panel .panel-body .login-right .version,
+            .page#login-page-logo .page-content .container .panel .panel-body .login-right .version,
+            .page#login-page-with-text .page-content .container .panel .panel-body .login-right .version {
+  font-size: 0.8em;
+}
+
+.page#login-page .tooltip,
+  .page#login-page-carousel .tooltip,
+  .page#login-page-color-bg .tooltip,
+  .page#login-page-coop .tooltip,
+  .page#login-page-logo .tooltip,
+  .page#login-page-with-text .tooltip {
+  min-width: 150px;
+}

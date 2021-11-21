@@ -1,0 +1,27 @@
+.page#error-403 .jumbotron {
+  margin-top: 10px;
+  background-color: #FFFFFF;
+}
+
+.page#error-403 .jumbotron h1 {
+  font-size: 45px;
+}
+
+.page#error-403 .page-content {
+  top: 0;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+
+.page#error-403 .bottom-bg-403 {
+  width: 100%;
+  height: 55%;
+  background: url("../images/error/anchor_birds_bg.png") no-repeat bottom center, url("../images/error/birds_anchor_line.png") repeat-x bottom center;
+  background-size: contain;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
