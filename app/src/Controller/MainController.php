@@ -5,10 +5,6 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 
 class MainController extends AppController {
-    
-    public function initialize() {
-        parent::initialize();
-    }
 
     public function beforeFilter(Event $event) {
         $this->Auth->allow(array('index','login','logout'));

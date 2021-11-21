@@ -3,4 +3,10 @@ if (!isset($params['escape']) || $params['escape'] !== false) {
     $message = h($message);
 }
 ?>
-<div class="message error" onclick="this.classList.add('hidden');"><?= $message ?></div>
+
+<div class="alert alert-danger">
+    <span>
+        <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
+        <span><?= $message ?></span>
+    </span>
+</div>
