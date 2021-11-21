@@ -1,0 +1,57 @@
+#basic-page.page #page-map {
+  margin-top: 25px;
+  max-width: 800px;
+}
+
+#basic-page.page #page-map .pm-block {
+  -webkit-transition: all 0.12s linear;
+  -moz-transition: all 0.12s linear;
+  -ms-transition: all 0.12s linear;
+  -o-transition: all 0.12s linear;
+  transition: all 0.12s linear;
+  background-color: #eeeeee;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  margin: 5px;
+  float: left;
+  height: 70px;
+  width: 100%;
+  padding: 10px 20px;
+}
+
+#basic-page.page #page-map .pm-block:hover {
+  margin: 2px;
+  height: 76px;
+  width: calc(100% + 6px);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background-color: #dadada;
+}
+
+#basic-page.page #page-map .pm-block .block-name {
+  font-weight: bold;
+}
+
+#basic-page.page #page-map .pm-block .block-info {
+  font-size: 0.85em;
+  color: #1d71b8;
+}
+
+#basic-page.page #page-map .left {
+  width: 30%;
+  min-height: 240px;
+}
+
+#basic-page.page #page-map .left:hover {
+  width: calc(30% + 6px);
+  min-height: 246px;
+}
+
+#basic-page.page #page-map .page {
+  float: left;
+  min-height: 240px;
+  width: calc(70% - 10px);
+}
+
+#basic-page.page #page-map .page .contents {
+  height: 160px;
+}
