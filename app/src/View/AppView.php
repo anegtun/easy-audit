@@ -34,7 +34,7 @@ class AppView extends View {
      * @return void
      */
     public function initialize() {
-        $this->loadHelper('Form', ['templates' => 'agfg_form']);
+        $this->loadHelper('Form', ['templates' => 'easy_audit_form_templates']);
         $this->loadHelper('EasyAuditHtml');
     }
 }
