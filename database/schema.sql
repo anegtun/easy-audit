@@ -76,7 +76,7 @@ INSERT INTO easy_audit_users (
 ) VALUES (
   1,
   'easy-admin',
-  '91dfd9ddb4198affc5c194cd8ce6d338fde470e2', -- mypassword
+  '$2y$10$ChGDc1dcEvxZFEFofq5crOIM.vgTtWzWjBZYjt45f9i9D/acwZfAK', -- mypassword
   'Administrador',
   'admin',
   '2016-09-21 19:38:38',
