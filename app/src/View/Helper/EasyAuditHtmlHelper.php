@@ -19,11 +19,11 @@ class EasyAuditHtmlHelper extends Helper {
         return "<span class='glyphicon glyphicon-$glyphicon'><span class='sr-only'>$text</span></span> $text";
     }
 
-    public function gliphiconLink($glyphicon, $text, $url) {
+    public function gliphiconLink($glyphicon, $text, $url, $options = []) {
         return $this->Html->link(
             $this->gliphiconText($glyphicon, $text),
             $url,
-            ['escape'=>false]
+            array_merge($options, ['escape'=>false])
         );
     }
  

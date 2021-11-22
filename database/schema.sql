@@ -54,7 +54,8 @@ CREATE TABLE easy_audit_form_template_sections (
 
 CREATE TABLE easy_audit_form_template_fields (
   id int unsigned NOT NULL AUTO_INCREMENT,
-  template_section_id int unsigned NOT NULL,
+  form_template_id int unsigned NOT NULL,
+  form_template_section_id int unsigned NOT NULL,
   optionset_id int unsigned DEFAULT NULL,
   position int unsigned NOT NULL,
   text varchar(4000) DEFAULT NULL,

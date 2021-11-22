@@ -12,14 +12,14 @@ $this->set('headerBreadcrumbs', [
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th class="celda-titulo">Name</th>
+                    <th class="celda-titulo"><?= __('Name') ?></th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach($templates as $t) : ?>
                     <tr>
-                        <td><?= $t->name ?></td>
+                        <td><?= $this->Html->link($t->name, ['action'=>'detail', $t->id]) ?></td>
                         <td class="text-center"><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $t->id]) ?></td>
                     </tr>
                 <?php endforeach ?>
@@ -42,7 +42,7 @@ $this->set('headerBreadcrumbs', [
                 </div>
                 <div class="modal-body">
                     <fieldset>
-                        <?= $this->Form->control('name', ['label'=>'Name']) ?>
+                        <?= $this->Form->control('name', ['label'=>__('Name')]) ?>
                     </fieldset>
                 </div>
                 <div class="modal-footer">
