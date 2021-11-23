@@ -9,8 +9,11 @@
             <span class="caret caret-right"></span>
         </a>
         <ul id="config-entries" class="nav nav-pills nav-stacked left-submenu collapse <?=$menu_option==='config'?'in':''?>"  <?=$menu_option==='config'?'aria-expanded="true"':''?>>
+            <li <?=$submenu_option==='config-customers'?'class="active"':''?>>
+                <?= $this->Html->link(__('Customers'), ['controller'=>'Customers', 'action'=>'index']) ?>
+            </li>
             <li <?=$submenu_option==='config-form-templates'?'class="active"':''?>>
-                <?= $this->Html->link('Form templates', ['controller'=>'FormTemplates', 'action'=>'index']) ?>
+                <?= $this->Html->link(__('Form templates'), ['controller'=>'FormTemplates', 'action'=>'index']) ?>
             </li>
         </ul>
     </li>

@@ -19,6 +19,14 @@ CREATE TABLE easy_audit_users (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 
+CREATE TABLE easy_audit_customers (
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  name varchar(4000) NOT NULL,
+  email varchar(4000) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+
 CREATE TABLE easy_audit_form_template_optionsets (
   id int unsigned NOT NULL AUTO_INCREMENT,
   name varchar(200) NOT NULL,
