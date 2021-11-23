@@ -17,7 +17,9 @@ class FormTemplatesController extends AppController {
     }
 
     public function index() {
-        $this->set('templates', $this->FormTemplates->find());
+        $templates = $this->FormTemplates->find()
+            ->contain(['FormTemplateSections', 'FormTemplateFields']);
+        $this->set(compact('templates'));
     }
 
     public function save() {

@@ -7,6 +7,7 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('Form templates'), 'url'=>['action'=>'index']],
     ['label'=>$title]
 ]);
+$this->Html->script('modal-utils', ['block' => 'script']);
 $this->Html->script('form-templates', ['block' => 'script']);
 $optionsetOptions = iterator_to_array($optionsets);
 ?>
@@ -15,28 +16,23 @@ $optionsetOptions = iterator_to_array($optionsets);
     <?php foreach($sections as $s) : ?>
         <fieldset>
             <legend>
-                <?= $this->EasyAuditHtml->gliphiconLink('edit', '', '#', ['data-section-id' => $s->id]) ?>
+                <?= $this->EasyAuditForm->editModalLink($s, 'data-section', ['id', 'position', 'name']) ?>
                 <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $s->id]) ?>
                 <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $s->id]) ?>
                 <?php if(empty($s->form_template_fields)) : ?>
                     <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteSection', $s->id]) ?>
                 <?php endif ?>
                 <?= $s->name ?>
-                <?= $this->Form->hidden("section-position-{$s->id}", ['value'=>$s->position]) ?>
-                <?= $this->Form->hidden("section-name-{$s->id}", ['value'=>$s->name]) ?>
             </legend>
             <?php foreach($s->form_template_fields as $f) : ?>
                 <div class="col-sm-1">
-                    <?= $this->EasyAuditHtml->gliphiconLink('edit', '', '#', ['data-field-id' => $f->id]) ?>
+                    <?= $this->EasyAuditForm->editModalLink($f, 'data-field', ['id', 'form_template_section_id', 'position', 'text']) ?>
                     <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveFieldUp', $f->id]) ?>
                     <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveFieldDown', $f->id]) ?>
                     <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteField', $f->id]) ?>
                 </div>
                 <div class="col-sm-11">
                     <div class="form-group">
-                        <?= $this->Form->hidden("field-section-{$f->id}", ['value'=>$f->form_template_section_id]) ?>
-                        <?= $this->Form->hidden("field-position-{$f->id}", ['value'=>$f->position]) ?>
-                        <?= $this->Form->hidden("field-text-{$f->id}", ['value'=>$f->text]) ?>
                         <?= $this->Form->control('dummy', ['label'=>$f->text, 'value'=>$optionsetOptions[$f->optionset_id], 'disabled'=>true]) ?>
                     </div>
                 </div>
