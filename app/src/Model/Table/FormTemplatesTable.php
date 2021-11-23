@@ -9,6 +9,8 @@ class FormTemplatesTable extends Table {
         $this->setTable('easy_audit_form_templates');
         $this->hasMany('FormTemplateSections')
             ->setForeignKey('form_template_id');
+        $this->hasMany('FormTemplateFields')
+            ->setForeignKey('form_template_id');
     }
 
 }

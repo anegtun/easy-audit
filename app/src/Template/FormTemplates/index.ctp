@@ -13,6 +13,8 @@ $this->set('headerBreadcrumbs', [
             <thead>
                 <tr>
                     <th class="celda-titulo"><?= __('Name') ?></th>
+                    <th class="celda-titulo"><?= __('Sections') ?></th>
+                    <th class="celda-titulo"><?= __('Fields') ?></th>
                     <th></th>
                 </tr>
             </thead>
@@ -20,6 +22,8 @@ $this->set('headerBreadcrumbs', [
                 <?php foreach($templates as $t) : ?>
                     <tr>
                         <td><?= $this->Html->link($t->name, ['action'=>'detail', $t->id]) ?></td>
+                        <td><?= count($t->form_template_sections) ?></td>
+                        <td><?= count($t->form_template_fields) ?></td>
                         <td class="text-center"><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $t->id]) ?></td>
                     </tr>
                 <?php endforeach ?>
