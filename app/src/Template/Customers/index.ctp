@@ -5,6 +5,7 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('Config')],
     ['label'=>__('Customers')]
 ]);
+$this->Html->script('modal-utils', ['block' => 'script']);
 $this->Html->script('customers', ['block' => 'script']);
 ?>
 
@@ -24,10 +25,7 @@ $this->Html->script('customers', ['block' => 'script']);
                     <tr>
                         <td><?= $c->name ?></td>
                         <td><?= $c->email ?></td>
-                        <td class="text-center">
-                            <?php $attrs = ['data-customer-id' => $c->id, 'data-customer-name' => $c->name, 'data-customer-email' => $c->email] ?>
-                            <?= $this->EasyAuditHtml->gliphiconLink('edit', '', '#', $attrs) ?>
-                        </td>
+                        <td class="text-center"><?= $this->EasyAuditForm->editModalLink($c, 'data-customer', ['id', 'name', 'email']) ?></td>
                         <td class="text-center"><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $c->id]) ?></td>
                     </tr>
                 <?php endforeach ?>

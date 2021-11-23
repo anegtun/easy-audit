@@ -1,39 +1,28 @@
 $(document).ready(function() {
 
+    const sectionModal = $('#modal-section');
+    const fieldModal = $('#modal-field');
+
     $('#modal-section-button').click(function() {
-        $('#modal-section form')[0].reset();
-        $('#modal-section input[name=id]').val('');
-        $('#modal-section select[name=position]').prop('disabled', false);
-        $('#modal-section').modal("show");
+        openModalToCreate(sectionModal, ['id']);
+        sectionModal.find('*[name=position]').prop('disabled', false);
     });
 
     $('#modal-field-button').click(function() {
-        $('#modal-field form')[0].reset();
-        $('#modal-field input[name=id]').val('');
-        $('#modal-field select[name=position]').prop('disabled', false);
-        $('#modal-field').modal("show");
+        openModalToCreate(fieldModal, ['id']);
+        fieldModal.find('*[name=position]').prop('disabled', false);
+        fieldModal.find('*[name=form_template_section_id]').trigger("change");
     });
 
     $('a[data-section-id]').click(function() {
-        const id = $(this).attr('data-section-id');
-        const position = Number($('input[name=section-position-'+id+']').val()) + 1;
-        const name = $('input[name=section-name-'+id+']').val();
-        $('#modal-section input[name=id]').val(id);
-        $('#modal-section select[name=position]').val(position).prop('disabled', true);
-        $('#modal-section input[name=name]').val(name);
-        $('#modal-section').modal("show");
+        openModalToEdit(sectionModal, $(this), 'data-section-', ['id', 'name']);
+        sectionModal.find('*[name=position]').val(Number($(this).attr('data-section-position')) + 1).prop('disabled', true);
     });
 
     $('a[data-field-id]').click(function() {
-        const id = $(this).attr('data-field-id');
-        const section = $('input[name=field-section-'+id+']').val();
-        const position = Number($('input[name=field-position-'+id+']').val()) + 1;
-        const text = $('input[name=field-text-'+id+']').val();
-        $('#modal-field input[name=id]').val(id);
-        $('#modal-field select[name=form_template_section_id]').val(section).trigger("change");
-        $('#modal-field select[name=position]').val(position).prop('disabled', true);
-        $('#modal-field input[name=text]').val(text);
-        $('#modal-field').modal("show");
+        openModalToEdit(fieldModal, $(this), 'data-field-', ['id', 'form_template_section_id', 'text']);
+        fieldModal.find('*[name=form_template_section_id]').trigger("change");
+        fieldModal.find('*[name=position]').val(Number($(this).attr('data-field-position')) + 1).prop('disabled', true);
     });
 
     $('#modal-field select[name=form_template_section_id]').change(function() {
