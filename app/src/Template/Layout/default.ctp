@@ -104,29 +104,11 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
             <div id="main-content" class="row" role="main"><section id="basic-page" class="page">
                 <aside id="left-menu" class="no-selectable">
                     <div class="content-wrapper">
-                        <ul class="nav nav-pills nav-stacked" id="left-menu-content" role="navigation">
-                            <li data-toggle="tooltip">
-                                <?= $this->EasyAuditHtml->gliphiconLink('home', __('Dashboard'), ['controller'=>'Main', 'action'=>'index']) ?>
-                            </li>
-
-                            <li data-toggle="tooltip">
-                                <a href="#" data-toggle="collapse" data-target="#config-entries" data-parent="#left-menu-content" <?=$menu_option==='config'?'aria-expanded="true"':''?>>
-                                    <span class="glyphicon glyphicon-cog"><span class="sr-only">Config</span></span>Config
-                                    <span class="caret caret-right"></span>
-                                </a>
-                                <ul id="config-entries" class="nav nav-pills nav-stacked left-submenu collapse <?=$menu_option==='config'?'in':''?>"  <?=$menu_option==='config'?'aria-expanded="true"':''?>>
-                                    <li <?=$submenu_option==='config1'?'class="active"':''?>>
-                                        <?= $this->Html->link('Config 1', ['controller'=>'Config', 'action'=>'index']) ?>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
+                        <?= $this->element('Layout/menu', ['menu_option'=>$menu_option, 'submenu_option'=>$submenu_option]) ?>
                     </div>
                 </aside>
 
                 <div class="page-content">
-                    <?= $this->Flash->render(); ?>
-
                     <div class="container-full gray-bg">
                         <div class="row page-header">
                             <div class="col-xs-12 m-b-15">
@@ -136,7 +118,7 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
                                 <?php if(!empty($headerBreadcrumbs)) : ?>
                                     <ol class="breadcrumb">
                                         <li>
-                                            <?= $this->EasyAuditHtml->gliphiconLink('home', __('Dashboard'), ['controller'=>'Main', 'action'=>'index']) ?>
+                                            <?= $this->EasyAuditHtml->gliphiconLink('home', __('Home'), ['controller'=>'Main', 'action'=>'index']) ?>
                                         </li>
                                         <?php foreach($headerBreadcrumbs as $bc) : ?>
                                             <?php if(!empty($bc['url'])) : ?>
@@ -150,8 +132,11 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
                             </div>
                         </div>
                     </div>
-                    
-                    <?= $this->fetch('content'); ?>
+
+                    <div class="container-full" style="margin-top:2em;">
+                        <?= $this->Flash->render(); ?>
+                        <?= $this->fetch('content'); ?>
+                    </div>
                 </div>
             </div>
 
