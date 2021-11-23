@@ -62,17 +62,22 @@ class FormTemplatesController extends AppController {
     public function saveSection() {
         $formData = $this->request->getData();
         $templateId = $formData['form_template_id'];
-        $section = empty($formData['id']) ? $this->FormTemplateSections->newEntity() : $this->FormTemplateSections->get($formData['id']);
         if ($this->request->is('post') || $this->request->is('put')) {
-            $section = $this->FormTemplateSections->patchEntity($section, $formData);
-            $count = $this->FormTemplateSections->find()
-                ->where(['form_template_id' => $templateId])
-                ->count();
-            debug($section);
-            if(empty($section->position) || $section->position >= $count) {
-                $section->position = empty($section->id) ? $count + 1 : $count;
+            if(empty($formData['id'])) {
+                $section = $this->FormTemplateSections->newEntity();
+                $section = $this->FormTemplateSections->patchEntity($section, $formData);
+                $count = $this->FormTemplateSections->find()
+                    ->where(['form_template_id' => $templateId])
+                    ->count();
+                if(empty($section->position) || $section->position > $count) {
+                    $section->position = $count + 1;
+                }
+                $this->FormTemplateSections->incrementPositionAfter($templateId, $section->position);
+            } else {
+                $section = $this->FormTemplateSections->get($formData['id']);
+                unset($formData['position']);
+                $section = $this->FormTemplateSections->patchEntity($section, $formData);
             }
-            $this->FormTemplateSections->incrementPositionAfter($templateId, $section->position + 1);
             if ($this->FormTemplateSections->save($section)) {
                 $this->Flash->success(__('Section created.'));
             } else {
@@ -122,14 +127,21 @@ class FormTemplatesController extends AppController {
         $sectionId = $formData['form_template_section_id'];
         $field = empty($formData['id']) ? $this->FormTemplateFields->newEntity() : $this->FormTemplateFields->get($formData['id']);
         if ($this->request->is('post') || $this->request->is('put')) {
-            $field = $this->FormTemplateFields->patchEntity($field, $formData);
-            $count = $this->FormTemplateFields->find()
-                ->where(['form_template_id' => $templateId, 'form_template_section_id' => $sectionId])
-                ->count();
-            if(empty($field->position) || $field->position >= $count) {
-                $field->position = empty($field->id) ? $count + 1 : $count;
+            if(empty($formData['id'])) {
+                $field = $this->FormTemplateFields->newEntity();
+                $field = $this->FormTemplateFields->patchEntity($field, $formData);
+                $count = $this->FormTemplateFields->find()
+                    ->where(['form_template_id' => $templateId, 'form_template_section_id' => $sectionId])
+                    ->count();
+                if(empty($field->position) || $field->position > $count) {
+                    $field->position = $count + 1;
+                }
+                $this->FormTemplateFields->incrementPositionAfter($templateId, $sectionId, $field->position);
+            } else {
+                $field = $this->FormTemplateFields->get($formData['id']);
+                unset($formData['position']);
+                $field = $this->FormTemplateFields->patchEntity($field, $formData);
             }
-            $this->FormTemplateFields->incrementPositionAfter($templateId, $sectionId, $field->position);
             if ($this->FormTemplateFields->save($field)) {
                 $this->Flash->success(__('Field created.'));
             } else {
