@@ -3,8 +3,14 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Event\Event;
+use Cake\ORM\TableRegistry;
 
 class CustomersController extends AppController {
+    
+    public function initialize() {
+        parent::initialize();
+        $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
+    }
 
     public function index() {
         $customers = $this->Customers->find('all', ['order'=>'name']);
@@ -12,7 +18,11 @@ class CustomersController extends AppController {
     }
 
     public function detail($id=null) {
-        $customer = empty($id) ? $this->Customers->newEntity() : $this->Customers->get($id);
+        $customer = empty($id) ? $this->Customers->newEntity() : $this->getCustomer($id);
+        if(!empty($customer)) {
+            $templates = $this->FormTemplates->find('all');
+            $this->set(compact('templates'));
+        }
         $this->set(compact('customer'));
     }
 
@@ -37,6 +47,42 @@ class CustomersController extends AppController {
             $this->Flash->error(__('Error deleting customer.'));
         }
         return $this->redirect(['action'=>'index']);
+    }
+
+    public function saveTemplate() {
+        $data = $this->request->getData();
+        $customerId = $data['customer_id'];
+        $template = $this->FormTemplates->get($data['form_template_id']);
+        $customer = $this->getCustomer($customerId);
+        $customer->form_templates[] = $template;
+        $customer->setDirty('form_templates', true);
+        if ($this->Customers->save($customer)) {
+            $this->Flash->success(__('Template added correctly.'));
+        } else {
+            $this->Flash->error(__('Error adding template.'));
+        }
+        return $this->redirect(['action'=>'detail', $customerId]);
+    }
+
+    public function deleteTemplate($customerId, $templateId) {
+        $customer = $this->getCustomer($customerId);
+        $customer->form_templates = array_filter(
+            $customer->form_templates,
+            function ($e) use (&$templateId) {
+                return $e->id != $templateId;
+            }
+        );
+        $customer->setDirty('form_templates', true);
+        if ($this->Customers->save($customer)) {
+            $this->Flash->success(__('Template removed correctly.'));
+        } else {
+            $this->Flash->error(__('Error removing template.'));
+        }
+        return $this->redirect(['action'=>'detail', $customerId]);
+    }
+
+    private function getCustomer($id) {
+        return $this->Customers->get($id, [ 'contain' => ['FormTemplates'] ]);
     }
 
 }

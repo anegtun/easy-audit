@@ -1,4 +1,6 @@
 DROP TABLE IF EXISTS easy_audit_users;
+DROP TABLE IF EXISTS easy_audit_customer_forms;
+DROP TABLE IF EXISTS easy_audit_customers;
 DROP TABLE IF EXISTS easy_audit_form_template_fields;
 DROP TABLE IF EXISTS easy_audit_form_template_sections;
 DROP TABLE IF EXISTS easy_audit_form_templates;
@@ -15,14 +17,6 @@ CREATE TABLE easy_audit_users (
   role varchar(20) DEFAULT NULL,
   created datetime DEFAULT NULL,
   modified datetime DEFAULT NULL,
-  PRIMARY KEY (id)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
-
-
-CREATE TABLE easy_audit_customers (
-  id int unsigned NOT NULL AUTO_INCREMENT,
-  name varchar(4000) NOT NULL,
-  email varchar(4000) DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
@@ -69,6 +63,21 @@ CREATE TABLE easy_audit_form_template_fields (
   text varchar(4000) DEFAULT NULL,
   type varchar(20) NOT NULL,
   PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE easy_audit_customers (
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  name varchar(4000) NOT NULL,
+  email varchar(4000) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE easy_audit_customer_forms (
+  customer_id int unsigned NOT NULL,
+  form_template_id int unsigned NOT NULL,
+  PRIMARY KEY (customer_id, form_template_id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 

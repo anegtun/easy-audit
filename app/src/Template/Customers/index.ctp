@@ -15,15 +15,13 @@ $this->set('headerBreadcrumbs', [
                     <th class="celda-titulo"><?= __('Name') ?></th>
                     <th class="celda-titulo"><?= __('Email') ?></th>
                     <th></th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach($customers as $c) : ?>
                     <tr>
-                        <td><?= $c->name ?></td>
+                        <td><?= $this->Html->link($c->name, ['action'=>'detail', $c->id]) ?></td>
                         <td><?= $c->email ?></td>
-                        <td class="text-center"><?= $this->EasyAuditHtml->editButton(['action'=>'detail', $c->id]) ?></td>
                         <td class="text-center"><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $c->id]) ?></td>
                     </tr>
                 <?php endforeach ?>
