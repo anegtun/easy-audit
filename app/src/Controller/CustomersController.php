@@ -11,6 +11,11 @@ class CustomersController extends AppController {
         $this->set(compact('customers'));
     }
 
+    public function detail($id=null) {
+        $customer = empty($id) ? $this->Customers->newEntity() : $this->Customers->get($id);
+        $this->set(compact('customer'));
+    }
+
     public function save() {
         $customer = $this->Customers->newEntity();
         if ($this->request->is('post') || $this->request->is('put')) {
