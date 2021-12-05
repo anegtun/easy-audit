@@ -21,6 +21,10 @@ class CustomersController extends AppController {
         $customer = empty($id) ? $this->Customers->newEntity() : $this->getCustomer($id);
         if(!empty($customer)) {
             $templates = $this->FormTemplates->find('all');
+            $templateIds = $customer->getTemplateIds();
+            if(!empty($templateIds)) {
+                $templates->where(['id NOT IN' => $templateIds]);
+            }
             $this->set(compact('templates'));
         }
         $this->set(compact('customer'));

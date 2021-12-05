@@ -112,10 +112,10 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
                     <div class="container-full gray-bg">
                         <div class="row page-header">
                             <div class="col-xs-12 m-b-15">
-                                <?php if(!empty($headerTitle)) : ?>
+                                <?php if(isset($headerTitle)) : ?>
                                     <h1><?= $headerTitle ?></h1>
                                 <?php endif ?>
-                                <?php if(!empty($headerBreadcrumbs)) : ?>
+                                <?php if(isset($headerBreadcrumbs)) : ?>
                                     <ol class="breadcrumb">
                                         <li>
                                             <?= $this->EasyAuditHtml->gliphiconLink('home', __('Home'), ['controller'=>'Main', 'action'=>'index']) ?>
