@@ -79,8 +79,8 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
                                             <li class="hidden-from-md">
                                                 <?= $this->Html->link(
                                                     '<span class="text-danger"><i class="glyphicon glyphicon-log-out p-r-5"><span class="sr-only">'.__('Logout').'</span></i> <strong>'.__('Logout').'</strong></span>',
-                                                    array('controller'=>'Main', 'action'=>'logout'),
-                                                    array('escape'=>false)
+                                                    ['controller'=>'Users', 'action'=>'logout'],
+                                                    ['escape'=>false]
                                                 ) ?>
                                             </li>
                                         </ul>
@@ -88,8 +88,8 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
                                     <div id="header-logout" class="hidden-xs hidden-sm">
                                         <?= $this->Html->link(
                                             '<span class="text-danger"><i class="glyphicon glyphicon-off p-r-5" data-toggle="tooltip" title="'.__('Logout').'"  data-placement="bottom"><span class="sr-only">'.__('Logout').'</span></i></span>',
-                                            array('controller'=>'Main', 'action'=>'logout'),
-                                            array('escape'=>false)
+                                            ['controller'=>'Users', 'action'=>'logout'],
+                                            ['escape'=>false]
                                         ) ?>
                                     </div>
                                 </div>
