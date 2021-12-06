@@ -24,7 +24,7 @@ class EasyAuditFormHelper extends Helper {
         return $this->EasyAuditHtml->gliphiconLink('edit', '', '#', $attrs);
     }
     
-    public function objectToKeyValue($array, $key, $value, $allowEmpty=true, $order=true) {
+    public function objectToKeyValue($array, $key, $value, $allowEmpty=true, $order=false) {
         $tmp = $allowEmpty ? [''=>''] : [];
         foreach($array as $e) {
             $v = '';

@@ -13,6 +13,10 @@ $optionsetOptions = iterator_to_array($optionsets);
 ?>
 
 <div class="row">
+    <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
+    <button type="button" id="modal-field-button" class="btn btn-primary" data-target="#modal-field"><?= __('Add field') ?></button>
+    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
+
     <?php foreach($sections as $s) : ?>
         <fieldset>
             <legend>
@@ -22,25 +26,28 @@ $optionsetOptions = iterator_to_array($optionsets);
                 <?php if(empty($s->form_template_fields)) : ?>
                     <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteSection', $s->id]) ?>
                 <?php endif ?>
-                <?= $s->name ?>
+                <?= $s->position ?>. <?= $s->name ?>
             </legend>
             <?php foreach($s->form_template_fields as $f) : ?>
-                <div class="col-sm-1">
-                    <?= $this->EasyAuditForm->editModalLink($f, 'data-field', ['id', 'form_template_section_id', 'position', 'text']) ?>
-                    <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveFieldUp', $f->id]) ?>
-                    <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveFieldDown', $f->id]) ?>
-                    <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteField', $f->id]) ?>
-                </div>
-                <div class="col-sm-11">
-                    <div class="form-group">
-                        <?= $this->Form->control('dummy', ['label'=>$f->text, 'value'=>$optionsetOptions[$f->optionset_id], 'disabled'=>true]) ?>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <?= $this->EasyAuditForm->editModalLink($f, 'data-field', ['id', 'form_template_section_id', 'position', 'text']) ?>
+                        <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveFieldUp', $f->id]) ?>
+                        <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveFieldDown', $f->id]) ?>
+                        <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteField', $f->id]) ?>
+                    </div>
+                    <div class="col-sm-1">
+                        <?= $optionsetOptions[$f->optionset_id] ?>
+                    </div>
+                    <div class="col-sm-10">
+                        <div class="form-group">
+                            <label><?= $s->position ?>.<?= $f->position ?>. <?= $f->text ?></label>
+                        </div>
                     </div>
                 </div>
             <?php endforeach ?>
         </fieldset>
     <?php endforeach ?>
-    <button type="button" id="modal-section-button" class="btn btn-secondary" data-target="#modal-section"><?= __('Add section') ?></button>
-    <button type="button" id="modal-field-button" class="btn btn-secondary" data-target="#modal-field"><?= __('Add field') ?></button>
 </div>
 
 
@@ -59,8 +66,8 @@ $optionsetOptions = iterator_to_array($optionsets);
                 </div>
                 <div class="modal-body">
                     <fieldset>
-                        <?= $this->Form->control('position', ['options' => $this->EasyAuditForm->objectToKeyValue($sections, 'position', 'name'), 'label'=>__('Before')]) ?>
                         <?= $this->Form->control('name', ['label'=>__('Name')]) ?>
+                        <?= $this->Form->control('position', ['options' => $this->EasyAuditForm->objectToKeyValue($sections, 'position', 'name'), 'label'=>__('Place before...')]) ?>
                     </fieldset>
                 </div>
                 <div class="modal-footer">
@@ -88,11 +95,11 @@ $optionsetOptions = iterator_to_array($optionsets);
                 </div>
                 <div class="modal-body">
                     <fieldset>
-                        <?= $this->Form->control('form_template_section_id', ['options' => $this->EasyAuditForm->objectToKeyValue($sections, 'id', 'name'), 'label'=>__('Section')]) ?>
-                        <?= $this->Form->control('position', ['options' => [], 'label'=>__('Before')]) ?>
+                        <?= $this->Form->control('form_template_section_id', ['options' => $this->EasyAuditForm->objectToKeyValue($sections, 'id', '{$e->position}. {$e->name}'), 'label'=>__('Section')]) ?>
                         <?= $this->Form->control('text', ['label'=>__('Text')]) ?>
                         <?= $this->Form->control('type', ['options'=>$fieldTypes, 'label'=>__('Type')]) ?>
                         <?= $this->Form->control('optionset_id', ['options'=>$optionsets, 'label'=>__('Optionset')]) ?>
+                        <?= $this->Form->control('position', ['options' => [], 'label'=>__('Place before...')]) ?>
                     </fieldset>
                 </div>
                 <div class="modal-footer">
@@ -105,8 +112,49 @@ $optionsetOptions = iterator_to_array($optionsets);
 </div>
 
 
+
+<div id="modal-customers" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><?= __('Customers') ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-xs-12 table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th class="celda-titulo"><?= __('Name') ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach($template->customers as $c) : ?>
+                                <tr>
+                                    <td><?= $this->Html->link($c->name, ['controller'=>'customers', 'action'=>'detail', $c->id]) ?></td>
+                                </tr>
+                            <?php endforeach ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <div id='all-field-options'>
     <?php foreach($allFields as $f) : ?>
-        <?= $this->Form->hidden("field-{$f->id}", ['data-id' => $f->id, 'data-position' => $f->position, 'data-section' => $f->form_template_section_id, 'value'=>$f->text]) ?>
+        <?= $this->Form->hidden("field-{$f->id}", [
+            'data-id' => $f->id,
+            'data-position' => $f->position,
+            'data-section' => $f->form_template_section_id,
+            'value'=>"{$f->position}. {$f->text}"]) ?>
     <?php endforeach ?>
 </div>

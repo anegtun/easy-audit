@@ -39,6 +39,9 @@ class AuditsController extends AppController {
         $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
         $field_values = $this->AuditFieldValues->findForAudit($id);
         $users = $this->Users->find('all');
+        foreach($template_sections as $s) {
+            $s->score = $this->calculateSectionScore($s, $field_values);
+        }
         $this->set(compact('audit', 'field_values', 'optionset_values', 'template', 'template_sections', 'template_fields', 'users'));
     }
 
@@ -46,7 +49,7 @@ class AuditsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
             $audit = $this->Audits->patchEntity($this->Audits->newEntity(), $data);
-            $audit->date = parseDate($data['date']);
+            $audit->date = $this->parseDate($data['date']);
             $audit->auditor_user_id = $this->Auth->user('id');
             if ($this->Audits->save($audit)) {
                 $this->Flash->success(__('Audit created.'));
@@ -61,7 +64,7 @@ class AuditsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
             $audit = $this->Audits->get($data['id']);
-            $audit->date = parseDate($data['date']);
+            $audit->date = $this->parseDate($data['date']);
             $audit->auditor_user_id = $data['auditor_user_id'];
             $this->Audits->save($audit);
             $this->AuditFieldValues->upsertAll($data['id'], $data['field_values']);
@@ -71,6 +74,18 @@ class AuditsController extends AppController {
 
     private function parseDate($date) {
         return empty($date) ? NULL : Time::createFromFormat('d-m-Y', $date);
+    }
+
+    private function calculateSectionScore($section, $field_values) {
+        $count = 0;
+        $score = 0;
+        foreach($field_values as $f) {
+            if($f->form_template_field->form_template_section_id === $section->id) {
+                $count++;
+                $score += $f->form_template_optionset_value->value_numeric;
+            }
+        }
+        return round(100 * ($score / $count), 1);
     }
 
 }
