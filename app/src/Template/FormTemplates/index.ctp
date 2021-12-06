@@ -50,7 +50,7 @@ $this->set('headerBreadcrumbs', [
                     </fieldset>
                 </div>
                 <div class="modal-footer">
-                    <?= $this->Form->button(__('Save'), ['class'=>'btn btn-primary']); ?>
+                    <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
                 </div>
             </div>
