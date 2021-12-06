@@ -1,4 +1,5 @@
-DROP TABLE IF EXISTS easy_audit_users;
+DROP TABLE IF EXISTS easy_audit_audit_field_values;
+DROP TABLE IF EXISTS easy_audit_audits;
 DROP TABLE IF EXISTS easy_audit_customer_forms;
 DROP TABLE IF EXISTS easy_audit_customers;
 DROP TABLE IF EXISTS easy_audit_form_template_fields;
@@ -6,6 +7,7 @@ DROP TABLE IF EXISTS easy_audit_form_template_sections;
 DROP TABLE IF EXISTS easy_audit_form_templates;
 DROP TABLE IF EXISTS easy_audit_form_template_optionset_values;
 DROP TABLE IF EXISTS easy_audit_form_template_optionsets;
+DROP TABLE IF EXISTS easy_audit_users;
 
 
 
