@@ -10,7 +10,7 @@ class UsersTable extends Table {
         $this->setTable('easy_audit_users');
 
         $this->hasMany('Audits')
-            ->setForeignKey('user_id');
+            ->setForeignKey('auditor_user_id');
     }
 
 }

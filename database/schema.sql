@@ -85,7 +85,7 @@ CREATE TABLE easy_audit_audits (
   customer_id int unsigned NOT NULL,
   form_template_id int unsigned NOT NULL,
   date date DEFAULT NULL,
-  user_id int unsigned NOT NULL,
+  auditor_user_id int unsigned NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 

@@ -14,7 +14,7 @@ $this->set('headerBreadcrumbs', [
                     <th class="celda-titulo"><?= __('Name') ?></th>
                     <th class="celda-titulo"><?= __('Template') ?></th>
                     <th class="celda-titulo"><?= __('Date') ?></th>
-                    <th class="celda-titulo"><?= __('User') ?></th>
+                    <th class="celda-titulo"><?= __('Auditor') ?></th>
                     <th></th>
                 </tr>
             </thead>
@@ -24,7 +24,7 @@ $this->set('headerBreadcrumbs', [
                         <td><?= $a->customer->name ?></td>
                         <td><?= $a->form_template->name ?></td>
                         <td><?= $a->date ?></td>
-                        <td><?= $a->user->name ?></td>
+                        <td><?= $a->auditor->name ?></td>
                         <td class="text-center"><?= $this->EasyAuditHtml->editButton(['action'=>'detail', $a->id]) ?></td>
                     </tr>
                 <?php endforeach ?>
