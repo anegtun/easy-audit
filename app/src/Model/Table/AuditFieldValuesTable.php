@@ -7,13 +7,21 @@ class AuditFieldValuesTable extends Table {
 
     public function initialize(array $config) {
         $this->setTable('easy_audit_audit_field_values');
+
+        $this->belongsTo('FormTemplateFields')
+            ->setForeignKey('form_template_field_id');
+
+        $this->belongsTo('FormTemplateOptionsetValues')
+            ->setForeignKey('optionset_value_id');
     }
 
     public function findForAudit($audit_id) {
-        $values = $this->find('all')->where(['audit_id' => $audit_id]);
+        $values = $this->find('all')
+            ->where(['audit_id' => $audit_id])
+            ->contain(['FormTemplateFields', 'FormTemplateOptionsetValues']);
         $result = [];
         foreach($values as $v) {
-            $result[$v->form_template_field_id] = $v->optionset_value_id;
+            $result[$v->form_template_field_id] = $v;
         }
         return $result;
     }

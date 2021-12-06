@@ -32,8 +32,6 @@ class FormTemplatesController extends AppController {
             }
             $this->Flash->error(__('Error saving template.'));
         }
-        // $this->set(compact('clube'));
-        // $this->render('detalle');
         return $this->redirect(['action'=>'index']);
     }
 
@@ -48,7 +46,7 @@ class FormTemplatesController extends AppController {
     }
 
     public function detail($id) {
-        $template = $this->FormTemplates->get($id);
+        $template = $this->FormTemplates->get($id, [ 'contain' => ['Customers'] ]);
         $fieldTypes = $this->FormTemplateFieldTypes->getAll();
         $optionsets = $this->FormTemplateOptionsets->findForSelect();
         $sections = $this->FormTemplateSections->find()

@@ -27,7 +27,7 @@ $this->set('headerBreadcrumbs', [
                 <?php endforeach ?>
             </tbody>
         </table>
-
-        <?= $this->Html->link(__('Create'), ['action'=>'detail'], ['class'=>'btn btn-primary']) ?>
     </div>
+    
+    <?= $this->Html->link(__('Create'), ['action'=>'detail'], ['class'=>'btn btn-primary']) ?>
 </div>

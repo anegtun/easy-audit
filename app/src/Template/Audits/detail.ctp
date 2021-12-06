@@ -39,16 +39,23 @@ $this->set('headerBreadcrumbs', [
     </fieldset>
 
     <?php foreach($template_sections as $s) : ?>
+        <?php $collapseId = "section{$s->id}" ?>
         <fieldset>
-            <legend><?= $s->name ?></legend>
-            <?php foreach($template_fields as $f) : ?>
-                <?php if($f->form_template_section_id === $s->id) : ?>
-                    <?= $this->Form->control("field_values[{$f->id}]", [
-                        'options' => $this->EasyAuditForm->objectToKeyValue($optionset_values[$f->optionset_id], 'id', 'label'),
-                        'value' => empty($field_values[$f->id]) ? '' : $field_values[$f->id],
-                        'label' => __($f->text)]) ?>
-                <?php endif ?>
-            <?php endforeach ?>
+            <legend>
+                <a href="#<?= $collapseId ?>" data-toggle="collapse">
+                    <?= $s->name ?> (<?= $s->score ?>)
+                </a>
+            </legend>
+            <div id="<?= $collapseId ?>" class="collapse">
+                <?php foreach($template_fields as $f) : ?>
+                    <?php if($f->form_template_section_id === $s->id) : ?>
+                        <?= $this->Form->control("field_values[{$f->id}]", [
+                            'options' => $this->EasyAuditForm->objectToKeyValue($optionset_values[$f->optionset_id], 'id', 'label'),
+                            'value' => empty($field_values[$f->id]) ? '' : $field_values[$f->id]->optionset_value_id,
+                            'label' => __($f->text)]) ?>
+                    <?php endif ?>
+                <?php endforeach ?>
+            </div>
         </fieldset>
     <?php endforeach ?>
 

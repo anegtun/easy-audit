@@ -35,7 +35,7 @@ CREATE TABLE easy_audit_form_template_optionset_values (
   optionset_id int unsigned NOT NULL,
   label varchar(200) NOT NULL,
   value varchar(20) NOT NULL,
-  value_numeric int unsigned DEFAULT NULL,
+  value_numeric float unsigned DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 

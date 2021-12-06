@@ -31,9 +31,9 @@
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-xs-12 col-md-6 login-left">
-                                        <div class="row">
+                                        <div class="col-xs-10 row">
                                             <!-- Login logo -->
-                                            <div class="col-xs-12 text-center login-logo">
+                                            <div class="text-center login-logo">
                                                 <?= $this->Html->image("/images/logo/login.png", array('alt'=>$this->EasyAuditConfig->siteTitle())); ?>
                                             </div>
 
