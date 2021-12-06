@@ -4,6 +4,10 @@
     </li>
 
     <li data-toggle="tooltip">
+        <?= $this->EasyAuditHtml->gliphiconLink('check', __('Audits'), ['controller'=>'Audits', 'action'=>'index']) ?>
+    </li>
+
+    <li data-toggle="tooltip">
         <a href="#" data-toggle="collapse" data-target="#config-entries" data-parent="#left-menu-content" <?=$menu_option==='config'?'aria-expanded="true"':''?>>
             <?= $this->EasyAuditHtml->gliphiconText('cog', __('Config')) ?>
             <span class="caret caret-right"></span>

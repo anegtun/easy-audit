@@ -5,7 +5,12 @@ use Cake\View\Helper;
 
 class EasyAuditFormHelper extends Helper {
 
-    public $helpers = ['EasyAuditHtml'];
+    public $helpers = ['EasyAuditHtml', 'Form'];
+    
+    public function dateControl($key, $attrs=[]) {
+        $formAttrs = array_merge($attrs, ['templateVars' => ['classes' => 'fld-date']]);
+        return $this->Form->control($key, $formAttrs);
+    }
     
     public function editModalLink($entity, $prefix, $fields = []) {
         $attrs = [];
