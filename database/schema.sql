@@ -81,11 +81,19 @@ CREATE TABLE easy_audit_customer_forms (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 CREATE TABLE easy_audit_audits (
-  id int unsigned NOT NULL AUTO_INCREMENT,         
+  id int unsigned NOT NULL AUTO_INCREMENT,
   customer_id int unsigned NOT NULL,
   form_template_id int unsigned NOT NULL,
   date date DEFAULT NULL,
   auditor_user_id int unsigned NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+CREATE TABLE easy_audit_audit_field_values (
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  audit_id int unsigned NOT NULL,
+  form_template_field_id int unsigned NOT NULL,
+  optionset_value_id int unsigned NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
