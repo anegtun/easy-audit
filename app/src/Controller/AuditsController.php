@@ -46,7 +46,7 @@ class AuditsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
             $audit = $this->Audits->patchEntity($this->Audits->newEntity(), $data);
-            $audit->date = empty($data['date']) ? NULL : Time::createFromFormat('d-m-Y', $data['date']);
+            $audit->date = parseDate($data['date']);
             $audit->auditor_user_id = $this->Auth->user('id');
             if ($this->Audits->save($audit)) {
                 $this->Flash->success(__('Audit created.'));
@@ -61,12 +61,16 @@ class AuditsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
             $audit = $this->Audits->get($data['id']);
-            $audit->date = empty($data['date']) ? NULL : Time::createFromFormat('d-m-Y', $data['date']);
+            $audit->date = parseDate($data['date']);
             $audit->auditor_user_id = $data['auditor_user_id'];
             $this->Audits->save($audit);
             $this->AuditFieldValues->upsertAll($data['id'], $data['field_values']);
         }
         return $this->redirect(['action'=>'detail', $audit->id]);
+    }
+
+    private function parseDate($date) {
+        return empty($date) ? NULL : Time::createFromFormat('d-m-Y', $date);
     }
 
 }

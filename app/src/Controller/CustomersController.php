@@ -85,8 +85,17 @@ class CustomersController extends AppController {
         return $this->redirect(['action'=>'detail', $customerId]);
     }
 
+    public function templates($id) {
+        $customer = $this->getCustomer($id);
+        $result = [];
+        foreach($customer->form_templates as $t) {
+            $result[] = ['id' => $t->id, 'name' => $t->name];
+        }
+        $this->set($result);
+    }
+
     private function getCustomer($id) {
-        return $this->Customers->get($id, [ 'contain' => ['FormTemplates'] ]);
+        return $this->Customers->get($id, [ 'contain' => ['Audits' => [ 'Customers', 'FormTemplates', 'Users' ], 'FormTemplates'] ]);
     }
 
 }

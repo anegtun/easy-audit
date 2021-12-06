@@ -4,6 +4,8 @@ $this->set('headerTitle', __('Audits'));
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Audits')]
 ]);
+$this->Html->script('modal-utils', ['block' => 'script']);
+$this->Html->script('audits', ['block' => 'script']);
 ?>
 
 <div class="row">
@@ -25,7 +27,7 @@ $this->set('headerBreadcrumbs', [
                         <td><?= $a->form_template->name ?></td>
                         <td><?= $a->date ?></td>
                         <td><?= $a->auditor->name ?></td>
-                        <td class="text-center"><?= $this->EasyAuditHtml->editButton(['action'=>'detail', $a->id]) ?></td>
+                        <td class="text-center"><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['action'=>'detail', $a->id]) ?></td>
                     </tr>
                 <?php endforeach ?>
             </tbody>
@@ -48,7 +50,7 @@ $this->set('headerBreadcrumbs', [
                 <div class="modal-body">
                     <fieldset>
                         <?= $this->Form->control('customer_id', ['options' => $this->EasyAuditForm->objectToKeyValue($customers, 'id', 'name'), 'label'=>__('Customer')]) ?>
-                        <?= $this->Form->control('form_template_id', ['options' => $this->EasyAuditForm->objectToKeyValue($templates, 'id', 'name'), 'label'=>__('Template')]) ?>
+                        <?= $this->Form->control('form_template_id', ['options' => [], 'label'=>__('Template')]) ?>
                         <?= $this->EasyAuditForm->dateControl('date', ['label'=>__('Date')]) ?>
                     </fieldset>
                 </div>

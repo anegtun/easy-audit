@@ -15,11 +15,19 @@ $this->set('headerBreadcrumbs', [
         <div class="row">
             <div class="form-group col-lg-3">
                 <label><?= __('Customer') ?></label>
-                <div><?= $audit->customer->name ?></div>
+                <div>
+                    <?= $audit->customer->name ?>
+                    &nbsp;
+                    <?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['controller' => 'Customers', 'action' => 'detail', $audit->customer->id]) ?>
+                </div>
             </div>
             <div class="form-group col-lg-3">
                 <label><?= __('Template') ?></label>
-                <div><?= $audit->form_template->name ?></div>
+                <div>
+                    <?= $audit->form_template->name ?>
+                    &nbsp;
+                    <?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['controller' => 'FormTemplates', 'action' => 'detail', $audit->form_template->id]) ?>
+                </div>
             </div>
             <div class="form-group col-lg-3">
                 <?= $this->EasyAuditForm->dateControl('date', ['value'=>$audit->date, 'label'=>__('Date')]) ?>
@@ -44,6 +52,6 @@ $this->set('headerBreadcrumbs', [
         </fieldset>
     <?php endforeach ?>
 
-    <?= $this->Form->button(__('Save'), ['class'=>'btn btn-primary glyphicon glyphicon-saved']); ?>
+    <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
 
 <?= $this->Form->end() ?>
