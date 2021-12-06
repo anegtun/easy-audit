@@ -22,7 +22,7 @@ $this->set('headerBreadcrumbs', [
 </div>
 
 
-<?php if(!empty($customer)) : ?>
+<?php if(!empty($customer->form_templates)) : ?>
 
     <div class="row table-responsive" style="margin-top: 10px">
 

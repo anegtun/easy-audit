@@ -19,7 +19,7 @@ class CustomersController extends AppController {
 
     public function detail($id=null) {
         $customer = empty($id) ? $this->Customers->newEntity() : $this->getCustomer($id);
-        if(!empty($customer)) {
+        if(!empty($id)) {
             $templates = $this->FormTemplates->find('all');
             $templateIds = $customer->getTemplateIds();
             if(!empty($templateIds)) {
