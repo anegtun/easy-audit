@@ -34,7 +34,7 @@ $optionsetOptions = iterator_to_array($optionsets);
                         <?= $this->EasyAuditForm->editModalLink($f, 'data-field', ['id', 'form_template_section_id', 'position', 'text']) ?>
                         <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveFieldUp', $f->id]) ?>
                         <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveFieldDown', $f->id]) ?>
-                        <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteField', $f->id]) ?>
+                        <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteField', $f->id], ['confirm' => __('Are you sure you want to remove this field? This can\'t be undone')]) ?>
                     </div>
                     <div class="col-sm-1">
                         <?= $optionsetOptions[$f->optionset_id] ?>
@@ -123,7 +123,7 @@ $optionsetOptions = iterator_to_array($optionsets);
                 </button>
             </div>
             <div class="modal-body">
-                <div class="col-xs-12 table-responsive">
+                <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>

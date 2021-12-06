@@ -32,9 +32,9 @@ $this->Html->script('audits', ['block' => 'script']);
                 <?php endforeach ?>
             </tbody>
         </table>
-
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-new-audit"><?= __('New audit') ?></button>
     </div>
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-new-audit"><?= __('New audit') ?></button>
 </div>
 
 <div id="modal-new-audit" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
