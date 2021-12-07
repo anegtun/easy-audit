@@ -20,6 +20,9 @@
             <li <?=$submenu_option==='config-form-templates'?'class="active"':''?>>
                 <?= $this->Html->link(__('Form templates'), ['controller'=>'FormTemplates', 'action'=>'index']) ?>
             </li>
+            <li <?=$submenu_option==='config-users'?'class="active"':''?>>
+                <?= $this->Html->link(__('Users'), ['controller'=>'Users', 'action'=>'index']) ?>
+            </li>
         </ul>
     </li>
 </ul>
