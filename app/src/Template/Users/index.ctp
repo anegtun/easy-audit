@@ -14,8 +14,8 @@ $this->set('headerBreadcrumbs', [
                 <tr>
                     <th class="cell-small"></th>
                     <th class="celda-titulo"><?= __('Username') ?></th>
-                    <th class="celda-titulo"><?= __('Name') ?></th>
                     <th class="celda-titulo"><?= __('Role') ?></th>
+                    <th class="celda-titulo"><?= __('Name') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -23,8 +23,8 @@ $this->set('headerBreadcrumbs', [
                     <tr>
                         <td><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $u->id]) ?></td>
                         <td><?= $this->Html->link($u->username, ['action'=>'detail', $u->id]) ?></td>
-                        <td><?= $u->name ?></td>
                         <td><?= $roles[$u->role] ?></td>
+                        <td><?= $u->name ?></td>
                     </tr>
                 <?php endforeach ?>
             </tbody>
