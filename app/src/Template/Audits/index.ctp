@@ -9,25 +9,23 @@ $this->Html->script('audits', ['block' => 'script']);
 ?>
 
 <div class="row">
-    <div class="col-xs-12 table-responsive">
+    <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
+                    <th class="cell-small"></th>
+                    <th class="cell-small celda-titulo"><?= __('Date') ?></th>
                     <th class="celda-titulo"><?= __('Name') ?></th>
-                    <th class="celda-titulo"><?= __('Template') ?></th>
-                    <th class="celda-titulo"><?= __('Date') ?></th>
                     <th class="celda-titulo"><?= __('Auditor') ?></th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach($audits as $a) : ?>
                     <tr>
-                        <td><?= $a->customer->name ?></td>
-                        <td><?= $a->form_template->name ?></td>
+                        <td><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['action'=>'detail', $a->id]) ?></td>
                         <td><?= $a->date ?></td>
+                        <td><?= $a->customer->name ?></td>
                         <td><?= $a->auditor->name ?></td>
-                        <td class="text-center"><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['action'=>'detail', $a->id]) ?></td>
                     </tr>
                 <?php endforeach ?>
             </tbody>

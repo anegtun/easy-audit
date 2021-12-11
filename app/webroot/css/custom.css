@@ -14,6 +14,10 @@ td.border-right, th.border-right {
     border-right: 1px solid #ccc;
 }
 
+legend > a:hover, legend > a:active, legend > a:focus {
+    text-decoration: none !important;
+}
+
 @media (max-width: 990px) {
     #main-wrapper #main-content {
         min-height: calc(100% - 85px);
