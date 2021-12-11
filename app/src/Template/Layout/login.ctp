@@ -9,7 +9,7 @@
         <!-- Favicon -->
         <?= $this->Html->meta('favicon.ico', '/images/favicon/favicon.ico', array('type' => 'icon')) ?>
         <!-- custom:css -->
-        <?= $this->Html->css(array("/maqint/maqint", "login-page")) ?>
+        <?= $this->Html->css(array("/maqint/maqint", "login-page", "custom")) ?>
         <!-- libs:js -->
         <?= $this->Html->script("/libs/ckeditor/ckeditor") ?>
         <!-- custom:js -->
@@ -31,7 +31,7 @@
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-xs-12 col-md-6 login-left">
-                                        <div class="col-xs-10 row">
+                                        <div class="col-xs-7 col-md-12 row">
                                             <!-- Login logo -->
                                             <div class="text-center login-logo">
                                                 <?= $this->Html->image("/images/logo/login.png", array('alt'=>$this->EasyAuditConfig->siteTitle())); ?>
