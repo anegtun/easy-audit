@@ -113,7 +113,7 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
                         <div class="row page-header">
                             <div class="col-xs-12 m-b-15">
                                 <?php if(isset($headerTitle)) : ?>
-                                    <h1><?= $headerTitle ?></h1>
+                                    <h1 class="hidden-xs hidden-sm"><?= $headerTitle ?></h1>
                                 <?php endif ?>
                                 <?php if(isset($headerBreadcrumbs)) : ?>
                                     <ol class="breadcrumb">
@@ -143,7 +143,7 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
             <footer id="main-footer" class="row">
                 <div id="footer-logo">
                     <?= $this->Html->link(
-                        $this->Html->image('/images/logo/footer.png', array('width'=>'150')),
+                        $this->Html->image('/images/logo/footer.png'),
                         $this->EasyAuditConfig->mainUrl(),
                         ['escape'=>false]) ?>
                 </div>
@@ -163,7 +163,7 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
                     </div>
                 </div>
             </footer>
-    </div>
+        </div>
 
-</body>
+    </body>
 </html>

@@ -11,8 +11,8 @@ class EasyAuditHtmlHelper extends Helper {
         return $this->gliphiconLink('pencil', '', $url);
     }
 
-    public function deleteButton($url) {
-        return $this->gliphiconLink('trash', '', $url, ['confirm'=>__('This operation can\'t be undone, are you sure?')]);
+    public function deleteButton($url, $icon = 'trash') {
+        return $this->gliphiconLink($icon, '', $url, ['confirm'=>__('This operation can\'t be undone, are you sure?')]);
     }
 
     public function gliphiconText($glyphicon, $text) {

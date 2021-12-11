@@ -8,23 +8,23 @@ $this->set('headerBreadcrumbs', [
 ?>
 
 <div class="row">
-    <div class="col-xs-12 table-responsive">
+    <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
+                    <th class="cell-small"></th>
                     <th class="celda-titulo"><?= __('Name') ?></th>
                     <th class="celda-titulo"><?= __('Sections') ?></th>
                     <th class="celda-titulo"><?= __('Fields') ?></th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach($templates as $t) : ?>
                     <tr>
+                        <td><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $t->id]) ?></td>
                         <td><?= $this->Html->link($t->name, ['action'=>'detail', $t->id]) ?></td>
                         <td><?= count($t->form_template_sections) ?></td>
                         <td><?= count($t->form_template_fields) ?></td>
-                        <td class="text-center"><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $t->id]) ?></td>
                     </tr>
                 <?php endforeach ?>
             </tbody>

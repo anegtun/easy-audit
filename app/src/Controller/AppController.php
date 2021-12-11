@@ -16,6 +16,8 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
+use Cake\I18n\Date;
+use Cake\I18n\FrozenDate;
 
 /**
  * Application Controller
@@ -79,6 +81,9 @@ class AppController extends Controller
             in_array($this->response->getType(), array('application/json', 'application/xml'))
         ) {
             $this->set('_serialize', true);
+        } else {
+            Date::setToStringFormat('dd/MM/yyyy');
+            FrozenDate::setToStringFormat('dd/MM/yyyy');
         }
     }
 }

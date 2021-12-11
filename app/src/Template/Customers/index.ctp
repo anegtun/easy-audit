@@ -8,21 +8,21 @@ $this->set('headerBreadcrumbs', [
 ?>
 
 <div class="row">
-    <div class="col-xs-12 table-responsive">
+    <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
+                    <th class="cell-small"></th>
                     <th class="celda-titulo"><?= __('Name') ?></th>
                     <th class="celda-titulo"><?= __('Email') ?></th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach($customers as $c) : ?>
                     <tr>
+                        <td><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $c->id]) ?></td>
                         <td><?= $this->Html->link($c->name, ['action'=>'detail', $c->id]) ?></td>
                         <td><?= $c->email ?></td>
-                        <td class="text-center"><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $c->id]) ?></td>
                     </tr>
                 <?php endforeach ?>
             </tbody>

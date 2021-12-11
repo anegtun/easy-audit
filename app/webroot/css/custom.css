@@ -1,19 +1,67 @@
-/** Sobrescritura de Bootstrap de MAQINT **/
-
-table .text-warning {
-    color: #d49f00 !important;
+#main-content .login-logo {
+    margin-left: 0 !important;
 }
 
-.partido-check {
-    height: 67px;
-    padding-top: 2em;
+#main-footer img {
+    max-width: 150px;
+}
+
+th.cell-small , td.cell-small {
+    width: 10px;
+}
+
+td.border-right, th.border-right {
+    border-right: 1px solid #ccc;
+}
+
+legend > a:hover, legend > a:active, legend > a:focus {
+    text-decoration: none !important;
+}
+
+@media (max-width: 990px) {
+    #main-wrapper #main-content {
+        min-height: calc(100% - 85px);
+    }
+    #main-footer {
+        height: 30px;
+    }
+    #main-footer #footer-logo,
+    #main-footer #footer-info,
+    #main-footer img {
+        height: 25px;
+        font-size: 0.65em;
+    }
+    #main-footer #footer-info #footer-menu {
+        padding-top: 3px;
+    }
+
+    .login-left {
+        padding: 0 35px !important;
+    }
+    .container-full {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    .breadcrumb {
+        margin-top: 10px;
+    }
+}
+
+@media (min-width: 990px) {
+    .form-row {
+        display: flex;
+    }
+    .form-row > * {
+        flex-basis: 100%;
+        margin-right: 25px;
+    }
+    .form-row > *:last-child {
+        margin-right: 0;
+    }
 }
 
 @media (min-width: 1200px) {
     .modal-lg {
         width: 1100px;
     }
-}
-td.border-right, th.border-right {
-    border-right: 1px solid #ccc;
 }

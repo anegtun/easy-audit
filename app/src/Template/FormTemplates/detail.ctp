@@ -37,12 +37,10 @@ $optionsetOptions = iterator_to_array($optionsets);
                         <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteField', $f->id], ['confirm' => __('Are you sure you want to remove this field? This can\'t be undone')]) ?>
                     </div>
                     <div class="col-sm-1">
-                        <?= $optionsetOptions[$f->optionset_id] ?>
+                        <strong><?= $optionsetOptions[$f->optionset_id] ?></strong>
                     </div>
-                    <div class="col-sm-10">
-                        <div class="form-group">
-                            <label><?= $s->position ?>.<?= $f->position ?>. <?= $f->text ?></label>
-                        </div>
+                    <div class="col-sm-10 form-group">
+                        <label><?= $s->position ?>.<?= $f->position ?>. <?= $f->text ?></label>
                     </div>
                 </div>
             <?php endforeach ?>
@@ -123,22 +121,20 @@ $optionsetOptions = iterator_to_array($optionsets);
                 </button>
             </div>
             <div class="modal-body">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="celda-titulo"><?= __('Name') ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($template->customers as $c) : ?>
                             <tr>
-                                <th class="celda-titulo"><?= __('Name') ?></th>
+                                <td><?= $this->Html->link($c->name, ['controller'=>'customers', 'action'=>'detail', $c->id]) ?></td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach($template->customers as $c) : ?>
-                                <tr>
-                                    <td><?= $this->Html->link($c->name, ['controller'=>'customers', 'action'=>'detail', $c->id]) ?></td>
-                                </tr>
-                            <?php endforeach ?>
-                        </tbody>
-                    </table>
-                </div>
+                        <?php endforeach ?>
+                    </tbody>
+                </table>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
