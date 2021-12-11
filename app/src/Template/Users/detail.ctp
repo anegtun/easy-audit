@@ -38,26 +38,24 @@ $authUser = $this->request->getSession()->read('Auth.User');
     <div class="row">
         <fieldset>
             <legend><?= __('Audits') ?></legend>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead>
+            <table class="table table-striped table-hover table-responsive">
+                <thead>
+                    <tr>
+                        <th class="cell-small"></th>
+                        <th class="cell-small celda-titulo"><?= __('Date') ?></th>
+                        <th class="celda-titulo"><?= __('Name') ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach($user->audits as $a) : ?>
                         <tr>
-                            <th class="cell-small"></th>
-                            <th class="cell-small celda-titulo"><?= __('Date') ?></th>
-                            <th class="celda-titulo"><?= __('Name') ?></th>
+                            <td><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['controller'=>'Audits', 'action'=>'detail', $a->id]) ?></td>
+                            <td><?= $a->date ?></td>
+                            <td><?= $a->customer->name ?></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($user->audits as $a) : ?>
-                            <tr>
-                                <td><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['controller'=>'Audits', 'action'=>'detail', $a->id]) ?></td>
-                                <td><?= $a->date ?></td>
-                                <td><?= $a->customer->name ?></td>
-                            </tr>
-                        <?php endforeach ?>
-                    </tbody>
-                </table>
-            </div>
+                    <?php endforeach ?>
+                </tbody>
+            </table>
         </fieldset>
     </div>
 
