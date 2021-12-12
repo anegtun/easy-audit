@@ -24,10 +24,13 @@ $this->set('headerBreadcrumbs', [
                 <div id="<?= $collapseId ?>" class="collapse">
                     <?php foreach($template_fields as $f) : ?>
                         <?php if($f->form_template_section_id === $s->id) : ?>
-                            <?= $this->Form->control("field_values[{$f->id}]", [
-                                'options' => $this->EasyAuditForm->objectToKeyValue($optionset_values[$f->optionset_id], 'id', 'label'),
-                                'value' => empty($field_values[$f->id]) ? '' : $field_values[$f->id]->optionset_value_id,
-                                'label' => __($f->text)]) ?>
+                            <div class="form-group">
+                                <label for="<?= "field-values-{$f->id}" ?>">  <?= $f->text ?> </label>
+                                <?= $this->EasyAuditForm->cleanControl("field_values[{$f->id}]", [
+                                    'id' => "field-values-{$f->id}",
+                                    'options' => $this->EasyAuditForm->objectToKeyValue($optionset_values[$f->optionset_id], 'id', 'label'),
+                                    'value' => empty($field_values[$f->id]) ? '' : $field_values[$f->id]->optionset_value_id]) ?>
+                            </div>
                         <?php endif ?>
                     <?php endforeach ?>
                 </div>

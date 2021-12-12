@@ -1,5 +1,11 @@
 $(document).ready(function() {
 
+    let editor;
+    ClassicEditor
+        .create(document.querySelector('#field-text'), { toolbar: [ 'bold', 'italic' ] })
+        .then(newEditor => editor = newEditor)
+        .catch( error => console.error(error));
+
     const sectionModal = $('#modal-section');
     const fieldModal = $('#modal-field');
 
@@ -9,7 +15,7 @@ $(document).ready(function() {
     });
 
     $('#modal-field-button').click(function() {
-        openModalToCreate(fieldModal, ['id']);
+        penModalToCreate(fieldModal, ['id']);
         fieldModal.find('*[name=position]').prop('disabled', false);
         fieldModal.find('*[name=form_template_section_id]').trigger("change");
     });
@@ -21,6 +27,7 @@ $(document).ready(function() {
 
     $('a[data-field-id]').click(function() {
         openModalToEdit(fieldModal, $(this), 'data-field-', ['id', 'form_template_section_id', 'text']);
+        editor.setData($(this).attr('data-field-text'));
         fieldModal.find('*[name=form_template_section_id]').trigger("change");
         fieldModal.find('*[name=position]').val(Number($(this).attr('data-field-position')) + 1).prop('disabled', true);
     });
@@ -33,5 +40,4 @@ $(document).ready(function() {
             positionField.append($('<option>').text($(value).val()).val($(value).attr('data-position')));
         });
     });
-
 });

@@ -6,10 +6,21 @@ use Cake\View\Helper;
 class EasyAuditFormHelper extends Helper {
 
     public $helpers = ['EasyAuditHtml', 'Form'];
-    
+
+    private $clean_templates = [
+        'inputContainer' => '{{content}}',
+        'input' => '<input type="{{type}}" name="{{name}}" {{attrs}}/>',
+        'select' => '<select name="{{name}}" class="form-control {{classes}}"{{attrs}}>{{content}}</select>',
+    ];
+
     public function dateControl($key, $attrs=[]) {
         $formAttrs = array_merge($attrs, ['templateVars' => ['classes' => 'fld-date']]);
         return $this->Form->control($key, $formAttrs);
+    }
+
+    public function cleanControl($name, $attrs=[]) {
+        $input_attrs = array_merge($attrs, ['label' => false, 'templates' => $this->clean_templates]);
+        return $this->Form->control($name, $input_attrs);
     }
     
     public function saveButton($label) {
