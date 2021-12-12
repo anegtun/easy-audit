@@ -29,7 +29,7 @@ $optionsetOptions = iterator_to_array($optionsets);
                 <?= $s->position ?>. <?= $s->name ?>
             </legend>
             <?php foreach($s->form_template_fields as $f) : ?>
-                <div class="row">
+                <div class="row form-template-field">
                     <div class="col-sm-1">
                         <?= $this->EasyAuditForm->editModalLink($f, 'data-field', ['id', 'form_template_section_id', 'position', 'text']) ?>
                         <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveFieldUp', $f->id]) ?>
@@ -95,7 +95,6 @@ $optionsetOptions = iterator_to_array($optionsets);
                     <fieldset>
                         <?= $this->Form->control('form_template_section_id', ['options' => $this->EasyAuditForm->objectToKeyValue($sections, 'id', '{$e->position}. {$e->name}'), 'label'=>__('Section')]) ?>
                         <?= $this->Form->control('text', ['id'=>'field-text', 'type'=>'textarea', 'label'=>__('Text')]) ?>
-                        <?php // $this->Form->control('text', ['label'=>__('Text')]) ?>
                         <?= $this->Form->control('type', ['options'=>$fieldTypes, 'label'=>__('Type')]) ?>
                         <?= $this->Form->control('optionset_id', ['options'=>$optionsets, 'label'=>__('Optionset')]) ?>
                         <?= $this->Form->control('position', ['options' => [], 'label'=>__('Place before...')]) ?>

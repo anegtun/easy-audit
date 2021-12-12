@@ -18,6 +18,10 @@ legend > a:hover, legend > a:active, legend > a:focus {
     text-decoration: none !important;
 }
 
+.form-template-field p {
+    display: inline;
+}
+
 @media (max-width: 990px) {
     #main-wrapper #main-content {
         min-height: calc(100% - 85px);
