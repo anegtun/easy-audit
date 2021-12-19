@@ -27,22 +27,20 @@ class AuditsController extends AppController {
     }
 
     public function detail($id) {
-        $audit = $this->Audits->get($id, [ 'contain'=>['Customers', 'FormTemplates', 'Users'] ]);
-        $template = $this->FormTemplates->get($audit->form_template->id);
-        $template_sections = $this->FormTemplateSections->find()
-            ->where(['form_template_id' => $template->id])
-            ->order(['position' => 'ASC'])
-            ->contain(['FormTemplateFields' => ['sort' => ['FormTemplateFields.position' => 'ASC']]]);
-        $template_fields = $this->FormTemplateFields->find()
-            ->where(['form_template_id' => $template->id])
-            ->order(['position' => 'ASC']);
+        $audit = $this->Audits->get($id, [ 'contain' => [
+            'Customers',
+            'FormTemplates' => ['FormTemplateSections', 'FormTemplateFields'],
+            'Users'
+        ] ]);
         $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
         $field_values = $this->AuditFieldValues->findForAudit($id);
         $users = $this->Users->find('all');
-        foreach($template_sections as $s) {
-            $s->score = $this->calculateSectionScore($s, $field_values);
+        foreach($audit->form_templates as $t) {
+            foreach($t->form_template_sections as $s) {
+                $s->score = $this->calculateSectionScore($s, $field_values);
+            }
         }
-        $this->set(compact('audit', 'field_values', 'optionset_values', 'template', 'template_sections', 'template_fields', 'users'));
+        $this->set(compact('audit', 'field_values', 'optionset_values', 'users'));
     }
 
     public function create() {
