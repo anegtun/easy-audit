@@ -48,7 +48,10 @@ $this->Html->script('audits', ['block' => 'script']);
                 <div class="modal-body">
                     <fieldset>
                         <?= $this->Form->control('customer_id', ['options' => $this->EasyAuditForm->objectToKeyValue($customers, 'id', 'name'), 'label'=>__('Customer')]) ?>
-                        <?= $this->Form->control('form_template_id', ['options' => [], 'label'=>__('Template')]) ?>
+                        <div class="form-group">
+                            <label><?= __('Template') ?></label>
+                            <div  id="template-check-container"></div>
+                        </div>
                         <?= $this->EasyAuditForm->dateControl('date', ['label'=>__('Date')]) ?>
                     </fieldset>
                 </div>

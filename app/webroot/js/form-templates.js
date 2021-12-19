@@ -15,7 +15,7 @@ $(document).ready(function() {
     });
 
     $('#modal-field-button').click(function() {
-        penModalToCreate(fieldModal, ['id']);
+        openModalToCreate(fieldModal, ['id']);
         fieldModal.find('*[name=position]').prop('disabled', false);
         fieldModal.find('*[name=form_template_section_id]').trigger("change");
     });
@@ -36,8 +36,10 @@ $(document).ready(function() {
         const sectionId = $(this).val();
         const positionField = $('#modal-field select[name=position]').empty().append($('<option>'));
         $('#modal-field select[name=position]').text();
-        $('#all-field-options input[data-section='+sectionId+']').each(function(index, value) {
-            positionField.append($('<option>').text($(value).val()).val($(value).attr('data-position')));
-        });
+        if(sectionId) {
+            $('#all-field-options input[data-section='+sectionId+']').each(function(index, value) {
+                positionField.append($('<option>').text($(value).val()).val($(value).attr('data-position')));
+            });
+        }
     });
 });

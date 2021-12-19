@@ -22,7 +22,7 @@ $this->set('headerBreadcrumbs', [
 
     <div class="tab-content">
 
-        <?php foreach($audit->form_templates as $t) : ?>
+        <?php foreach($audit->form_templates as $i => $t) : ?>
 
             <div id="form<?= $t->id ?>" class="tab-pane fade <?= $i==0 ? "in active" : "" ?>">
                 <?php foreach($t->form_template_sections as $s) : ?>

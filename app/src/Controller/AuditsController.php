@@ -49,6 +49,7 @@ class AuditsController extends AppController {
             $audit = $this->Audits->patchEntity($this->Audits->newEntity(), $data);
             $audit->date = $this->parseDate($data['date']);
             $audit->auditor_user_id = $this->Auth->user('id');
+            $audit->form_templates = $this->FormTemplates->find('all')->where(['id IN' => $data['form_template_id']])->toArray();
             if ($this->Audits->save($audit)) {
                 $this->Flash->success(__('Audit created.'));
             } else {
@@ -83,7 +84,7 @@ class AuditsController extends AppController {
                 $score += $f->form_template_optionset_value->value_numeric;
             }
         }
-        return round(100 * ($score / $count), 1);
+        return $count === 0 ? 0 : round(100 * ($score / $count), 1);
     }
 
 }

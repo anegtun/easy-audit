@@ -1,11 +1,16 @@
 $(document).ready(function() {
 
     $('#modal-new-audit select[name=customer_id]').change(function() {
-        const templateField = $('#modal-new-audit select[name=form_template_id]').empty().append($('<option>'));
+        const templateContainer = $('#template-check-container').empty();
         const customerId = $(this).val();
         const url = "customers/templates/" + customerId + '.json';
         $.get(url, (data) => {
-            $.each(data, (i, item) => templateField.append($('<option>').text(item.name).val(item.id)));
+            $.each(data, (i, item) => {
+                const div = $('<div>');
+                div.append($('<input type="checkbox" name="form_template_id[]" >').val(item.id));
+                div.append($('<span>').text(item.name));
+                templateContainer.append(div);
+            });
         });
     });
 
