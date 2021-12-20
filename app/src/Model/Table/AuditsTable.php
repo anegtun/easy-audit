@@ -11,8 +11,10 @@ class AuditsTable extends Table {
         $this->belongsTo('Customers')
             ->setForeignKey('customer_id');
 
-        $this->belongsTo('FormTemplates')
-            ->setForeignKey('form_template_id');
+        $this->belongsToMany('FormTemplates', [
+            'joinTable' => 'easy_audit_audit_forms',
+            'foreignKey' => 'audit_id',
+        ]);
 
         $this->belongsTo('Users', [
             'foreignKey' => 'auditor_user_id',
