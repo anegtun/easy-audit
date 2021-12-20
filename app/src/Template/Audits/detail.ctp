@@ -12,7 +12,7 @@ $this->set('headerBreadcrumbs', [
 
     <?= $this->Form->hidden('id', ['value' => $audit->id]) ?>
 
-    <ul class="nav nav-tabs nav-justified">
+    <ul class="nav nav-tabs">
         <?php foreach($audit->form_templates as $i => $t) : ?>
             <li class="<?= $i==0 ? "active" : "" ?>">
                 <a data-toggle="tab" href="#form<?= $t->id ?>"><?= $t->name ?></a>
