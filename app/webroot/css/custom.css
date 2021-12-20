@@ -22,6 +22,14 @@ legend > a:hover, legend > a:active, legend > a:focus {
     display: inline;
 }
 
+.checkbox-container {
+    display: block;
+}
+
+.checkbox-container > span {
+    margin-left: .5em;
+}
+
 @media (max-width: 990px) {
     #main-wrapper #main-content {
         min-height: calc(100% - 85px);

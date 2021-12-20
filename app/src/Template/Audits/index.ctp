@@ -50,7 +50,7 @@ $this->Html->script('audits', ['block' => 'script']);
                         <?= $this->Form->control('customer_id', ['options' => $this->EasyAuditForm->objectToKeyValue($customers, 'id', 'name'), 'label'=>__('Customer')]) ?>
                         <div class="form-group">
                             <label><?= __('Template') ?></label>
-                            <div  id="template-check-container"></div>
+                            <div id="template-check-container"></div>
                         </div>
                         <?= $this->EasyAuditForm->dateControl('date', ['label'=>__('Date')]) ?>
                     </fieldset>

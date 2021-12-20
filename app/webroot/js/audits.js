@@ -6,8 +6,8 @@ $(document).ready(function() {
         const url = "customers/templates/" + customerId + '.json';
         $.get(url, (data) => {
             $.each(data, (i, item) => {
-                const div = $('<div>');
-                div.append($('<input type="checkbox" name="form_template_id[]" >').val(item.id));
+                const div = $('<label class="checkbox-container">');
+                div.append('<input type="checkbox" name="form_template_id[]" value="'+item.id+'">');
                 div.append($('<span>').text(item.name));
                 templateContainer.append(div);
             });
