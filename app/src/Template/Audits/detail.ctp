@@ -53,11 +53,21 @@ $this->Html->script('audits', ['block' => 'script']);
                                         ]) ?>
                                         <div class="audit-observations">
                                             <?php if(!$hasObservations) : ?>
-                                                <a href="#">
-                                                    <?= __('+ add observations') ?>
-                                                </a>
+                                                <a href="#"><?= __('+ add observations & photos') ?></a>
                                             <?php endif ?>
-                                            <textarea name="<?="field_observations[{$f->id}]"?>" class="form-control" <?= $hasObservations ? '' : 'style="display:none"' ?>><?= $hasObservations ? $value->observations : '' ?></textarea>
+                                            <div class="audit-observations-input" <?= $hasObservations ? '' : 'style="display:none"' ?>>
+                                                <textarea name="<?="field_observations[{$f->id}]"?>" class="form-control"><?= $hasObservations ? $value->observations : '' ?></textarea>
+                                                <div class="audit-img-input">
+                                                    <div>
+                                                        <input type="file" name="<?="field_img[{$f->id}]"?>" id="<?="field_img_{$f->id}"?>" accept="image/*" multiple />
+                                                        <label for="<?="field_img_{$f->id}"?>"><?= $this->EasyAuditHtml->gliphiconText('picture', __('Choose images')) ?></label>
+                                                    </div>
+                                                    <div>
+                                                        <input type="file" name="<?="field_photo[{$f->id}]"?>" id="<?="field_photo_{$f->id}"?>" accept="image/*" capture="capture" />
+                                                        <label for="<?="field_photo_{$f->id}"?>"><?= $this->EasyAuditHtml->gliphiconText('camera', __('Take photo')) ?></label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 <?php endif ?>
