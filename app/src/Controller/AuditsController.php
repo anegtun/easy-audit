@@ -99,8 +99,10 @@ class AuditsController extends AppController {
         foreach($subdirs as $fieldId) {
             $result[$fieldId] = [];
             $dirField = new Folder($dir->path . DS . $fieldId);
-            foreach($dirField->read()[1] as $f) {
-                $result[$fieldId][] = "uploads/audits/$auditId/$fieldId/$f";
+            if(file_exists($dirField->path)) {
+                foreach($dirField->read()[1] as $f) {
+                    $result[$fieldId][] = "uploads/audits/$auditId/$fieldId/$f";
+                }
             }
         }
         return $result;
@@ -124,11 +126,13 @@ class AuditsController extends AppController {
     }
 
     private function deleteAllFiles($data) {
-        $dir = new Folder(WWW_ROOT . "uploads/audits/{$data['id']}");
-        foreach($data['field_img_removed'] as $fieldId => $filenames) {
-            foreach($filenames as $f) {
-                $file = new File($dir->path . DS . $fieldId. DS . $f);
-                $file->delete();
+        if(!empty($data['field_img_removed'])) {
+            $dir = new Folder(WWW_ROOT . "uploads/audits/{$data['id']}");
+            foreach($data['field_img_removed'] as $fieldId => $filenames) {
+                foreach($filenames as $f) {
+                    $file = new File($dir->path . DS . $fieldId. DS . $f);
+                    $file->delete();
+                }
             }
         }
     }

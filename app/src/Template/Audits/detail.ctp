@@ -41,6 +41,9 @@ $this->Html->script('audits', ['block' => 'script']);
                                     <?php 
                                         $value = empty($field_values[$f->id]) ? null : $field_values[$f->id];
                                         $hasObservations = !empty($value) && !empty($value->observations);
+                                        $imgs = empty($field_images[$f->id]) ? [] : $field_images[$f->id];
+                                        $hasImgs = !empty($imgs);
+                                        $hasImgsOrObs = $hasObservations || $hasImgs;
                                     ?>
                                     <div class="form-group audit-field">
                                         <label for="<?= "field-values-{$f->id}" ?>">
@@ -52,14 +55,13 @@ $this->Html->script('audits', ['block' => 'script']);
                                             'value' => empty($value) ? '' : $value->optionset_value_id
                                         ]) ?>
                                         <div class="audit-observations">
-                                            <?php if(!$hasObservations) : ?>
+                                            <?php if(!$hasImgsOrObs) : ?>
                                                 <a href="#"><?= __('+ add observations & photos') ?></a>
                                             <?php endif ?>
-                                            <div class="audit-observations-input" <?= $hasObservations ? '' : 'style="display:none"' ?>>
+                                            <div class="audit-observations-input" <?= $hasImgsOrObs ? '' : 'style="display:none"' ?>>
                                                 <textarea name="<?="field_observations[{$f->id}]"?>" class="form-control"><?= $hasObservations ? $value->observations : '' ?></textarea>
                                                 <div class="audit-img-current">
-                                                    <?php $imgs = empty($field_images[$f->id]) ? [] : $field_images[$f->id] ?>
-                                                    <?php if(!empty($imgs)) : ?>
+                                                    <?php if($hasImgs) : ?>
                                                         <p><strong><?= __('Current images') ?></strong></p>
                                                         <?php foreach($imgs as $img) : ?>
                                                             <?= $this->Html->image("/$img", ['data-field-id'=>$f->id]) ?>
