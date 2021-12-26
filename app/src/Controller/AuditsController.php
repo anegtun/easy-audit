@@ -3,6 +3,8 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Event\Event;
+use Cake\Filesystem\File;
+use Cake\Filesystem\Folder;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 
@@ -40,7 +42,8 @@ class AuditsController extends AppController {
                 $s->score = $this->calculateSectionScore($s, $field_values);
             }
         }
-        $this->set(compact('audit', 'field_values', 'optionset_values', 'users'));
+        $field_images = $this->readImgs($id);
+        $this->set(compact('audit', 'field_images', 'field_values', 'optionset_values', 'users'));
     }
 
     public function create() {
@@ -66,7 +69,9 @@ class AuditsController extends AppController {
             $audit->date = $this->parseDate($data['date']);
             $audit->auditor_user_id = $data['auditor_user_id'];
             $this->Audits->save($audit);
-            $this->AuditFieldValues->upsertAll($data['id'], $data['field_values']);
+            $this->AuditFieldValues->upsertAll($data['id'], $data['field_values'], $data['field_observations']);
+            $this->moveAllFiles($data);
+            $this->deleteAllFiles($data);
         }
         return $this->redirect(['action'=>'detail', $audit->id]);
     }
@@ -85,6 +90,51 @@ class AuditsController extends AppController {
             }
         }
         return $count === 0 ? 0 : round(100 * ($score / $count), 1);
+    }
+
+    private function readImgs($auditId) {
+        $result = [];
+        $dir = new Folder(WWW_ROOT . "uploads/audits/$auditId", true, 0755);
+        $subdirs = $dir->read()[0];
+        foreach($subdirs as $fieldId) {
+            $result[$fieldId] = [];
+            $dirField = new Folder($dir->path . DS . $fieldId);
+            if(file_exists($dirField->path)) {
+                foreach($dirField->read()[1] as $f) {
+                    $result[$fieldId][] = "uploads/audits/$auditId/$fieldId/$f";
+                }
+            }
+        }
+        return $result;
+    }
+
+    private function moveAllFiles($data) {
+        $dir = new Folder(WWW_ROOT . "uploads/audits/{$data['id']}", true, 0755);
+        $this->moveFiles($dir, $data['field_img']);
+        $this->moveFiles($dir, $data['field_photo']);
+    }
+
+    private function moveFiles($dir, $imgByFieldId) {
+        foreach($imgByFieldId as $fieldId => $imgs) {
+            if(!empty($imgs && !empty($imgs[0]['name']))) {
+                $dirField = new Folder($dir->path . DS . $fieldId, true, 0755);
+                foreach($imgs as $img) {
+                    move_uploaded_file($img['tmp_name'], $dirField->path . DS . "{$img['name']}");
+                }
+            }
+        }
+    }
+
+    private function deleteAllFiles($data) {
+        if(!empty($data['field_img_removed'])) {
+            $dir = new Folder(WWW_ROOT . "uploads/audits/{$data['id']}");
+            foreach($data['field_img_removed'] as $fieldId => $filenames) {
+                foreach($filenames as $f) {
+                    $file = new File($dir->path . DS . $fieldId. DS . $f);
+                    $file->delete();
+                }
+            }
+        }
     }
 
 }
