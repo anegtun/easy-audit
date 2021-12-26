@@ -4,10 +4,10 @@ namespace App\Model\Table;
 use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Table;
 
-class FormTemplateFieldsTable extends Table {
+class FormTemplateFieldsOptionsetTable extends Table {
     
     public function initialize(array $config) {
-        $this->setTable('easy_audit_form_template_fields');
+        $this->setTable('easy_audit_form_template_fields_optionset');
     }
 
     public function decrementPositionAfter($templateId, $sectionId, $startPosition, $excludedId = NULL) {

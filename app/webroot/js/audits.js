@@ -35,17 +35,13 @@ $(document).ready(function() {
         const fieldId = img.attr('data-field-id');
         const src = img.attr('src');
         const filename = src.substring(src.lastIndexOf('/') + 1);
-        const isSelected = img.hasClass('to-remove');
-        if(isSelected) {
+        if(img.hasClass('to-remove')) {
             img.removeClass('to-remove');
-            const que = $('form').find('input[data-field-id="'+fieldId+'"][data-filename="'+filename+'"]');
-            console.log("JAIME!", que);
-            que.remove();
+            $('form').find('input[data-field-id="'+fieldId+'"][data-filename="'+filename+'"]').remove();
         } else {
             img.addClass('to-remove');
             $('form').append($('<input type="hidden" name="field_img_removed['+fieldId+'][]" data-field-id='+fieldId+' data-filename='+filename+' value="'+filename+'">'));
         }
-        console.log('JAIME!', isSelected);
     });
 
 });

@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS easy_audit_audit_field_values;
 DROP TABLE IF EXISTS easy_audit_audits;
 DROP TABLE IF EXISTS easy_audit_customer_forms;
 DROP TABLE IF EXISTS easy_audit_customers;
-DROP TABLE IF EXISTS easy_audit_form_template_fields;
+DROP TABLE IF EXISTS easy_audit_form_template_fields_optionset;
 DROP TABLE IF EXISTS easy_audit_form_template_sections;
 DROP TABLE IF EXISTS easy_audit_form_templates;
 DROP TABLE IF EXISTS easy_audit_form_template_optionset_values;
@@ -43,6 +43,7 @@ CREATE TABLE easy_audit_form_template_optionset_values (
 CREATE TABLE easy_audit_form_templates (
   id int unsigned NOT NULL AUTO_INCREMENT,
   name varchar(200) DEFAULT NULL,
+  type varchar(20) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
@@ -56,14 +57,13 @@ CREATE TABLE easy_audit_form_template_sections (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE easy_audit_form_template_fields (
+CREATE TABLE easy_audit_form_template_optionset_fields (
   id int unsigned NOT NULL AUTO_INCREMENT,
   form_template_id int unsigned NOT NULL,
   form_template_section_id int unsigned NOT NULL,
   optionset_id int unsigned DEFAULT NULL,
   position int unsigned NOT NULL,
   text varchar(4000) DEFAULT NULL,
-  type varchar(20) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 

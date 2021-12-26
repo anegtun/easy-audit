@@ -14,8 +14,7 @@ $this->set('headerBreadcrumbs', [
                 <tr>
                     <th class="cell-small"></th>
                     <th class="celda-titulo"><?= __('Name') ?></th>
-                    <th class="celda-titulo"><?= __('Sections') ?></th>
-                    <th class="celda-titulo"><?= __('Fields') ?></th>
+                    <th class="celda-titulo"><?= __('Type') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -23,8 +22,7 @@ $this->set('headerBreadcrumbs', [
                     <tr>
                         <td><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $t->id]) ?></td>
                         <td><?= $this->Html->link($t->name, ['action'=>'detail', $t->id]) ?></td>
-                        <td><?= count($t->form_template_sections) ?></td>
-                        <td><?= count($t->form_template_fields) ?></td>
+                        <td><?= $template_types[$t->type] ?></td>
                     </tr>
                 <?php endforeach ?>
             </tbody>
@@ -47,6 +45,7 @@ $this->set('headerBreadcrumbs', [
                 <div class="modal-body">
                     <fieldset>
                         <?= $this->Form->control('name', ['label'=>__('Name')]) ?>
+                        <?= $this->Form->control('type', ['options'=>$template_types, 'label'=>__('Type')]) ?>
                     </fieldset>
                 </div>
                 <div class="modal-footer">

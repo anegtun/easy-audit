@@ -36,7 +36,7 @@ $this->Html->script('audits', ['block' => 'script']);
                             </a>
                         </legend>
                         <div id="<?= $collapseId ?>" class="collapse">
-                            <?php foreach($t->form_template_fields as $f) : ?>
+                            <?php foreach($t->form_template_fields_optionset as $f) : ?>
                                 <?php if($f->form_template_section_id === $s->id) : ?>
                                     <?php 
                                         $value = empty($field_values[$f->id]) ? null : $field_values[$f->id];

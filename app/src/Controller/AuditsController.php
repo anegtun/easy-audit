@@ -15,7 +15,7 @@ class AuditsController extends AppController {
         $this->AuditFieldValues = TableRegistry::getTableLocator()->get('AuditFieldValues');
         $this->Customers = TableRegistry::getTableLocator()->get('Customers');
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
-        $this->FormTemplateFields = TableRegistry::getTableLocator()->get('FormTemplateFields');
+        $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
         $this->FormTemplateSections = TableRegistry::getTableLocator()->get('FormTemplateSections');
         $this->FormTemplateOptionsetValues = TableRegistry::getTableLocator()->get('FormTemplateOptionsetValues');
         $this->Users = TableRegistry::getTableLocator()->get('Users');
@@ -31,7 +31,7 @@ class AuditsController extends AppController {
     public function detail($id) {
         $audit = $this->Audits->get($id, [ 'contain' => [
             'Customers',
-            'FormTemplates' => ['FormTemplateSections', 'FormTemplateFields'],
+            'FormTemplates' => ['FormTemplateSections', 'FormTemplateFieldsOptionset'],
             'Users'
         ] ]);
         $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
@@ -84,7 +84,7 @@ class AuditsController extends AppController {
         $count = 0;
         $score = 0;
         foreach($field_values as $f) {
-            if($f->form_template_field->form_template_section_id === $section->id) {
+            if($f->form_template_fields_optionset->form_template_section_id === $section->id) {
                 $count++;
                 $score += $f->form_template_optionset_value->value_numeric;
             }
