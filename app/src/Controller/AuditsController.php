@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Event\Event;
+use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
@@ -70,6 +71,7 @@ class AuditsController extends AppController {
             $this->Audits->save($audit);
             $this->AuditFieldValues->upsertAll($data['id'], $data['field_values'], $data['field_observations']);
             $this->moveAllFiles($data);
+            $this->deleteAllFiles($data);
         }
         return $this->redirect(['action'=>'detail', $audit->id]);
     }
@@ -117,6 +119,16 @@ class AuditsController extends AppController {
                 foreach($imgs as $img) {
                     move_uploaded_file($img['tmp_name'], $dirField->path . DS . "{$img['name']}");
                 }
+            }
+        }
+    }
+
+    private function deleteAllFiles($data) {
+        $dir = new Folder(WWW_ROOT . "uploads/audits/{$data['id']}");
+        foreach($data['field_img_removed'] as $fieldId => $filenames) {
+            foreach($filenames as $f) {
+                $file = new File($dir->path . DS . $fieldId. DS . $f);
+                $file->delete();
             }
         }
     }

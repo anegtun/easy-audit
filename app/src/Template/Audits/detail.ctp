@@ -59,9 +59,12 @@ $this->Html->script('audits', ['block' => 'script']);
                                                 <textarea name="<?="field_observations[{$f->id}]"?>" class="form-control"><?= $hasObservations ? $value->observations : '' ?></textarea>
                                                 <div class="audit-img-current">
                                                     <?php $imgs = empty($field_images[$f->id]) ? [] : $field_images[$f->id] ?>
-                                                    <?php foreach($imgs as $img) : ?>
-                                                        <?= $this->Html->image("/$img") ?>
-                                                    <?php endforeach ?>
+                                                    <?php if(!empty($imgs)) : ?>
+                                                        <p><strong><?= __('Current images') ?></strong></p>
+                                                        <?php foreach($imgs as $img) : ?>
+                                                            <?= $this->Html->image("/$img", ['data-field-id'=>$f->id]) ?>
+                                                        <?php endforeach ?>
+                                                    <?php endif ?>
                                                 </div>
                                                 <div class="audit-img-preview">
                                                     <p style="display:none"><strong><?= __('New images') ?></strong></p>
