@@ -26,7 +26,7 @@ class AuditFieldValuesTable extends Table {
         return $result;
     }
 
-    public function upsertAll($audit_id, $values) {
+    public function upsertAll($audit_id, $values, $observations) {
         $this->deleteAll(['audit_id' => $audit_id]);
         foreach($values as $k=>$v) {
             if(!empty($v)) {
@@ -34,6 +34,7 @@ class AuditFieldValuesTable extends Table {
                 $field_value->audit_id = $audit_id;
                 $field_value->form_template_field_id = $k;
                 $field_value->optionset_value_id = $v;
+                $field_value->observations = empty($observations[$k]) ? null : $observations[$k];
                 $this->save($field_value);
             }
         }

@@ -4,7 +4,7 @@ $(document).ready(function() {
     ClassicEditor
         .create(document.querySelector('#field-text'), { toolbar: [ 'bold', 'italic' ] })
         .then(newEditor => editor = newEditor)
-        .catch( error => console.error(error));
+        .catch(error => console.error(error));
 
     const sectionModal = $('#modal-section');
     const fieldModal = $('#modal-field');

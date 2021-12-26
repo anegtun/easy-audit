@@ -6,6 +6,8 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('Audits'), 'url'=>['action'=>'index']],
     ['label'=>$title]
 ]);
+$this->Html->script('modal-utils', ['block' => 'script']);
+$this->Html->script('audits', ['block' => 'script']);
 ?>
 
 <?= $this->Form->create(null, ['url'=>['action'=>'update']]) ?>
@@ -36,12 +38,27 @@ $this->set('headerBreadcrumbs', [
                         <div id="<?= $collapseId ?>" class="collapse">
                             <?php foreach($t->form_template_fields as $f) : ?>
                                 <?php if($f->form_template_section_id === $s->id) : ?>
-                                    <div class="form-group">
-                                        <label for="<?= "field-values-{$f->id}" ?>">  <?= $f->text ?> </label>
+                                    <?php 
+                                        $value = empty($field_values[$f->id]) ? null : $field_values[$f->id];
+                                        $hasObservations = !empty($value) && !empty($value->observations);
+                                    ?>
+                                    <div class="form-group audit-field">
+                                        <label for="<?= "field-values-{$f->id}" ?>">
+                                            <?= $f->text ?>
+                                        </label>
                                         <?= $this->EasyAuditForm->cleanControl("field_values[{$f->id}]", [
                                             'id' => "field-values-{$f->id}",
                                             'options' => $this->EasyAuditForm->objectToKeyValue($optionset_values[$f->optionset_id], 'id', 'label'),
-                                            'value' => empty($field_values[$f->id]) ? '' : $field_values[$f->id]->optionset_value_id]) ?>
+                                            'value' => empty($value) ? '' : $value->optionset_value_id
+                                        ]) ?>
+                                        <div class="audit-observations">
+                                            <?php if(!$hasObservations) : ?>
+                                                <a href="#">
+                                                    <?= __('+ add observations') ?>
+                                                </a>
+                                            <?php endif ?>
+                                            <textarea name="<?="field_observations[{$f->id}]"?>" class="form-control" <?= $hasObservations ? '' : 'style="display:none"' ?>><?= $hasObservations ? $value->observations : '' ?></textarea>
+                                        </div>
                                     </div>
                                 <?php endif ?>
                             <?php endforeach ?>

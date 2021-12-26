@@ -14,4 +14,9 @@ $(document).ready(function() {
         });
     });
 
+    $('.audit-observations > a').click(function(e) {
+        e.preventDefault();
+        $(e.currentTarget).hide().siblings('textarea').show();
+    });
+
 });

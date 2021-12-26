@@ -66,7 +66,7 @@ class AuditsController extends AppController {
             $audit->date = $this->parseDate($data['date']);
             $audit->auditor_user_id = $data['auditor_user_id'];
             $this->Audits->save($audit);
-            $this->AuditFieldValues->upsertAll($data['id'], $data['field_values']);
+            $this->AuditFieldValues->upsertAll($data['id'], $data['field_values'], $data['field_observations']);
         }
         return $this->redirect(['action'=>'detail', $audit->id]);
     }

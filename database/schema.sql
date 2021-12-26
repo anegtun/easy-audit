@@ -101,6 +101,7 @@ CREATE TABLE easy_audit_audit_field_values (
   audit_id int unsigned NOT NULL,
   form_template_field_id int unsigned NOT NULL,
   optionset_value_id int unsigned NOT NULL,
+  observations varchar(4000) DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 

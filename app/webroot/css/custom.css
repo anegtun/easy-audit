@@ -22,6 +22,22 @@ legend > a:hover, legend > a:active, legend > a:focus {
     display: inline;
 }
 
+.audit-field {
+    margin-bottom: 2em;
+}
+
+.audit-observations {
+    margin-top: .5em;
+}
+
+.audit-observations a {
+    text-decoration: none;
+}
+
+.audit-observations textarea {
+    min-height: 10em;
+}
+
 .checkbox-container {
     display: block;
 }
@@ -56,6 +72,10 @@ legend > a:hover, legend > a:active, legend > a:focus {
     }
     .breadcrumb {
         margin-top: 10px;
+    }
+
+    fieldset legend {
+        font-size: 1.1em;
     }
 }
 
