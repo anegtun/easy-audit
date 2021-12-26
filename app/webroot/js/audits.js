@@ -19,4 +19,15 @@ $(document).ready(function() {
         $(e.currentTarget).hide().siblings('.audit-observations-input').show();
     });
 
+    $('input[type="file"]').change(function() {
+        const previewBox = $(this).parents('.audit-img-input').siblings('.audit-img-preview');
+        previewBox.find('p').show();
+        previewBox.find('img').remove();
+        $.each(this.files, function(i, item) {
+            var reader = new FileReader();
+            reader.onload = (e) => previewBox.append($('<img>').attr('src', e.target.result));
+            reader.readAsDataURL(item);
+        });
+    });
+
 });

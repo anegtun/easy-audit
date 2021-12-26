@@ -66,6 +66,12 @@ legend > a:hover, legend > a:active, legend > a:focus {
     color: #134876;
 }
 
+.audit-img-current img,
+.audit-img-preview img {
+    margin: .5em;
+    max-height: 100px;
+}
+
 .checkbox-container {
     display: block;
 }

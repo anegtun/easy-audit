@@ -4,3 +4,4 @@
 app/composer.lock
 app/logs/*.log
 app/tmp/cache
+app/webroot/uploads
