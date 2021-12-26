@@ -12,7 +12,7 @@ class AuditsController extends AppController {
     
     public function initialize() {
         parent::initialize();
-        $this->AuditFieldValues = TableRegistry::getTableLocator()->get('AuditFieldValues');
+        $this->AuditFieldOptionsetValues = TableRegistry::getTableLocator()->get('AuditFieldOptionsetValues');
         $this->Customers = TableRegistry::getTableLocator()->get('Customers');
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
         $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
@@ -35,7 +35,7 @@ class AuditsController extends AppController {
             'Users'
         ] ]);
         $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
-        $field_values = $this->AuditFieldValues->findForAudit($id);
+        $field_values = $this->AuditFieldOptionsetValues->findForAudit($id);
         $users = $this->Users->find('all');
         foreach($audit->form_templates as $t) {
             foreach($t->form_template_sections as $s) {
@@ -69,7 +69,7 @@ class AuditsController extends AppController {
             $audit->date = $this->parseDate($data['date']);
             $audit->auditor_user_id = $data['auditor_user_id'];
             $this->Audits->save($audit);
-            $this->AuditFieldValues->upsertAll($data['id'], $data['field_values'], $data['field_observations']);
+            $this->AuditFieldOptionsetValues->upsertAll($data['id'], $data['field_values'], $data['field_observations']);
             $this->moveAllFiles($data);
             $this->deleteAllFiles($data);
         }
