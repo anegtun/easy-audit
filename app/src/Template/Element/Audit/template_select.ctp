@@ -34,10 +34,9 @@
                             'value' => empty($value) ? '' : $value->optionset_value_id
                         ]) ?>
                         <div class="audit-observations">
-                            <?php if(!$hasImgsOrObs) : ?>
-                                <a href="#"><?= __('+ add observations & photos') ?></a>
-                            <?php endif ?>
-                            <div class="audit-observations-input" <?= $hasImgsOrObs ? '' : 'style="display:none"' ?>>
+                            <a class="audit-observations-open" href="#"><?= __('+ add observations & photos') ?> <?= $hasImgsOrObs ? ' (*)' : '' ?></a>
+                            <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations & photos') ?></a>
+                            <div class="audit-observations-input" style="display:none">
                                 <textarea name="<?="field_observations[{$f->id}]"?>" class="form-control"><?= $hasObservations ? $value->observations : '' ?></textarea>
                                 <div class="audit-img-current">
                                     <?php if($hasImgs) : ?>
@@ -50,16 +49,11 @@
                                 <div class="audit-img-preview">
                                     <p style="display:none"><strong><?= __('New images') ?></strong></p>
                                 </div>
-                                <div class="audit-img-input">
-                                    <div>
-                                        <?php $fieldId = "field_img_{$f->id}"; ?>
-                                        <input type="file" name="<?="field_img[{$f->id}][]"?>" id="<?=$fieldId?>" accept="image/*" multiple />
-                                        <label for="<?=$fieldId?>"><?= $this->EasyAuditHtml->gliphiconText('picture', __('Choose images')) ?></label>
-                                    </div>
-                                    <div>
+                                <div class="audit-img-inputs">
+                                    <div class="audit-img-input">
                                         <?php $fieldId = "field_photo_{$f->id}"; ?>
-                                        <input type="file" name="<?="field_photo[{$f->id}][]"?>" id="<?=$fieldId?>" accept="image/*" capture="capture" multiple />
-                                        <label for="<?=$fieldId?>"><?= $this->EasyAuditHtml->gliphiconText('camera', __('Take photo')) ?></label>
+                                        <input type="file" name="<?="field_photo[{$f->id}][]"?>" id="<?=$fieldId?>" accept="image/*" capture="capture" />
+                                        <label for="<?=$fieldId?>"><?= $this->EasyAuditHtml->gliphiconText('camera', __('Add photo')) ?></label>
                                     </div>
                                 </div>
                             </div>
