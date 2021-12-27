@@ -56,9 +56,17 @@ $(document).ready(function() {
 
     $('.audit-measure-expected input, .audit-measure-actual input, .audit-measure-thredshold input').change(onChangeMeasures).change();
 
-    $('.audit-observations > a').click(function(e) {
+    $('.audit-observations > a.audit-observations-open').click(function(e) {
         e.preventDefault();
-        $(e.currentTarget).hide().siblings('.audit-observations-input').show();
+        const link = $(e.currentTarget).hide();
+        link.siblings('.audit-observations-input, .audit-observations-close').show();
+    });
+
+    $('.audit-observations > a.audit-observations-close').click(function(e) {
+        e.preventDefault();
+        const link = $(e.currentTarget).hide();
+        link.siblings('.audit-observations-input').hide();
+        link.siblings('.audit-observations-open').show();
     });
 
     $('input[type="file"]').change(function() {

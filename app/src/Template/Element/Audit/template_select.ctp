@@ -34,10 +34,9 @@
                             'value' => empty($value) ? '' : $value->optionset_value_id
                         ]) ?>
                         <div class="audit-observations">
-                            <?php if(!$hasImgsOrObs) : ?>
-                                <a href="#"><?= __('+ add observations & photos') ?></a>
-                            <?php endif ?>
-                            <div class="audit-observations-input" <?= $hasImgsOrObs ? '' : 'style="display:none"' ?>>
+                            <a class="audit-observations-open" href="#"><?= __('+ add observations & photos') ?> <?= $hasImgsOrObs ? ' (*)' : '' ?></a>
+                            <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations & photos') ?></a>
+                            <div class="audit-observations-input" style="display:none">
                                 <textarea name="<?="field_observations[{$f->id}]"?>" class="form-control"><?= $hasObservations ? $value->observations : '' ?></textarea>
                                 <div class="audit-img-current">
                                     <?php if($hasImgs) : ?>

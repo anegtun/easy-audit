@@ -93,6 +93,10 @@ legend > a:hover, legend > a:active, legend > a:focus {
     min-height: 10em;
 }
 
+.audit-observations-input {
+    margin-top: .5em;
+}
+
 .audit-img-input {
     display: flex;
     margin-top: .5em;
