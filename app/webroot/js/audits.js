@@ -5,6 +5,23 @@ $(document).ready(function() {
         $(e.currentTarget).parents('.audit-measure').remove();
     };
 
+    const onChangeMeasures = function(e) {
+        const parent = $(e.currentTarget).parents('.audit-measure');
+        const expected = parent.find('.audit-measure-expected input').val() || 0;
+        const actual = parent.find('.audit-measure-actual input').val() || 0;
+        const thredshold = parent.find('.audit-measure-thredshold input').val() || 0;
+        const difference = Math.round((expected - actual) * 100) / 100;
+        const isOk = Math.abs(difference) <= thredshold;
+        parent.find('.audit-measure-difference input').val(difference);
+        if(isOk) {
+            parent.find('.audit-measure-result .glyphicon-ok-sign').show();
+            parent.find('.audit-measure-result .glyphicon-remove-sign').hide();
+        } else {
+            parent.find('.audit-measure-result .glyphicon-remove-sign').show();
+            parent.find('.audit-measure-result .glyphicon-ok-sign').hide();
+        }
+    };
+
     $('#modal-new-audit select[name=customer_id]').change(function() {
         const templateContainer = $('#template-check-container').empty();
         const customerId = $(this).val();
@@ -25,14 +42,19 @@ $(document).ready(function() {
         const count = container.find('.audit-measure').length;
         const field = container.find('.audit-measure-template').clone().removeClass('audit-measure-template').attr('style', '');
         field.find('.remove-measure').click(onRemoveMeasure);
+        field.find('.audit-measure-expected, .audit-measure-actual, .audit-measure-thredshold').change(onChangeMeasures);
         field.find('input').each(function(i, input) {
-            const newName = $(input).attr('name').replace('[0]', '['+count+']');
-            $(input).attr('name', newName);
+            const name = $(input).attr('name');
+            if(name) {
+                $(input).attr('name', name.replace('[0]', '['+count+']'));
+            }
         });
         container.append(field);
     });
 
     $('.remove-measure').click(onRemoveMeasure);
+
+    $('.audit-measure-expected, .audit-measure-actual, .audit-measure-thredshold').change(onChangeMeasures).change();
 
     $('.audit-observations > a').click(function(e) {
         e.preventDefault();

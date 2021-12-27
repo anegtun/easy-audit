@@ -56,10 +56,25 @@ legend > a:hover, legend > a:active, legend > a:focus {
 .audit-measure-numbers {
     align-items: center;
     display: flex;
+    margin-bottom: .5em;
 }
 
-.audit-measure-numbers > * {
+.audit-measure-thredshold {
+    display: flex;
+}
+
+.audit-measure-numbers > *,
+.audit-measure-thredshold > * {
     margin-right: 1em;
+    flex-basis: 50%;
+}
+
+.audit-measure-result .glyphicon-ok-sign {
+    color: #28a745;
+}
+
+.audit-measure-result .glyphicon-remove-sign {
+    color: #dc3545;
 }
 
 .audit-observations {

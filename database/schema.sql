@@ -111,9 +111,9 @@ CREATE TABLE easy_audit_audit_field_measure_values (
   audit_id int unsigned NOT NULL,
   form_template_id int unsigned NOT NULL,
   item varchar(4000) DEFAULT NULL,
-  expected float unsigned DEFAULT NULL,
-  actual float unsigned DEFAULT NULL,
-  threshold float unsigned DEFAULT NULL,
+  expected float DEFAULT NULL,
+  actual float DEFAULT NULL,
+  threshold float DEFAULT NULL,
   observations varchar(4000) DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
