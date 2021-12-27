@@ -97,14 +97,10 @@ legend > a:hover, legend > a:active, legend > a:focus {
     margin-top: .5em;
 }
 
-.audit-img-input {
-    display: flex;
+.audit-img-inputs {
     margin-top: .5em;
 }
 
-.audit-img-input > div {
-    margin-right: 1.5em;
-}
 
 .audit-img-input input {
     width: 0.1px;

@@ -22,6 +22,30 @@ $(document).ready(function() {
         }
     };
 
+    const onAddPhoto = function() {
+        const file = this.files && this.files[0];
+        const inputsDiv = $(this).parents('.audit-img-inputs');
+        const previewBox = inputsDiv.siblings('.audit-img-preview');
+        previewBox.find('p').show();
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = $('<img>').attr('src', e.target.result).attr('data-name', file.name).click(function() {
+                inputsDiv.find('[data-photo-name="'+$(this).attr('data-name')+'"]').remove();
+                $(this).remove();
+            });
+            previewBox.append(img);
+        }
+        reader.readAsDataURL(file);
+
+        const newId = 'photo-' + Math.random();
+        const newInput = $(this).parents('.audit-img-input').clone();
+        newInput.find('input[type="file"]').attr('id',newId).val('').change(onAddPhoto);
+        newInput.find('label').attr('for',newId);
+        $(this).parents('.audit-img-input').attr('data-photo-name', file.name).hide();
+        inputsDiv.append(newInput);
+    };
+
     $('#modal-new-audit select[name=customer_id]').change(function() {
         const templateContainer = $('#template-check-container').empty();
         const customerId = $(this).val();
@@ -69,16 +93,7 @@ $(document).ready(function() {
         link.siblings('.audit-observations-open').show();
     });
 
-    $('input[type="file"]').change(function() {
-        const previewBox = $(this).parents('.audit-img-input').siblings('.audit-img-preview');
-        previewBox.find('p').show();
-        previewBox.find('img').remove();
-        $.each(this.files, function(i, item) {
-            var reader = new FileReader();
-            reader.onload = (e) => previewBox.append($('<img>').attr('src', e.target.result));
-            reader.readAsDataURL(item);
-        });
-    });
+    $('input[type="file"]').change(onAddPhoto);
 
     $('.audit-img-current img').click(function() {
         const img = $(this);

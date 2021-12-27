@@ -118,17 +118,14 @@ class AuditsController extends AppController {
     }
 
     private function moveAllFiles($data) {
-        $dir = new Folder(WWW_ROOT . "uploads/audits/{$data['id']}", true, 0755);
-        $this->moveFiles($dir, $data['field_img']);
-        $this->moveFiles($dir, $data['field_photo']);
-    }
-
-    private function moveFiles($dir, $imgByFieldId) {
-        foreach($imgByFieldId as $fieldId => $imgs) {
-            if(!empty($imgs && !empty($imgs[0]['name']))) {
-                $dirField = new Folder($dir->path . DS . $fieldId, true, 0755);
-                foreach($imgs as $img) {
-                    move_uploaded_file($img['tmp_name'], $dirField->path . DS . "{$img['name']}");
+        if(!empty($data['field_photo'])) {
+            $dir = new Folder(WWW_ROOT . "uploads/audits/{$data['id']}", true, 0755);
+            foreach($data['field_photo'] as $fieldId => $imgs) {
+                if(!empty($imgs && !empty($imgs[0]['name']))) {
+                    $dirField = new Folder($dir->path . DS . $fieldId, true, 0755);
+                    foreach($imgs as $img) {
+                        move_uploaded_file($img['tmp_name'], $dirField->path . DS . "{$img['name']}");
+                    }
                 }
             }
         }
