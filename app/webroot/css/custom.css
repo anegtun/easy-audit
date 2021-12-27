@@ -26,6 +26,61 @@ legend > a:hover, legend > a:active, legend > a:focus {
     margin-bottom: 2em;
 }
 
+.audit-measures {
+    margin-top: 1em;
+}
+
+.audit-measure {
+    align-items: center;
+    display: flex;
+    margin-bottom: .5em;
+}
+
+.audit-measure-button {
+    align-items: center;
+    margin-right: 1em;
+}
+
+.audit-measure-input {
+    display: flex;
+    flex-grow: 1;
+    flex-wrap: wrap;
+}
+
+.audit-measure-item {
+    flex-grow: 1;
+    margin-bottom: .5em;
+    margin-right: 1em;
+}
+
+.audit-measure-numbers {
+    align-items: center;
+    display: flex;
+    margin-bottom: .5em;
+}
+
+.audit-measure-thredshold {
+    display: flex;
+}
+
+.audit-measure-numbers > *,
+.audit-measure-thredshold > * {
+    margin-right: 1em;
+    flex-basis: 50%;
+}
+
+.audit-measure-result .glyphicon {
+    margin-top: .8em;
+}
+
+.audit-measure-result .glyphicon-ok-sign {
+    color: #28a745;
+}
+
+.audit-measure-result .glyphicon-remove-sign {
+    color: #dc3545;
+}
+
 .audit-observations {
     margin-top: .5em;
 }
@@ -122,6 +177,10 @@ legend > a:hover, legend > a:active, legend > a:focus {
 
     fieldset legend {
         font-size: 1.1em;
+    }
+
+    .audit-measure {
+        margin-bottom: 1.5em;
     }
 }
 

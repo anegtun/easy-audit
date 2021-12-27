@@ -1,16 +1,17 @@
 <?php
 namespace App\Model;
 
-class FormTemplateFieldTypes {
+class FormTemplateTypes {
     
     public function getAll() {
         return array(
-            'select' => __('Option select')
+            'measure' => __('Measure'),
+            'select' => __('Select form')
         );
     }
     
     public function getAllWithEmpty() {
-        return array_merge([''=>''], $this->getCategorias());
+        return array_merge([''=>''], $this->getAll());
     }
 
     public function get($key) {

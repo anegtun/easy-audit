@@ -12,10 +12,11 @@ class AuditsController extends AppController {
     
     public function initialize() {
         parent::initialize();
-        $this->AuditFieldValues = TableRegistry::getTableLocator()->get('AuditFieldValues');
+        $this->AuditFieldMeasureValues = TableRegistry::getTableLocator()->get('AuditFieldMeasureValues');
+        $this->AuditFieldOptionsetValues = TableRegistry::getTableLocator()->get('AuditFieldOptionsetValues');
         $this->Customers = TableRegistry::getTableLocator()->get('Customers');
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
-        $this->FormTemplateFields = TableRegistry::getTableLocator()->get('FormTemplateFields');
+        $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
         $this->FormTemplateSections = TableRegistry::getTableLocator()->get('FormTemplateSections');
         $this->FormTemplateOptionsetValues = TableRegistry::getTableLocator()->get('FormTemplateOptionsetValues');
         $this->Users = TableRegistry::getTableLocator()->get('Users');
@@ -31,11 +32,12 @@ class AuditsController extends AppController {
     public function detail($id) {
         $audit = $this->Audits->get($id, [ 'contain' => [
             'Customers',
-            'FormTemplates' => ['FormTemplateSections', 'FormTemplateFields'],
+            'FormTemplates' => ['FormTemplateSections', 'FormTemplateFieldsOptionset'],
             'Users'
         ] ]);
         $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
-        $field_values = $this->AuditFieldValues->findForAudit($id);
+        $field_values = $this->AuditFieldOptionsetValues->findForAudit($id);
+        $field_measure_values = $this->AuditFieldMeasureValues->findForAudit($id);
         $users = $this->Users->find('all');
         foreach($audit->form_templates as $t) {
             foreach($t->form_template_sections as $s) {
@@ -43,7 +45,7 @@ class AuditsController extends AppController {
             }
         }
         $field_images = $this->readImgs($id);
-        $this->set(compact('audit', 'field_images', 'field_values', 'optionset_values', 'users'));
+        $this->set(compact('audit', 'field_images', 'field_values', 'field_measure_values', 'optionset_values', 'users'));
     }
 
     public function create() {
@@ -69,9 +71,16 @@ class AuditsController extends AppController {
             $audit->date = $this->parseDate($data['date']);
             $audit->auditor_user_id = $data['auditor_user_id'];
             $this->Audits->save($audit);
-            $this->AuditFieldValues->upsertAll($data['id'], $data['field_values'], $data['field_observations']);
+
+            $this->AuditFieldOptionsetValues->upsertAll($data['id'], $data['field_values'], $data['field_observations']);
             $this->moveAllFiles($data);
             $this->deleteAllFiles($data);
+
+            if(!empty($data['audit_measure'])) {
+                foreach($data['audit_measure'] as $templateId => $audit_measures) {
+                    $this->AuditFieldMeasureValues->upsertAll($data['id'], $templateId, $audit_measures);
+                }
+            }
         }
         return $this->redirect(['action'=>'detail', $audit->id]);
     }
@@ -84,7 +93,7 @@ class AuditsController extends AppController {
         $count = 0;
         $score = 0;
         foreach($field_values as $f) {
-            if($f->form_template_field->form_template_section_id === $section->id) {
+            if($f->form_template_fields_optionset->form_template_section_id === $section->id) {
                 $count++;
                 $score += $f->form_template_optionset_value->value_numeric;
             }

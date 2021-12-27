@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-use App\Model\FormTemplateFieldTypes;
+use App\Model\FormTemplateTypes;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 
@@ -10,16 +10,16 @@ class FormTemplatesController extends AppController {
     
     public function initialize() {
         parent::initialize();
-        $this->FormTemplateFieldTypes = new FormTemplateFieldTypes();
-        $this->FormTemplateFields = TableRegistry::getTableLocator()->get('FormTemplateFields');
+        $this->FormTemplateTypes = new FormTemplateTypes();
+        $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
         $this->FormTemplateOptionsets = TableRegistry::getTableLocator()->get('FormTemplateOptionsets');
         $this->FormTemplateSections = TableRegistry::getTableLocator()->get('FormTemplateSections');
     }
 
     public function index() {
-        $templates = $this->FormTemplates->find()
-            ->contain(['FormTemplateSections', 'FormTemplateFields']);
-        $this->set(compact('templates'));
+        $template_types = $this->FormTemplateTypes->getAll();
+        $templates = $this->FormTemplates->find();
+        $this->set(compact('templates', 'template_types'));
     }
 
     public function save() {
@@ -47,16 +47,15 @@ class FormTemplatesController extends AppController {
 
     public function detail($id) {
         $template = $this->FormTemplates->get($id, [ 'contain' => ['Customers'] ]);
-        $fieldTypes = $this->FormTemplateFieldTypes->getAll();
         $optionsets = $this->FormTemplateOptionsets->findForSelect();
         $sections = $this->FormTemplateSections->find()
             ->where(['form_template_id' => $id])
             ->order(['position' => 'ASC'])
-            ->contain(['FormTemplateFields' => ['sort' => ['FormTemplateFields.position' => 'ASC']]]);
-        $allFields = $this->FormTemplateFields->find()
+            ->contain(['FormTemplateFieldsOptionset' => ['sort' => ['FormTemplateFieldsOptionset.position' => 'ASC']]]);
+        $allFields = $this->FormTemplateFieldsOptionset->find()
             ->where(['form_template_id' => $id])
             ->order(['position' => 'ASC']);
-        $this->set(compact('template', 'fieldTypes', 'optionsets', 'sections', 'allFields'));
+        $this->set(compact('template', 'optionsets', 'sections', 'allFields'));
     }
 
     public function saveSection() {
@@ -125,24 +124,24 @@ class FormTemplatesController extends AppController {
         $formData = $this->request->getData();
         $templateId = $formData['form_template_id'];
         $sectionId = $formData['form_template_section_id'];
-        $field = empty($formData['id']) ? $this->FormTemplateFields->newEntity() : $this->FormTemplateFields->get($formData['id']);
+        $field = empty($formData['id']) ? $this->FormTemplateFieldsOptionset->newEntity() : $this->FormTemplateFieldsOptionset->get($formData['id']);
         if ($this->request->is('post') || $this->request->is('put')) {
             if(empty($formData['id'])) {
-                $field = $this->FormTemplateFields->newEntity();
-                $field = $this->FormTemplateFields->patchEntity($field, $formData);
-                $count = $this->FormTemplateFields->find()
+                $field = $this->FormTemplateFieldsOptionset->newEntity();
+                $field = $this->FormTemplateFieldsOptionset->patchEntity($field, $formData);
+                $count = $this->FormTemplateFieldsOptionset->find()
                     ->where(['form_template_id' => $templateId, 'form_template_section_id' => $sectionId])
                     ->count();
                 if(empty($field->position) || $field->position > $count) {
                     $field->position = $count + 1;
                 }
-                $this->FormTemplateFields->incrementPositionAfter($templateId, $sectionId, $field->position);
+                $this->FormTemplateFieldsOptionset->incrementPositionAfter($templateId, $sectionId, $field->position);
             } else {
-                $field = $this->FormTemplateFields->get($formData['id']);
+                $field = $this->FormTemplateFieldsOptionset->get($formData['id']);
                 unset($formData['position']);
-                $field = $this->FormTemplateFields->patchEntity($field, $formData);
+                $field = $this->FormTemplateFieldsOptionset->patchEntity($field, $formData);
             }
-            if ($this->FormTemplateFields->save($field)) {
+            if ($this->FormTemplateFieldsOptionset->save($field)) {
                 $this->Flash->success(__('Field created.'));
             } else {
                 $this->Flash->error(__('Error saving field.'));
@@ -152,9 +151,9 @@ class FormTemplatesController extends AppController {
     }
 
     public function deleteField($id) {
-        $field = $this->FormTemplateFields->get($id);
-        $this->FormTemplateFields->decrementPositionAfter($field->form_template_id, $field->form_template_section_id, $field->position);
-        if($this->FormTemplateFields->delete($field)) {
+        $field = $this->FormTemplateFieldsOptionset->get($id);
+        $this->FormTemplateFieldsOptionset->decrementPositionAfter($field->form_template_id, $field->form_template_section_id, $field->position);
+        if($this->FormTemplateFieldsOptionset->delete($field)) {
             $this->Flash->success(__('Field deleted successfully.'));
         } else {
             $this->Flash->error(__('Error deleting field.'));
@@ -163,24 +162,24 @@ class FormTemplatesController extends AppController {
     }
 
     public function moveFieldUp($id) {
-        $field = $this->FormTemplateFields->get($id);
+        $field = $this->FormTemplateFieldsOptionset->get($id);
         if($field->position > 1) {
-            $this->FormTemplateFields->incrementPositionAfter($field->form_template_id, $field->form_template_section_id, $field->position - 1, $field->id);
+            $this->FormTemplateFieldsOptionset->incrementPositionAfter($field->form_template_id, $field->form_template_section_id, $field->position - 1, $field->id);
             $field->position--;
-            $this->FormTemplateFields->save($field);
+            $this->FormTemplateFieldsOptionset->save($field);
         }
         return $this->redirect(['action'=>'detail', $field->form_template_id]);
     }
 
     public function moveFieldDown($id) {
-        $field = $this->FormTemplateFields->get($id);
-        $count = $this->FormTemplateFields->find()
+        $field = $this->FormTemplateFieldsOptionset->get($id);
+        $count = $this->FormTemplateFieldsOptionset->find()
                 ->where(['form_template_id' => $field->form_template_id, 'form_template_section_id' => $field->form_template_section_id])
                 ->count();
         if($field->position < $count) {
-            $this->FormTemplateFields->decrementPositionBefore($field->form_template_id, $field->form_template_section_id, $field->position + 1, $field->id);
+            $this->FormTemplateFieldsOptionset->decrementPositionBefore($field->form_template_id, $field->form_template_section_id, $field->position + 1, $field->id);
             $field->position++;
-            $this->FormTemplateFields->save($field);
+            $this->FormTemplateFieldsOptionset->save($field);
         }
         return $this->redirect(['action'=>'detail', $field->form_template_id]);
     }

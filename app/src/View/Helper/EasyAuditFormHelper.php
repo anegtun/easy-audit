@@ -23,8 +23,9 @@ class EasyAuditFormHelper extends Helper {
         return $this->Form->control($name, $input_attrs);
     }
     
-    public function saveButton($label) {
-        return $this->Form->button($label, ['class'=>'btn btn-primary glyphicon glyphicon-saved']);;
+    public function saveButton($label, $opts=[]) {
+        $attrs = array_merge($opts, ['class'=>'btn btn-primary glyphicon glyphicon-saved']);
+        return $this->Form->button($label, $attrs);
     }
     
     public function editModalLink($entity, $prefix, $fields = []) {

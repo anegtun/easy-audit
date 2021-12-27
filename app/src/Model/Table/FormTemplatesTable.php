@@ -11,7 +11,7 @@ class FormTemplatesTable extends Table {
         $this->hasMany('FormTemplateSections')
             ->setForeignKey('form_template_id');
 
-        $this->hasMany('FormTemplateFields')
+        $this->hasMany('FormTemplateFieldsOptionset')
             ->setForeignKey('form_template_id');
 
         $this->belongsToMany('Customers', [

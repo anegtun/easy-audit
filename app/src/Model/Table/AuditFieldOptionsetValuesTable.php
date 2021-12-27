@@ -3,12 +3,12 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 
-class AuditFieldValuesTable extends Table {
+class AuditFieldOptionsetValuesTable extends Table {
 
     public function initialize(array $config) {
-        $this->setTable('easy_audit_audit_field_values');
+        $this->setTable('easy_audit_audit_field_optionset_values');
 
-        $this->belongsTo('FormTemplateFields')
+        $this->belongsTo('FormTemplateFieldsOptionset')
             ->setForeignKey('form_template_field_id');
 
         $this->belongsTo('FormTemplateOptionsetValues')
@@ -18,7 +18,7 @@ class AuditFieldValuesTable extends Table {
     public function findForAudit($audit_id) {
         $values = $this->find('all')
             ->where(['audit_id' => $audit_id])
-            ->contain(['FormTemplateFields', 'FormTemplateOptionsetValues']);
+            ->contain(['FormTemplateFieldsOptionset', 'FormTemplateOptionsetValues']);
         $result = [];
         foreach($values as $v) {
             $result[$v->form_template_field_id] = $v;

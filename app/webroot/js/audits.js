@@ -1,5 +1,27 @@
 $(document).ready(function() {
 
+    const onRemoveMeasure = function(e) {
+        e.preventDefault();
+        $(e.currentTarget).parents('.audit-measure').remove();
+    };
+
+    const onChangeMeasures = function(e) {
+        const parent = $(e.currentTarget).parents('.audit-measure');
+        const expected = parent.find('.audit-measure-expected input').val() || 0;
+        const actual = parent.find('.audit-measure-actual input').val() || 0;
+        const thredshold = parent.find('.audit-measure-thredshold input').val() || 0;
+        const difference = Math.round((expected - actual) * 100) / 100;
+        const isOk = Math.abs(difference) <= thredshold;
+        parent.find('.audit-measure-difference input').val(difference);
+        if(isOk) {
+            parent.find('.audit-measure-result .glyphicon-ok-sign').show();
+            parent.find('.audit-measure-result .glyphicon-remove-sign').hide();
+        } else {
+            parent.find('.audit-measure-result .glyphicon-remove-sign').show();
+            parent.find('.audit-measure-result .glyphicon-ok-sign').hide();
+        }
+    };
+
     $('#modal-new-audit select[name=customer_id]').change(function() {
         const templateContainer = $('#template-check-container').empty();
         const customerId = $(this).val();
@@ -13,6 +35,26 @@ $(document).ready(function() {
             });
         });
     });
+
+    $('.add-measure').click(function(e) {
+        e.preventDefault();
+        const container = $(e.currentTarget).siblings('.audit-measures');
+        const count = container.find('.audit-measure').length;
+        const field = container.find('.audit-measure-template').clone().removeClass('audit-measure-template').attr('style', '');
+        field.find('.remove-measure').click(onRemoveMeasure);
+        field.find('.audit-measure-expected input, .audit-measure-actual input, .audit-measure-thredshold input').change(onChangeMeasures).change();
+        field.find('input').each(function(i, input) {
+            const name = $(input).attr('name');
+            if(name) {
+                $(input).attr('name', name.replace('[0]', '['+count+']'));
+            }
+        });
+        container.append(field);
+    });
+
+    $('.remove-measure').click(onRemoveMeasure);
+
+    $('.audit-measure-expected input, .audit-measure-actual input, .audit-measure-thredshold input').change(onChangeMeasures).change();
 
     $('.audit-observations > a').click(function(e) {
         e.preventDefault();
@@ -35,17 +77,13 @@ $(document).ready(function() {
         const fieldId = img.attr('data-field-id');
         const src = img.attr('src');
         const filename = src.substring(src.lastIndexOf('/') + 1);
-        const isSelected = img.hasClass('to-remove');
-        if(isSelected) {
+        if(img.hasClass('to-remove')) {
             img.removeClass('to-remove');
-            const que = $('form').find('input[data-field-id="'+fieldId+'"][data-filename="'+filename+'"]');
-            console.log("JAIME!", que);
-            que.remove();
+            $('form').find('input[data-field-id="'+fieldId+'"][data-filename="'+filename+'"]').remove();
         } else {
             img.addClass('to-remove');
             $('form').append($('<input type="hidden" name="field_img_removed['+fieldId+'][]" data-field-id='+fieldId+' data-filename='+filename+' value="'+filename+'">'));
         }
-        console.log('JAIME!', isSelected);
     });
 
 });
