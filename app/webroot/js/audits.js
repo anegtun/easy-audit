@@ -1,5 +1,10 @@
 $(document).ready(function() {
 
+    const onRemoveMeasure = function(e) {
+        e.preventDefault();
+        $(e.currentTarget).parents('.audit-measure').remove();
+    };
+
     $('#modal-new-audit select[name=customer_id]').change(function() {
         const templateContainer = $('#template-check-container').empty();
         const customerId = $(this).val();
@@ -19,6 +24,7 @@ $(document).ready(function() {
         const container = $(e.currentTarget).siblings('.audit-measures');
         const count = container.find('.audit-measure').length;
         const field = container.find('.audit-measure-template').clone().removeClass('audit-measure-template').attr('style', '');
+        field.find('.remove-measure').click(onRemoveMeasure);
         field.find('input').each(function(i, input) {
             const newName = $(input).attr('name').replace('[0]', '['+count+']');
             $(input).attr('name', newName);
@@ -26,10 +32,7 @@ $(document).ready(function() {
         container.append(field);
     });
 
-    $('.remove-measure').click(function(e) {
-        e.preventDefault();
-        $(e.currentTarget).parents('.audit-measure').remove();
-    });
+    $('.remove-measure').click(onRemoveMeasure);
 
     $('.audit-observations > a').click(function(e) {
         e.preventDefault();

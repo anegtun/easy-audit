@@ -2,25 +2,42 @@
     <div class="audit-measures">
 
         <?php if(!empty($field_measure_values[$template->id])) : ?>
+            <?php foreach($field_measure_values[$template->id] as $i => $v) : ?>
 
-        <?php foreach($field_measure_values[$template->id] as $i => $v) : ?>
-            <?php $index = $i + 1 ?>
-            <div class="audit-measure">
-                <div><?= $this->EasyAuditHtml->gliphiconLink('remove', '', '', ['class' => 'remove-measure']) ?></div>
-                <div><input type="text" class="form-control" name="audit_measure[<?= $template->id ?>][<?= $index ?>][item]" value="<?= $v['item'] ?>" /></div>
-                <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][<?= $index ?>][expected]" value="<?= $v['expected'] ?>" /></div>
-                <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][<?= $index ?>][actual]" value="<?= $v['actual'] ?>" /></div>
-                <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][<?= $index ?>][threshold]" value="<?= $v['threshold'] ?>" /></div>
-            </div>
-        <?php endforeach ?>
+                <?php $index = $i + 1 ?>
+                <div class="audit-measure">
+                    <div class="audit-measure-button">
+                        <?= $this->EasyAuditHtml->gliphiconLink('remove', '', '', ['class' => 'remove-measure']) ?>
+                    </div>
+                    <div class="audit-measure-input">
+                        <div class="audit-measure-item">
+                            <input type="text" class="form-control" name="audit_measure[<?= $template->id ?>][<?= $index ?>][item]" value="<?= $v['item'] ?>" />
+                        </div>
+                        <div class="audit-measure-numbers">
+                            <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][<?= $index ?>][expected]" value="<?= $v['expected'] ?>" /></div>
+                            <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][<?= $index ?>][actual]" value="<?= $v['actual'] ?>" /></div>
+                            <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][<?= $index ?>][threshold]" value="<?= $v['threshold'] ?>" /></div>
+                        </div>
+                    </div>
+                </div>
 
+            <?php endforeach ?>
         <?php endif ?>
 
-        <div class="audit-measure audit-measure-template" style="display: none">
-            <div><input type="text" class="form-control" name="audit_measure[<?= $template->id ?>][0][item]" /></div>
-            <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][0][expected]" /></div>
-            <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][0][actual]" /></div>
-            <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][0][threshold]" /></div>
+        <div class="audit-measure audit-measure-template" style="display:none;">
+            <div class="audit-measure-button">
+                <?= $this->EasyAuditHtml->gliphiconLink('remove', '', '', ['class' => 'remove-measure']) ?>
+            </div>
+            <div class="audit-measure-input">
+                <div class="audit-measure-item">
+                    <input type="text" class="form-control" name="audit_measure[<?= $template->id ?>][0][item]" />
+                </div>
+                <div class="audit-measure-numbers">
+                    <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][0][expected]" /></div>
+                    <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][0][actual]" /></div>
+                    <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][0][threshold]" /></div>
+                </div>
+            </div>
         </div>
     </div>
 
