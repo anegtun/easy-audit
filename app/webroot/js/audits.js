@@ -14,6 +14,23 @@ $(document).ready(function() {
         });
     });
 
+    $('.add-measure').click(function(e) {
+        e.preventDefault();
+        const container = $(e.currentTarget).siblings('.audit-measures');
+        const count = container.find('.audit-measure').length;
+        const field = container.find('.audit-measure-template').clone().removeClass('audit-measure-template').attr('style', '');
+        field.find('input').each(function(i, input) {
+            const newName = $(input).attr('name').replace('[0]', '['+count+']');
+            $(input).attr('name', newName);
+        });
+        container.append(field);
+    });
+
+    $('.remove-measure').click(function(e) {
+        e.preventDefault();
+        $(e.currentTarget).parents('.audit-measure').remove();
+    });
+
     $('.audit-observations > a').click(function(e) {
         e.preventDefault();
         $(e.currentTarget).hide().siblings('.audit-observations-input').show();

@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS easy_audit_audit_field_measure_values;
 DROP TABLE IF EXISTS easy_audit_audit_field_optionset_values;
 DROP TABLE IF EXISTS easy_audit_audits;
 DROP TABLE IF EXISTS easy_audit_customer_forms;
@@ -101,6 +102,18 @@ CREATE TABLE easy_audit_audit_field_optionset_values (
   audit_id int unsigned NOT NULL,
   form_template_field_id int unsigned NOT NULL,
   optionset_value_id int unsigned NOT NULL,
+  observations varchar(4000) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+CREATE TABLE easy_audit_audit_field_measure_values (
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  audit_id int unsigned NOT NULL,
+  form_template_id int unsigned NOT NULL,
+  item varchar(4000) DEFAULT NULL,
+  expected float unsigned DEFAULT NULL,
+  actual float unsigned DEFAULT NULL,
+  threshold float unsigned DEFAULT NULL,
   observations varchar(4000) DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
