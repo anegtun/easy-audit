@@ -42,7 +42,7 @@ $(document).ready(function() {
         const count = container.find('.audit-measure').length;
         const field = container.find('.audit-measure-template').clone().removeClass('audit-measure-template').attr('style', '');
         field.find('.remove-measure').click(onRemoveMeasure);
-        field.find('.audit-measure-expected, .audit-measure-actual, .audit-measure-thredshold').change(onChangeMeasures);
+        field.find('.audit-measure-expected input, .audit-measure-actual input, .audit-measure-thredshold input').change(onChangeMeasures).change();
         field.find('input').each(function(i, input) {
             const name = $(input).attr('name');
             if(name) {
@@ -54,7 +54,7 @@ $(document).ready(function() {
 
     $('.remove-measure').click(onRemoveMeasure);
 
-    $('.audit-measure-expected, .audit-measure-actual, .audit-measure-thredshold').change(onChangeMeasures).change();
+    $('.audit-measure-expected input, .audit-measure-actual input, .audit-measure-thredshold input').change(onChangeMeasures).change();
 
     $('.audit-observations > a').click(function(e) {
         e.preventDefault();

@@ -46,7 +46,10 @@
                 </div>
                 <div class="audit-measure-thredshold">
                     <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][0][threshold]" placeholder="<?= __('Thredshold') ?>" /></div>
-                    <div class="audit-measure-result"></div>
+                    <div class="audit-measure-result">
+                        <span class='glyphicon glyphicon-ok-sign'></span>
+                        <span class='glyphicon glyphicon-remove-sign'></span>
+                    </div>
                 </div>
             </div>
         </div>
