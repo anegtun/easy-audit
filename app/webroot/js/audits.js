@@ -1,3 +1,11 @@
+let auditDirty = false;
+window.onbeforeunload = function() {
+    if(auditDirty) {
+        return $('#dirtyFormMsg').text();
+    }
+    return;
+};
+
 $(document).ready(function() {
 
     const onRemoveMeasure = function(e) {
@@ -107,6 +115,11 @@ $(document).ready(function() {
             img.addClass('to-remove');
             $('form').append($('<input type="hidden" name="field_img_removed['+fieldId+'][]" data-field-id='+fieldId+' data-filename='+filename+' value="'+filename+'">'));
         }
+        auditDirty = true;
+    });
+
+    $('#auditForm input, #auditForm select, #auditForm textarea').change(function() {
+        auditDirty = true;
     });
 
 });
