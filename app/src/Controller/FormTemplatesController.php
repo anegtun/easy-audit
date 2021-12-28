@@ -35,6 +35,48 @@ class FormTemplatesController extends AppController {
         return $this->redirect(['action'=>'index']);
     }
 
+    public function clone() {
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $data = $this->request->getData();
+            $old_template = $this->FormTemplates->get($data['id']);
+            if(!empty($data['name_old'])) {
+                $old_template->name = $data['name_old'];
+                $this->FormTemplates->save($old_template);
+            }
+
+            $new_template = $this->FormTemplates->newEntity();
+            $new_template->name = $data['name'];
+            $new_template->type = $old_template->type;
+            $new_template = $this->FormTemplates->save($new_template);
+
+            $sections = $this->FormTemplateSections->find()->where(['form_template_id' => $data['id']]);
+            $sections_id_map = [];
+            foreach($sections as $s) {
+                $new_section = $this->FormTemplateSections->newEntity();
+                $new_section->form_template_id = $new_template->id;
+                $new_section->position = $s->position;
+                $new_section->name = $s->name;
+                $new_section = $this->FormTemplateSections->save($new_section);
+                $sections_id_map[$s->id] = $new_section->id;
+            }
+
+            $allFields = $this->FormTemplateFieldsOptionset->find()->where(['form_template_id' => $data['id']]);
+            foreach($allFields as $f) {
+                $new_field = $this->FormTemplateFieldsOptionset->newEntity();
+                $new_field->form_template_id = $new_template->id;
+                $new_field->form_template_section_id = $sections_id_map[$f->form_template_section_id];
+                $new_field->optionset_id = $f->optionset_id;
+                $new_field->position = $f->position;
+                $new_field->text = $f->text;
+                $this->FormTemplateFieldsOptionset->save($new_field);
+            }
+
+            $this->Flash->success(__('Template created.'));
+            return $this->redirect(['action'=>'index']);
+        }
+        return $this->redirect(['action'=>'index']);
+    }
+
     public function delete($id) {
         $template = $this->FormTemplates->get($id);
         if($this->FormTemplates->delete($template)) {
