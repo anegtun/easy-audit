@@ -81,6 +81,14 @@ class FormTemplatesController extends AppController {
         return $this->redirect(['action'=>'index']);
     }
 
+    public function toggleEnabled($id) {
+        $template = $this->FormTemplates->get($id);
+        $template->disabled = $template->disabled ? 0 : 1;
+        $this->FormTemplates->save($template);
+        $this->Flash->success(__('Template enabled or disabled successfully.'));
+        return $this->redirect(['action'=>'index']);
+    }
+
     public function delete($id) {
         $template = $this->FormTemplates->get($id);
         if($this->FormTemplates->delete($template)) {
