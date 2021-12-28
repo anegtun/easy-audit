@@ -18,6 +18,7 @@ $optionsetOptions = iterator_to_array($optionsets);
         <button type="button" id="modal-field-button" class="btn btn-primary" data-target="#modal-field"><?= __('Add field') ?></button>
     <?php endif ?>
     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
+    <button type="button" class="btn btn-secondary modal-clone-button" data-template-id="<?=$template->id?>" data-template-name="<?=$template->name?>"><?= __('Clone template') ?></button>
 
     <?php if($template->type === 'select') : ?>
         <?php foreach($sections as $s) : ?>
@@ -146,6 +147,8 @@ $optionsetOptions = iterator_to_array($optionsets);
     </div>
 </div>
 
+
+<?= $this->element('FormTemplate/modal_clone') ?>
 
 
 <div id='all-field-options'>
