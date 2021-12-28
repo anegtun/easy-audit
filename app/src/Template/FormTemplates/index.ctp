@@ -22,7 +22,7 @@ $this->Html->script('form-templates', ['block' => 'script']);
             </thead>
             <tbody>
                 <?php foreach($templates as $t) : ?>
-                    <tr>
+                    <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
                         <td><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $t->id]) ?></td>
                         <td><?= $this->Html->link('', '', ['class'=>'glyphicon glyphicon-duplicate modal-clone-button', 'data-template-id'=>$t->id, 'data-template-name'=>$t->name]) ?></td>
                         <td><?= $this->Html->link($t->name, ['action'=>'detail', $t->id]) ?></td>
@@ -76,6 +76,10 @@ $this->Html->script('form-templates', ['block' => 'script']);
                     <fieldset>
                         <?= $this->Form->control('name', ['label'=>__('New template name')]) ?>
                         <?= $this->Form->control('name_old', ['label'=>__('Rename old template?')]) ?>
+                        <label class="checkbox-container">
+                            <?= __('Disable old template?') ?>
+                            <input type="checkbox" name="disable">
+                        </label>
                     </fieldset>
                 </div>
                 <div class="modal-footer">

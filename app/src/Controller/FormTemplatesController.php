@@ -18,7 +18,7 @@ class FormTemplatesController extends AppController {
 
     public function index() {
         $template_types = $this->FormTemplateTypes->getAll();
-        $templates = $this->FormTemplates->find();
+        $templates = $this->FormTemplates->find()->order(['disabled'=>'ASC', 'name'=>'ASC']);
         $this->set(compact('templates', 'template_types'));
     }
 
@@ -38,11 +38,15 @@ class FormTemplatesController extends AppController {
     public function clone() {
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
+
             $old_template = $this->FormTemplates->get($data['id']);
             if(!empty($data['name_old'])) {
                 $old_template->name = $data['name_old'];
-                $this->FormTemplates->save($old_template);
             }
+            if(!empty($data['disable'])) {
+                $old_template->disabled = 1;
+            }
+            $this->FormTemplates->save($old_template);
 
             $new_template = $this->FormTemplates->newEntity();
             $new_template->name = $data['name'];
