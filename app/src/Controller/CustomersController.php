@@ -20,7 +20,7 @@ class CustomersController extends AppController {
     public function detail($id=null) {
         $customer = empty($id) ? $this->Customers->newEntity() : $this->getCustomer($id);
         if(!empty($id)) {
-            $templates = $this->FormTemplates->find('all');
+            $templates = $this->FormTemplates->find('all')->where(['disabled'=>0]);
             $templateIds = $customer->getTemplateIds();
             if(!empty($templateIds)) {
                 $templates->where(['id NOT IN' => $templateIds]);
@@ -89,7 +89,9 @@ class CustomersController extends AppController {
         $customer = $this->getCustomer($id);
         $result = [];
         foreach($customer->form_templates as $t) {
-            $result[] = ['id' => $t->id, 'name' => $t->name];
+            if(!$t->disabled) {
+                $result[] = ['id' => $t->id, 'name' => $t->name];
+            }
         }
         $this->set($result);
     }

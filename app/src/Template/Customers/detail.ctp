@@ -40,7 +40,7 @@ $this->set('headerBreadcrumbs', [
                     </thead>
                     <tbody>
                         <?php foreach($customer->form_templates as $t) : ?>
-                            <tr>
+                            <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
                                 <td><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['controller' => 'FormTemplates', 'action' => 'detail', $t->id]) ?></td>
                                 <td><?= $this->EasyAuditHtml->deleteButton(['action'=>'deleteTemplate', $customer->id, $t->id], 'remove') ?></td>
                                 <td><?= $t->name ?></td>
