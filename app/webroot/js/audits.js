@@ -127,4 +127,8 @@ $(document).ready(function() {
         auditDirty = true;
     });
 
+    $('#auditForm').submit(function() {
+        auditDirty = false;
+    });
+
 });
