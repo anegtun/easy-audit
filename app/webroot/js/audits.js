@@ -1,3 +1,11 @@
+let auditDirty = false;
+window.onbeforeunload = function() {
+    if(auditDirty) {
+        return $('#dirtyFormMsg').text();
+    }
+    return;
+};
+
 $(document).ready(function() {
 
     const onRemoveMeasure = function(e) {
@@ -31,8 +39,13 @@ $(document).ready(function() {
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = $('<img>').attr('src', e.target.result).attr('data-name', file.name).click(function() {
-                inputsDiv.find('[data-photo-name="'+$(this).attr('data-name')+'"]').remove();
-                $(this).remove();
+                if($(this).hasClass('to-remove')) {
+                    $(this).removeClass('to-remove');
+                    inputsDiv.find('[data-photo-name="'+$(this).attr('data-name')+'"] input').prop('disabled', false);
+                } else {
+                    $(this).addClass('to-remove');
+                    inputsDiv.find('[data-photo-name="'+$(this).attr('data-name')+'"] input').prop('disabled', true);
+                }
             });
             previewBox.append(img);
         }
@@ -107,6 +120,15 @@ $(document).ready(function() {
             img.addClass('to-remove');
             $('form').append($('<input type="hidden" name="field_img_removed['+fieldId+'][]" data-field-id='+fieldId+' data-filename='+filename+' value="'+filename+'">'));
         }
+        auditDirty = true;
+    });
+
+    $('#auditForm input, #auditForm select, #auditForm textarea').change(function() {
+        auditDirty = true;
+    });
+
+    $('#auditForm').submit(function() {
+        auditDirty = false;
     });
 
 });
