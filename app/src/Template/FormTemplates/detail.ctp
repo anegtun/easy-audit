@@ -17,8 +17,9 @@ $optionsetOptions = iterator_to_array($optionsets);
         <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
         <button type="button" id="modal-field-button" class="btn btn-primary" data-target="#modal-field"><?= __('Add field') ?></button>
     <?php endif ?>
-    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
-    <button type="button" class="btn btn-secondary modal-clone-button" data-template-id="<?=$template->id?>" data-template-name="<?=$template->name?>"><?= __('Clone template') ?></button>
+    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-rename"><?= __('Rename template') ?></button>
+    <button type="button" class="btn btn-default modal-clone-button" data-template-id="<?=$template->id?>" data-template-name="<?=$template->name?>"><?= __('Clone template') ?></button>
+    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
 
     <?php if($template->type === 'select') : ?>
         <?php foreach($sections as $s) : ?>
@@ -145,6 +146,33 @@ $optionsetOptions = iterator_to_array($optionsets);
             </div>
         </div>
     </div>
+</div>
+
+
+
+<div id="modal-rename" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <?= $this->Form->create(null, ['id'=>'field-form', 'url'=>['action'=>'rename']]) ?>
+        <?= $this->Form->hidden('id', ['value' => $template->id]) ?>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><?= __('Rename') ?></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <fieldset>
+                        <?= $this->Form->control('name', ['label'=>__('New name'), 'value'=>$template->name]) ?>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
+                </div>
+            </div>
+        </div>
+    <?= $this->Form->end() ?>
 </div>
 
 

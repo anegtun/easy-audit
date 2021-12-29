@@ -89,6 +89,18 @@ class FormTemplatesController extends AppController {
         return $this->redirect(['action'=>'index']);
     }
 
+    public function rename() {
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $data = $this->request->getData();
+            $template = $this->FormTemplates->get($data['id']);
+            $template->name = $data['name'];
+            $this->FormTemplates->save($template);
+            $this->Flash->success(__('Template renamed.'));
+            return $this->redirect(['action'=>'detail', $template->id]);
+        }
+        return $this->redirect(['action'=>'index']);
+    }
+
     public function delete($id) {
         $template = $this->FormTemplates->get($id);
         if($this->FormTemplates->delete($template)) {
