@@ -57,29 +57,3 @@
 
     <button type="button" class="btn btn-secondary add-measure"><?= __('+ add measure') ?></button>
 </div>
-
-
-<div id="modal-measure" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><?= __('Measure') ?></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <fieldset>
-                    <?= $this->Form->control('item', ['label'=>__('Item')]) ?>
-                    <?= $this->Form->control('expected', ['type'=>'number', 'label'=>__('Expected')]) ?>
-                    <?= $this->Form->control('actual', ['type'=>'number', 'label'=>__('Actual')]) ?>
-                    <?= $this->Form->control('threshold', ['type'=>'number', 'label'=>__('Threshold')]) ?>
-                </fieldset>
-            </div>
-            <div class="modal-footer">
-                <?= $this->EasyAuditForm->saveButton(__('Save'), ['id'=>'submit-measure']) ?>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
-            </div>
-        </div>
-    </div>
-</div>
