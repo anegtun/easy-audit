@@ -48,5 +48,6 @@ $this->Html->script('audits', ['block' => 'script']);
     </div>
 
     <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
+    <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $audit->id]) ?>
 
 <?= $this->Form->end() ?>

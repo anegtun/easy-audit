@@ -85,6 +85,16 @@ class AuditsController extends AppController {
         return $this->redirect(['action'=>'detail', $audit->id]);
     }
 
+    public function delete($id) {
+        $audit = $this->Audits->get($id);
+        if($this->Audits->delete($audit)) {
+            $this->Flash->success(__('Audit deleted correctly.'));
+        } else {
+            $this->Flash->error(__('Error deleting audit.'));
+        }
+        return $this->redirect(['action'=>'index']);
+    }
+
     private function parseDate($date) {
         return empty($date) ? NULL : Time::createFromFormat('d-m-Y', $date);
     }
