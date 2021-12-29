@@ -20,6 +20,7 @@ $optionsetOptions = iterator_to_array($optionsets);
     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-rename"><?= __('Rename template') ?></button>
     <button type="button" class="btn btn-default modal-clone-button" data-template-id="<?=$template->id?>" data-template-name="<?=$template->name?>"><?= __('Clone template') ?></button>
     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
+    <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $template->id]) ?>
 
     <?php if($template->type === 'select') : ?>
         <?php foreach($sections as $s) : ?>

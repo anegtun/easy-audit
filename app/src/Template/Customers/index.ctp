@@ -20,7 +20,7 @@ $this->set('headerBreadcrumbs', [
             <tbody>
                 <?php foreach($customers as $c) : ?>
                     <tr>
-                        <td><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $c->id]) ?></td>
+                        <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'delete', $c->id]) ?></td>
                         <td><?= $this->Html->link($c->name, ['action'=>'detail', $c->id]) ?></td>
                         <td><?= $c->email ?></td>
                     </tr>

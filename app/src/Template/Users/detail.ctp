@@ -26,6 +26,9 @@ $authUser = $this->request->getSession()->read('Auth.User');
                 <?= $this->Form->control('role', ['options'=>$roles, 'label'=>__('Role')]) ?>
             </div>
             <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
+            <?php if(!empty($user->id)) : ?>
+                <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $user->id]) ?>
+            <?php endif ?>
         </fieldset>
     <?= $this->Form->end() ?>
 </div>

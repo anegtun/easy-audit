@@ -19,6 +19,9 @@ $this->set('headerBreadcrumbs', [
                 <?= $this->Form->control('email', ['label'=>__('Email')]) ?>
             </div>
             <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
+            <?php if(!empty($customer->id)) : ?>
+                <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $customer->id]) ?>
+            <?php endif ?>
         </fieldset>
     <?= $this->Form->end() ?>
 </div>
@@ -42,7 +45,7 @@ $this->set('headerBreadcrumbs', [
                         <?php foreach($customer->form_templates as $t) : ?>
                             <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
                                 <td><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['controller' => 'FormTemplates', 'action' => 'detail', $t->id]) ?></td>
-                                <td><?= $this->EasyAuditHtml->deleteButton(['action'=>'deleteTemplate', $customer->id, $t->id], 'remove') ?></td>
+                                <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'deleteTemplate', $customer->id, $t->id], 'remove') ?></td>
                                 <td><?= $t->name ?></td>
                             </tr>
                         <?php endforeach ?>

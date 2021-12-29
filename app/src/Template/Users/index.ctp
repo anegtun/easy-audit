@@ -21,7 +21,7 @@ $this->set('headerBreadcrumbs', [
             <tbody>
                 <?php foreach($users as $u) : ?>
                     <tr>
-                        <td><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $u->id]) ?></td>
+                        <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'delete', $u->id]) ?></td>
                         <td><?= $this->Html->link($u->username, ['action'=>'detail', $u->id]) ?></td>
                         <td><?= $roles[$u->role] ?></td>
                         <td><?= $u->name ?></td>

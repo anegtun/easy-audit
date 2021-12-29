@@ -24,7 +24,7 @@ $this->Html->script('form-templates', ['block' => 'script']);
             <tbody>
                 <?php foreach($templates as $t) : ?>
                     <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
-                        <td><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $t->id]) ?></td>
+                        <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'delete', $t->id]) ?></td>
                         <td><?= $this->Html->link('', '', ['class'=>'glyphicon glyphicon-duplicate modal-clone-button', 'data-template-id'=>$t->id, 'data-template-name'=>$t->name]) ?></td>
                         <td><?= $this->Html->link('', ['action'=>'toggleEnabled', $t->id], ['class'=>'glyphicon glyphicon-'.($t->disabled?'thumbs-up':'thumbs-down')]) ?></td>
                         <td><?= $this->Html->link($t->name, ['action'=>'detail', $t->id]) ?></td>
