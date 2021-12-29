@@ -39,8 +39,13 @@ $(document).ready(function() {
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = $('<img>').attr('src', e.target.result).attr('data-name', file.name).click(function() {
-                inputsDiv.find('[data-photo-name="'+$(this).attr('data-name')+'"]').remove();
-                $(this).remove();
+                if($(this).hasClass('to-remove')) {
+                    $(this).removeClass('to-remove');
+                    inputsDiv.find('[data-photo-name="'+$(this).attr('data-name')+'"] input').prop('disabled', false);
+                } else {
+                    $(this).addClass('to-remove');
+                    inputsDiv.find('[data-photo-name="'+$(this).attr('data-name')+'"] input').prop('disabled', true);
+                }
             });
             previewBox.append(img);
         }
