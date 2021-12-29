@@ -26,6 +26,7 @@
 
                     <div class="form-group audit-field">
                         <label for="<?= "field-values-{$f->id}" ?>">
+                            <?= $hasImgsOrObs ? $this->EasyAuditHtml->gliphicon('warning-sign', ['classes'=>['text-warning']]) : '' ?>
                             <?= $f->text ?>
                         </label>
                         <?= $this->EasyAuditForm->cleanControl("field_values[{$f->id}]", [
@@ -34,7 +35,7 @@
                             'value' => empty($value) ? '' : $value->optionset_value_id
                         ]) ?>
                         <div class="audit-observations">
-                            <a class="audit-observations-open" href="#"><?= __('+ add observations & photos') ?> <?= $hasImgsOrObs ? ' (*)' : '' ?></a>
+                            <a class="audit-observations-open" href="#"><?= __('+ add observations & photos') ?></a>
                             <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations & photos') ?></a>
                             <div class="audit-observations-input" style="display:none">
                                 <textarea name="<?="field_observations[{$f->id}]"?>" class="form-control"><?= $hasObservations ? $value->observations : '' ?></textarea>
