@@ -83,7 +83,11 @@ class FormTemplatesController extends AppController {
     }
 
     public function delete($id) {
-        $template = $this->FormTemplates->get($id);
+        $template = $this->FormTemplates->get($id, [ 'contain' => ['Audits'] ]);
+        if(!empty($template->audits)) {
+            $this->Flash->error(__('This template is used in at least one audit, so it can\'t be deleted. You can instead disable it.'));
+            return $this->redirect(['action'=>'index']);
+        }
         if($this->FormTemplates->delete($template)) {
             $this->Flash->success(__('Template deleted successfully.'));
         } else {

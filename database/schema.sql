@@ -100,10 +100,12 @@ CREATE TABLE easy_audit_customer_forms (
   PRIMARY KEY (customer_id, form_template_id),
   CONSTRAINT FK_CustomerFormTemplate_Customer
     FOREIGN KEY (customer_id)
-    REFERENCES easy_audit_customers(id),
+    REFERENCES easy_audit_customers(id)
+    ON DELETE CASCADE,
   CONSTRAINT FK_CustomerFormTemplate_FormTemplate
     FOREIGN KEY (form_template_id)
     REFERENCES easy_audit_form_templates(id)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 CREATE TABLE easy_audit_audits (
