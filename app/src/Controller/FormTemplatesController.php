@@ -53,28 +53,9 @@ class FormTemplatesController extends AppController {
             $new_template->type = $old_template->type;
             $new_template = $this->FormTemplates->save($new_template);
 
-            $sections = $this->FormTemplateSections->find()->where(['form_template_id' => $data['id']]);
-            $sections_id_map = [];
-            foreach($sections as $s) {
-                $new_section = $this->FormTemplateSections->newEntity();
-                $new_section->form_template_id = $new_template->id;
-                $new_section->position = $s->position;
-                $new_section->name = $s->name;
-                $new_section = $this->FormTemplateSections->save($new_section);
-                $sections_id_map[$s->id] = $new_section->id;
-            }
-
-            $allFields = $this->FormTemplateFieldsOptionset->find()->where(['form_template_id' => $data['id']]);
-            foreach($allFields as $f) {
-                $new_field = $this->FormTemplateFieldsOptionset->newEntity();
-                $new_field->form_template_id = $new_template->id;
-                $new_field->form_template_section_id = $sections_id_map[$f->form_template_section_id];
-                $new_field->optionset_id = $f->optionset_id;
-                $new_field->position = $f->position;
-                $new_field->text = $f->text;
-                $this->FormTemplateFieldsOptionset->save($new_field);
-            }
-
+            $sections_id_map = $this->FormTemplateSections->clone($data['id'], $new_template->id);
+            $this->FormTemplateFieldsOptionset->clone($data['id'], $new_template->id, $sections_id_map);
+            
             $this->Flash->success(__('Template created.'));
             return $this->redirect(['action'=>'index']);
         }
@@ -89,8 +70,24 @@ class FormTemplatesController extends AppController {
         return $this->redirect(['action'=>'index']);
     }
 
+    public function rename() {
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $data = $this->request->getData();
+            $template = $this->FormTemplates->get($data['id']);
+            $template->name = $data['name'];
+            $this->FormTemplates->save($template);
+            $this->Flash->success(__('Template renamed.'));
+            return $this->redirect(['action'=>'detail', $template->id]);
+        }
+        return $this->redirect(['action'=>'index']);
+    }
+
     public function delete($id) {
-        $template = $this->FormTemplates->get($id);
+        $template = $this->FormTemplates->get($id, [ 'contain' => ['Audits'] ]);
+        if(!empty($template->audits)) {
+            $this->Flash->error(__('This template is used in at least one audit, so it can\'t be deleted. You can instead disable it.'));
+            return $this->redirect(['action'=>'index']);
+        }
         if($this->FormTemplates->delete($template)) {
             $this->Flash->success(__('Template deleted successfully.'));
         } else {

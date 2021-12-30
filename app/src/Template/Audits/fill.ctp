@@ -25,26 +25,11 @@ $this->Html->script('audits', ['block' => 'script']);
     </ul>
 
     <div class="tab-content">
-
         <?php foreach($audit->form_templates as $i => $t) : ?>
-
             <div id="form<?= $t->id ?>" class="tab-pane fade <?= $i==0 ? "in active" : "" ?>">
-                <?= $this->element("Audit/template_{$t->type}", ['template'=>$t]) ?>
+                <?= $this->element("Audits/template_{$t->type}", ['template'=>$t]) ?>
             </div>
-
         <?php endforeach ?>
-
-    </div>
-
-    <div class="row">
-        <fieldset>
-            <div class="form-group col-lg-1">
-                <?= $this->EasyAuditForm->dateControl('date', ['value'=>$audit->date, 'label'=>__('Date')]) ?>
-            </div>
-            <div class="form-group col-lg-3">
-                <?= $this->Form->control('auditor_user_id', ['options' => $this->EasyAuditForm->objectToKeyValue($users, 'id', 'name'), 'value'=>$audit->auditor->id, 'label'=>__('Auditor')]) ?>
-            </div>
-        </fieldset>
     </div>
 
     <?= $this->EasyAuditForm->saveButton(__('Save')) ?>

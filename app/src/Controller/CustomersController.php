@@ -44,7 +44,11 @@ class CustomersController extends AppController {
     }
 
     public function delete($id) {
-        $customer = $this->Customers->get($id);
+        $customer = $this->Customers->get($id, [ 'contain' => ['Audits'] ]);
+        if(!empty($customer->audits)) {
+            $this->Flash->error(__('This customer has at least one audit, so it can\'t be deleted.'));
+            return $this->redirect(['action'=>'index']);
+        }
         if($this->Customers->delete($customer)) {
             $this->Flash->success(__('Customer deleted correctly.'));
         } else {

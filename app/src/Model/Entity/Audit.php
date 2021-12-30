@@ -3,7 +3,7 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 
-class Customer extends Entity {
+class Audit extends Entity {
 
     public function getTemplateIds() {
         if(empty($this->form_templates)) {

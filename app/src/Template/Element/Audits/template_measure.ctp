@@ -1,4 +1,4 @@
-<div class="row">
+<fieldset>
     <div class="audit-measures">
 
         <?php if(!empty($field_measure_values[$template->id])) : ?>
@@ -56,4 +56,4 @@
     </div>
 
     <button type="button" class="btn btn-secondary add-measure"><?= __('+ add measure') ?></button>
-</div>
+</fieldset>

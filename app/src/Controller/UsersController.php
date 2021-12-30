@@ -46,7 +46,11 @@ class UsersController extends AppController {
     }
 
     public function delete($id) {
-        $user = $this->Users->get($id);
+        $user = $this->Users->get($id, [ 'contain' => ['Audits'] ]);
+        if(!empty($user->audits)) {
+            $this->Flash->error(__('This user is assigned to at least one audit, so it can\'t be deleted.'));
+            return $this->redirect(['action'=>'index']);
+        }
         if($this->Users->delete($user)) {
             $this->Flash->success(__('User deleted correctly.'));
         } else {

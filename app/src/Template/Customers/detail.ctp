@@ -19,6 +19,9 @@ $this->set('headerBreadcrumbs', [
                 <?= $this->Form->control('email', ['label'=>__('Email')]) ?>
             </div>
             <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
+            <?php if(!empty($customer->id)) : ?>
+                <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $customer->id]) ?>
+            <?php endif ?>
         </fieldset>
     <?= $this->Form->end() ?>
 </div>
@@ -34,16 +37,14 @@ $this->set('headerBreadcrumbs', [
                     <thead>
                         <tr>
                             <th class="cell-small"></th>
-                            <th class="cell-small"></th>
                             <th class="celda-titulo"><?= __('Name') ?></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach($customer->form_templates as $t) : ?>
                             <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
-                                <td><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['controller' => 'FormTemplates', 'action' => 'detail', $t->id]) ?></td>
-                                <td><?= $this->EasyAuditHtml->deleteButton(['action'=>'deleteTemplate', $customer->id, $t->id], 'remove') ?></td>
-                                <td><?= $t->name ?></td>
+                                <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'deleteTemplate', $customer->id, $t->id], 'remove') ?></td>
+                                <td><?= $this->Html->link($t->name, ['controller' => 'FormTemplates', 'action' => 'detail', $t->id]) ?></td>
                             </tr>
                         <?php endforeach ?>
                     </tbody>
@@ -83,28 +84,7 @@ $this->set('headerBreadcrumbs', [
     <div class="row">
         <fieldset>
             <legend><?= __('Audits') ?></legend>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th class="cell-small"></th>
-                            <th class="cell-small celda-titulo"><?= __('Date') ?></th>
-                            <th class="celda-titulo"><?= __('Name') ?></th>
-                            <th class="celda-titulo"><?= __('Auditor') ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($customer->audits as $a) : ?>
-                            <tr>
-                                <td><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['controller'=>'Audits', 'action'=>'detail', $a->id]) ?></td>
-                                <td><?= $a->date ?></td>
-                                <td><?= $a->customer->name ?></td>
-                                <td><?= $a->auditor->name ?></td>
-                            </tr>
-                        <?php endforeach ?>
-                    </tbody>
-                </table>
-            </div>
+            <?= $this->element('Audits/list', ['audits' => $customer->audits]) ?>
         </fieldset>
     </div>
 

@@ -20,7 +20,7 @@ class FormTemplatesTable extends Table {
         ]);
 
         $this->belongsToMany('Audits', [
-            'joinTable' => 'easy_audit_customer_forms',
+            'joinTable' => 'easy_audit_audit_forms',
             'foreignKey' => 'form_template_id',
         ]);
     }

@@ -26,6 +26,9 @@ $authUser = $this->request->getSession()->read('Auth.User');
                 <?= $this->Form->control('role', ['options'=>$roles, 'label'=>__('Role')]) ?>
             </div>
             <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
+            <?php if(!empty($user->id)) : ?>
+                <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $user->id]) ?>
+            <?php endif ?>
         </fieldset>
     <?= $this->Form->end() ?>
 </div>
@@ -38,26 +41,7 @@ $authUser = $this->request->getSession()->read('Auth.User');
     <div class="row">
         <fieldset>
             <legend><?= __('Audits') ?></legend>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th class="cell-small"></th>
-                            <th class="cell-small celda-titulo"><?= __('Date') ?></th>
-                            <th class="celda-titulo"><?= __('Name') ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($user->audits as $a) : ?>
-                            <tr>
-                                <td><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['controller'=>'Audits', 'action'=>'detail', $a->id]) ?></td>
-                                <td><?= $a->date ?></td>
-                                <td><?= $a->customer->name ?></td>
-                            </tr>
-                        <?php endforeach ?>
-                    </tbody>
-                </table>
-            </div>
+            <?= $this->element('Audits/list', ['audits' => $user->audits, 'hide_user' => true]) ?>
         </fieldset>
     </div>
 
