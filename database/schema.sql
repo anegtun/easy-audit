@@ -138,13 +138,14 @@ CREATE TABLE easy_audit_audit_forms (
 CREATE TABLE easy_audit_audit_field_optionset_values (
   id int unsigned NOT NULL AUTO_INCREMENT,
   audit_id int unsigned NOT NULL,
+  form_template_id int unsigned NOT NULL,
   form_template_field_id int unsigned NOT NULL,
   optionset_value_id int unsigned NOT NULL,
   observations varchar(4000) DEFAULT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT FK_AuditOptionsetValues_Audit
-    FOREIGN KEY (audit_id)
-    REFERENCES easy_audit_audits(id)
+  CONSTRAINT FK_AuditOptionsetValues_AuditFormTemplate
+    FOREIGN KEY (audit_id, form_template_id)
+    REFERENCES easy_audit_audit_forms(audit_id, form_template_id)
     ON DELETE CASCADE,
   CONSTRAINT FK_AuditOptionsetValues_FormTemplateOptionsetField
     FOREIGN KEY (form_template_field_id)
@@ -164,13 +165,10 @@ CREATE TABLE easy_audit_audit_field_measure_values (
   threshold float DEFAULT NULL,
   observations varchar(4000) DEFAULT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT FK_AuditMeasureValues_Audit
-    FOREIGN KEY (audit_id)
-    REFERENCES easy_audit_audits(id)
-    ON DELETE CASCADE,
-  CONSTRAINT FK_AuditMeasureValues_FormTemplate
-    FOREIGN KEY (form_template_id)
-    REFERENCES easy_audit_form_templates(id)
+  CONSTRAINT FK_AuditMeasureValues_AuditFormTemplate
+    FOREIGN KEY (audit_id, form_template_id)
+    REFERENCES easy_audit_audit_forms(audit_id, form_template_id)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 

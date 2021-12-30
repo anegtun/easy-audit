@@ -31,3 +31,56 @@ $this->Html->script('audits', ['block' => 'script']);
     <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $audit->id]) ?>
 
 <?= $this->Form->end() ?>
+
+
+
+<div class="row">
+    <fieldset>
+        <legend><?= __('Associated templates') ?></legend>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th class="cell-small"></th>
+                        <th class="celda-titulo"><?= __('Name') ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach($audit->form_templates as $t) : ?>
+                        <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
+                            <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'deleteTemplate', $audit->id, $t->id], 'remove') ?></td>
+                            <td><?= $this->Html->link($t->name, ['controller' => 'FormTemplates', 'action' => 'detail', $t->id]) ?></td>
+                        </tr>
+                    <?php endforeach ?>
+                </tbody>
+            </table>
+        </div>
+        <button type="button" id="modal-templates-button" class="btn btn-secondary" data-toggle="modal" data-target="#modal-templates"><?= __('Add template') ?></button>
+    </fieldset>
+</div>
+
+
+<div id="modal-templates" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <?= $this->Form->create(null, ['url'=>['action'=>'addTemplate']]) ?>
+        <?= $this->Form->hidden('audit_id', ['value' => $audit->id]) ?>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><?= __('Add template') ?></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <fieldset>
+                        <?= $this->Form->control('form_template_id', ['options' => $this->EasyAuditForm->objectToKeyValue($audit->customer->form_templates, 'id', 'name'), 'label'=>__('Template')]) ?>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
+                </div>
+            </div>
+        </div>
+    <?= $this->Form->end() ?>
+</div>
