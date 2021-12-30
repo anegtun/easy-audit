@@ -33,7 +33,7 @@ class AuditsTable extends Table {
         $audits = $this->find('all')
             ->where(['date <' => empty($date) ? Time::now() : $date])
             ->order(['date' => 'DESC'])
-            ->contain(['FormTemplates'])
+            ->contain(['AuditFieldMeasureValues', 'AuditFieldOptionsetValues', 'FormTemplates'])
             ->toArray();
         foreach($audits as $audit) {
             if(in_array($templateId, $audit->getTemplateIds())) {

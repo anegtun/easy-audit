@@ -47,21 +47,21 @@ class AuditsController extends AppController {
     public function fill($id) {
         $audit = $this->Audits->get($id, [ 'contain' => [
             'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
+            'AuditFieldOptionsetValues' => ['FormTemplateFieldsOptionset' => ['FormTemplateSections']],
             'Customers',
             'FormTemplates' => [
                 'FormTemplateSections' => ['FormTemplateFieldsOptionset'],
                 'FormTemplateFieldsOptionset' => ['FormTemplateSections'],
                 'sort' => 'name'
             ]
-        ] ]);
+        ]]);
         $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
         $field_values = $this->AuditFieldOptionsetValues->findForAudit($id);
         foreach($audit->form_templates as $t) {
             $last_audit = $this->Audits->findLast($t->id, $audit->date);
             if($last_audit) {
-                $last_field_values = $this->AuditFieldOptionsetValues->findForAudit($last_audit->id);
-                foreach($field_values as $newV) {
-                    foreach($last_field_values as $oldV) {
+                foreach($audit->audit_field_optionset_values as $i => $newV) {
+                    foreach($last_audit->audit_field_optionset_values as $oldV) {
                         if($newV->form_template_field_id === $oldV->form_template_field_id && !empty($newV->observations) && $newV->observations === $oldV->observations) {
                             $newV->observations_cloned = true;
                         }
@@ -73,7 +73,7 @@ class AuditsController extends AppController {
             }
         }
         $field_images = $this->AuditFile->readPhotos($id);
-        $this->set(compact('audit', 'field_images', 'field_values', 'optionset_values'));
+        $this->set(compact('audit', 'field_images', 'optionset_values'));
     }
 
     public function history($id) {
@@ -91,22 +91,6 @@ class AuditsController extends AppController {
                     'FormTemplateSections' => ['FormTemplateFieldsOptionset', 'sort'=>'position'],
                 ]
             ]);
-        /*foreach($audit->form_templates as $t) {
-            $last_audit = $this->Audits->findLast($t->id, $audit->date);
-            if($last_audit) {
-                $last_field_values = $this->AuditFieldOptionsetValues->findForAudit($last_audit->id);
-                foreach($field_values as $newV) {
-                    foreach($last_field_values as $oldV) {
-                        if($newV->form_template_field_id === $oldV->form_template_field_id && !empty($newV->observations) && $newV->observations === $oldV->observations) {
-                            $newV->observations_cloned = true;
-                        }
-                    }
-                }
-            }
-            foreach($t->form_template_sections as $s) {
-                $s->calculateSectionScore($field_values);
-            }
-        }*/
         $this->set(compact('audit', 'audits'));
     }
 

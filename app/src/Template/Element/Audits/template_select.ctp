@@ -1,12 +1,8 @@
 <?php
 $fields_cloned = [];
-foreach($field_values as $fv) {
+foreach($audit->audit_field_optionset_values as $fv) {
     if(!empty($fv->observations_cloned)) {
-        foreach($template->form_template_fields_optionset as $f) {
-            if($f->id === $fv->form_template_field_id) {
-                $fields_cloned[] = $f;
-            }
-        }
+        $fields_cloned[] = $fv;
     }
 }
 ?>
@@ -16,7 +12,7 @@ foreach($field_values as $fv) {
         <strong><?= __('Warning!') ?></strong> <?= __('Observations for the following items are the same as the last audit: ') ?>
         <ul>
         <?php foreach($fields_cloned as $f) : ?>
-            <li><?= "{$f->form_template_section->position}.{$f->position}" ?></li>
+            <li><?= "{$f->form_template_fields_optionset->form_template_section->position}.{$f->form_template_fields_optionset->position}" ?></li>
         <?php endforeach ?>
         </ul>
     </div>
@@ -38,8 +34,14 @@ foreach($field_values as $fv) {
 
             <?php foreach($s->form_template_fields_optionset as $f) : ?>
 
-                <?php 
-                    $value = empty($field_values[$f->id]) ? null : $field_values[$f->id];
+                <?php
+                    $value = null;
+                    foreach($audit->audit_field_optionset_values as $fv) {
+                        if($fv->form_template_field_id === $f->id) {
+                            $value = $fv;
+                            break;
+                        }
+                    }
                     $hasObservations = !empty($value) && !empty($value->observations);
                     $imgs = empty($field_images[$template->id][$f->id]) ? [] : $field_images[$template->id][$f->id];
                     $hasImgs = !empty($imgs);
