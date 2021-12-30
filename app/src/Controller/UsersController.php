@@ -23,7 +23,9 @@ class UsersController extends AppController {
     }
 
     public function detail($id = null) {
-        $user = empty($id) ? $this->Users->newEntity() : $this->Users->get($id, ['contain'=>['Audits'=>['Customers', 'FormTemplates']]]);
+        $user = empty($id) ? $this->Users->newEntity() : $this->Users->get($id, ['contain' => [
+            'Audits' => [ 'Customers', 'FormTemplates', 'sort' => ['date'=>'DESC'] ]
+        ]]);
         $roles = $this->Roles->getAll();
         $this->set(compact('roles', 'user'));
     }

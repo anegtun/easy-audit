@@ -22,7 +22,7 @@ class AuditsController extends AppController {
     }
 
     public function index() {
-        $audits = $this->Audits->find('all', ['contain'=>['Customers', 'FormTemplates', 'Users'], 'order'=>'date']);
+        $audits = $this->Audits->find('all', ['contain'=>['Customers', 'FormTemplates', 'Users'], 'order'=>['date'=>'DESC']]);
         $customers = $this->Customers->find('all', ['order'=>'name']);
         $templates = $this->FormTemplates->find('all', ['order'=>'name']);
         $this->set(compact('audits', 'customers', 'templates'));
