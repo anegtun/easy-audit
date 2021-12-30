@@ -89,7 +89,10 @@ class AuditsController extends AppController {
             ]
         ]]);
         $audits = $this->Audits->find('all')
-            ->where(['date <= ' => $audit->date])
+            ->where([
+                'customer_id' => $audit->customer_id,
+                'date <= ' => $audit->date
+            ])
             ->contain([
                 'AuditFieldOptionsetValues' => [
                     'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
