@@ -34,6 +34,34 @@ legend > a:hover, legend > a:active, legend > a:focus {
     display: inline;
 }
 
+.audit-field .glyphicon-warning-sign {
+    font-size: larger;
+}
+
+.audit-field-position {
+    color: #1d71b8;
+    font-weight: bold;
+    font-size: larger;
+}
+
+.audit-field-select-success {
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    color: #3c763d;
+}
+
+.audit-field-select-warning {
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+    color: #8a6d3b;
+}
+
+.audit-field-select-danger {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+}
+
 .audit-measure {
     align-items: center;
     display: flex;
@@ -93,10 +121,6 @@ legend > a:hover, legend > a:active, legend > a:focus {
     text-decoration: none;
 }
 
-.audit-observations textarea {
-    min-height: 10em;
-}
-
 .audit-observations-input {
     margin-top: .5em;
 }
@@ -153,6 +177,11 @@ legend > a:hover, legend > a:active, legend > a:focus {
     margin-left: 2em;
 }
 
+.audit-history-chart-container {
+    display: flex;
+    justify-content: center;
+}
+
 .checkbox-container {
     display: block;
 }
@@ -195,6 +224,10 @@ legend > a:hover, legend > a:active, legend > a:focus {
 
     .audit-measure {
         margin-bottom: 1.5em;
+    }
+
+    .audit-observations textarea {
+        min-height: 10em;
     }
 }
 

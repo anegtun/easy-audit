@@ -49,15 +49,21 @@ foreach($audit->audit_field_optionset_values as $fv) {
                 ?>
 
                 <div class="form-group audit-field">
+
                     <label for="<?= "field-values-{$f->id}" ?>">
                         <?= $hasImgsOrObs ? $this->EasyAuditHtml->gliphicon('warning-sign', ['classes'=>['text-warning']]) : '' ?>
-                        <?= "{$s->position}.{$f->position}. {$f->text}" ?>
+                        <span class="audit-field-position"><?= "{$s->position}.{$f->position}." ?></span>
+                        <?= $f->text ?>
                     </label>
+
                     <?= $this->EasyAuditForm->cleanControl("field_values[{$template->id}][{$f->id}]", [
                         'id' => "field-values-{$f->id}",
+                        'classes' => "audit-field-select",
+                        'data-template-id' => $template->id,
                         'options' => $this->EasyAuditForm->objectToKeyValue($optionset_values[$f->optionset_id], 'id', 'label'),
                         'value' => empty($value) ? '' : $value->optionset_value_id
                     ]) ?>
+
                     <div class="audit-observations">
                         <a class="audit-observations-open" href="#"><?= __('+ add observations & photos') ?></a>
                         <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations & photos') ?></a>

@@ -73,6 +73,27 @@ $(document).ready(function() {
         });
     });
 
+    $('.audit-field-select').change(function() {
+        const input = $(this);
+        const templateId = input.attr('data-template-id');
+        const value = input.val();
+        const optionsConfig = $('#optionset-'+templateId);
+        if(optionsConfig) {
+            optionsConfig.find('div[data-opt-color]').each(function(i, div) {
+                const color = $(div).attr('data-opt-color');
+                if(color) {
+                    input.removeClass('audit-field-select-'+color);
+                }
+            });
+            optionsConfig.find('div[data-opt-id='+value+']').each(function(i, div) {
+                const color = $(div).attr('data-opt-color');
+                if(color) {
+                    input.addClass('audit-field-select-'+color);
+                }
+            });
+        }
+    }).change();
+
     $('.add-measure').click(function(e) {
         e.preventDefault();
         const container = $(e.currentTarget).siblings('.audit-measures');

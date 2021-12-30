@@ -25,7 +25,11 @@ class EasyAuditFormHelper extends Helper {
     }
 
     public function cleanControl($name, $attrs=[]) {
-        $input_attrs = array_merge($attrs, ['label' => false, 'templates' => $this->clean_templates]);
+        $input_attrs = array_merge($attrs, [
+            'label' => false,
+            'templates' => $this->clean_templates,
+            'templateVars' => ['classes' => empty($attrs['classes']) ? [] : $attrs['classes']]
+        ]);
         return $this->Form->control($name, $input_attrs);
     }
     
