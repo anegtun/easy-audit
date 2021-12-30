@@ -15,6 +15,7 @@ class FormTemplateSection extends Entity {
             }
         }
         $this->score = $count === 0 ? 0 : round(100 * ($score / $count), 1);
+        return $this->score;
     }
 
 }
