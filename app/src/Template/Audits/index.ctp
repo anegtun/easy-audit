@@ -9,29 +9,7 @@ $this->Html->script('audits', ['block' => 'script']);
 ?>
 
 <div class="row">
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th class="cell-small"></th>
-                    <th class="cell-small celda-titulo"><?= __('Date') ?></th>
-                    <th class="celda-titulo"><?= __('Name') ?></th>
-                    <th class="celda-titulo"><?= __('Auditor') ?></th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach($audits as $a) : ?>
-                    <tr>
-                        <td><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['action'=>'detail', $a->id]) ?></td>
-                        <td><?= $a->date ?></td>
-                        <td><?= $a->customer->name ?></td>
-                        <td><?= $a->auditor->name ?></td>
-                    </tr>
-                <?php endforeach ?>
-            </tbody>
-        </table>
-    </div>
-
+    <?= $this->element('Audits/list', ['audits' => $audits]) ?>
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-new-audit"><?= __('New audit') ?></button>
 </div>
 

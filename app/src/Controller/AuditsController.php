@@ -29,7 +29,26 @@ class AuditsController extends AppController {
         $this->set(compact('audits', 'customers', 'templates'));
     }
 
-    public function detail($id) {
+    public function data($id) {
+        $audit = $this->Audits->get($id, [ 'contain' => [
+            'Customers',
+            'FormTemplates' => ['FormTemplateSections', 'FormTemplateFieldsOptionset'],
+            'Users'
+        ] ]);
+        $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
+        $field_values = $this->AuditFieldOptionsetValues->findForAudit($id);
+        $field_measure_values = $this->AuditFieldMeasureValues->findForAudit($id);
+        $users = $this->Users->find('all');
+        foreach($audit->form_templates as $t) {
+            foreach($t->form_template_sections as $s) {
+                $s->score = $this->calculateSectionScore($s, $field_values);
+            }
+        }
+        $field_images = $this->readImgs($id);
+        $this->set(compact('audit', 'field_images', 'field_values', 'field_measure_values', 'optionset_values', 'users'));
+    }
+
+    public function fill($id) {
         $audit = $this->Audits->get($id, [ 'contain' => [
             'Customers',
             'FormTemplates' => ['FormTemplateSections', 'FormTemplateFieldsOptionset'],

@@ -29,7 +29,7 @@ $this->Html->script('audits', ['block' => 'script']);
         <?php foreach($audit->form_templates as $i => $t) : ?>
 
             <div id="form<?= $t->id ?>" class="tab-pane fade <?= $i==0 ? "in active" : "" ?>">
-                <?= $this->element("Audit/template_{$t->type}", ['template'=>$t]) ?>
+                <?= $this->element("Audits/template_{$t->type}", ['template'=>$t]) ?>
             </div>
 
         <?php endforeach ?>
