@@ -22,16 +22,16 @@ legend > a:hover, legend > a:active, legend > a:focus {
     display: inline;
 }
 
+#auditForm .tab-content {
+    margin-bottom: 1em;
+}
+
 .audit-field {
     margin-bottom: 2em;
 }
 
 .audit-field label > * {
     display: inline;
-}
-
-.audit-measures {
-    margin-top: 1em;
 }
 
 .audit-measure {
@@ -104,7 +104,6 @@ legend > a:hover, legend > a:active, legend > a:focus {
 .audit-img-inputs {
     margin-top: .5em;
 }
-
 
 .audit-img-input input {
     width: 0.1px;
