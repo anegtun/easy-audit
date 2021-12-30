@@ -110,15 +110,16 @@ $(document).ready(function() {
 
     $('.audit-img-current img').click(function() {
         const img = $(this);
+        const templateId = img.attr('data-template-id');
         const fieldId = img.attr('data-field-id');
         const src = img.attr('src');
         const filename = src.substring(src.lastIndexOf('/') + 1);
         if(img.hasClass('to-remove')) {
             img.removeClass('to-remove');
-            $('form').find('input[data-field-id="'+fieldId+'"][data-filename="'+filename+'"]').remove();
+            $('form').find('input[data-template-id="'+templateId+'"][data-field-id="'+fieldId+'"][data-filename="'+filename+'"]').remove();
         } else {
             img.addClass('to-remove');
-            $('form').append($('<input type="hidden" name="field_img_removed['+fieldId+'][]" data-field-id='+fieldId+' data-filename='+filename+' value="'+filename+'">'));
+            $('form').append($('<input type="hidden" name="field_img_removed['+templateId+']['+fieldId+'][]" data-template-id='+templateId+' data-field-id='+fieldId+' data-filename='+filename+' value="'+filename+'">'));
         }
         auditDirty = true;
     });

@@ -57,7 +57,7 @@ class AuditsController extends AppController {
                 $s->calculateSectionScore($field_values);
             }
         }
-        $field_images = $this->AuditFile->readImgs($id);
+        $field_images = $this->AuditFile->readPhotos($id);
         $this->set(compact('audit', 'field_images', 'field_values', 'field_measure_values', 'optionset_values'));
     }
 
@@ -147,10 +147,14 @@ class AuditsController extends AppController {
                 }
             }
             if(!empty($data['field_photo'])) {
-                $this->AuditFile->moveAllImgs($data['id'], $data['field_photo']);
+                foreach($data['field_photo'] as $templateId => $photos) {
+                    $this->AuditFile->addPhotos($data['id'], $templateId, $photos);
+                }
             }
             if(!empty($data['field_img_removed'])) {
-                $this->AuditFile->deleteAllImgs($data['id'], $data['field_img_removed']);
+                foreach($data['field_img_removed'] as $templateId => $photos) {
+                    $this->AuditFile->removePhotos($data['id'], $templateId, $photos);
+                }
             }
         }
         return $this->redirect(['action'=>'fill', $data['id']]);
@@ -159,6 +163,7 @@ class AuditsController extends AppController {
     public function delete($id) {
         $audit = $this->Audits->get($id);
         if($this->Audits->delete($audit)) {
+            $this->AuditFile->removeAllPhotos($id);
             $this->Flash->success(__('Audit deleted correctly.'));
         } else {
             $this->Flash->error(__('Error deleting audit.'));

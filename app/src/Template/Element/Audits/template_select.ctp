@@ -19,7 +19,7 @@
                     <?php 
                         $value = empty($field_values[$f->id]) ? null : $field_values[$f->id];
                         $hasObservations = !empty($value) && !empty($value->observations);
-                        $imgs = empty($field_images[$f->id]) ? [] : $field_images[$f->id];
+                        $imgs = empty($field_images[$template->id][$f->id]) ? [] : $field_images[$template->id][$f->id];
                         $hasImgs = !empty($imgs);
                         $hasImgsOrObs = $hasObservations || $hasImgs;
                     ?>
@@ -43,7 +43,7 @@
                                     <?php if($hasImgs) : ?>
                                         <p><strong><?= __('Current images') ?></strong></p>
                                         <?php foreach($imgs as $img) : ?>
-                                            <?= $this->Html->image("/$img", ['data-field-id'=>$f->id]) ?>
+                                            <?= $this->Html->image("/$img", ['data-template-id'=>$template->id, 'data-field-id'=>$f->id]) ?>
                                         <?php endforeach ?>
                                     <?php endif ?>
                                 </div>
@@ -53,7 +53,7 @@
                                 <div class="audit-img-inputs">
                                     <div class="audit-img-input">
                                         <?php $fieldId = "field_photo_{$f->id}"; ?>
-                                        <input type="file" name="<?="field_photo[{$f->id}][]"?>" id="<?=$fieldId?>" accept="image/*" capture="capture" />
+                                        <input type="file" name="<?="field_photo[{$template->id}][{$f->id}][]"?>" id="<?=$fieldId?>" accept="image/*" capture="capture" />
                                         <label for="<?=$fieldId?>"><?= $this->EasyAuditHtml->gliphiconText('camera', __('Add photo')) ?></label>
                                     </div>
                                 </div>
