@@ -29,7 +29,7 @@
                             <?= $hasImgsOrObs ? $this->EasyAuditHtml->gliphicon('warning-sign', ['classes'=>['text-warning']]) : '' ?>
                             <?= $f->text ?>
                         </label>
-                        <?= $this->EasyAuditForm->cleanControl("field_values[{$f->id}]", [
+                        <?= $this->EasyAuditForm->cleanControl("field_values[{$template->id}][{$f->id}]", [
                             'id' => "field-values-{$f->id}",
                             'options' => $this->EasyAuditForm->objectToKeyValue($optionset_values[$f->optionset_id], 'id', 'label'),
                             'value' => empty($value) ? '' : $value->optionset_value_id
@@ -38,7 +38,7 @@
                             <a class="audit-observations-open" href="#"><?= __('+ add observations & photos') ?></a>
                             <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations & photos') ?></a>
                             <div class="audit-observations-input" style="display:none">
-                                <textarea name="<?="field_observations[{$f->id}]"?>" class="form-control"><?= $hasObservations ? $value->observations : '' ?></textarea>
+                                <textarea name="<?="field_observations[{$template->id}][{$f->id}]"?>" class="form-control"><?= $hasObservations ? $value->observations : '' ?></textarea>
                                 <div class="audit-img-current">
                                     <?php if($hasImgs) : ?>
                                         <p><strong><?= __('Current images') ?></strong></p>

@@ -43,12 +43,13 @@ class AuditFieldOptionsetValuesTable extends Table {
         return true;
     }
 
-    public function upsertAll($audit_id, $values, $observations) {
-        $this->deleteAll(['audit_id' => $audit_id]);
+    public function upsertAll($audit_id, $template_id, $values, $observations) {
+        $this->deleteAll(['form_template_id' => $template_id, 'audit_id' => $audit_id]);
         foreach($values as $k=>$v) {
             if(!empty($v)) {
                 $field_value = $this->newEntity();
                 $field_value->audit_id = $audit_id;
+                $field_value->form_template_id = $template_id;
                 $field_value->form_template_field_id = $k;
                 $field_value->optionset_value_id = $v;
                 $field_value->observations = empty($observations[$k]) ? null : $observations[$k];

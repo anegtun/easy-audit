@@ -135,17 +135,22 @@ class AuditsController extends AppController {
     public function update() {
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
-            $this->AuditFieldOptionsetValues->upsertAll($data['id'], $data['field_values'], $data['field_observations']);
-            if(!empty($data['field_photo'])) {
-                $this->AuditFile->moveAllImgs($data['id'], $data['field_photo']);
-            }
-            if(!empty($data['field_img_removed'])) {
-                $this->AuditFile->deleteAllImgs($data['id'], $data['field_img_removed']);
+            if(!empty($data['field_values'])) {
+                foreach($data['field_values'] as $templateId => $field_values) {
+                    $field_observations = $data['field_observations'][$templateId];
+                    $this->AuditFieldOptionsetValues->upsertAll($data['id'], $templateId, $field_values, $field_observations);
+                }
             }
             if(!empty($data['audit_measure'])) {
                 foreach($data['audit_measure'] as $templateId => $audit_measures) {
                     $this->AuditFieldMeasureValues->upsertAll($data['id'], $templateId, $audit_measures);
                 }
+            }
+            if(!empty($data['field_photo'])) {
+                $this->AuditFile->moveAllImgs($data['id'], $data['field_photo']);
+            }
+            if(!empty($data['field_img_removed'])) {
+                $this->AuditFile->deleteAllImgs($data['id'], $data['field_img_removed']);
             }
         }
         return $this->redirect(['action'=>'fill', $data['id']]);
