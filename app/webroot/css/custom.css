@@ -144,6 +144,15 @@ legend > a:hover, legend > a:active, legend > a:focus {
     border: 2px solid red;
 }
 
+.audit-alert-obervations-cloned {
+    margin-top: 1em;
+}
+
+.audit-alert-obervations-cloned ul {
+    list-style-type: disc;
+    margin-left: 2em;
+}
+
 .checkbox-container {
     display: block;
 }

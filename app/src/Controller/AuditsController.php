@@ -47,12 +47,25 @@ class AuditsController extends AppController {
     public function fill($id) {
         $audit = $this->Audits->get($id, [ 'contain' => [
             'Customers',
-            'FormTemplates' => ['FormTemplateSections', 'FormTemplateFieldsOptionset', 'sort' => [ 'name' => 'ASC' ]]
+            'FormTemplates' => [
+                'FormTemplateSections' => ['FormTemplateFieldsOptionset'],
+                'FormTemplateFieldsOptionset' => ['FormTemplateSections'],
+                'sort' => [ 'name' => 'ASC' ]
+            ]
         ] ]);
         $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
         $field_values = $this->AuditFieldOptionsetValues->findForAudit($id);
         $field_measure_values = $this->AuditFieldMeasureValues->findForAudit($id);
         foreach($audit->form_templates as $t) {
+            $last_audit = $this->Audits->findLast($t->id, $audit->date);
+            $last_field_values = $this->AuditFieldOptionsetValues->findForAudit($last_audit->id);
+            foreach($field_values as $newV) {
+                foreach($last_field_values as $oldV) {
+                    if($newV->form_template_field_id === $oldV->form_template_field_id && !empty($newV->observations) && $newV->observations === $oldV->observations) {
+                        $newV->observations_cloned = true;
+                    }
+                }
+            }
             foreach($t->form_template_sections as $s) {
                 $s->calculateSectionScore($field_values);
             }

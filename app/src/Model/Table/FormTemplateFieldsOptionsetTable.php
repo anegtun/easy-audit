@@ -8,6 +8,9 @@ class FormTemplateFieldsOptionsetTable extends Table {
     
     public function initialize(array $config) {
         $this->setTable('easy_audit_form_template_fields_optionset');
+
+        $this->belongsTo('FormTemplateSections')
+            ->setForeignKey('form_template_section_id');
     }
 
     public function clone($source_template_id, $target_template_id, $sections_id_map) {
