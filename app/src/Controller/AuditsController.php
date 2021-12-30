@@ -46,16 +46,16 @@ class AuditsController extends AppController {
 
     public function fill($id) {
         $audit = $this->Audits->get($id, [ 'contain' => [
+            'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
             'Customers',
             'FormTemplates' => [
                 'FormTemplateSections' => ['FormTemplateFieldsOptionset'],
                 'FormTemplateFieldsOptionset' => ['FormTemplateSections'],
-                'sort' => [ 'name' => 'ASC' ]
+                'sort' => 'name'
             ]
         ] ]);
         $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
         $field_values = $this->AuditFieldOptionsetValues->findForAudit($id);
-        $field_measure_values = $this->AuditFieldMeasureValues->findForAudit($id);
         foreach($audit->form_templates as $t) {
             $last_audit = $this->Audits->findLast($t->id, $audit->date);
             if($last_audit) {
@@ -73,7 +73,7 @@ class AuditsController extends AppController {
             }
         }
         $field_images = $this->AuditFile->readPhotos($id);
-        $this->set(compact('audit', 'field_images', 'field_values', 'field_measure_values', 'optionset_values'));
+        $this->set(compact('audit', 'field_images', 'field_values', 'optionset_values'));
     }
 
     public function history($id) {
