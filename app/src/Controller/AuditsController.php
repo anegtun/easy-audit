@@ -19,6 +19,7 @@ class AuditsController extends AppController {
         $this->FormTemplateOptionsetValues = TableRegistry::getTableLocator()->get('FormTemplateOptionsetValues');
         $this->Users = TableRegistry::getTableLocator()->get('Users');
         $this->loadComponent('AuditFile');
+        $this->loadComponent('AuditInitialization');
     }
 
     public function index() {
@@ -113,13 +114,20 @@ class AuditsController extends AppController {
             $audit->form_templates = $this->FormTemplates->find('all')->where(['id IN' => $data['form_template_id']])->toArray();
             $audit = $this->Audits->save($audit);
 
+            $cloned = false;
             if(!empty($data['clone'])) {
                 foreach($audit->form_templates as $t) {
                     $last_audit = $this->Audits->findLast($t->id, $audit);
                     if($last_audit) {
                         $this->AuditFieldOptionsetValues->clone($t->id, $last_audit->id, $audit->id);
                         $this->AuditFieldMeasureValues->clone($t->id, $last_audit->id, $audit->id);
+                        $cloned = true;
                     }
+                }
+            }
+            if(!$cloned) {
+                foreach($audit->form_templates as $t) {
+                    $this->AuditInitialization->createDefaults($t->id, $audit->id);
                 }
             }
 

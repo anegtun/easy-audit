@@ -33,6 +33,7 @@ CREATE TABLE easy_audit_form_template_optionsets (
 
 CREATE TABLE easy_audit_form_template_optionset_values (
   id int unsigned NOT NULL AUTO_INCREMENT,
+  is_default int unsigned NOT NULL DEFAULT 0,
   optionset_id int unsigned NOT NULL,
   label varchar(200) NOT NULL,
   value varchar(20) NOT NULL,

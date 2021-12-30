@@ -11,6 +11,9 @@ class FormTemplateFieldsOptionsetTable extends Table {
 
         $this->belongsTo('FormTemplateSections')
             ->setForeignKey('form_template_section_id');
+
+        $this->belongsTo('FormTemplateOptionsets')
+            ->setForeignKey('optionset_id');
     }
 
     public function clone($source_template_id, $target_template_id, $sections_id_map) {
