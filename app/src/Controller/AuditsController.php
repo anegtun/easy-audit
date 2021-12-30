@@ -58,11 +58,13 @@ class AuditsController extends AppController {
         $field_measure_values = $this->AuditFieldMeasureValues->findForAudit($id);
         foreach($audit->form_templates as $t) {
             $last_audit = $this->Audits->findLast($t->id, $audit->date);
-            $last_field_values = $this->AuditFieldOptionsetValues->findForAudit($last_audit->id);
-            foreach($field_values as $newV) {
-                foreach($last_field_values as $oldV) {
-                    if($newV->form_template_field_id === $oldV->form_template_field_id && !empty($newV->observations) && $newV->observations === $oldV->observations) {
-                        $newV->observations_cloned = true;
+            if($last_audit) {
+                $last_field_values = $this->AuditFieldOptionsetValues->findForAudit($last_audit->id);
+                foreach($field_values as $newV) {
+                    foreach($last_field_values as $oldV) {
+                        if($newV->form_template_field_id === $oldV->form_template_field_id && !empty($newV->observations) && $newV->observations === $oldV->observations) {
+                            $newV->observations_cloned = true;
+                        }
                     }
                 }
             }
