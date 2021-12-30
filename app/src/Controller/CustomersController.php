@@ -101,7 +101,10 @@ class CustomersController extends AppController {
     }
 
     private function getCustomer($id) {
-        return $this->Customers->get($id, [ 'contain' => ['Audits' => [ 'Customers', 'FormTemplates', 'Users' ], 'FormTemplates'] ]);
+        return $this->Customers->get($id, ['contain' => [
+            'Audits' => [ 'Customers', 'FormTemplates', 'Users', 'sort' => ['date'=>'DESC'] ],
+            'FormTemplates'
+        ]]);
     }
 
 }

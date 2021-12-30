@@ -13,6 +13,12 @@ class EasyAuditFormHelper extends Helper {
         'select' => '<select name="{{name}}" class="form-control {{classes}}"{{attrs}}>{{content}}</select>',
     ];
 
+    public function checkbox($key, $attrs=[]) {
+        $label = empty($attrs['label']) ? "" : "<span>{$attrs['label']}</span>";
+        $checked = empty($attrs['value']) ? "" : "checked";
+        return "<label class=\"checkbox-container\"><input type=\"checkbox\" name=\"$key\" checked=\"$checked\">$label</label>";
+    }
+
     public function dateControl($key, $attrs=[]) {
         $formAttrs = array_merge($attrs, ['templateVars' => ['classes' => 'fld-date']]);
         return $this->Form->control($key, $formAttrs);

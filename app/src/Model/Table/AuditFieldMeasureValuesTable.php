@@ -7,6 +7,9 @@ class AuditFieldMeasureValuesTable extends Table {
 
     public function initialize(array $config) {
         $this->setTable('easy_audit_audit_field_measure_values');
+
+        $this->belongsTo('Audits')
+            ->setForeignKey('audit_id');
     }
 
     public function findForAudit($audit_id) {
@@ -21,6 +24,21 @@ class AuditFieldMeasureValuesTable extends Table {
             $result[$v->form_template_id][] = $v;
         }
         return $result;
+    }
+
+    public function clone($template_id, $source_audit_id, $target_audit_id) {
+        $values = $this->find()->where(['form_template_id' => $template_id, 'audit_id' => $source_audit_id]);
+        foreach($values as $v) {
+            $new_value = $this->newEntity();
+            $new_value->audit_id = $target_audit_id;
+            $new_value->form_template_id = $v->form_template_id;
+            $new_value->item = $v->item;
+            $new_value->expected = $v->expected;
+            $new_value->actual = $v->actual;
+            $new_value->threshold = $v->threshold;
+            $new_value = $this->save($new_value);
+        }
+        return true;
     }
 
     public function upsertAll($audit_id, $template_id, $values) {

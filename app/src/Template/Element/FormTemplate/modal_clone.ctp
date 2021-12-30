@@ -13,10 +13,7 @@
                     <fieldset>
                         <?= $this->Form->control('name', ['label'=>__('New template name')]) ?>
                         <?= $this->Form->control('name_old', ['label'=>__('Rename old template?')]) ?>
-                        <label class="checkbox-container">
-                            <?= __('Disable old template?') ?>
-                            <input type="checkbox" name="disable">
-                        </label>
+                        <?= $this->EasyAuditForm->checkbox('disable', ['label'=>__('Disable old template?')]) ?>
                     </fieldset>
                 </div>
                 <div class="modal-footer">
