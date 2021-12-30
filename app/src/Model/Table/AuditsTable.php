@@ -29,9 +29,12 @@ class AuditsTable extends Table {
         ]);
     }
 
-    public function findLast($templateId, $date) {
+    public function findLast($templateId, $audit) {
         $audits = $this->find('all')
-            ->where(['date <' => empty($date) ? Time::now() : $date])
+            ->where([
+                'customer_id' => $audit->customer_id,
+                'date <' => empty($audit->date) ? Time::now() : $audit->date
+            ])
             ->order(['date' => 'DESC'])
             ->contain(['AuditFieldMeasureValues', 'AuditFieldOptionsetValues', 'FormTemplates'])
             ->toArray();

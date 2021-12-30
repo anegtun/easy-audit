@@ -19,6 +19,7 @@ class AuditsController extends AppController {
         $this->FormTemplateOptionsetValues = TableRegistry::getTableLocator()->get('FormTemplateOptionsetValues');
         $this->Users = TableRegistry::getTableLocator()->get('Users');
         $this->loadComponent('AuditFile');
+        $this->loadComponent('AuditInitialization');
     }
 
     public function index() {
@@ -59,7 +60,7 @@ class AuditsController extends AppController {
         ]]);
         $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
         foreach($audit->form_templates as $t) {
-            $last_audit = $this->Audits->findLast($t->id, $audit->date);
+            $last_audit = $this->Audits->findLast($t->id, $audit);
             if($last_audit) {
                 foreach($audit->audit_field_optionset_values as $i => $newV) {
                     foreach($last_audit->audit_field_optionset_values as $oldV) {
@@ -88,7 +89,10 @@ class AuditsController extends AppController {
             ]
         ]]);
         $audits = $this->Audits->find('all')
-            ->where(['date <= ' => $audit->date])
+            ->where([
+                'customer_id' => $audit->customer_id,
+                'date <= ' => $audit->date
+            ])
             ->contain([
                 'AuditFieldOptionsetValues' => [
                     'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
@@ -113,13 +117,20 @@ class AuditsController extends AppController {
             $audit->form_templates = $this->FormTemplates->find('all')->where(['id IN' => $data['form_template_id']])->toArray();
             $audit = $this->Audits->save($audit);
 
+            $cloned = false;
             if(!empty($data['clone'])) {
                 foreach($audit->form_templates as $t) {
-                    $last_audit = $this->Audits->findLast($t->id, $audit->date);
+                    $last_audit = $this->Audits->findLast($t->id, $audit);
                     if($last_audit) {
                         $this->AuditFieldOptionsetValues->clone($t->id, $last_audit->id, $audit->id);
                         $this->AuditFieldMeasureValues->clone($t->id, $last_audit->id, $audit->id);
+                        $cloned = true;
                     }
+                }
+            }
+            if(!$cloned) {
+                foreach($audit->form_templates as $t) {
+                    $this->AuditInitialization->createDefaults($t->id, $audit->id);
                 }
             }
 
