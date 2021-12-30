@@ -18,6 +18,7 @@ $show_user = empty($hide_user);
             <?php foreach($audits as $a) : ?>
                 <tr>
                     <td><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['action'=>'fill', $a->id]) ?></td>
+                    <td><?= $this->EasyAuditHtml->gliphiconLink('cog', '', ['action'=>'data', $a->id]) ?></td>
                     <td><?= $a->date ?></td>
                     <td><?= $a->customer->name ?></td>
                     <?php if($show_user) : ?>

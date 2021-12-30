@@ -30,22 +30,9 @@ class AuditsController extends AppController {
     }
 
     public function data($id) {
-        $audit = $this->Audits->get($id, [ 'contain' => [
-            'Customers',
-            'FormTemplates' => ['FormTemplateSections', 'FormTemplateFieldsOptionset'],
-            'Users'
-        ] ]);
-        $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
-        $field_values = $this->AuditFieldOptionsetValues->findForAudit($id);
-        $field_measure_values = $this->AuditFieldMeasureValues->findForAudit($id);
+        $audit = $this->Audits->get($id, [ 'contain' => [ 'Customers', 'Users' ] ]);
         $users = $this->Users->find('all');
-        foreach($audit->form_templates as $t) {
-            foreach($t->form_template_sections as $s) {
-                $s->score = $this->calculateSectionScore($s, $field_values);
-            }
-        }
-        $field_images = $this->readImgs($id);
-        $this->set(compact('audit', 'field_images', 'field_values', 'field_measure_values', 'optionset_values', 'users'));
+        $this->set(compact('audit', 'users'));
     }
 
     public function fill($id) {
@@ -83,13 +70,21 @@ class AuditsController extends AppController {
         return $this->redirect(['action'=>'index']);
     }
 
-    public function update() {
+    public function updateData() {
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
             $audit = $this->Audits->get($data['id']);
             $audit->date = $this->parseDate($data['date']);
             $audit->auditor_user_id = $data['auditor_user_id'];
             $this->Audits->save($audit);
+            $this->Flash->success(__('Audit data updated.'));
+        }
+        return $this->redirect(['action'=>'data', $data['id']]);
+    }
+
+    public function update() {
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $data = $this->request->getData();
 
             $this->AuditFieldOptionsetValues->upsertAll($data['id'], $data['field_values'], $data['field_observations']);
             $this->moveAllFiles($data);
@@ -101,7 +96,7 @@ class AuditsController extends AppController {
                 }
             }
         }
-        return $this->redirect(['action'=>'detail', $audit->id]);
+        return $this->redirect(['action'=>'fill', $data['id']]);
     }
 
     public function delete($id) {
