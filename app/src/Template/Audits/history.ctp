@@ -4,7 +4,8 @@ $this->extend('template');
 $this->set('headerTitle', $title);
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Audits'), 'url'=>['action'=>'index']],
-    ['label'=>$title]
+    ['label'=>$title],
+    ['label'=>__('History')]
 ]);
 $this->Html->script('modal-utils', ['block' => 'script']);
 $this->Html->script('audits', ['block' => 'script']);
@@ -61,3 +62,6 @@ $this->Html->script('audits', ['block' => 'script']);
     <?php endif ?>
 
 <?php endforeach ?>
+
+<?= $this->EasyAuditHtml->linkButton(['action' => 'fill', $audit->id], 'cog', _('Fill audit')) ?>
+<?= $this->EasyAuditHtml->linkButton(['action' => 'data', $audit->id], 'cog', _('Audit data')) ?>

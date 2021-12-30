@@ -4,7 +4,8 @@ $this->extend('template');
 $this->set('headerTitle', $title);
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Audits'), 'url'=>['action'=>'index']],
-    ['label'=>$title]
+    ['label'=>$title],
+    ['label'=>__('Audit data')]
 ]);
 $this->Html->script('modal-utils', ['block' => 'script']);
 $this->Html->script('audits', ['block' => 'script']);
@@ -29,6 +30,8 @@ $this->Html->script('audits', ['block' => 'script']);
 
     <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
     <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $audit->id]) ?>
+    <?= $this->EasyAuditHtml->linkButton(['action' => 'fill', $audit->id], 'cog', _('Fill audit')) ?>
+    <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', _('Audit history')) ?>
 
 <?= $this->Form->end() ?>
 

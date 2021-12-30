@@ -15,6 +15,10 @@ class EasyAuditHtmlHelper extends Helper {
         return $this->gliphiconLink($icon, _('Delete'), $url, ['class'=>['btn','btn-danger'], 'role'=>'button', 'confirm'=>__('This operation can\'t be undone, are you sure?')]);
     }
 
+    public function linkButton($url, $icon, $label) {
+        return $this->gliphiconLink($icon, $label, $url, ['class'=>['btn','btn-default'], 'role'=>'button']);
+    }
+
     public function gliphiconText($glyphicon, $text) {
         return "<span class='glyphicon glyphicon-$glyphicon'><span class='sr-only'>$text</span></span> $text";
     }
