@@ -19,6 +19,13 @@ foreach($audit->audit_field_optionset_values as $fv) {
     </div>
 <?php endif ?>
 
+
+
+<div class="audit-open-all">
+    <?= $this->Html->link(__('Open all'), '#', ['class' => 'open-button']) ?>
+    <?= $this->Html->link(__('Close all'), '#', ['class' => 'close-button']) ?>
+</div>
+
 <?php foreach($template->form_template_sections as $s) : ?>
 
     <?php $collapseId = "section{$s->id}" ?>
@@ -65,7 +72,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
                         'value' => empty($value) ? '' : $value->optionset_value_id
                     ]) ?>
 
-                    <div class="audit-observations">
+                    <div class="audit-observations" data-has-observations="<?= $hasImgsOrObs ? true : false ?>">
                         <a class="audit-observations-open" href="#"><?= __('+ add observations & photos') ?></a>
                         <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations & photos') ?></a>
                         <div class="audit-observations-input" style="display:none">

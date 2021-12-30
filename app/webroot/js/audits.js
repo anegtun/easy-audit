@@ -73,6 +73,25 @@ $(document).ready(function() {
         });
     });
 
+    $('.audit-open-all .open-button').click(function(e) {
+        e.preventDefault();
+        const fieldsset = $(this).parents('.audit-open-all').siblings('fieldset').find('.collapse').collapse("show");
+        fieldsset.find("textarea")
+            .filter(function() { return $(this).val() != ""; })
+            .parents('.audit-observations')
+            .find('.audit-observations-open')
+            .click();
+    });
+
+    $('.audit-open-all .close-button').click(function(e) {
+        e.preventDefault();
+        const fieldsset = $(this).parents('.audit-open-all').siblings('fieldset').find('.collapse').collapse("hide");
+        fieldsset.find("textarea")
+            .parents('.audit-observations')
+            .find('.audit-observations-close')
+            .click();
+    });
+
     $('.audit-field-select').change(function() {
         const input = $(this);
         const templateId = input.attr('data-template-id');
@@ -116,15 +135,15 @@ $(document).ready(function() {
 
     $('.audit-observations > a.audit-observations-open').click(function(e) {
         e.preventDefault();
-        const link = $(e.currentTarget).hide();
-        link.siblings('.audit-observations-input, .audit-observations-close').show();
+        const link = $(e.currentTarget).removeClass('show').addClass('hide');
+        link.siblings('.audit-observations-input, .audit-observations-close').removeClass('hide').addClass('show');
     });
 
     $('.audit-observations > a.audit-observations-close').click(function(e) {
         e.preventDefault();
-        const link = $(e.currentTarget).hide();
-        link.siblings('.audit-observations-input').hide();
-        link.siblings('.audit-observations-open').show();
+        const link = $(e.currentTarget).removeClass('show').addClass('hide');
+        link.siblings('.audit-observations-input').removeClass('show').addClass('hide');
+        link.siblings('.audit-observations-open').removeClass('hide').addClass('show');
     });
 
     $('input[type="file"]').change(onAddPhoto);

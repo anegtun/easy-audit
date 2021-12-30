@@ -26,6 +26,11 @@ legend > a:hover, legend > a:active, legend > a:focus {
     margin-bottom: 1em;
 }
 
+.audit-open-all > a {
+    margin-right: 1em;
+    text-decoration: none;
+}
+
 .audit-field {
     margin-bottom: 2em;
 }
