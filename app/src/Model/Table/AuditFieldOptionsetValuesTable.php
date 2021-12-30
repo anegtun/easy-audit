@@ -18,17 +18,6 @@ class AuditFieldOptionsetValuesTable extends Table {
             ->setForeignKey('optionset_value_id');
     }
 
-    public function findForAudit($audit_id) {
-        $values = $this->find('all')
-            ->where(['audit_id' => $audit_id])
-            ->contain(['FormTemplateFieldsOptionset', 'FormTemplateOptionsetValues']);
-        $result = [];
-        foreach($values as $v) {
-            $result[$v->form_template_field_id] = $v;
-        }
-        return $result;
-    }
-
     public function clone($template_id, $source_audit_id, $target_audit_id) {
         $values = $this->find()->where(['form_template_id' => $template_id, 'audit_id' => $source_audit_id]);
         foreach($values as $v) {
