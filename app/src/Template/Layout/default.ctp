@@ -18,6 +18,7 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
         <?= $this->Html->css(array("/maqint/maqint", "basic-page", "custom")) ?>
         <!-- libs:js -->
         <?= $this->Html->script("/libs/ckeditor5-build-classic/ckeditor") ?>
+        <?= $this->Html->script("/libs/chartjs/chart.min") ?>
         <!-- custom:js -->
         <?= $this->Html->script(array("/maqint/maqint-config", "/maqint/maqint", "/maqint/support")) ?>
         <!-- outros -->

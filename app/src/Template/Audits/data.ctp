@@ -7,8 +7,6 @@ $this->set('headerBreadcrumbs', [
     ['label'=>$title],
     ['label'=>__('Audit data')]
 ]);
-$this->Html->script('modal-utils', ['block' => 'script']);
-$this->Html->script('audits', ['block' => 'script']);
 ?>
 
 <?= $this->Form->create(null, ['id'=>'auditForm', 'type'=>'file', 'url'=>['action'=>'update_data']]) ?>

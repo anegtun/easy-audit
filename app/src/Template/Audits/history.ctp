@@ -7,8 +7,7 @@ $this->set('headerBreadcrumbs', [
     ['label'=>$title],
     ['label'=>__('History')]
 ]);
-$this->Html->script('modal-utils', ['block' => 'script']);
-$this->Html->script('audits', ['block' => 'script']);
+$this->Html->script('audit-history', ['block' => 'script']);
 ?>
 
 <?php foreach($audit->form_templates as $t) : ?>
@@ -24,7 +23,7 @@ $this->Html->script('audits', ['block' => 'script']);
         }
         ?>
 
-        <div class="row">
+        <div class="row history-container" data-template-id="<?= $t->id ?>">
             <fieldset>
                 <legend><?= $t->name ?></legend>
 
@@ -50,13 +49,16 @@ $this->Html->script('audits', ['block' => 'script']);
                                 <tr>
                                     <td><strong>TOTAL</strong></td>
                                     <?php foreach($template_audits as $a) : ?>
-                                        <td><strong><?= $a->getTemplate($t)->score ?></strong></td>
+                                        <td class="audit-history-total" data-audit-date="<?= $a->date ?>"><strong><?= $a->getTemplate($t)->score ?></strong></td>
                                     <?php endforeach ?>
                                 </tr>
                         </tbody>
                     </table>
                 </div>
             </fieldset>
+
+            <canvas id="audit-history-chart-<?= $t->id ?>" height="70"></canvas> 
+
         </div>
 
     <?php endif ?>
