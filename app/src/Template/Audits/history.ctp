@@ -57,8 +57,9 @@ $this->Html->script('audit-history', ['block' => 'script']);
                 </div>
             </fieldset>
 
-            <canvas id="audit-history-chart-<?= $t->id ?>" height="70"></canvas> 
-
+            <div>
+                <canvas id="audit-history-chart-<?= $t->id ?>" style="max-width: 700px;"></canvas>
+            </div>
         </div>
 
     <?php endif ?>
