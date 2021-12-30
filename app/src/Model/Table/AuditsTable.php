@@ -8,6 +8,12 @@ class AuditsTable extends Table {
     public function initialize(array $config) {
         $this->setTable('easy_audit_audits');
 
+        $this->hasMany('AuditFieldMeasureValues')
+            ->setForeignKey('audit_id');
+
+        $this->hasMany('AuditFieldOptionsetValues')
+            ->setForeignKey('audit_id');
+
         $this->belongsTo('Customers')
             ->setForeignKey('customer_id');
 
@@ -20,6 +26,20 @@ class AuditsTable extends Table {
             'foreignKey' => 'auditor_user_id',
             'propertyName' => 'auditor'
         ]);
+    }
+
+    public function findLast($templateId, $date) {
+        $audits = $this->find('all')
+            ->where(['date <' => $date])
+            ->order(['date' => 'DESC'])
+            ->contain(['FormTemplates'])
+            ->toArray();
+        foreach($audits as $audit) {
+            if(in_array($templateId, $audit->getTemplateIds())) {
+                return $audit;
+            }
+        }
+        return false;
     }
 
 }

@@ -68,7 +68,19 @@ class AuditsController extends AppController {
             $audit->date = $this->parseDate($data['date']);
             $audit->auditor_user_id = $this->Auth->user('id');
             $audit->form_templates = $this->FormTemplates->find('all')->where(['id IN' => $data['form_template_id']])->toArray();
-            if ($this->Audits->save($audit)) {
+            $audit = $this->Audits->save($audit);
+
+            if(!empty($data['clone'])) {
+                foreach($audit->form_templates as $t) {
+                    $last_audit = $this->Audits->findLast($t->id, $audit->date);
+                    if($last_audit) {
+                        $this->AuditFieldOptionsetValues->clone($t->id, $last_audit->id, $audit->id);
+                        $this->AuditFieldMeasureValues->clone($t->id, $last_audit->id, $audit->id);
+                    }
+                }
+            }
+
+            if ($audit) {
                 $this->Flash->success(__('Audit created.'));
             } else {
                 $this->Flash->error(__('Error creating audit.'));
