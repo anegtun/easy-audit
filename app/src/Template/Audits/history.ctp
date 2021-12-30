@@ -42,10 +42,16 @@ $this->Html->script('audits', ['block' => 'script']);
                                 <tr>
                                     <td><?= "{$s->position}.{$s->name}" ?></td>
                                     <?php foreach($template_audits as $a) : ?>
-                                        <td>0</td>
+                                        <td><?= $a->getSection($s)->score ?></td>
                                     <?php endforeach ?>
                                 </tr>
                             <?php endforeach ?>
+                                <tr>
+                                    <td><strong>TOTAL</strong></td>
+                                    <?php foreach($template_audits as $a) : ?>
+                                        <td><strong><?= $a->getTemplate($t)->score ?></strong></td>
+                                    <?php endforeach ?>
+                                </tr>
                         </tbody>
                     </table>
                 </div>

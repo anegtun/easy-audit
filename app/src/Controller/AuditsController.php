@@ -53,8 +53,7 @@ class AuditsController extends AppController {
             ],
             'Customers',
             'FormTemplates' => [
-                'FormTemplateSections' => ['FormTemplateFieldsOptionset'],
-                'FormTemplateFieldsOptionset' => ['FormTemplateSections'],
+                'FormTemplateSections' => [ 'FormTemplateFieldsOptionset' ],
                 'sort' => 'name'
             ]
         ]]);
@@ -78,19 +77,30 @@ class AuditsController extends AppController {
 
     public function history($id) {
         $audit = $this->Audits->get($id, [ 'contain' => [
+            'AuditFieldOptionsetValues' => [
+                'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
+                'FormTemplateOptionsetValues'
+            ],
             'Customers',
             'FormTemplates' => [
-                'FormTemplateSections' => ['FormTemplateFieldsOptionset'],
-                'sort' => [ 'name' => 'ASC' ]
+                'FormTemplateSections' => [ 'FormTemplateFieldsOptionset', 'sort' => 'position' ],
+                'sort' => 'name'
             ]
         ]]);
         $audits = $this->Audits->find('all')
             ->where(['date <= ' => $audit->date])
             ->contain([
+                'AuditFieldOptionsetValues' => [
+                    'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
+                    'FormTemplateOptionsetValues'
+                ],
                 'FormTemplates' => [
-                    'FormTemplateSections' => ['FormTemplateFieldsOptionset', 'sort'=>'position'],
+                    'FormTemplateSections' => [ 'FormTemplateFieldsOptionset' ],
                 ]
             ]);
+        foreach($audits as $a) {
+            $a->calculateScores();
+        }
         $this->set(compact('audit', 'audits'));
     }
 
