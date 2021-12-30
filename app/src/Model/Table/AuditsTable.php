@@ -1,6 +1,7 @@
 <?php
 namespace App\Model\Table;
 
+use Cake\I18n\Time;
 use Cake\ORM\Table;
 
 class AuditsTable extends Table {
@@ -30,7 +31,7 @@ class AuditsTable extends Table {
 
     public function findLast($templateId, $date) {
         $audits = $this->find('all')
-            ->where(['date <' => $date])
+            ->where(['date <' => empty($date) ? Time::now() : $date])
             ->order(['date' => 'DESC'])
             ->contain(['FormTemplates'])
             ->toArray();
