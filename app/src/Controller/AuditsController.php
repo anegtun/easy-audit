@@ -59,7 +59,7 @@ class AuditsController extends AppController {
         ]]);
         $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
         foreach($audit->form_templates as $t) {
-            $last_audit = $this->Audits->findLast($t->id, $audit->date);
+            $last_audit = $this->Audits->findLast($t->id, $audit);
             if($last_audit) {
                 foreach($audit->audit_field_optionset_values as $i => $newV) {
                     foreach($last_audit->audit_field_optionset_values as $oldV) {
@@ -115,7 +115,7 @@ class AuditsController extends AppController {
 
             if(!empty($data['clone'])) {
                 foreach($audit->form_templates as $t) {
-                    $last_audit = $this->Audits->findLast($t->id, $audit->date);
+                    $last_audit = $this->Audits->findLast($t->id, $audit);
                     if($last_audit) {
                         $this->AuditFieldOptionsetValues->clone($t->id, $last_audit->id, $audit->id);
                         $this->AuditFieldMeasureValues->clone($t->id, $last_audit->id, $audit->id);
