@@ -8,12 +8,13 @@ foreach($audit->audit_field_optionset_values as $fv) {
 ?>
 
 <?php if(!empty($fields_cloned)) : ?>
-    <div class="alert alert-warning audit-alert-obervations-cloned">
+    <div class="alert alert-warning alert-dismissible fade in audit-alert-obervations-cloned">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         <strong><?= __('Warning!') ?></strong> <?= __('Observations for the following items are the same as the last audit: ') ?>
         <ul>
-        <?php foreach($fields_cloned as $f) : ?>
-            <li><?= "{$f->form_template_fields_optionset->form_template_section->position}.{$f->form_template_fields_optionset->position}" ?></li>
-        <?php endforeach ?>
+            <?php foreach($fields_cloned as $f) : ?>
+                <li><?= "{$f->form_template_fields_optionset->form_template_section->position}.{$f->form_template_fields_optionset->position}" ?></li>
+            <?php endforeach ?>
         </ul>
     </div>
 <?php endif ?>
