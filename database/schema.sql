@@ -152,8 +152,10 @@ CREATE TABLE easy_audit_audit_field_optionset_values (
     FOREIGN KEY (form_template_field_id)
     REFERENCES easy_audit_form_template_fields_optionset(id),
   CONSTRAINT FK_AuditOptionsetValues_FormTemplateOptionsetValue
-    FOREIGN KEY (optionset_value_id)
-    REFERENCES easy_audit_form_template_optionset_values(id)
+    FOREIGN KEY (optionset_value_id),
+    REFERENCES easy_audit_form_template_optionset_values(id),
+  CONSTRAINT UQ_AuditOptionsetValues_AuditFormTemplateField
+    UNIQUE (audit_id,form_template_field_id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 CREATE TABLE easy_audit_audit_field_measure_values (
@@ -196,6 +198,6 @@ INSERT INTO easy_audit_users (
 
 INSERT INTO easy_audit_form_template_optionsets (id, name) VALUES (1, 'A, B, C');
 
-INSERT INTO easy_audit_form_template_optionset_values (optionset_id, label, value, value_numeric) VALUES (1, 'A', 'A', 10);
-INSERT INTO easy_audit_form_template_optionset_values (optionset_id, label, value, value_numeric) VALUES (1, 'B', 'B', 5);
-INSERT INTO easy_audit_form_template_optionset_values (optionset_id, label, value, value_numeric) VALUES (1, 'C', 'C', 0);
+INSERT INTO easy_audit_form_template_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'A', 'A', 10, 1);
+INSERT INTO easy_audit_form_template_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'B', 'B', 5, 0);
+INSERT INTO easy_audit_form_template_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'C', 'C', 0, 0);
