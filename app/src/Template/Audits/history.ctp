@@ -1,0 +1,57 @@
+<?php
+$title = __('Audit') . " ". $audit->customer->name;
+$this->extend('template');
+$this->set('headerTitle', $title);
+$this->set('headerBreadcrumbs', [
+    ['label'=>__('Audits'), 'url'=>['action'=>'index']],
+    ['label'=>$title]
+]);
+$this->Html->script('modal-utils', ['block' => 'script']);
+$this->Html->script('audits', ['block' => 'script']);
+?>
+
+<?php foreach($audit->form_templates as $t) : ?>
+
+    <?php if($t->type === 'select') : ?>
+
+        <?php
+        $template_audits = [];
+        foreach($audits as $a)  {
+            if(in_array($t->id, $a->getTemplateIds())) {
+                $template_audits[] = $a;
+            }
+        }
+        ?>
+
+        <div class="row">
+            <fieldset>
+                <legend><?= $t->name ?></legend>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th class="celda-titulo"><?= __('Section') ?></th>
+                                <?php foreach($template_audits as $a) : ?>
+                                    <th class="celda-titulo"><?= $a->date ?></th>
+                                <?php endforeach ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach($t->form_template_sections as $s) : ?>
+                                <tr>
+                                    <td><?= "{$s->position}.{$s->name}" ?></td>
+                                    <?php foreach($template_audits as $a) : ?>
+                                        <td>0</td>
+                                    <?php endforeach ?>
+                                </tr>
+                            <?php endforeach ?>
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+
+    <?php endif ?>
+
+<?php endforeach ?>

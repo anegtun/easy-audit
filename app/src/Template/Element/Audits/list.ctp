@@ -7,6 +7,8 @@ $show_user = empty($hide_user);
         <thead>
             <tr>
                 <th class="cell-small"></th>
+                <th class="cell-small"></th>
+                <th class="cell-small"></th>
                 <th class="cell-small celda-titulo"><?= __('Date') ?></th>
                 <th class="celda-titulo"><?= __('Name') ?></th>
                 <?php if($show_user) : ?>
@@ -19,6 +21,7 @@ $show_user = empty($hide_user);
                 <tr>
                     <td><?= $this->EasyAuditHtml->gliphiconLink('edit', '', ['action'=>'fill', $a->id]) ?></td>
                     <td><?= $this->EasyAuditHtml->gliphiconLink('cog', '', ['action'=>'data', $a->id]) ?></td>
+                    <td><?= $this->EasyAuditHtml->gliphiconLink('stats', '', ['action'=>'history', $a->id]) ?></td>
                     <td><?= $a->date ?></td>
                     <td><?= $a->customer->name ?></td>
                     <?php if($show_user) : ?>
