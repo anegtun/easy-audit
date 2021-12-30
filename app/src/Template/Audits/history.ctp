@@ -33,7 +33,7 @@ $this->Html->script('audit-history', ['block' => 'script']);
                             <tr>
                                 <th class="celda-titulo"><?= __('Section') ?></th>
                                 <?php foreach($template_audits as $a) : ?>
-                                    <th class="celda-titulo"><?= $a->date ?></th>
+                                    <th class="celda-titulo"><?= strtoupper($a->date->i18nFormat('MMM yy')) ?></th>
                                 <?php endforeach ?>
                             </tr>
                         </thead>
@@ -49,7 +49,7 @@ $this->Html->script('audit-history', ['block' => 'script']);
                                 <tr>
                                     <td><strong>TOTAL</strong></td>
                                     <?php foreach($template_audits as $a) : ?>
-                                        <td class="audit-history-total" data-audit-date="<?= $a->date ?>"><strong><?= $a->getTemplate($t)->score ?></strong></td>
+                                        <td class="audit-history-total" data-audit-date="<?= strtoupper($a->date->i18nFormat('MMM yy')) ?>"><strong><?= $a->getTemplate($t)->score ?></strong></td>
                                     <?php endforeach ?>
                                 </tr>
                         </tbody>
