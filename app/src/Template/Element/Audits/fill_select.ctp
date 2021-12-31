@@ -8,15 +8,23 @@ foreach($audit->audit_field_optionset_values as $fv) {
 ?>
 
 <?php if(!empty($fields_cloned)) : ?>
-    <div class="alert alert-warning audit-alert-obervations-cloned">
+    <div class="alert alert-warning alert-dismissible fade in audit-alert-obervations-cloned">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         <strong><?= __('Warning!') ?></strong> <?= __('Observations for the following items are the same as the last audit: ') ?>
         <ul>
-        <?php foreach($fields_cloned as $f) : ?>
-            <li><?= "{$f->form_template_fields_optionset->form_template_section->position}.{$f->form_template_fields_optionset->position}" ?></li>
-        <?php endforeach ?>
+            <?php foreach($fields_cloned as $f) : ?>
+                <li><?= "{$f->form_template_fields_optionset->form_template_section->position}.{$f->form_template_fields_optionset->position}" ?></li>
+            <?php endforeach ?>
         </ul>
     </div>
 <?php endif ?>
+
+
+
+<div class="audit-open-all">
+    <?= $this->Html->link(__('Open all'), '#', ['class' => 'open-button']) ?>
+    <?= $this->Html->link(__('Close all'), '#', ['class' => 'close-button']) ?>
+</div>
 
 <?php foreach($template->form_template_sections as $s) : ?>
 
@@ -64,7 +72,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
                         'value' => empty($value) ? '' : $value->optionset_value_id
                     ]) ?>
 
-                    <div class="audit-observations">
+                    <div class="audit-observations" data-has-observations="<?= $hasImgsOrObs ? true : false ?>">
                         <a class="audit-observations-open" href="#"><?= __('+ add observations & photos') ?></a>
                         <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations & photos') ?></a>
                         <div class="audit-observations-input" style="display:none">
