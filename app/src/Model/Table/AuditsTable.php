@@ -56,6 +56,7 @@ class AuditsTable extends Table {
                 'customer_id' => $audit->customer_id,
                 'date <= ' => $audit->date
             ])
+            ->order('date')
             ->contain([
                 'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
                 'AuditFieldOptionsetValues' => [
