@@ -14,8 +14,7 @@ class FormTemplateSection extends Entity {
                 $score += $f->form_template_optionset_value->value_numeric;
             }
         }
-        $this->score = $count === 0 ? 0 : round(100 * ($score / $count), 1);
-        return $this->score;
+        return $count === 0 ? 0 : round(100 * ($score / $count), 1);
     }
 
 }

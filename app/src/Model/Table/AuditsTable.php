@@ -57,6 +57,7 @@ class AuditsTable extends Table {
                 'date <= ' => $audit->date
             ])
             ->contain([
+                'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
                 'AuditFieldOptionsetValues' => [
                     'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
                     'FormTemplateOptionsetValues'

@@ -194,14 +194,16 @@ class AuditsController extends AppController {
 
     public function print($id) {
         $audit = $this->Audits->getComplete($id);
-        $content = $this->AuditPdf->generate($audit);
-        $download = $this->request->getQuery('download');
+        $audits = $this->Audits->findHistory($audit)->toList();
+
+        $content = $this->AuditPdf->generate($audit, $audits);
+
         $response = $this->response
             ->withStringBody($content)
             ->withType('application/pdf');
-        if(!empty($download)) {
+        if(!empty($this->request->getQuery('download'))) {
             $date = $audit->date->i18nFormat('yyyy-MM');
-            $filename = __('Audit').' '.$audit->customer->name.' - '.$date.'.pdf';
+            $filename = __('Audit')." {$audit->customer->name} - $date.pdf";
             $response = $response->withDownload($filename);
         }
         return $response;

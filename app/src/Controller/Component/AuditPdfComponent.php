@@ -10,6 +10,8 @@ class AuditPDF extends FPDF {
 
     public $audit;
 
+    public $history;
+
     function Header() {
         if($this->PageNo() > 1) {
             $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'main.png', 10, 8, 25);
@@ -122,25 +124,41 @@ class AuditPDF extends FPDF {
     private function SelectReportSummary($template) {
         $rows = [];
         foreach($template->form_template_sections as $s) {
-            $rows[] = ['values' => [$s->name, $s->score]];
+            $row = ['values' => [$s->name]];
+            foreach($this->history as $h) {
+                $row['values'][] = $h->score_section[$s->id];
+            }
+            $rows[] = $row;
         }
-        $rows[] = ['values' => ['Total', $template->score], 'font' => ['Arial', 'B', 10]];
+        $totalRow = ['values' => ['Total'], 'font' => ['Arial', 'B', 10]];
+        foreach($this->history as $h) {
+            $totalRow['values'][] = $h->score_templates[$template->id];
+        }
+        $rows[] = $totalRow;
 
-        $this->Table(
-            $rows,
-            [ 'align' => ['L','R'], 'font' => ['Arial','',10], 'height' => 8, 'marginLeft' => 20, 'width' => [150, 15] ]
-        );
+        $tableConfig = [
+            'align' => ['L'],
+            'font' => ['Arial','',10],
+            'height' => 8,
+            'marginLeft' => 20,
+            'width' => [165 - count($this->history) * 15]
+        ];
+        foreach($this->history as $h) {
+            $tableConfig['align'][] = 'R';
+            $tableConfig['width'][] = 15;
+        }
+        $this->Table($rows, $tableConfig);
         $this->Ln(20);
 
         $letter = 'A';
-        if($template->score < 65) {
+        if($this->audit->score_templates[$template->id] < 65) {
             $letter = 'C';
-        } elseif($template->score < 85) {
+        } elseif($this->audit->score_templates[$template->id] < 85) {
             $letter = 'B';
         }
         $this->Table(
             [
-                ['values' => ['Total', "{$template->score}%"]],
+                ['values' => ['Total', "{$this->audit->score_templates[$template->id]}%"]],
                 ['values' => ['Puntuación', $letter]]
             ],
             ['font' => ['Arial', 'B', 12], 'height' => 8, 'marginLeft' => 90, 'width' => [55, 40]]
@@ -316,10 +334,11 @@ class AuditPDF extends FPDF {
 
 class AuditPdfComponent extends Component {
 
-    public function generate($audit) {
+    public function generate($audit, $audits) {
         $pdf = new AuditPDF();
         $pdf->AliasNbPages();
         $pdf->audit = $audit;
+        $pdf->history = $audits;
 
         $pdf->AddPage();
         $pdf->Cover();
