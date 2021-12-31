@@ -78,7 +78,11 @@ class AuditPDF extends FPDF {
         $this->SelectReportIntro($template);
         $this->AddPage();
         $this->SubTitle('Resumen de puntuaciones');
-        $this->SelectReportSummary($template);
+        $this->SelectReportSummaryTable($template);
+        $this->Ln(5);
+        $this->SelectReportSummaryGraph($template);
+        $this->Ln(20);
+        $this->SelectReportSummaryResult($template);
         $this->AddPage();
         $this->SubTitle('Detalles de auditoría');
         $this->SelectReportDetail($template);
@@ -121,7 +125,7 @@ class AuditPDF extends FPDF {
         $this->Cell(0, 0, utf8_decode($this->audit->auditor->position));
     }
 
-    private function SelectReportSummary($template) {
+    private function SelectReportSummaryTable($template) {
         $rows = [];
         $headerRow = ['values' => [''], 'bg' => [237,239,246], 'color'=>[29,113,184],  'font' => ['Arial','B',10]];
         foreach($this->history as $h) {
@@ -135,7 +139,7 @@ class AuditPDF extends FPDF {
             }
             $rows[] = $row;
         }
-        $totalRow = ['values' => ['Total'], 'font' => ['Arial', 'B', 10]];
+        $totalRow = ['values' => ['Total'], 'font' => ['Arial','B',10]];
         foreach($this->history as $h) {
             $totalRow['values'][] = $h->score_templates[$template->id];
         }
@@ -153,8 +157,42 @@ class AuditPDF extends FPDF {
             $tableConfig['width'][] = 15;
         }
         $this->Table($rows, $tableConfig);
-        $this->Ln(20);
+    }
 
+    private function SelectReportSummaryGraph($template) {
+        $maxHeight = 40;
+        $maxWidth = 180;
+        $marginLeft = 20;
+        $gap = $maxWidth - (count($this->history) * 40) / (count($this->history) - 1);
+        $y = $this->GetY();
+        $this->SetFillColor(29, 113, 184);
+        foreach($this->history as $i => $h) {
+            $x = $marginLeft + $i * $gap + 20;
+            $score = $h->score_templates[$template->id];
+            $height = $maxHeight * $score / 100;
+            $this->SetXY($x, $y);
+            $this->Cell(20, 10, $score, 0, 0, 'C');
+            $this->Ln();
+            $this->SetX($x);
+            $this->Cell(20, $maxHeight - $height);
+            $this->Ln();
+            $this->SetX($x);
+            $this->Cell(20, $height, '', 0, 0, '', true);
+            $lastX = $this->GetX();
+        }
+        $this->SetFillColor(255, 255, 255);
+        $this->Ln();
+        $this->SetX($marginLeft);
+        $this->Cell($lastX - $marginLeft + 20, 5, '', 'T');
+        $this->Ln();
+        $this->SetX($marginLeft + 20);
+        foreach($this->history as $i => $h) {
+            $this->Cell(20, 3, strtoupper($h->date->i18nFormat('MMM yy')), 0, 0, 'C');
+            $this->Cell($gap - 20, 3);
+        }
+    }
+
+    private function SelectReportSummaryResult($template) {
         $letter = 'A';
         if($this->audit->score_templates[$template->id] < 65) {
             $letter = 'C';
