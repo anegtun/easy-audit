@@ -36,15 +36,18 @@ class AuditPDF extends FPDF {
     }
 
     function Cover() {
-        // TODO Create image
-        $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'main.png', 50, 50, 100);
-        $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'header.png', 50, 140, 100);
-        $this->SetY(-95);
+        $date = $this->audit->date->i18nFormat('MMMM yyyy');
+        $date = strtoupper(substr($date,0,1)) . substr($date,1);
+        $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'report-cover.png', 30, 30, 150);
+        $this->SetY(-110);
         $this->SetFont('Arial', 'B', 25);
         $this->Cell(0, 0, utf8_decode('Informe Auditoría Higiénico-Sanitaria'), 0, 0, 'C');
-        $this->Ln(25);
-        $this->SetFont('Arial', 'B', 20);
+        $this->Ln(20);
+        $this->SetFont('Arial', 'B', 25);
         $this->MultiCell(0, 10, utf8_decode($this->audit->customer->name), 0, 'C');
+        $this->Ln(15);
+        $this->SetFont('Arial', 'B', 20);
+        $this->Cell(0, 10, utf8_decode($date), 0, 0, 'C');
     }
 
     function MeasureReport($template) {
