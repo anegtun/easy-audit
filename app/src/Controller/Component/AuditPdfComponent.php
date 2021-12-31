@@ -116,8 +116,7 @@ class AuditPDF extends FPDF {
         $this->Cell(0, 0, utf8_decode($this->audit->auditor->name));
         $this->Ln(7);
         $this->Cell(120);
-        // TODO Add to user model
-        $this->Cell(0, 0, 'Auditora de APTHISA');
+        $this->Cell(0, 0, utf8_decode($this->audit->auditor->position));
     }
 
     private function SelectReportSummary($template) {

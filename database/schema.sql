@@ -18,6 +18,7 @@ CREATE TABLE easy_audit_users (
   password varchar(255) DEFAULT NULL,
   name varchar(255) DEFAULT NULL,
   role varchar(20) DEFAULT NULL,
+  position varchar(200) DEFAULT NULL,
   created datetime DEFAULT NULL,
   modified datetime DEFAULT NULL,
   PRIMARY KEY (id)
