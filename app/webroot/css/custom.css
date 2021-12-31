@@ -102,9 +102,6 @@ legend > a:hover, legend > a:active, legend > a:focus {
     margin-right: 1em;
 }
 
-.audit-measure-item > *:first-child {
-}
-
 .audit-measure-item > *:last-child {
     max-width: 5em;
 }
