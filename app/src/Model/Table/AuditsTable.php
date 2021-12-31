@@ -29,6 +29,50 @@ class AuditsTable extends Table {
         ]);
     }
 
+    public function getComplete($id) {
+        $audit = $this->get($id, [ 'contain' => [
+            'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
+            'AuditFieldOptionsetValues' => [
+                'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
+                'FormTemplateOptionsetValues'
+            ],
+            'Customers',
+            'FormTemplates' => [
+                'sort' => 'name',
+                'FormTemplateSections' => [
+                    'sort' => 'position',
+                    'FormTemplateFieldsOptionset' => [ 'sort' => 'position' ]
+                ]
+            ],
+            'Users'
+        ]]);
+        $audit->calculateScores();
+        return $audit;
+    }
+
+    public function findHistory($audit) {
+        $audits = $this->find('all')
+            ->where([
+                'customer_id' => $audit->customer_id,
+                'date <= ' => $audit->date
+            ])
+            ->order('date')
+            ->contain([
+                'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
+                'AuditFieldOptionsetValues' => [
+                    'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
+                    'FormTemplateOptionsetValues'
+                ],
+                'FormTemplates' => [
+                    'FormTemplateSections' => [ 'FormTemplateFieldsOptionset' ],
+                ]
+            ]);
+        foreach($audits as $a) {
+            $a->calculateScores();
+        }
+        return $audits;
+    }
+
     public function findLast($templateId, $audit) {
         $audits = $this->find('all')
             ->where([

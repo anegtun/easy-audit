@@ -10,6 +10,8 @@ class AuditPDF extends FPDF {
 
     public $audit;
 
+    public $history;
+
     function Header() {
         if($this->PageNo() > 1) {
             $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'main.png', 10, 8, 25);
@@ -76,7 +78,11 @@ class AuditPDF extends FPDF {
         $this->SelectReportIntro($template);
         $this->AddPage();
         $this->SubTitle('Resumen de puntuaciones');
-        $this->SelectReportSummary($template);
+        $this->SelectReportSummaryTable($template);
+        $this->Ln(10);
+        $this->SelectReportSummaryGraph($template);
+        $this->Ln(20);
+        $this->SelectReportSummaryResult($template);
         $this->AddPage();
         $this->SubTitle('Detalles de auditoría');
         $this->SelectReportDetail($template);
@@ -119,28 +125,89 @@ class AuditPDF extends FPDF {
         $this->Cell(0, 0, utf8_decode($this->audit->auditor->position));
     }
 
-    private function SelectReportSummary($template) {
+    private function SelectReportSummaryTable($template) {
+        $history_to_show = count($this->history) > 6 ? array_slice($this->history, -6) : $this->history;
+        $sectionNameMaxLength = 110 - count($history_to_show) * 10;
+        $sectionNameMaxWidth = 175 - count($history_to_show) * 15;
         $rows = [];
-        foreach($template->form_template_sections as $s) {
-            $rows[] = ['values' => [$s->name, $s->score]];
+        $headerRow = ['values' => [''], 'bg' => [237,239,246], 'color'=>[29,113,184],  'font' => ['Arial','B',10]];
+        foreach($history_to_show as $h) {
+            $headerRow['values'][] = strtoupper($h->date->i18nFormat('MMM yy'));
         }
-        $rows[] = ['values' => ['Total', $template->score], 'font' => ['Arial', 'B', 10]];
+        $rows[] = $headerRow;
+        foreach($template->form_template_sections as $s) {
+            $sectionName = $s->name;
+            if(strlen($sectionName) > $sectionNameMaxLength) {
+                $sectionName = substr($s->name, 0, 110 - count($history_to_show) * 10).'...';
+            }
+            $row = ['values' => [$sectionName]];
+            foreach($history_to_show as $h) {
+                $row['values'][] = $h->score_section[$s->id];
+            }
+            $rows[] = $row;
+        }
+        $totalRow = ['values' => ['Total'], 'font' => ['Arial','B',10]];
+        foreach($history_to_show as $h) {
+            $totalRow['values'][] = $h->score_templates[$template->id];
+        }
+        $rows[] = $totalRow;
 
-        $this->Table(
-            $rows,
-            [ 'align' => ['L','R'], 'font' => ['Arial','',10], 'height' => 8, 'marginLeft' => 20, 'width' => [150, 15] ]
-        );
-        $this->Ln(20);
+        $tableConfig = [
+            'align' => ['L'],
+            'font' => ['Arial','',10],
+            'height' => 8,
+            'marginLeft' => 20,
+            'width' => [$sectionNameMaxWidth]
+        ];
+        foreach($history_to_show as $h) {
+            $tableConfig['align'][] = 'R';
+            $tableConfig['width'][] = 15;
+        }
+        $this->Table($rows, $tableConfig);
+    }
 
+    private function SelectReportSummaryGraph($template) {
+        $maxHeight = 40;
+        $maxWidth = 175;
+        $marginLeft = 20;
+        $colWidth = min([20, $maxWidth / count($this->history) / 2]);
+        $gap = ($maxWidth - $colWidth * count($this->history)) / (2 * count($this->history));
+        $y = $this->GetY();
+        $this->SetFillColor(29, 113, 184);
+        foreach($this->history as $i => $h) {
+            $x = $marginLeft + $gap + $i * ($colWidth + 2 * $gap);
+            $score = $h->score_templates[$template->id];
+            $height = $maxHeight * $score / 100;
+            $this->SetXY($x, $y);
+            $this->Cell($colWidth, 10, $score, 0, 0, 'C');
+            $this->Ln();
+            $this->SetX($x);
+            $this->Cell($colWidth, $maxHeight - $height);
+            $this->Ln();
+            $this->SetX($x);
+            $this->Cell($colWidth, $height, '', 0, 0, '', true);
+        }
+        $this->SetFillColor(255, 255, 255);
+        $this->Ln();
+        $this->SetX($marginLeft);
+        $this->Cell($maxWidth, 5, '', 'T');
+        $this->Ln();
+        $this->SetX($marginLeft);
+        foreach($this->history as $i => $h) {
+            $this->Cell($colWidth + 2 * $gap, 3, strtoupper($h->date->i18nFormat('MMM yy')), 0, 0, 'C');
+        }
+    }
+
+    private function SelectReportSummaryResult($template) {
         $letter = 'A';
-        if($template->score < 65) {
+        if($this->audit->score_templates[$template->id] < 65) {
             $letter = 'C';
-        } elseif($template->score < 85) {
+        } elseif($this->audit->score_templates[$template->id] < 85) {
             $letter = 'B';
         }
         $this->Table(
             [
-                ['values' => ['Total', "{$template->score}%"]],
+                ['values' => ['Total', "{$this->audit->score_templates[$template->id]}%"]],
                 ['values' => ['Puntuación', $letter]]
             ],
             ['font' => ['Arial', 'B', 12], 'height' => 8, 'marginLeft' => 90, 'width' => [55, 40]]
@@ -316,10 +383,11 @@ class AuditPDF extends FPDF {
 
 class AuditPdfComponent extends Component {
 
-    public function generate($audit) {
+    public function generate($audit, $audits) {
         $pdf = new AuditPDF();
         $pdf->AliasNbPages();
         $pdf->audit = $audit;
+        $pdf->history = $audits;
 
         $pdf->AddPage();
         $pdf->Cover();

@@ -42,14 +42,14 @@ $this->Html->script('audit-history', ['block' => 'script']);
                                 <tr>
                                     <td><?= $this->EasyAuditTemplate->section($s) ?></td>
                                     <?php foreach($template_audits as $a) : ?>
-                                        <td><?= $a->getSection($s)->score ?></td>
+                                        <td><?= $a->score_section[$s->id] ?></td>
                                     <?php endforeach ?>
                                 </tr>
                             <?php endforeach ?>
                                 <tr>
-                                    <td><strong>TOTAL</strong></td>
+                                    <td><strong><?= __('TOTAL') ?></strong></td>
                                     <?php foreach($template_audits as $a) : ?>
-                                        <td class="audit-history-total" data-audit-date="<?= strtoupper($a->date->i18nFormat('MMM yy')) ?>"><strong><?= $a->getTemplate($t)->score ?></strong></td>
+                                        <td class="audit-history-total" data-audit-date="<?= strtoupper($a->date->i18nFormat('MMM yy')) ?>"><strong><?= $a->score_templates[$t->id] ?></strong></td>
                                     <?php endforeach ?>
                                 </tr>
                         </tbody>

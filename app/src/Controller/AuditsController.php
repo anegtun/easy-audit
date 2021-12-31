@@ -36,7 +36,7 @@ class AuditsController extends AppController {
 
     public function data($id) {
         $audit = $this->Audits->get($id, ['contain' => [
-            'Customers' => [ 'FormTemplates' => ['sort' => [ 'name' => 'ASC' ]] ],
+            'Customers' => [ 'FormTemplates' => ['sort' => 'name'] ],
             'FormTemplates',
             'Users'
         ]]);
@@ -51,18 +51,7 @@ class AuditsController extends AppController {
     }
 
     public function fill($id) {
-        $audit = $this->Audits->get($id, [ 'contain' => [
-            'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
-            'AuditFieldOptionsetValues' => [
-                'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
-                'FormTemplateOptionsetValues'
-            ],
-            'Customers',
-            'FormTemplates' => [
-                'FormTemplateSections' => [ 'FormTemplateFieldsOptionset' ],
-                'sort' => 'name'
-            ]
-        ]]);
+        $audit = $this->Audits->getComplete($id);
         $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
         foreach($audit->form_templates as $t) {
             $last_audit = $this->Audits->findLast($t->id, $audit);
@@ -76,40 +65,13 @@ class AuditsController extends AppController {
                 }
             }
         }
-        $audit->calculateScores();
         $field_images = $this->AuditFile->readPhotos($id);
         $this->set(compact('audit', 'field_images', 'optionset_values'));
     }
 
     public function history($id) {
-        $audit = $this->Audits->get($id, [ 'contain' => [
-            'AuditFieldOptionsetValues' => [
-                'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
-                'FormTemplateOptionsetValues'
-            ],
-            'Customers',
-            'FormTemplates' => [
-                'FormTemplateSections' => [ 'FormTemplateFieldsOptionset', 'sort' => 'position' ],
-                'sort' => 'name'
-            ]
-        ]]);
-        $audits = $this->Audits->find('all')
-            ->where([
-                'customer_id' => $audit->customer_id,
-                'date <= ' => $audit->date
-            ])
-            ->contain([
-                'AuditFieldOptionsetValues' => [
-                    'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
-                    'FormTemplateOptionsetValues'
-                ],
-                'FormTemplates' => [
-                    'FormTemplateSections' => [ 'FormTemplateFieldsOptionset' ],
-                ]
-            ]);
-        foreach($audits as $a) {
-            $a->calculateScores();
-        }
+        $audit = $this->Audits->getComplete($id);
+        $audits = $this->Audits->findHistory($audit);
         $this->set(compact('audit', 'audits'));
     }
 
@@ -231,33 +193,17 @@ class AuditsController extends AppController {
     }
 
     public function print($id) {
-        $audit = $this->Audits->get($id, [ 'contain' => [
-            'AuditFieldOptionsetValues' => [
-                'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
-                'FormTemplateOptionsetValues'
-            ],
-            'AuditFieldMeasureValues',
-            'Customers',
-            'FormTemplates' => [
-                'sort' => 'name',
-                'FormTemplateSections' => [
-                    'sort' => 'position',
-                    'FormTemplateFieldsOptionset' => [ 'sort' => 'position' ]
-                ]
-            ],
-            'Users'
-        ]]);
-        $audit->calculateScores();
+        $audit = $this->Audits->getComplete($id);
+        $audits = $this->Audits->findHistory($audit)->toList();
 
-        $content = $this->AuditPdf->generate($audit);
-        $download = $this->request->getQuery('download');
+        $content = $this->AuditPdf->generate($audit, $audits);
 
         $response = $this->response
             ->withStringBody($content)
             ->withType('application/pdf');
-        if(!empty($download)) {
+        if(!empty($this->request->getQuery('download'))) {
             $date = $audit->date->i18nFormat('yyyy-MM');
-            $filename = __('Audit').' '.$audit->customer->name.' - '.$date.'.pdf';
+            $filename = __('Audit')." {$audit->customer->name} - $date.pdf";
             $response = $response->withDownload($filename);
         }
         return $response;
