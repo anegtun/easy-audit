@@ -10,38 +10,57 @@ $this->set('headerBreadcrumbs', [
 $this->Html->script('modal-utils', ['block' => 'script']);
 $this->Html->script('form-templates', ['block' => 'script']);
 $optionsetOptions = iterator_to_array($optionsets);
+$has_audits = !empty($template->audits);
 ?>
 
 <div class="row">
-    <?php if($template->type === 'select') : ?>
-        <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
-        <button type="button" id="modal-field-button" class="btn btn-primary" data-target="#modal-field"><?= __('Add field') ?></button>
+    <?php if(!$has_audits) : ?>
+        <?php if($template->type === 'select') : ?>
+            <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
+            <button type="button" id="modal-field-button" class="btn btn-primary" data-target="#modal-field"><?= __('Add field') ?></button>
+        <?php endif ?>
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-rename"><?= __('Rename template') ?></button>
     <?php endif ?>
-    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-rename"><?= __('Rename template') ?></button>
     <button type="button" class="btn btn-default modal-clone-button" data-template-id="<?=$template->id?>" data-template-name="<?=$template->name?>"><?= __('Clone template') ?></button>
     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
-    <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $template->id]) ?>
+    <?php if($has_audits) : ?>
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-audits"><?= __('See audits') ?></button>
+    <?php endif ?>
+    <?php if(!$has_audits) : ?>
+        <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $template->id]) ?>
+    <?php endif ?>
+
+    <?php if($has_audits) : ?>
+        <div class="alert alert-info form-template-audit-info">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <?= $this->EasyAuditHtml->gliphiconText('info-sign', __('This template is associated with at least one audit, so it can\'t be edited anymore.')) ?>
+        </div>
+    <?php endif ?>
 
     <?php if($template->type === 'select') : ?>
         <?php foreach($sections as $s) : ?>
             <fieldset>
                 <legend>
-                    <?= $this->EasyAuditForm->editModalLink($s, 'data-section', ['id', 'position', 'name']) ?>
-                    <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $s->id]) ?>
-                    <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $s->id]) ?>
-                    <?php if(empty($s->form_template_fields)) : ?>
-                        <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteSection', $s->id]) ?>
+                    <?php if(!$has_audits) : ?>
+                        <?= $this->EasyAuditForm->editModalLink($s, 'data-section', ['id', 'position', 'name']) ?>
+                        <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $s->id]) ?>
+                        <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $s->id]) ?>
+                        <?php if(empty($s->form_template_fields)) : ?>
+                            <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteSection', $s->id]) ?>
+                        <?php endif ?>
                     <?php endif ?>
                     <?= $s->position ?>. <?= $s->name ?>
                 </legend>
                 <?php foreach($s->form_template_fields_optionset as $f) : ?>
                     <div class="row form-template-field">
-                        <div class="col-sm-1">
-                            <?= $this->EasyAuditForm->editModalLink($f, 'data-field', ['id', 'form_template_section_id', 'position', 'text']) ?>
-                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveFieldUp', $f->id]) ?>
-                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveFieldDown', $f->id]) ?>
-                            <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteField', $f->id], ['confirm' => __('Are you sure you want to remove this field? This can\'t be undone')]) ?>
-                        </div>
+                        <?php if(!$has_audits) : ?>
+                            <div class="col-sm-1">
+                                <?= $this->EasyAuditForm->editModalLink($f, 'data-field', ['id', 'form_template_section_id', 'position', 'text']) ?>
+                                <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveFieldUp', $f->id]) ?>
+                                <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveFieldDown', $f->id]) ?>
+                                <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteField', $f->id], ['confirm' => __('Are you sure you want to remove this field? This can\'t be undone')]) ?>
+                            </div>
+                        <?php endif ?>
                         <div class="col-sm-1">
                             <strong><?= $optionsetOptions[$f->optionset_id] ?></strong>
                         </div>
@@ -141,6 +160,26 @@ $optionsetOptions = iterator_to_array($optionsets);
                         <?php endforeach ?>
                     </tbody>
                 </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="modal-audits" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><?= __('Audits') ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <?= $this->element('Audits/list', ['audits' => $template->audits]) ?>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
