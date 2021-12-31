@@ -16,10 +16,12 @@ class AuditPDF extends FPDF {
         if($this->PageNo() > 1) {
             $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'main.png', 10, 8, 25);
             $this->SetFont('Arial', '', 10);
-            $this->Cell(0, 10, utf8_decode('Informe Auditoría Higiénico-Sanitaria'), 0, 0, 'R');
+            $this->Cell(0, 5, utf8_decode('Informe Auditoría Higiénico-Sanitaria'), 0, 0, 'R');
             $this->Ln(5);
-            $this->Cell(0, 10, utf8_decode($this->audit->customer->name), 0, 0, 'R');
-            $this->Ln(20);
+            $this->Cell(0, 5, utf8_decode($this->audit->customer->name), 0, 0, 'R');
+            $this->Ln(5);
+            $this->Cell(0, 5, utf8_decode($this->getAuditDate()), 0, 0, 'R');
+            $this->Ln(15);
         }
     }
 
@@ -36,8 +38,6 @@ class AuditPDF extends FPDF {
     }
 
     function Cover() {
-        $date = $this->audit->date->i18nFormat('MMMM yyyy');
-        $date = strtoupper(substr($date,0,1)) . substr($date,1);
         $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'report-cover.png', 30, 30, 150);
         $this->SetY(-110);
         $this->SetFont('Arial', 'B', 25);
@@ -47,7 +47,7 @@ class AuditPDF extends FPDF {
         $this->MultiCell(0, 10, utf8_decode($this->audit->customer->name), 0, 'C');
         $this->Ln(15);
         $this->SetFont('Arial', 'B', 20);
-        $this->Cell(0, 10, utf8_decode($date), 0, 0, 'C');
+        $this->Cell(0, 10, utf8_decode($this->getAuditDate()), 0, 0, 'C');
     }
 
     function MeasureReport($template) {
@@ -295,6 +295,11 @@ class AuditPDF extends FPDF {
     private function Paragraph($text) {
         $this->MultiCell(0, 5, utf8_decode($text));
         $this->Ln(5);
+    }
+
+    private function getAuditDate() {
+        $date = $this->audit->date->i18nFormat('MMMM yyyy');
+        return strtoupper(substr($date,0,1)) . substr($date,1);
     }
 
     private function Table($rows, $config) {
