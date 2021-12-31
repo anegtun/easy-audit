@@ -19,6 +19,7 @@ class AuditFieldMeasureValuesTable extends Table {
             $new_value->audit_id = $target_audit_id;
             $new_value->form_template_id = $v->form_template_id;
             $new_value->item = $v->item;
+            $new_value->unit = $v->unit;
             $new_value->expected = $v->expected;
             $new_value->actual = $v->actual;
             $new_value->threshold = $v->threshold;
@@ -35,6 +36,7 @@ class AuditFieldMeasureValuesTable extends Table {
                 $field_value->audit_id = $audit_id;
                 $field_value->form_template_id = $template_id;
                 $field_value->item = $v['item'];
+                $field_value->unit = $v['unit'];
                 $field_value->expected = $v['expected'];
                 $field_value->actual = $v['actual'];
                 $field_value->threshold = $v['threshold'];

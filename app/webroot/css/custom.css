@@ -30,6 +30,10 @@ legend > a:hover, legend > a:active, legend > a:focus {
     margin-bottom: 1em;
 }
 
+.audit-open-all {
+    margin-top: 1em;
+}
+
 .audit-open-all > a {
     margin-right: 1em;
     text-decoration: none;
@@ -89,9 +93,17 @@ legend > a:hover, legend > a:active, legend > a:focus {
 }
 
 .audit-measure-item {
+    display: flex;
     flex-grow: 1;
     margin-bottom: .5em;
+}
+
+.audit-measure-item > * {
     margin-right: 1em;
+}
+
+.audit-measure-item > *:last-child {
+    max-width: 5em;
 }
 
 .audit-measure-numbers {

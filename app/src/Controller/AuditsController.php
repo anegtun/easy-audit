@@ -1,10 +1,14 @@
 <?php
 namespace App\Controller;
 
+require_once(ROOT . DS . 'vendor' . DS  . 'fpdf' . DS . 'fpdf.php');
+
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
+use FPDF;
+
 
 class AuditsController extends AppController {
     
@@ -20,6 +24,7 @@ class AuditsController extends AppController {
         $this->Users = TableRegistry::getTableLocator()->get('Users');
         $this->loadComponent('AuditFile');
         $this->loadComponent('AuditInitialization');
+        $this->loadComponent('AuditPdf');
     }
 
     public function index() {
@@ -223,6 +228,39 @@ class AuditsController extends AppController {
             $this->Flash->error(__('Error deleting audit.'));
         }
         return $this->redirect(['action'=>'index']);
+    }
+
+    public function print($id) {
+        $audit = $this->Audits->get($id, [ 'contain' => [
+            'AuditFieldOptionsetValues' => [
+                'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
+                'FormTemplateOptionsetValues'
+            ],
+            'AuditFieldMeasureValues',
+            'Customers',
+            'FormTemplates' => [
+                'sort' => 'name',
+                'FormTemplateSections' => [
+                    'sort' => 'position',
+                    'FormTemplateFieldsOptionset' => [ 'sort' => 'position' ]
+                ]
+            ],
+            'Users'
+        ]]);
+        $audit->calculateScores();
+
+        $content = $this->AuditPdf->generate($audit);
+        $download = $this->request->getQuery('download');
+
+        $response = $this->response
+            ->withStringBody($content)
+            ->withType('application/pdf');
+        if(!empty($download)) {
+            $date = $audit->date->i18nFormat('yyyy-MM');
+            $filename = __('Audit').' '.$audit->customer->name.' - '.$date.'.pdf';
+            $response = $response->withDownload($filename);
+        }
+        return $response;
     }
 
     private function parseDate($date) {

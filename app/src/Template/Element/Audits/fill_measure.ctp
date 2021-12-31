@@ -12,6 +12,7 @@
                     <div class="audit-measure-input">
                         <div class="audit-measure-item">
                             <input type="text" class="form-control" name="audit_measure[<?= $template->id ?>][<?= $index ?>][item]" value="<?= $v['item'] ?>" placeholder="<?= __('Item') ?>" />
+                            <input type="text" class="form-control" name="audit_measure[<?= $template->id ?>][<?= $index ?>][unit]" value="<?= $v['unit'] ?>" placeholder="<?= __('Unit') ?>" />
                         </div>
                         <div class="audit-measure-numbers">
                             <div class="audit-measure-expected"><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][<?= $index ?>][expected]" value="<?= $v['expected'] ?>" placeholder="<?= __('Expected') ?>" /></div>
@@ -38,6 +39,7 @@
             <div class="audit-measure-input">
                 <div class="audit-measure-item">
                     <input type="text" class="form-control" name="audit_measure[<?= $template->id ?>][0][item]" placeholder="<?= __('Item') ?>" />
+                    <input type="text" class="form-control" name="audit_measure[<?= $template->id ?>][0][unit]" placeholder="<?= __('Unit') ?>" />
                 </div>
                 <div class="audit-measure-numbers">
                     <div class="audit-measure-expected"><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][0][expected]" placeholder="<?= __('Expected') ?>" /></div>

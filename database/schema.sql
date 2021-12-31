@@ -18,6 +18,7 @@ CREATE TABLE easy_audit_users (
   password varchar(255) DEFAULT NULL,
   name varchar(255) DEFAULT NULL,
   role varchar(20) DEFAULT NULL,
+  position varchar(200) DEFAULT NULL,
   created datetime DEFAULT NULL,
   modified datetime DEFAULT NULL,
   PRIMARY KEY (id)
@@ -164,6 +165,7 @@ CREATE TABLE easy_audit_audit_field_measure_values (
   audit_id int unsigned NOT NULL,
   form_template_id int unsigned NOT NULL,
   item varchar(4000) DEFAULT NULL,
+  unit varchar(10) DEFAULT NULL,
   expected float DEFAULT NULL,
   actual float DEFAULT NULL,
   threshold float DEFAULT NULL,

@@ -23,6 +23,7 @@ $authUser = $this->request->getSession()->read('Auth.User');
             </div>
             <div class="form-row">
                 <?= $this->Form->control('name', ['label'=>__('Name')]) ?>
+                <?= $this->Form->control('position', ['label'=>__('Company position')]) ?>
                 <?= $this->Form->control('role', ['options'=>$roles, 'label'=>__('Role')]) ?>
             </div>
             <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
