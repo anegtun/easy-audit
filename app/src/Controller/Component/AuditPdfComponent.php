@@ -52,6 +52,41 @@ class AuditPDF extends FPDF {
         $this->Cell(0, 0, utf8_decode($this->audit->customer->name), 0, 0, 'C');
     }
 
+    function MeasureReport($template) {
+        $this->AddPage('P', 'A4', 0);
+        $this->Title('Resultados verificaciones externas');
+        $this->Ln(20);
+
+        $this->SetFont('Arial', 'B', 12);
+        $this->SetFillColor(237, 239, 246);
+        $this->SetTextColor(29, 113, 184);
+        $this->Cell(70, 7, utf8_decode('Equipo a verificar'), 1, 0, 'C', true);
+        $this->Cell(15, 7, utf8_decode('Dato'), 1, 0, 'C', true);
+        $this->Cell(25, 7, utf8_decode('M. equipo'), 1, 0, 'C', true);
+        $this->Cell(30, 7, utf8_decode('M. verificada'), 1, 0, 'C', true);
+        $this->Cell(25, 7, utf8_decode('Diferencia'), 1, 0, 'C', true);
+        $this->Cell(25, 7, utf8_decode('Resultado'), 1, 0, 'C', true);
+        $this->Ln(7);
+        $this->SetFillColor(255, 255, 255);
+        $this->SetTextColor(0, 0, 0);
+
+        $this->SetFont('Arial', '', 10);
+        foreach($this->audit->audit_field_measure_values as $m) {
+            $img = $m->isInThreshold() ? 'ok.png' : 'nok.png';
+            $this->Cell(70, 7, utf8_decode($m->item), 1);
+            $this->Cell(15, 7, utf8_decode('T(ºC)'), 1, 0, 'C');
+            $this->Cell(25, 7, $m->expected, 1, 0, 'C');
+            $this->Cell(30, 7, $m->actual, 1, 0, 'C');
+            $this->Cell(25, 7, $m->calculateDifference(), 1, 0, 'C');
+            $x = $this->GetX();
+            $y = $this->GetY();
+            $this->Image(WWW_ROOT . DS . 'images' . DS . 'components' . DS . $img, $x + 10, $y + 1, 5);
+            $this->Cell(25, 7, '', 1, 0, 'C');
+            $this->Ln(7);
+    
+        }
+    }
+
     function SelectReport($template) {
         $this->AddPage();
         $this->SelectReportIntro($template);
@@ -191,8 +226,10 @@ class AuditPDF extends FPDF {
                         $value = $fv;
                     }
                 }
+                $observations = empty($value->observations) ? '' : $value->observations;
+                $valueLabel = empty($value->form_template_optionset_value->label) ? '' : $value->form_template_optionset_value->label;
                 $wrappedFieldText = $this->WrapString(utf8_decode($f->text), 45);
-                $wrappedFieldObs = $this->WrapString(utf8_decode($value->observations), 45);
+                $wrappedFieldObs = $this->WrapString(utf8_decode($observations), 45);
                 if(count($wrappedFieldText) > count($wrappedFieldObs)) {
                     foreach($wrappedFieldText as $i => $str) {
                         if(empty($wrappedFieldObs[$i])) {
@@ -211,7 +248,7 @@ class AuditPDF extends FPDF {
                     $this->AddPage();
                 } 
                 $this->WrappedStringTableCell(85, 6, $wrappedFieldText);
-                $this->Cell(15, $lineHeight, empty($fv->form_template_optionset_value->label) ? '' : $fv->form_template_optionset_value->label, 1, 0, 'C');
+                $this->Cell(15, $lineHeight, $valueLabel, 1, 0, 'C');
                 $this->WrappedStringTableCell(85, 6, $wrappedFieldObs);
                 $this->Ln($lineHeight);
             }
@@ -270,6 +307,8 @@ class AuditPdfComponent extends Component {
         foreach($audit->form_templates as $t) {
             if($t->type === 'select') {
                 $pdf->SelectReport($t);
+            } elseif($t->type === 'measure') {
+                $pdf->MeasureReport($t);
             }
         }
 
