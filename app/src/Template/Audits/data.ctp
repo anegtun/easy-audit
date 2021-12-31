@@ -30,6 +30,7 @@ $this->set('headerBreadcrumbs', [
     <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $audit->id]) ?>
     <?= $this->EasyAuditHtml->linkButton(['action' => 'fill', $audit->id], 'cog', _('Fill audit')) ?>
     <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', _('Audit history')) ?>
+    <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', _('Report'), ['target'=>'_blank']) ?>
 
 <?= $this->Form->end() ?>
 

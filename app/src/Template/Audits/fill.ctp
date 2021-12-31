@@ -36,6 +36,7 @@ $this->Html->script('audits', ['block' => 'script']);
     <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
     <?= $this->EasyAuditHtml->linkButton(['action' => 'data', $audit->id], 'cog', _('Audit data')) ?>
     <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', _('Audit history')) ?>
+    <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', _('Report'), ['target'=>'_blank']) ?>
 
 <?= $this->Form->end() ?>
 
