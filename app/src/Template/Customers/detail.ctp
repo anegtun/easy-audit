@@ -16,7 +16,7 @@ $this->set('headerBreadcrumbs', [
             <legend><?= __('Customer details') ?></legend>
             <div class="form-row">
                 <?= $this->Form->control('name', ['label'=>__('Name')]) ?>
-                <?= $this->Form->control('email', ['label'=>__('Email')]) ?>
+                <?= $this->Form->control('emails', ['label'=>__('Emails')]) ?>
             </div>
             <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
             <?php if(!empty($customer->id)) : ?>

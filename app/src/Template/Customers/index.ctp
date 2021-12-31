@@ -14,7 +14,6 @@ $this->set('headerBreadcrumbs', [
                 <tr>
                     <th class="cell-small"></th>
                     <th class="celda-titulo"><?= __('Name') ?></th>
-                    <th class="celda-titulo"><?= __('Email') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -22,7 +21,6 @@ $this->set('headerBreadcrumbs', [
                     <tr>
                         <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'delete', $c->id]) ?></td>
                         <td><?= $this->Html->link($c->name, ['action'=>'detail', $c->id]) ?></td>
-                        <td><?= $c->email ?></td>
                     </tr>
                 <?php endforeach ?>
             </tbody>
