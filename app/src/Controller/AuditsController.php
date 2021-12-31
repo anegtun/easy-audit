@@ -237,8 +237,11 @@ class AuditsController extends AppController {
             ],
             'Customers',
             'FormTemplates' => [
-                'FormTemplateSections' => [ 'FormTemplateFieldsOptionset', 'sort' => 'position' ],
-                'sort' => 'name'
+                'sort' => 'name',
+                'FormTemplateSections' => [
+                    'sort' => 'position',
+                    'FormTemplateFieldsOptionset' => [ 'sort' => 'position' ]
+                ]
             ],
             'Users'
         ]]);

@@ -50,7 +50,9 @@ class AuditPDF extends FPDF {
         $this->AddPage();
         $this->SelectReportIntro($template);
         $this->AddPage();
-        $this->SelectReportSummart($template);
+        $this->SelectReportSummary($template);
+        $this->AddPage();
+        $this->SelectReportDetail($template);
     }
 
     function SelectReportIntro($template) {
@@ -105,7 +107,7 @@ class AuditPDF extends FPDF {
         $this->Cell(0, 0, 'Auditora de APTHISA');
     }
 
-    function SelectReportSummart($template) {
+    function SelectReportSummary($template) {
         $this->Title('Resumen de puntuaciones');
         $this->Ln(20);
         $this->SetFont('Arial', '', 10);
@@ -143,7 +145,108 @@ class AuditPDF extends FPDF {
         }
         $this->Cell(40, 8, $letter, 1, 0, 'C', true);
         $this->SetFillColor(0, 0, 0);
+    }
 
+    function SelectReportDetail($template) {
+        $this->Title('Detalles de auditoría');
+        $this->Ln(20);
+
+        $this->SetFont('Arial', 'B', 10);
+        $this->SetFillColor(237, 239, 246);
+        $this->SetTextColor(29, 113, 184);
+        $this->Cell(85, 8, utf8_decode('Requisitos'), 1, 0, 'C', true);
+        $this->Cell(15, 8, utf8_decode('Pt'), 1, 0, 'C', true);
+        $this->Cell(85, 8, utf8_decode('Aspectos destacables'), 1, 0, 'C', true);
+        $this->Ln(8);
+        $this->SetFillColor(255, 255, 255);
+        $this->SetTextColor(0, 0, 0);
+
+        foreach($template->form_template_sections as $s) {
+            $wrappedSectionName = $this->WrapString(utf8_decode($s->name), 45);
+            $lineHeight = count($wrappedSectionName) * 6;
+            if($this->GetY() + $lineHeight > 270) {
+                $this->AddPage();
+            }
+
+            $this->SetFont('Arial', 'B', 10);
+            $this->SetFillColor(237, 239, 246);
+            $this->SetTextColor(29, 113, 184);
+            $this->WrappedStringTableCell(85, 6, $wrappedSectionName, true);
+            $this->Cell(15, $lineHeight, utf8_decode($s->score), 1, 0, 'C', true);
+            $this->Cell(85, $lineHeight, '', 1, 0, 'L', true);
+            $this->Ln($lineHeight);
+            $this->SetTextColor(0, 0, 0);
+
+            $this->SetFont('Arial', '', 10);
+            foreach($s->form_template_fields_optionset as $f) {
+                $value = '';
+                foreach($this->audit->audit_field_optionset_values as $fv) {
+                    if($fv->form_template_id === $f->form_template_id && $fv->form_template_field_id === $f->id) {
+                        $value = $fv;
+                    }
+                }
+                $wrappedFieldText = $this->WrapString(utf8_decode($f->text), 45);
+                $wrappedFieldObs = $this->WrapString(utf8_decode($value->observations), 45);
+                if(count($wrappedFieldText) > count($wrappedFieldObs)) {
+                    foreach($wrappedFieldText as $i => $str) {
+                        if(empty($wrappedFieldObs[$i])) {
+                            $wrappedFieldObs[$i] = "";
+                        } 
+                    }
+                } else {
+                    foreach($wrappedFieldObs as $i => $str) {
+                        if(empty($wrappedFieldText[$i])) {
+                            $wrappedFieldText[$i] = "";
+                        } 
+                    }
+                }
+                $lineHeight = count($wrappedFieldText) * 6;
+                if($this->GetY() + $lineHeight > 280) {
+                    $this->AddPage();
+                } 
+                $this->WrappedStringTableCell(85, 6, $wrappedFieldText);
+                $this->Cell(15, $lineHeight, empty($fv->form_template_optionset_value->label) ? '' : $fv->form_template_optionset_value->label, 1, 0, 'C');
+                $this->WrappedStringTableCell(85, 6, $wrappedFieldObs);
+                $this->Ln($lineHeight);
+            }
+        }
+    }
+
+    function WrapString($str, $max_length) {
+        $result = [];
+        $current = "";
+        $words = explode(" ", strip_tags($str));
+        foreach($words as $w) {
+            $tmp = "$current $w";
+            if(strlen($tmp) > $max_length) {
+                $result[] = $current;
+                $current = "";
+            }
+            $current = "$current $w";
+        }
+        $result[] = $current;
+        return $result;
+    }
+
+    function WrappedStringTableCell($w, $h, $wrappedStr, $fill=false) {
+        $x = $this->GetX();
+        $y = $this->GetY();
+        foreach($wrappedStr as $i => $str) {
+            $border = 'LR';
+            if($i === 0) {
+                $border = 'LRT';
+            }
+            if($i === count($wrappedStr) - 1) {
+                $border = 'LRB';
+            }
+            if($i === 0 && $i === count($wrappedStr) - 1) {
+                $border = 1;
+            }
+            $this->SetX($x);
+            $this->Cell($w, $h, $str, $border, 0, 'L', $fill);
+            $this->Ln($h);
+        }
+        $this->SetXY($x+$w, $y);
     }
 
 }
