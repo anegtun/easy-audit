@@ -1,4 +1,10 @@
 <?php
+namespace App\Controller\Component;
+
+require_once(ROOT . DS . 'vendor' . DS  . 'fpdf' . DS . 'fpdf.php');
+
+use Cake\Controller\Component;
+use FPDF;
 
 class AuditPDF extends FPDF {
 
@@ -251,18 +257,23 @@ class AuditPDF extends FPDF {
 
 }
 
+class AuditPdfComponent extends Component {
 
-$pdf = new AuditPDF();
-$pdf->AliasNbPages();
-$pdf->audit = $audit;
+    public function generate($audit) {
+        $pdf = new AuditPDF();
+        $pdf->AliasNbPages();
+        $pdf->audit = $audit;
 
-$pdf->AddPage();
-$pdf->Cover();
+        $pdf->AddPage();
+        $pdf->Cover();
 
-foreach($audit->form_templates as $t) {
-    if($t->type === 'select') {
-        $pdf->SelectReport($t);
+        foreach($audit->form_templates as $t) {
+            if($t->type === 'select') {
+                $pdf->SelectReport($t);
+            }
+        }
+
+        return $pdf->Output('S');
     }
-}
 
-$pdf->Output();
+}

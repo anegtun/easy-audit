@@ -24,6 +24,7 @@ class AuditsController extends AppController {
         $this->Users = TableRegistry::getTableLocator()->get('Users');
         $this->loadComponent('AuditFile');
         $this->loadComponent('AuditInitialization');
+        $this->loadComponent('AuditPdf');
     }
 
     public function index() {
@@ -246,11 +247,19 @@ class AuditsController extends AppController {
             'Users'
         ]]);
         $audit->calculateScores();
-        $this->set(compact('audit'));
 
-        $this->response->type('application/pdf');
-        $this->layout = 'pdf'; 
-        $this->render();
+        $content = $this->AuditPdf->generate($audit);
+        $download = $this->request->getQuery('download');
+
+        $response = $this->response
+            ->withStringBody($content)
+            ->withType('application/pdf');
+        if(!empty($download)) {
+            $date = $audit->date->i18nFormat('yyyy-MM');
+            $filename = __('Audit').' '.$audit->customer->name.' - '.$date.'.pdf';
+            $response = $response->withDownload($filename);
+        }
+        return $response;
     }
 
     private function parseDate($date) {
