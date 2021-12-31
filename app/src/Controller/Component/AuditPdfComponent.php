@@ -123,6 +123,11 @@ class AuditPDF extends FPDF {
 
     private function SelectReportSummary($template) {
         $rows = [];
+        $headerRow = ['values' => [''], 'bg' => [237,239,246], 'color'=>[29,113,184],  'font' => ['Arial','B',10]];
+        foreach($this->history as $h) {
+            $headerRow['values'][] = strtoupper($h->date->i18nFormat('MMM yy'));
+        }
+        $rows[] = $headerRow;
         foreach($template->form_template_sections as $s) {
             $row = ['values' => [$s->name]];
             foreach($this->history as $h) {
