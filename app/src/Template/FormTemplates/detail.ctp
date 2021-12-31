@@ -49,7 +49,7 @@ $has_audits = !empty($template->audits);
                             <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteSection', $s->id]) ?>
                         <?php endif ?>
                     <?php endif ?>
-                    <?= $s->position ?>. <?= $s->name ?>
+                    <?= $this->EasyAuditTemplate->section($s) ?>
                 </legend>
                 <?php foreach($s->form_template_fields_optionset as $f) : ?>
                     <div class="row form-template-field">
@@ -65,7 +65,7 @@ $has_audits = !empty($template->audits);
                             <strong><?= $optionsetOptions[$f->optionset_id] ?></strong>
                         </div>
                         <div class="col-sm-10 form-group">
-                            <label><?= $s->position ?>.<?= $f->position ?>. <?= $f->text ?></label>
+                            <label><?= $this->EasyAuditTemplate->fieldLabel($s, $f) ?></label>
                         </div>
                     </div>
                 <?php endforeach ?>
@@ -119,7 +119,7 @@ $has_audits = !empty($template->audits);
                 </div>
                 <div class="modal-body">
                     <fieldset>
-                        <?= $this->Form->control('form_template_section_id', ['options' => $this->EasyAuditForm->objectToKeyValue($sections, 'id', '{$e->position}. {$e->name}'), 'label'=>__('Section')]) ?>
+                        <?= $this->Form->control('form_template_section_id', ['options' => $this->EasyAuditForm->objectToKeyValue($sections, 'id', '{$e->name}'), 'label'=>__('Section')]) ?>
                         <?= $this->Form->control('text', ['id'=>'field-text', 'type'=>'textarea', 'label'=>__('Text')]) ?>
                         <?= $this->Form->control('optionset_id', ['options'=>$optionsets, 'label'=>__('Option Set')]) ?>
                         <?= $this->Form->control('position', ['options' => [], 'label'=>__('Place before...')]) ?>

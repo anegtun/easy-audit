@@ -40,7 +40,7 @@ $this->Html->script('audit-history', ['block' => 'script']);
                         <tbody>
                             <?php foreach($t->form_template_sections as $s) : ?>
                                 <tr>
-                                    <td><?= "{$s->position}.{$s->name}" ?></td>
+                                    <td><?= $this->EasyAuditTemplate->section($s) ?></td>
                                     <?php foreach($template_audits as $a) : ?>
                                         <td><?= $a->getSection($s)->score ?></td>
                                     <?php endforeach ?>
