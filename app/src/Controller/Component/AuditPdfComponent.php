@@ -12,6 +12,8 @@ class AuditPDF extends FPDF {
 
     public $history;
 
+    public $photos;
+
     function Header() {
         $this->SetTextColor(0, 0, 0);
         if($this->PageNo() > 1) {
@@ -230,11 +232,13 @@ class AuditPDF extends FPDF {
                         $value = $fv;
                     }
                 }
-                if(empty($value->form_template_optionset_value->is_default)) {
+                ;
+                if(empty($value->form_template_optionset_value->is_default) || !empty($value->observations)) {
                     $section['fields'][] = [
                         'text' => $f->text,
                         'result' => empty($value->form_template_optionset_value->label) ? '' : $value->form_template_optionset_value->label,
                         'observations' => empty($value->observations) ? '-' : $value->observations,
+                        'photos' => empty($this->photos[$template->id][$f->id]) ? [] : $this->photos[$template->id][$f->id]
                     ];
                 }
             }
@@ -254,6 +258,22 @@ class AuditPDF extends FPDF {
                     $this->SetFont('Arial', '', 12);
                     $this->Cell(35, 5, utf8_decode($f['result']));
                     $this->MultiCell(0, 5, utf8_decode(strip_tags($f['observations'])));
+                    if(!empty($f['photos'])) {
+                        $this->Ln(5);
+                        $y = $this->GetY();
+                        foreach($f['photos'] as $i => $photo) {
+                            $x = ($i % 2 === 0) ? 20 : 110;
+                            if($y + 110 > 290) {
+                                $this->AddPage();
+                                $y = $this->GetY();
+                            }
+                            $this->Image(WWW_ROOT . DS . $photo, $x, $y, 70);
+                            if($i % 2 === 1 || $i === count($f['photos']) - 1) {
+                                $this->Ln(110);
+                                $y = $this->GetY();
+                            }
+                        }
+                    }
                     $this->Ln(12);
                 }
             }
@@ -349,11 +369,12 @@ class AuditPDF extends FPDF {
 
 class AuditPdfComponent extends Component {
 
-    public function generate($audit, $audits) {
+    public function generate($audit, $audits, $images) {
         $pdf = new AuditPDF();
         $pdf->AliasNbPages();
         $pdf->audit = $audit;
         $pdf->history = $audits;
+        $pdf->photos = $images;
 
         $pdf->AddPage();
         $pdf->Cover();
