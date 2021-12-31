@@ -52,8 +52,8 @@ class AuditPDF extends FPDF {
 
     function MeasureReport($template) {
         $this->AddPage();
-        $this->Title($template->name);
-        $this->SubTitle('Resultados');
+        $this->H1($template->name);
+        $this->H2('Resultados');
 
         $rows = [
             [
@@ -76,18 +76,18 @@ class AuditPDF extends FPDF {
 
     function SelectReport($template) {
         $this->AddPage();
-        $this->Title($template->name);
-        $this->SubTitle('Evaluación de la auditoría');
+        $this->H1($template->name);
+        $this->H2('Evaluación de la auditoría');
         $this->SelectReportIntro($template);
         $this->AddPage();
-        $this->SubTitle('Resumen de puntuaciones');
+        $this->H2('Resumen de puntuaciones');
         $this->SelectReportSummaryTable($template);
         $this->Ln(10);
         $this->SelectReportSummaryGraph($template);
         $this->Ln(20);
         $this->SelectReportSummaryResult($template);
         $this->AddPage();
-        $this->SubTitle('Detalles de auditoría');
+        $this->H2('Detalles de auditoría');
         $this->SelectReportDetail($template);
     }
 
@@ -120,7 +120,7 @@ class AuditPDF extends FPDF {
         $y = $this->GetY();
         $this->MultiCell(80, 5, utf8_decode($this->audit->customer->name), 0, 'L');
         $this->SetY($y + 2);
-        $this->SetFont('Arial', '', 12);
+        $this->SetDefaultFont();
         $this->Cell(120);
         $this->Cell(0, 0, utf8_decode($this->audit->auditor->name));
         $this->Ln(7);
@@ -213,33 +213,13 @@ class AuditPDF extends FPDF {
                 ['values' => ['Total', "{$this->audit->score_templates[$template->id]}%"]],
                 ['values' => ['Puntuación', $letter]]
             ],
-            ['font' => ['Arial', 'B', 12], 'height' => 8, 'marginLeft' => 90, 'width' => [55, 40]]
+            ['font' => ['Arial','B',12], 'height' => 8, 'marginLeft' => 90, 'width' => [55,40]]
         );
     }
 
     private function SelectReportDetail($template) {
-        $this->Table(
-            [ ['bg' => [237,239,246], 'color'=>[29,113,184], 'values' => ['Requisitos', 'Pt', 'Aspectos destacables']] ],
-            ['font' => ['Arial', 'B', 10], 'height' => 8, 'width' => [85,15,85]]
-        );
-
         foreach($template->form_template_sections as $s) {
-            $wrappedSectionName = $this->WrapString(utf8_decode($s->name), 45);
-            $lineHeight = count($wrappedSectionName) * 6;
-            if($this->GetY() + $lineHeight > 270) {
-                $this->AddPage();
-            }
-
-            $this->SetFont('Arial', 'B', 10);
-            $this->SetFillColor(237, 239, 246);
-            $this->SetTextColor(29, 113, 184);
-            $this->WrappedStringTableCell(85, 6, $wrappedSectionName, true);
-            $this->Cell(15, $lineHeight, utf8_decode($s->score), 1, 0, 'C', true);
-            $this->Cell(85, $lineHeight, '', 1, 0, 'C', true);
-            $this->Ln($lineHeight);
-            $this->SetTextColor(0, 0, 0);
-
-            $this->SetFont('Arial', '', 10);
+            $this->H3($s->name);
             foreach($s->form_template_fields_optionset as $f) {
                 $value = '';
                 foreach($this->audit->audit_field_optionset_values as $fv) {
@@ -247,54 +227,55 @@ class AuditPDF extends FPDF {
                         $value = $fv;
                     }
                 }
-                $observations = empty($value->observations) ? '' : $value->observations;
+                $observations = empty($value->observations) ? '-' : $value->observations;
                 $valueLabel = empty($value->form_template_optionset_value->label) ? '' : $value->form_template_optionset_value->label;
-                $wrappedFieldText = $this->WrapString(utf8_decode($f->text), 45);
-                $wrappedFieldObs = $this->WrapString(utf8_decode($observations), 45);
-                if(count($wrappedFieldText) > count($wrappedFieldObs)) {
-                    foreach($wrappedFieldText as $i => $str) {
-                        if(empty($wrappedFieldObs[$i])) {
-                            $wrappedFieldObs[$i] = "";
-                        } 
-                    }
-                } else {
-                    foreach($wrappedFieldObs as $i => $str) {
-                        if(empty($wrappedFieldText[$i])) {
-                            $wrappedFieldText[$i] = "";
-                        } 
-                    }
-                }
-                $lineHeight = count($wrappedFieldText) * 6;
-                if($this->GetY() + $lineHeight > 280) {
-                    $this->AddPage();
-                } 
-                $this->WrappedStringTableCell(85, 6, $wrappedFieldText);
-                $this->Cell(15, $lineHeight, $valueLabel, 1, 0, 'C');
-                $this->WrappedStringTableCell(85, 6, $wrappedFieldObs);
-                $this->Ln($lineHeight);
+
+                $this->SetFont('Arial', 'BI', 12);
+                $this->MultiCell(0, 5, utf8_decode(strip_tags($f->text)));
+                $this->Ln(2);
+                $this->SetFont('Arial', 'U', 12);
+                $this->Cell(35, 5, utf8_decode('Puntuación'));
+                $this->Cell(35, 5, utf8_decode('Observaciones'));
+                $this->Ln(7);
+                $this->SetFont('Arial', '', 12);
+                $this->Cell(35, 5, utf8_decode($valueLabel));
+                $this->MultiCell(0, 5, utf8_decode(strip_tags($observations)));
+                $this->Ln(12);
             }
         }
     }
 
-    private function Title($title) {
+    private function H1($str) {
         $this->SetFont('Arial', 'B', 20);
         $this->SetTextColor(29, 113, 184);
-        $this->Cell(0, 20, utf8_decode($title), 0, 0, 'C');
-        $this->SetFont('Arial', '', 12);
-        $this->SetTextColor(0, 0, 0);
+        $this->Cell(0, 20, utf8_decode($str), 0, 0, 'C');
+        $this->SetDefaultFont();
         $this->Ln(20);
     }
 
-    private function SubTitle($title) {
+    private function H2($str) {
         $this->SetFont('Arial', 'B', 18);
-        $this->Cell(0, 15, utf8_decode($title), 0, 0, 'C');
-        $this->SetFont('Arial', '', 12);
+        $this->Cell(0, 15, utf8_decode($str), 0, 0, 'C');
+        $this->SetDefaultFont();
+        $this->Ln(20);
+    }
+
+    private function H3($str) {
+        $this->SetFont('Arial', 'B', 14);
+        $this->SetTextColor(29, 113, 184);
+        $this->Cell(0, 15, utf8_decode($str));
+        $this->SetDefaultFont();
         $this->Ln(20);
     }
 
     private function Paragraph($text) {
         $this->MultiCell(0, 5, utf8_decode($text));
         $this->Ln(5);
+    }
+
+    private function SetDefaultFont() {
+        $this->SetFont('Arial', '', 12);
+        $this->SetTextColor(0, 0, 0);
     }
 
     private function getAuditDate() {
@@ -349,44 +330,6 @@ class AuditPDF extends FPDF {
             $this->Ln();
         }
     }
-
-    private function WrapString($str, $max_length) {
-        $result = [];
-        $current = "";
-        $words = explode(" ", strip_tags($str));
-        foreach($words as $w) {
-            $tmp = "$current $w";
-            if(strlen($tmp) > $max_length) {
-                $result[] = $current;
-                $current = "";
-            }
-            $current = "$current $w";
-        }
-        $result[] = $current;
-        return $result;
-    }
-
-    private function WrappedStringTableCell($w, $h, $wrappedStr, $fill=false) {
-        $x = $this->GetX();
-        $y = $this->GetY();
-        foreach($wrappedStr as $i => $str) {
-            $border = 'LR';
-            if($i === 0) {
-                $border = 'LRT';
-            }
-            if($i === count($wrappedStr) - 1) {
-                $border = 'LRB';
-            }
-            if($i === 0 && $i === count($wrappedStr) - 1) {
-                $border = 1;
-            }
-            $this->SetX($x);
-            $this->Cell($w, $h, $str, $border, 0, 'L', $fill);
-            $this->Ln($h);
-        }
-        $this->SetXY($x+$w, $y);
-    }
-
 }
 
 class AuditPdfComponent extends Component {
