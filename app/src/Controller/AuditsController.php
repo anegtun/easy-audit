@@ -1,10 +1,14 @@
 <?php
 namespace App\Controller;
 
+require_once(ROOT . DS . 'vendor' . DS  . 'fpdf' . DS . 'fpdf.php');
+
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
+use FPDF;
+
 
 class AuditsController extends AppController {
     
@@ -223,6 +227,12 @@ class AuditsController extends AppController {
             $this->Flash->error(__('Error deleting audit.'));
         }
         return $this->redirect(['action'=>'index']);
+    }
+
+    public function print() {
+        $this->response->type('application/pdf');
+        $this->layout = 'pdf'; 
+        $this->render();
     }
 
     private function parseDate($date) {
