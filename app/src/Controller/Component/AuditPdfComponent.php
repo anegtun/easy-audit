@@ -74,7 +74,7 @@ class AuditPDF extends FPDF {
         foreach($this->audit->audit_field_measure_values as $m) {
             $img = $m->isInThreshold() ? 'ok.png' : 'nok.png';
             $this->Cell(70, 7, utf8_decode($m->item), 1);
-            $this->Cell(15, 7, utf8_decode('T(ºC)'), 1, 0, 'C');
+            $this->Cell(15, 7, utf8_decode($m->unit), 1, 0, 'C');
             $this->Cell(25, 7, $m->expected, 1, 0, 'C');
             $this->Cell(30, 7, $m->actual, 1, 0, 'C');
             $this->Cell(25, 7, $m->calculateDifference(), 1, 0, 'C');

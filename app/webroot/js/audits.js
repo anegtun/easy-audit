@@ -104,12 +104,14 @@ $(document).ready(function() {
                     input.removeClass('audit-field-select-'+color);
                 }
             });
-            optionsConfig.find('div[data-opt-id='+value+']').each(function(i, div) {
-                const color = $(div).attr('data-opt-color');
-                if(color) {
-                    input.addClass('audit-field-select-'+color);
-                }
-            });
+            if(value) {
+                optionsConfig.find('div[data-opt-id='+value+']').each(function(i, div) {
+                    const color = $(div).attr('data-opt-color');
+                    if(color) {
+                        input.addClass('audit-field-select-'+color);
+                    }
+                });
+            }
         }
     }).change();
 

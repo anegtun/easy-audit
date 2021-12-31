@@ -164,6 +164,7 @@ CREATE TABLE easy_audit_audit_field_measure_values (
   audit_id int unsigned NOT NULL,
   form_template_id int unsigned NOT NULL,
   item varchar(4000) DEFAULT NULL,
+  unit varchar(10) DEFAULT NULL,
   expected float DEFAULT NULL,
   actual float DEFAULT NULL,
   threshold float DEFAULT NULL,
