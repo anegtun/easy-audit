@@ -79,7 +79,7 @@ class AuditPDF extends FPDF {
         $this->AddPage();
         $this->SubTitle('Resumen de puntuaciones');
         $this->SelectReportSummaryTable($template);
-        $this->Ln(5);
+        $this->Ln(10);
         $this->SelectReportSummaryGraph($template);
         $this->Ln(20);
         $this->SelectReportSummaryResult($template);
@@ -126,21 +126,28 @@ class AuditPDF extends FPDF {
     }
 
     private function SelectReportSummaryTable($template) {
+        $history_to_show = count($this->history) > 6 ? array_slice($this->history, -6) : $this->history;
+        $sectionNameMaxLength = 110 - count($history_to_show) * 10;
+        $sectionNameMaxWidth = 175 - count($history_to_show) * 15;
         $rows = [];
         $headerRow = ['values' => [''], 'bg' => [237,239,246], 'color'=>[29,113,184],  'font' => ['Arial','B',10]];
-        foreach($this->history as $h) {
+        foreach($history_to_show as $h) {
             $headerRow['values'][] = strtoupper($h->date->i18nFormat('MMM yy'));
         }
         $rows[] = $headerRow;
         foreach($template->form_template_sections as $s) {
-            $row = ['values' => [$s->name]];
-            foreach($this->history as $h) {
+            $sectionName = $s->name;
+            if(strlen($sectionName) > $sectionNameMaxLength) {
+                $sectionName = substr($s->name, 0, 110 - count($history_to_show) * 10).'...';
+            }
+            $row = ['values' => [$sectionName]];
+            foreach($history_to_show as $h) {
                 $row['values'][] = $h->score_section[$s->id];
             }
             $rows[] = $row;
         }
         $totalRow = ['values' => ['Total'], 'font' => ['Arial','B',10]];
-        foreach($this->history as $h) {
+        foreach($history_to_show as $h) {
             $totalRow['values'][] = $h->score_templates[$template->id];
         }
         $rows[] = $totalRow;
@@ -150,9 +157,9 @@ class AuditPDF extends FPDF {
             'font' => ['Arial','',10],
             'height' => 8,
             'marginLeft' => 20,
-            'width' => [165 - count($this->history) * 15]
+            'width' => [$sectionNameMaxWidth]
         ];
-        foreach($this->history as $h) {
+        foreach($history_to_show as $h) {
             $tableConfig['align'][] = 'R';
             $tableConfig['width'][] = 15;
         }
@@ -161,34 +168,33 @@ class AuditPDF extends FPDF {
 
     private function SelectReportSummaryGraph($template) {
         $maxHeight = 40;
-        $maxWidth = 180;
+        $maxWidth = 175;
         $marginLeft = 20;
-        $gap = $maxWidth - (count($this->history) * 40) / (count($this->history) - 1);
+        $colWidth = min([20, $maxWidth / count($this->history) / 2]);
+        $gap = ($maxWidth - $colWidth * count($this->history)) / (2 * count($this->history));
         $y = $this->GetY();
         $this->SetFillColor(29, 113, 184);
         foreach($this->history as $i => $h) {
-            $x = $marginLeft + $i * $gap + 20;
+            $x = $marginLeft + $gap + $i * ($colWidth + 2 * $gap);
             $score = $h->score_templates[$template->id];
             $height = $maxHeight * $score / 100;
             $this->SetXY($x, $y);
-            $this->Cell(20, 10, $score, 0, 0, 'C');
+            $this->Cell($colWidth, 10, $score, 0, 0, 'C');
             $this->Ln();
             $this->SetX($x);
-            $this->Cell(20, $maxHeight - $height);
+            $this->Cell($colWidth, $maxHeight - $height);
             $this->Ln();
             $this->SetX($x);
-            $this->Cell(20, $height, '', 0, 0, '', true);
-            $lastX = $this->GetX();
+            $this->Cell($colWidth, $height, '', 0, 0, '', true);
         }
         $this->SetFillColor(255, 255, 255);
         $this->Ln();
         $this->SetX($marginLeft);
-        $this->Cell($lastX - $marginLeft + 20, 5, '', 'T');
+        $this->Cell($maxWidth, 5, '', 'T');
         $this->Ln();
-        $this->SetX($marginLeft + 20);
+        $this->SetX($marginLeft);
         foreach($this->history as $i => $h) {
-            $this->Cell(20, 3, strtoupper($h->date->i18nFormat('MMM yy')), 0, 0, 'C');
-            $this->Cell($gap - 20, 3);
+            $this->Cell($colWidth + 2 * $gap, 3, strtoupper($h->date->i18nFormat('MMM yy')), 0, 0, 'C');
         }
     }
 
