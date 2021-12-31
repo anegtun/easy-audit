@@ -229,7 +229,22 @@ class AuditsController extends AppController {
         return $this->redirect(['action'=>'index']);
     }
 
-    public function print() {
+    public function print($id) {
+        $audit = $this->Audits->get($id, [ 'contain' => [
+            'AuditFieldOptionsetValues' => [
+                'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
+                'FormTemplateOptionsetValues'
+            ],
+            'Customers',
+            'FormTemplates' => [
+                'FormTemplateSections' => [ 'FormTemplateFieldsOptionset', 'sort' => 'position' ],
+                'sort' => 'name'
+            ],
+            'Users'
+        ]]);
+        $audit->calculateScores();
+        $this->set(compact('audit'));
+
         $this->response->type('application/pdf');
         $this->layout = 'pdf'; 
         $this->render();

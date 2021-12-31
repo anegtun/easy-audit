@@ -2,13 +2,15 @@
 
 class AuditPDF extends FPDF {
 
+    public $audit;
+
     function Header() {
         if($this->PageNo() > 1) {
             $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'main.png', 10, 8, 25);
             $this->SetFont('Arial', '', 10);
             $this->Cell(0, 10, utf8_decode('Informe Auditoría Higiénico-Sanitaria'), 0, 0, 'R');
             $this->Ln(5);
-            $this->Cell(0, 10, utf8_decode('CLIENTE XXX'), 0, 0, 'R');
+            $this->Cell(0, 10, utf8_decode($this->audit->customer->name), 0, 0, 'R');
             $this->Ln(20);
         }
     }
@@ -25,6 +27,14 @@ class AuditPDF extends FPDF {
         }
     }
 
+    function Title($title) {
+        $this->SetFont('Arial', 'B', 20);
+        $this->SetTextColor(29, 113, 184);
+        $this->Cell(0, 20, utf8_decode($title), 0, 0, 'C');
+        $this->SetFont('Arial', '', 12);
+        $this->SetTextColor(0, 0, 0);
+    }
+
     function Cover() {
         // TODO Create image
         $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'main.png', 50, 50, 100);
@@ -33,14 +43,18 @@ class AuditPDF extends FPDF {
         $this->SetFont('Arial', 'B', 25);
         $this->Cell(0, 0, utf8_decode('Informe Auditoría Higiénico-Sanitaria'), 0, 0, 'C');
         $this->Ln(30);
-        $this->Cell(0, 0, utf8_decode('CLIENTE XXX'), 0, 0, 'C');
+        $this->Cell(0, 0, utf8_decode($this->audit->customer->name), 0, 0, 'C');
     }
-    function Avaliation() {
-        $this->SetFont('Arial', 'B', 20);
-        $this->SetTextColor(29, 113, 184);
-        $this->Cell(0, 20, utf8_decode('Evaluación de la auditoría'), 0, 0, 'C');
-        $this->SetFont('Arial', '', 12);
-        $this->SetTextColor(0, 0, 0);
+
+    function SelectReport($template) {
+        $this->AddPage();
+        $this->SelectReportIntro($template);
+        $this->AddPage();
+        $this->SelectReportSummart($template);
+    }
+
+    function SelectReportIntro($template) {
+        $this->Title('Evaluación de la auditoría');
         $this->Ln(20);
         $this->MultiCell(0, 5, utf8_decode('La presente Auditoría Interna Higiénico-Sanitaria se ha evaluado teniendo en cuenta distintos apartados esenciales para llevar a cabo un correcto Sistema de Autocontrol. Este sistema necesario y obligatorio para las empresas alimentarias según el Reglamento (CE) 852/2004, está basado en los principios de Análisis de Peligros y Puntos de Control Críticos (APPCC).'));
         $this->Ln(5);
@@ -81,13 +95,55 @@ class AuditPDF extends FPDF {
         $this->Ln(10);
         $this->SetFont('Arial', 'B', 15);
         $this->Cell(20);
-        $this->MultiCell(100, 0, 'CLIENTE XXX');
+        $this->MultiCell(100, 0, utf8_decode($this->audit->customer->name));
         $this->SetFont('Arial', '', 12);
         $this->Cell(120);
-        $this->Cell(0, 0, 'Juana de los palotes');
+        $this->Cell(0, 0, utf8_decode($this->audit->auditor->name));
         $this->Ln(7);
         $this->Cell(120);
+        // TODO Add to user model
         $this->Cell(0, 0, 'Auditora de APTHISA');
+    }
+
+    function SelectReportSummart($template) {
+        $this->Title('Resumen de puntuaciones');
+        $this->Ln(20);
+        $this->SetFont('Arial', '', 10);
+        foreach($template->form_template_sections as $s) {
+            $this->SetX(20);
+            $this->Cell(150, 8, utf8_decode($s->name), 1, 0);
+            $this->Cell(15, 8, round($s->score)." ", 1, 0, 'R');
+            $this->Ln(8);
+        }
+        $this->SetX(20);
+        $this->SetFont('Arial', 'B', 12);
+        $this->Cell(150, 8, utf8_decode('Total'), 1, 0);
+        $this->Cell(15, 8, $template->score." ", 1, 0, 'R');
+        $this->Ln(20);
+        $this->SelectReportSummaryTotalTable($template);
+    }
+
+    function SelectReportSummaryTotalTable($template) {
+        $this->SetFont('Arial', 'B', 12);
+        $this->SetX(90);
+        $this->Cell(55, 8, utf8_decode('Total'), 1, 0, 'C');
+        $this->Cell(40, 8, "{$template->score}%", 1, 0, 'C');
+        $this->Ln(8);
+        $this->SetX(90);
+        $this->Cell(55, 8, utf8_decode('Puntuación'), 1, 0, 'C');
+        if($template->score < 65) {
+            $this->SetFillColor(235, 204, 209);
+            $letter = 'C';
+        } elseif($template->score < 85) {
+            $this->SetFillColor(250, 235, 204);
+            $letter = 'B';
+        } else {
+            $this->SetFillColor(214, 233, 198);
+            $letter = 'A';
+        }
+        $this->Cell(40, 8, $letter, 1, 0, 'C', true);
+        $this->SetFillColor(0, 0, 0);
+
     }
 
 }
@@ -95,11 +151,15 @@ class AuditPDF extends FPDF {
 
 $pdf = new AuditPDF();
 $pdf->AliasNbPages();
+$pdf->audit = $audit;
 
 $pdf->AddPage();
 $pdf->Cover();
 
-$pdf->AddPage();
-$pdf->Avaliation();
+foreach($audit->form_templates as $t) {
+    if($t->type === 'select') {
+        $pdf->SelectReport($t);
+    }
+}
 
 $pdf->Output();
