@@ -31,11 +31,11 @@ class AuditsTable extends Table {
 
     public function getComplete($id) {
         $audit = $this->get($id, [ 'contain' => [
+            'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
             'AuditFieldOptionsetValues' => [
                 'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
                 'FormTemplateOptionsetValues'
             ],
-            'AuditFieldMeasureValues',
             'Customers',
             'FormTemplates' => [
                 'sort' => 'name',
