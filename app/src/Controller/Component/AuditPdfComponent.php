@@ -148,15 +148,10 @@ class AuditPDF extends FPDF {
     }
 
     private function SelectReportDetail($template) {
-        $this->SetFont('Arial', 'B', 10);
-        $this->SetFillColor(237, 239, 246);
-        $this->SetTextColor(29, 113, 184);
-        $this->Cell(85, 8, utf8_decode('Requisitos'), 1, 0, 'C', true);
-        $this->Cell(15, 8, utf8_decode('Pt'), 1, 0, 'C', true);
-        $this->Cell(85, 8, utf8_decode('Aspectos destacables'), 1, 0, 'C', true);
-        $this->Ln(8);
-        $this->SetFillColor(255, 255, 255);
-        $this->SetTextColor(0, 0, 0);
+        $this->Table(
+            [ ['bg' => [237,239,246], 'color'=>[29,113,184], 'values' => ['Requisitos', 'Pt', 'Aspectos destacables']] ],
+            ['font' => ['Arial', 'B', 10], 'height' => 8, 'width' => [85,15,85]]
+        );
 
         foreach($template->form_template_sections as $s) {
             $wrappedSectionName = $this->WrapString(utf8_decode($s->name), 45);
@@ -170,7 +165,7 @@ class AuditPDF extends FPDF {
             $this->SetTextColor(29, 113, 184);
             $this->WrappedStringTableCell(85, 6, $wrappedSectionName, true);
             $this->Cell(15, $lineHeight, utf8_decode($s->score), 1, 0, 'C', true);
-            $this->Cell(85, $lineHeight, '', 1, 0, 'L', true);
+            $this->Cell(85, $lineHeight, '', 1, 0, 'C', true);
             $this->Ln($lineHeight);
             $this->SetTextColor(0, 0, 0);
 
