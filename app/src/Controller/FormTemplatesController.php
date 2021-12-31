@@ -97,15 +97,15 @@ class FormTemplatesController extends AppController {
     }
 
     public function detail($id) {
-        $template = $this->FormTemplates->get($id, [ 'contain' => ['Customers'] ]);
+        $template = $this->FormTemplates->get($id, [ 'contain' => ['Audits', 'Customers'] ]);
         $optionsets = $this->FormTemplateOptionsets->findForSelect();
         $sections = $this->FormTemplateSections->find()
             ->where(['form_template_id' => $id])
-            ->order(['position' => 'ASC'])
-            ->contain(['FormTemplateFieldsOptionset' => ['sort' => ['FormTemplateFieldsOptionset.position' => 'ASC']]]);
+            ->order('position')
+            ->contain(['FormTemplateFieldsOptionset' => ['sort' => 'position']]);
         $allFields = $this->FormTemplateFieldsOptionset->find()
             ->where(['form_template_id' => $id])
-            ->order(['position' => 'ASC']);
+            ->order('position');
         $this->set(compact('template', 'optionsets', 'sections', 'allFields'));
     }
 

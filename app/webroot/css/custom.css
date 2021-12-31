@@ -22,6 +22,10 @@ legend > a:hover, legend > a:active, legend > a:focus {
     display: inline;
 }
 
+.form-template-audit-info {
+    margin-top: 1em;
+}
+
 #auditForm .tab-content {
     margin-bottom: 1em;
 }
