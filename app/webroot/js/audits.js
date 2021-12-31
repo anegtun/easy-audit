@@ -94,9 +94,7 @@ $(document).ready(function() {
 
     $('.audit-field-select').change(function() {
         const input = $(this);
-        const templateId = input.attr('data-template-id');
-        const value = input.val();
-        const optionsConfig = $('#optionset-'+templateId);
+        const optionsConfig = $('#optionset-'+input.attr('data-optionset-id'));
         if(optionsConfig) {
             optionsConfig.find('div[data-opt-color]').each(function(i, div) {
                 const color = $(div).attr('data-opt-color');
@@ -104,8 +102,8 @@ $(document).ready(function() {
                     input.removeClass('audit-field-select-'+color);
                 }
             });
-            if(value) {
-                optionsConfig.find('div[data-opt-id='+value+']').each(function(i, div) {
+            if(input.val()) {
+                optionsConfig.find('div[data-opt-id='+input.val()+']').each(function(i, div) {
                     const color = $(div).attr('data-opt-color');
                     if(color) {
                         input.addClass('audit-field-select-'+color);

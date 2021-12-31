@@ -67,7 +67,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
                     <?= $this->EasyAuditForm->cleanControl("field_values[{$template->id}][{$f->id}]", [
                         'id' => "field-values-{$f->id}",
                         'classes' => "audit-field-select",
-                        'data-template-id' => $template->id,
+                        'data-optionset-id' => $f->optionset_id,
                         'options' => $this->EasyAuditForm->objectToKeyValue($optionset_values[$f->optionset_id], 'id', 'label'),
                         'value' => empty($value) ? '' : $value->optionset_value_id
                     ]) ?>
