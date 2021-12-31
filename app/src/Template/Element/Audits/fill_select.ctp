@@ -13,7 +13,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
         <strong><?= __('Warning!') ?></strong> <?= __('Observations for the following items are the same as the last audit: ') ?>
         <ul>
             <?php foreach($fields_cloned as $f) : ?>
-                <li><?= "{$f->form_template_fields_optionset->form_template_section->position}.{$f->form_template_fields_optionset->position}" ?></li>
+                <li><?= $this->EasyAuditTemplate->fieldLabel($f->form_template_fields_optionset->form_template_section, $f->form_template_fields_optionset, false) ?></li>
             <?php endforeach ?>
         </ul>
     </div>
@@ -34,7 +34,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
 
         <legend>
             <a href="#<?= $collapseId ?>" data-toggle="collapse">
-                <?= "{$s->position}. {$s->name} ({$s->score})" ?> 
+                <?= $this->EasyAuditTemplate->section($s) . " ({$s->score})" ?> 
             </a>
         </legend>
 
@@ -60,7 +60,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
 
                     <label for="<?= "field-values-{$f->id}" ?>">
                         <?= $hasImgsOrObs ? $this->EasyAuditHtml->gliphicon('warning-sign', ['classes'=>['text-warning']]) : '' ?>
-                        <span class="audit-field-position"><?= "{$s->position}.{$f->position}." ?></span>
+                        <span class="audit-field-position"><?= $this->EasyAuditTemplate->fieldLabel($s, $f, false) ?>.</span>
                         <?= $f->text ?>
                     </label>
 
