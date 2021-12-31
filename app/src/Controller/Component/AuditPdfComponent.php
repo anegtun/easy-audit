@@ -13,6 +13,7 @@ class AuditPDF extends FPDF {
     public $history;
 
     function Header() {
+        $this->SetTextColor(0, 0, 0);
         if($this->PageNo() > 1) {
             $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'main.png', 10, 8, 25);
             $this->SetFont('Arial', '', 10);
@@ -26,6 +27,7 @@ class AuditPDF extends FPDF {
     }
 
     function Footer() {
+        $this->SetTextColor(0, 0, 0);
         if($this->PageNo() > 1) {
             $this->SetY(-15);
             $this->SetFont('Arial', '', 10);
@@ -218,8 +220,9 @@ class AuditPDF extends FPDF {
     }
 
     private function SelectReportDetail($template) {
+        $data = [];
         foreach($template->form_template_sections as $s) {
-            $this->H3($s->name);
+            $section = ['title' => $s->name, 'fields' => []];
             foreach($s->form_template_fields_optionset as $f) {
                 $value = '';
                 foreach($this->audit->audit_field_optionset_values as $fv) {
@@ -227,20 +230,32 @@ class AuditPDF extends FPDF {
                         $value = $fv;
                     }
                 }
-                $observations = empty($value->observations) ? '-' : $value->observations;
-                $valueLabel = empty($value->form_template_optionset_value->label) ? '' : $value->form_template_optionset_value->label;
-
-                $this->SetFont('Arial', 'BI', 12);
-                $this->MultiCell(0, 5, utf8_decode(strip_tags($f->text)));
-                $this->Ln(2);
-                $this->SetFont('Arial', 'U', 12);
-                $this->Cell(35, 5, utf8_decode('Puntuación'));
-                $this->Cell(35, 5, utf8_decode('Observaciones'));
-                $this->Ln(7);
-                $this->SetFont('Arial', '', 12);
-                $this->Cell(35, 5, utf8_decode($valueLabel));
-                $this->MultiCell(0, 5, utf8_decode(strip_tags($observations)));
-                $this->Ln(12);
+                if(empty($value->form_template_optionset_value->is_default)) {
+                    $section['fields'][] = [
+                        'text' => $f->text,
+                        'result' => empty($value->form_template_optionset_value->label) ? '' : $value->form_template_optionset_value->label,
+                        'observations' => empty($value->observations) ? '-' : $value->observations,
+                    ];
+                }
+            }
+            $data[] = $section;
+        }
+        foreach($data as $e) {
+            if(!empty($e['fields'])) {
+                $this->H3($e['title']);
+                foreach($e['fields'] as $f) {
+                    $this->SetFont('Arial', 'BI', 12);
+                    $this->MultiCell(0, 5, utf8_decode(strip_tags($f['text'])));
+                    $this->Ln(2);
+                    $this->SetFont('Arial', 'U', 12);
+                    $this->Cell(35, 5, utf8_decode('Puntuación'));
+                    $this->Cell(35, 5, utf8_decode('Observaciones'));
+                    $this->Ln(7);
+                    $this->SetFont('Arial', '', 12);
+                    $this->Cell(35, 5, utf8_decode($f['result']));
+                    $this->MultiCell(0, 5, utf8_decode(strip_tags($f['observations'])));
+                    $this->Ln(12);
+                }
             }
         }
     }
