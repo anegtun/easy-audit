@@ -19,11 +19,11 @@ class AuditPDF extends FPDF {
         if($this->PageNo() > 1) {
             $this->SetY(-15);
             $this->SetFont('Arial', '', 10);
-            $this->Cell(0, 5, utf8_decode('Centro Tecnológico Higiénico-Sanitario APTHISA'));
-            $this->Cell(0, 5, utf8_decode('Juntos alimentamos la seguridad'), 0, 0, 'R');
+            $this->Cell(95, 5, utf8_decode('Centro Tecnológico Higiénico-Sanitario APTHISA'));
+            $this->Cell(95, 5, utf8_decode('Juntos alimentamos la seguridad'), 0, 0, 'R');
             $this->Ln();
-            $this->Cell(0, 5, utf8_decode('91 110 22 24 / www.apthisa.com'));
-            $this->Cell(5, 5, utf8_decode('Página ').$this->PageNo().' de {nb}', 0, 0, 'R');
+            $this->Cell(95, 5, utf8_decode('91 110 22 24 / www.apthisa.com'));
+            $this->Cell(98, 5, utf8_decode('Página ').$this->PageNo().' de {nb}', 0, 0, 'R');
         }
     }
 
