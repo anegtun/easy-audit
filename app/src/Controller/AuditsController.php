@@ -195,8 +195,9 @@ class AuditsController extends AppController {
     public function print($id) {
         $audit = $this->Audits->getComplete($id);
         $audits = $this->Audits->findHistory($audit)->toList();
+        $images = $this->AuditFile->readPhotos($id);
 
-        $content = $this->AuditPdf->generate($audit, $audits);
+        $content = $this->AuditPdf->generate($audit, $audits, $images);
 
         $response = $this->response
             ->withStringBody($content)
