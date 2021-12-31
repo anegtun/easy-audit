@@ -23,6 +23,9 @@ $has_audits = !empty($template->audits);
     <?php endif ?>
     <button type="button" class="btn btn-default modal-clone-button" data-template-id="<?=$template->id?>" data-template-name="<?=$template->name?>"><?= __('Clone template') ?></button>
     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
+    <?php if($has_audits) : ?>
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-audits"><?= __('See audits') ?></button>
+    <?php endif ?>
     <?php if(!$has_audits) : ?>
         <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $template->id]) ?>
     <?php endif ?>
@@ -157,6 +160,26 @@ $has_audits = !empty($template->audits);
                         <?php endforeach ?>
                     </tbody>
                 </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="modal-audits" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><?= __('Audits') ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <?= $this->element('Audits/list', ['audits' => $template->audits]) ?>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>

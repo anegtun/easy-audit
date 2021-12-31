@@ -97,7 +97,14 @@ class FormTemplatesController extends AppController {
     }
 
     public function detail($id) {
-        $template = $this->FormTemplates->get($id, [ 'contain' => ['Audits', 'Customers'] ]);
+        $template = $this->FormTemplates->get($id, [ 'contain' => [
+            'Audits' => [
+                'Customers',
+                'Users',
+                'sort' => ['date' => 'DESC']
+            ],
+            'Customers'
+        ]]);
         $optionsets = $this->FormTemplateOptionsets->findForSelect();
         $sections = $this->FormTemplateSections->find()
             ->where(['form_template_id' => $id])
