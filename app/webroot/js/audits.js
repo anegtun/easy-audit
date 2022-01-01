@@ -75,12 +75,15 @@ $(document).ready(function() {
 
     $('.audit-open-all .open-button').click(function(e) {
         e.preventDefault();
-        const fieldsset = $(this).parents('.audit-open-all').siblings('fieldset').find('.collapse').collapse("show");
+        const fieldsset = $(this).parents('.audit-open-all').siblings('fieldset').find('.collapse').attr('data-collapse-scroll', false).collapse("show");
         fieldsset.find("textarea")
             .filter(function() { return $(this).val() != ""; })
             .parents('.audit-observations')
             .find('.audit-observations-open')
             .click();
+        setTimeout(function() {
+            fieldsset.attr('data-collapse-scroll','');
+        }, 1000);
     });
 
     $('.audit-open-all .close-button').click(function(e) {

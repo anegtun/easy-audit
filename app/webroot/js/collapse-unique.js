@@ -1,11 +1,15 @@
 $(document).ready(function() {
 
     $('[data-toggle="collapse-unique"]').each(function(i, item) {
-        const clicked = this;
-        $(clicked.hash).on('shown.bs.collapse', function() {
-            $('html, body').animate({ scrollTop: $(clicked).offset().top }, 200);
-        }).on('show.bs.collapse', function() {
-            $('html, body').animate({ scrollTop: $(clicked).offset().top }, 200);
+        
+        $(item.hash).on('show.bs.collapse', function(e) {
+            if($(this).attr('data-collapse-scroll') !== 'false'){
+                $('html, body').animate({ scrollTop: $(item).offset().top }, 200);
+            }
+        }).on('shown.bs.collapse', function(e) {
+            if($(this).attr('data-collapse-scroll') !== 'false'){
+                $('html, body').animate({ scrollTop: $(item).offset().top }, 200);
+            }
         });
     });
 
