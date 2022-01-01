@@ -8,12 +8,14 @@ class AuditEmailComponent extends Component {
 
     public function sendReport($audit, $content) {
         $filename = $audit->getReportFilename();
+        $to = explode(',', $audit->customer->emails);
+        array_walk($to, function (&$e) { $e = trim($e); });
 
         $email = new Email('default');
         $email->viewBuilder()->setTemplate('audit_report', 'default');
         $email
             ->setEmailFormat('both')
-            ->setTo('nitta18@gmail.com')
+            ->setTo($to)
             ->setSubject(__('Audit report'))
             ->setViewVars(compact('audit'))
             ->setAttachments([
@@ -24,5 +26,5 @@ class AuditEmailComponent extends Component {
             ])
             ->send();
     }
-
+    
 }

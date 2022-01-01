@@ -208,11 +208,14 @@ class AuditsController extends AppController {
 
     public function send($id) {
         $audit = $this->Audits->getComplete($id);
-        $content = $this->generateReport($audit);
-
-        $this->AuditEmail->sendReport($audit, $content);
-        die('YAI!');
-        $this->Flash->success(__('Email sent correctly.'));
+        if(empty($audit->customer->emails)) {
+            $this->Flash->error(__('There are no emails configured for this customer.'));
+        } else {
+            $content = $this->generateReport($audit);
+            $this->AuditEmail->sendReport($audit, $content);
+            die('YAI!');
+            $this->Flash->success(__('Email sent correctly.'));
+        }
         $this->redirect(['action'=>'index']);
     }
 
