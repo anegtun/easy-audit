@@ -262,9 +262,9 @@ class AuditPDF extends FPDF {
                                 $this->AddPage();
                                 $y = $this->GetY();
                             }
-                            $this->Image(WWW_ROOT . DS . $photo, $x, $y, 70);
+                            $this->Image(WWW_ROOT . DS . $photo, $x, $y, 60);
                             if($i % 2 === 1 || $i === count($f['photos']) - 1) {
-                                $this->Ln(110);
+                                $this->Ln(120);
                                 $y = $this->GetY();
                             }
                         }

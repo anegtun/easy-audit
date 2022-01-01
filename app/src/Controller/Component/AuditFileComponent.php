@@ -7,7 +7,7 @@ use Cake\Filesystem\Folder;
 
 class AuditFileComponent extends Component {
 
-    const MAX_SIZE = 1600;
+    const MAX_SIZE = 1200;
 
     public function readPhotos($auditId) {
         $result = [];
