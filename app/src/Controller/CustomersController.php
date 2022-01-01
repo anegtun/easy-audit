@@ -34,6 +34,9 @@ class CustomersController extends AppController {
         $customer = $this->Customers->newEntity();
         if ($this->request->is('post') || $this->request->is('put')) {
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
+            $customer->emails = preg_replace("/\r\n|\r|\n/", ',', $customer->emails);
+            $customer->emails = preg_replace("/[,]+/", ',', $customer->emails);
+            $customer->emails = preg_replace("/[,]([^\s])/", ', $1', $customer->emails);
             if ($this->Customers->save($customer)) {
                 $this->Flash->success(__('Customer saved correctly.'));
             } else {

@@ -16,8 +16,14 @@ $this->set('headerBreadcrumbs', [
             <legend><?= __('Customer details') ?></legend>
             <div class="form-row">
                 <?= $this->Form->control('name', ['label'=>__('Name')]) ?>
-                <?= $this->Form->control('emails', ['label'=>__('Emails')]) ?>
+                </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label><?= __('Emails') ?></label>
+                    <?= $this->Form->textarea('emails') ?>
+                </div>
             </div>
+            <p></p>
             <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
             <?php if(!empty($customer->id)) : ?>
                 <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $customer->id]) ?>
