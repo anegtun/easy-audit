@@ -13,14 +13,14 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
         <!-- Favicon -->
-        <?= $this->Html->meta('favicon.ico', '/images/favicon/favicon.ico', array('type' => 'icon')) ?>
+        <?= $this->Html->meta('favicon.ico', '/images/favicon/favicon.ico', ['type' => 'icon']) ?>
         <!-- custom:css -->
-        <?= $this->Html->css(array("/maqint/maqint", "basic-page", "custom")) ?>
+        <?= $this->Html->css(["/maqint/maqint", "basic-page", "custom"]) ?>
         <!-- libs:js -->
         <?= $this->Html->script("/libs/ckeditor5-build-classic/ckeditor") ?>
         <?= $this->Html->script("/libs/chartjs/chart.min") ?>
         <!-- custom:js -->
-        <?= $this->Html->script(array("/maqint/maqint-config", "/maqint/maqint", "/maqint/support")) ?>
+        <?= $this->Html->script(["/maqint/maqint-config", "/maqint/maqint", "/maqint/support", "collapse-unique"]) ?>
         <!-- outros -->
         <?= $this->fetch('meta') ?>
         <?= $this->fetch('css') ?>

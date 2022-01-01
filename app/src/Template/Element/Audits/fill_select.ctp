@@ -33,7 +33,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
     <fieldset>
 
         <legend>
-            <a href="#<?= $collapseId ?>" data-toggle="collapse">
+            <a href="#<?= $collapseId ?>" data-toggle="collapse-unique">
                 <?= $this->EasyAuditTemplate->section($s) . " ({$audit->score_section[$s->id]})" ?> 
             </a>
         </legend>
@@ -43,13 +43,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
             <?php foreach($s->form_template_fields_optionset as $f) : ?>
 
                 <?php
-                    $value = null;
-                    foreach($audit->audit_field_optionset_values as $fv) {
-                        if($fv->form_template_field_id === $f->id) {
-                            $value = $fv;
-                            break;
-                        }
-                    }
+                    $value = $audit->getFieldOptionsetValue($f);
                     $hasObservations = !empty($value) && !empty($value->observations);
                     $imgs = empty($field_images[$template->id][$f->id]) ? [] : $field_images[$template->id][$f->id];
                     $hasImgs = !empty($imgs);
@@ -64,13 +58,29 @@ foreach($audit->audit_field_optionset_values as $fv) {
                         <?= $f->text ?>
                     </label>
 
-                    <?= $this->EasyAuditForm->cleanControl("field_values[{$template->id}][{$f->id}]", [
-                        'id' => "field-values-{$f->id}",
-                        'classes' => "audit-field-select",
-                        'data-optionset-id' => $f->optionset_id,
-                        'options' => $this->EasyAuditForm->objectToKeyValue($optionset_values[$f->optionset_id], 'id', 'label'),
-                        'value' => empty($value) ? '' : $value->optionset_value_id
-                    ]) ?>
+                    <div class="audit-field-select" data-optionset-id="<?= $f->optionset_id ?>">
+                        <?php foreach($optionset_values[$f->optionset_id] as $option) : ?>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="<?= "field_values[{$template->id}][{$f->id}]" ?>"
+                                    value="<?= $option->id ?>"
+                                    <?= !empty($value) && $value->optionset_value_id === $option->id ? 'checked="checked"' : '' ?>
+                                    <?= !empty($option->is_default) ? 'data-default="true"' : '' ?>
+                                />
+                                <span><?= $option->label ?></span>
+                            </label>
+                        <?php endforeach ?>
+                        <label>
+                            <input
+                                type="radio"
+                                name="<?= "field_values[{$template->id}][{$f->id}]" ?>"
+                                value=""
+                                <?= empty($value) ? 'checked="checked"' : '' ?>
+                            />
+                            <span>N/A</span>
+                        </label>
+                    </div>
 
                     <div class="audit-observations" data-has-observations="<?= $hasImgsOrObs ? true : false ?>">
                         <a class="audit-observations-open" href="#"><?= __('+ add observations & photos') ?></a>
