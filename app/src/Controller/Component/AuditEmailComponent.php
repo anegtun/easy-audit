@@ -6,14 +6,15 @@ use Cake\Mailer\Email;
 
 class AuditEmailComponent extends Component {
 
-    public function send() {
+    public function send($audit) {
         $email = new Email('default');
-        $email->viewBuilder()->setTemplate('default', 'default');
+        $email->viewBuilder()->setTemplate('audit_report', 'default');
         $email
             ->setEmailFormat('both')
             ->setTo('nitta18@gmail.com')
-            ->setSubject('QUE PASA')
-            ->send('TEST');
+            ->setSubject(__('Audit report'))
+            ->setViewVars(compact('audit'))
+            ->send();
     }
 
 }
