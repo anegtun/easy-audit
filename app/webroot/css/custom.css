@@ -43,10 +43,6 @@ legend > a:hover, legend > a:active, legend > a:focus {
     margin-bottom: 2em;
 }
 
-.audit-field label > * {
-    display: inline;
-}
-
 .audit-field .glyphicon-warning-sign {
     font-size: larger;
 }
@@ -57,21 +53,27 @@ legend > a:hover, legend > a:active, legend > a:focus {
     font-size: larger;
 }
 
+.audit-field-select {
+    border-radius: 15px;
+    display: flex;
+    padding: 1em;
+}
+
 .audit-field-select-success {
     background-color: #dff0d8;
-    border-color: #d6e9c6;
+    border: 1px solid #d6e9c6;
     color: #3c763d;
 }
 
 .audit-field-select-warning {
     background-color: #fcf8e3;
-    border-color: #faebcc;
+    border: 1px solid #faebcc;
     color: #8a6d3b;
 }
 
 .audit-field-select-danger {
     background-color: #f2dede;
-    border-color: #ebccd1;
+    border: 1px solid #ebccd1;
     color: #a94442;
 }
 
@@ -243,6 +245,10 @@ legend > a:hover, legend > a:active, legend > a:focus {
         font-size: 1.1em;
     }
 
+    .audit-field-select {
+        justify-content: space-between;
+    }
+
     .audit-measure {
         margin-bottom: 1.5em;
     }
@@ -262,6 +268,13 @@ legend > a:hover, legend > a:active, legend > a:focus {
     }
     .form-row > *:last-child {
         margin-right: 0;
+    }
+
+    .audit-field-select label {
+        min-width: 5em;
+    }
+    .audit-field-select input {
+        margin-right: .5em;
     }
 }
 

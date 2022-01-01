@@ -60,24 +60,24 @@ foreach($audit->audit_field_optionset_values as $fv) {
 
                     <div class="audit-field-select" data-optionset-id="<?= $f->optionset_id ?>">
                         <?php foreach($optionset_values[$f->optionset_id] as $option) : ?>
-                            <label class="radio-inline">
+                            <label>
                                 <input
                                     type="radio"
                                     name="<?= "field_values[{$template->id}][{$f->id}]" ?>"
                                     value="<?= $option->id ?>"
                                     <?= !empty($value) && $value->optionset_value_id === $option->id ? 'checked="checked"' : '' ?>
                                 />
-                                <?= $option->label ?>
+                                <span><?= $option->label ?></span>
                             </label>
                         <?php endforeach ?>
-                        <label class="radio-inline">
+                        <label>
                             <input
                                 type="radio"
                                 name="<?= "field_values[{$template->id}][{$f->id}]" ?>"
                                 value=""
                                 <?= empty($value) ? 'checked="checked"' : '' ?>
                             />
-                            N/A
+                            <span>N/A</span>
                         </label>
                     </div>
 
