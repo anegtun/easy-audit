@@ -116,7 +116,7 @@ $(document).ready(function() {
                 });
             }
         }
-        if(!$(this).attr('data-default')) {
+        if($(this).attr('data-open-observations')) {
             fieldDiv.find('.audit-observations-open').click();
             fieldDiv.find('.audit-observations textarea').focus();
         }

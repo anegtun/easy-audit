@@ -66,7 +66,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
                                     name="<?= "field_values[{$template->id}][{$f->id}]" ?>"
                                     value="<?= $option->id ?>"
                                     <?= !empty($value) && $value->optionset_value_id === $option->id ? 'checked="checked"' : '' ?>
-                                    <?= !empty($option->is_default) ? 'data-default="true"' : '' ?>
+                                    <?= empty($option->is_default) ? 'data-open-observations="true"' : '' ?>
                                 />
                                 <span><?= $option->label ?></span>
                             </label>
