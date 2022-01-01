@@ -92,26 +92,28 @@ $(document).ready(function() {
             .click();
     });
 
-    $('.audit-field-select').change(function() {
-        const input = $(this);
-        const optionsConfig = $('#optionset-'+input.attr('data-optionset-id'));
+    $('.audit-field-select input').change(function() {
+        const value = $(this).val();
+        const container = $(this).parents('.audit-field-select');
+        const optionsConfig = $('#optionset-'+container.attr('data-optionset-id'));
         if(optionsConfig) {
             optionsConfig.find('div[data-opt-color]').each(function(i, div) {
                 const color = $(div).attr('data-opt-color');
                 if(color) {
-                    input.removeClass('audit-field-select-'+color);
+                    container.removeClass('audit-field-select-'+color);
                 }
             });
-            if(input.val()) {
-                optionsConfig.find('div[data-opt-id='+input.val()+']').each(function(i, div) {
+            if(value) {
+                optionsConfig.find('div[data-opt-id='+value+']').each(function(i, div) {
                     const color = $(div).attr('data-opt-color');
                     if(color) {
-                        input.addClass('audit-field-select-'+color);
+                        container.addClass('audit-field-select-'+color);
                     }
                 });
             }
         }
-    }).change();
+    })
+    $('.audit-field-select input:checked').change();
 
     $('.add-measure').click(function(e) {
         e.preventDefault();

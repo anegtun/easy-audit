@@ -58,13 +58,28 @@ foreach($audit->audit_field_optionset_values as $fv) {
                         <?= $f->text ?>
                     </label>
 
-                    <?= $this->EasyAuditForm->cleanControl("field_values[{$template->id}][{$f->id}]", [
-                        'id' => "field-values-{$f->id}",
-                        'classes' => "audit-field-select",
-                        'data-optionset-id' => $f->optionset_id,
-                        'options' => $this->EasyAuditForm->objectToKeyValue($optionset_values[$f->optionset_id], 'id', 'label'),
-                        'value' => empty($value) ? '' : $value->optionset_value_id
-                    ]) ?>
+                    <div class="audit-field-select" data-optionset-id="<?= $f->optionset_id ?>">
+                        <?php foreach($optionset_values[$f->optionset_id] as $option) : ?>
+                            <label class="radio-inline">
+                                <input
+                                    type="radio"
+                                    name="<?= "field_values[{$template->id}][{$f->id}]" ?>"
+                                    value="<?= $option->id ?>"
+                                    <?= !empty($value) && $value->optionset_value_id === $option->id ? 'checked="checked"' : '' ?>
+                                />
+                                <?= $option->label ?>
+                            </label>
+                        <?php endforeach ?>
+                        <label class="radio-inline">
+                            <input
+                                type="radio"
+                                name="<?= "field_values[{$template->id}][{$f->id}]" ?>"
+                                value=""
+                                <?= empty($value) ? 'checked="checked"' : '' ?>
+                            />
+                            N/A
+                        </label>
+                    </div>
 
                     <div class="audit-observations" data-has-observations="<?= $hasImgsOrObs ? true : false ?>">
                         <a class="audit-observations-open" href="#"><?= __('+ add observations & photos') ?></a>
