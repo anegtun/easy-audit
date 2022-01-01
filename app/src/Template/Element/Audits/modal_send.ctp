@@ -1,5 +1,5 @@
 <div id="modal-send-report" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <?= $this->Form->create(null, ['type'=>'post', 'url'=>['controller'=>'audits', 'action'=>'send']]) ?>
+    <?= $this->Form->create(null, ['type'=>'post', 'url'=>['controller'=>'audits', 'action'=>'send', $audit->id]]) ?>
         <?= $this->Form->hidden('id') ?>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">

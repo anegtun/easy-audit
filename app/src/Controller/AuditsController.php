@@ -25,6 +25,7 @@ class AuditsController extends AppController {
         $this->loadComponent('AuditFile');
         $this->loadComponent('AuditInitialization');
         $this->loadComponent('AuditPdf');
+        $this->loadComponent('AuditEmail');
     }
 
     public function index() {
@@ -208,6 +209,12 @@ class AuditsController extends AppController {
             $response = $response->withDownload($filename);
         }
         return $response;
+    }
+
+    public function send($id) {
+        $content = $this->AuditEmail->send();
+        $this->Flash->success(__('Email sent correctly.'));
+        $this->redirect(['action'=>'index']);
     }
 
     private function parseDate($date) {
