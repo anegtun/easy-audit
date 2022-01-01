@@ -116,6 +116,10 @@ $(document).ready(function() {
                 });
             }
         }
+        if(!$(this).attr('data-default')) {
+            fieldDiv.find('.audit-observations-open').click();
+            fieldDiv.find('.audit-observations textarea').focus();
+        }
     })
     $('.audit-field-select input:checked').change();
 
