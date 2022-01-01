@@ -16,6 +16,15 @@ class Audit extends Entity {
             $this->form_templates);
     }
 
+    public function getFieldOptionsetValue($field) {
+        foreach($this->audit_field_optionset_values as $fv) {
+            if($fv->form_template_id === $field->form_template_id && $fv->form_template_field_id === $field->id) {
+                return $fv;
+            }
+        }
+        return false;
+    }
+
     public function calculateScores() {
         $this->score_section = [];
         $this->score_templates = [];

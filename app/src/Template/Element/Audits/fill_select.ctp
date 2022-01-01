@@ -43,13 +43,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
             <?php foreach($s->form_template_fields_optionset as $f) : ?>
 
                 <?php
-                    $value = null;
-                    foreach($audit->audit_field_optionset_values as $fv) {
-                        if($fv->form_template_field_id === $f->id) {
-                            $value = $fv;
-                            break;
-                        }
-                    }
+                    $value = $audit->getFieldOptionsetValue($f);
                     $hasObservations = !empty($value) && !empty($value->observations);
                     $imgs = empty($field_images[$template->id][$f->id]) ? [] : $field_images[$template->id][$f->id];
                     $hasImgs = !empty($imgs);

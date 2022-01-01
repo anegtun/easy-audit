@@ -227,14 +227,8 @@ class AuditPDF extends FPDF {
         foreach($template->form_template_sections as $s) {
             $section = ['title' => $s->name, 'fields' => []];
             foreach($s->form_template_fields_optionset as $f) {
-                $value = '';
-                foreach($this->audit->audit_field_optionset_values as $fv) {
-                    if($fv->form_template_id === $f->form_template_id && $fv->form_template_field_id === $f->id) {
-                        $value = $fv;
-                    }
-                }
-                ;
-                if(empty($value->form_template_optionset_value->is_default) || !empty($value->observations)) {
+                $value = $this->audit->getFieldOptionsetValue($f);
+                if($value && (empty($value->form_template_optionset_value->is_default) || !empty($value->observations))) {
                     $section['fields'][] = [
                         'text' => $f->text,
                         'result' => empty($value->form_template_optionset_value->label) ? '' : $value->form_template_optionset_value->label,
