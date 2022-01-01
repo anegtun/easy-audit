@@ -33,7 +33,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
     <fieldset>
 
         <legend>
-            <a href="#<?= $collapseId ?>" data-toggle="collapse">
+            <a href="#<?= $collapseId ?>" data-toggle="collapse-unique">
                 <?= $this->EasyAuditTemplate->section($s) . " ({$audit->score_section[$s->id]})" ?> 
             </a>
         </legend>
