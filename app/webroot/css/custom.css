@@ -63,10 +63,6 @@ legend > a:hover, legend > a:active, legend > a:focus {
     color: #a94442;
 }
 
-.audit-field .glyphicon-warning-sign {
-    font-size: larger;
-}
-
 .audit-field-position {
     color: #1d71b8;
     font-weight: bold;
@@ -142,6 +138,11 @@ legend > a:hover, legend > a:active, legend > a:focus {
 
 .audit-observations a {
     text-decoration: none;
+}
+
+.audit-observations > .glyphicon {
+    font-size: larger;
+    margin-left: .5em;
 }
 
 .audit-observations-input {

@@ -118,7 +118,6 @@ $(document).ready(function() {
         }
         if($(this).attr('data-open-observations')) {
             fieldDiv.find('.audit-observations-open').click();
-            fieldDiv.find('.audit-observations textarea').focus();
         }
     })
     $('.audit-field-select input:checked').change();
@@ -145,15 +144,15 @@ $(document).ready(function() {
 
     $('.audit-observations > a.audit-observations-open').click(function(e) {
         e.preventDefault();
-        const link = $(e.currentTarget).removeClass('show').addClass('hide');
-        link.siblings('.audit-observations-input, .audit-observations-close').removeClass('hide').addClass('show');
+        const link = $(e.currentTarget).hide();
+        link.siblings('.audit-observations-input, .audit-observations-close').show();
     });
 
     $('.audit-observations > a.audit-observations-close').click(function(e) {
         e.preventDefault();
-        const link = $(e.currentTarget).removeClass('show').addClass('hide');
-        link.siblings('.audit-observations-input').removeClass('show').addClass('hide');
-        link.siblings('.audit-observations-open').removeClass('hide').addClass('show');
+        const link = $(e.currentTarget).hide();
+        link.siblings('.audit-observations-input').hide();
+        link.siblings('.audit-observations-open').show();
     });
 
     $('input[type="file"]').change(onAddPhoto);

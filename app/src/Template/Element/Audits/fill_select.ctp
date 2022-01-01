@@ -52,8 +52,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
 
                 <div class="form-group audit-field">
 
-                    <label for="<?= "field-values-{$f->id}" ?>">
-                        <?= $hasImgsOrObs ? $this->EasyAuditHtml->gliphicon('warning-sign', ['classes'=>['text-warning']]) : '' ?>
+                    <label>
                         <span class="audit-field-position"><?= $this->EasyAuditTemplate->fieldLabel($s, $f, false) ?>.</span>
                         <?= $f->text ?>
                     </label>
@@ -85,6 +84,8 @@ foreach($audit->audit_field_optionset_values as $fv) {
                     <div class="audit-observations" data-has-observations="<?= $hasImgsOrObs ? true : false ?>">
                         <a class="audit-observations-open" href="#"><?= __('+ add observations & photos') ?></a>
                         <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations & photos') ?></a>
+                        <?= $hasObservations ? $this->EasyAuditHtml->gliphicon('comment', ['classes'=>['text-warning']]) : '' ?>
+                        <?= $hasImgs ? $this->EasyAuditHtml->gliphicon('camera', ['classes'=>['text-warning']]) : '' ?>
                         <div class="audit-observations-input" style="display:none">
                             <textarea name="<?="field_observations[{$template->id}][{$f->id}]"?>" class="form-control"><?= $hasObservations ? $value->observations : '' ?></textarea>
                             <div class="audit-img-current">
