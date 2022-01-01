@@ -32,4 +32,9 @@ class Audit extends Entity {
         }
     }
 
+    public function getReportFilename() {
+        $date = $this->date->i18nFormat('yyyy-MM');
+        return __('Audit')." {$this->customer->name} - $date.pdf";
+    }
+
 }

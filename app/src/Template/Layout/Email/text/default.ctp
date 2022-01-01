@@ -14,3 +14,7 @@
  */
 
 echo $this->fetch('content');
+
+echo "---\n";
+
+echo strip_tags($this->element('Layout/email_disclaimer'));

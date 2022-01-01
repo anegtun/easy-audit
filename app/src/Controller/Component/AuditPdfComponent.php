@@ -4,6 +4,7 @@ namespace App\Controller\Component;
 require_once(ROOT . DS . 'vendor' . DS  . 'fpdf' . DS . 'fpdf.php');
 
 use Cake\Controller\Component;
+use Cake\Core\Configure;
 use FPDF;
 
 class AuditPDF extends FPDF {
@@ -33,16 +34,16 @@ class AuditPDF extends FPDF {
         if($this->PageNo() > 1) {
             $this->SetY(-15);
             $this->SetFont('Arial', '', 10);
-            $this->Cell(95, 5, utf8_decode('Centro Tecnológico Higiénico-Sanitario APTHISA'));
-            $this->Cell(95, 5, utf8_decode('Juntos alimentamos la seguridad'), 0, 0, 'R');
+            $this->Cell(95, 5, utf8_decode(Configure::read('easy-audit.company.name-full')));
+            $this->Cell(95, 5, utf8_decode(Configure::read('easy-audit.company.motto')), 0, 0, 'R');
             $this->Ln();
-            $this->Cell(95, 5, utf8_decode('91 110 22 24 / www.apthisa.com'));
+            $this->Cell(95, 5, utf8_decode(Configure::read('easy-audit.company.phone').' / '. Configure::read('easy-audit.company.website')));
             $this->Cell(98, 5, utf8_decode('Página ').$this->PageNo().' de {nb}', 0, 0, 'R');
         }
     }
 
     function Cover() {
-        $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'report-cover.png', 30, 30, 150);
+        $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'report-cover.png', 50, 30, 110);
         $this->SetY(-110);
         $this->SetFont('Arial', 'B', 25);
         $this->Cell(0, 0, utf8_decode('Informe Auditoría Higiénico-Sanitaria'), 0, 0, 'C');

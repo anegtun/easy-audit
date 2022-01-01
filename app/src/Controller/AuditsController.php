@@ -25,6 +25,7 @@ class AuditsController extends AppController {
         $this->loadComponent('AuditFile');
         $this->loadComponent('AuditInitialization');
         $this->loadComponent('AuditPdf');
+        $this->loadComponent('AuditEmail');
     }
 
     public function index() {
@@ -194,20 +195,33 @@ class AuditsController extends AppController {
 
     public function print($id) {
         $audit = $this->Audits->getComplete($id);
-        $audits = $this->Audits->findHistory($audit)->toList();
-        $images = $this->AuditFile->readPhotos($id);
-
-        $content = $this->AuditPdf->generate($audit, $audits, $images);
+        $content = $this->generateReport($audit);
 
         $response = $this->response
             ->withStringBody($content)
             ->withType('application/pdf');
         if(!empty($this->request->getQuery('download'))) {
-            $date = $audit->date->i18nFormat('yyyy-MM');
-            $filename = __('Audit')." {$audit->customer->name} - $date.pdf";
-            $response = $response->withDownload($filename);
+            $response = $response->withDownload($audit->getReportFilename());
         }
         return $response;
+    }
+
+    public function send($id) {
+        $audit = $this->Audits->getComplete($id);
+        if(empty($audit->customer->emails)) {
+            $this->Flash->error(__('There are no emails configured for this customer.'));
+        } else {
+            $content = $this->generateReport($audit);
+            $this->AuditEmail->sendReport($audit, $content);
+            $this->Flash->success(__('Email sent correctly.'));
+        }
+        return $this->redirect($this->referer());
+    }
+
+    private function generateReport($audit) {
+        $audits = $this->Audits->findHistory($audit)->toList();
+        $images = $this->AuditFile->readPhotos($audit->id);
+        return $this->AuditPdf->generate($audit, $audits, $images);
     }
 
     private function parseDate($date) {

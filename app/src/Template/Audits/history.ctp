@@ -66,6 +66,9 @@ $this->Html->script('audit-history', ['block' => 'script']);
 
 <?php endforeach ?>
 
-<?= $this->EasyAuditHtml->linkButton(['action' => 'fill', $audit->id], 'cog', _('Fill audit')) ?>
+<?= $this->EasyAuditHtml->linkButton(['action' => 'fill', $audit->id], 'edit', _('Fill')) ?>
 <?= $this->EasyAuditHtml->linkButton(['action' => 'data', $audit->id], 'cog', _('Audit data')) ?>
-<?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', _('Report'), ['target'=>'_blank']) ?>
+<?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', _('View report'), ['target'=>'_blank']) ?>
+<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-send-report"><?= $this->EasyAuditHtml->gliphiconText('envelope', __('Send report')) ?></button>
+
+<?= $this->element('Audits/modal_send', ['audit' => $audit]) ?>
