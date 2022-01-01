@@ -8,10 +8,12 @@ class AuditEmailComponent extends Component {
 
     public function send() {
         $email = new Email('default');
-        $email->setFrom(['cona@example.com' => 'My Site'])
+        $email->viewBuilder()->setTemplate('default', 'default');
+        $email
+            ->setEmailFormat('both')
             ->setTo('nitta18@gmail.com')
-            ->setSubject('About')
-            ->send('My message');
+            ->setSubject('QUE PASA')
+            ->send('TEST');
     }
 
 }

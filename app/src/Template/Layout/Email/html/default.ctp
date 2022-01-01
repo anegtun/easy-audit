@@ -13,12 +13,35 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 ?>
+
+<?php
+$companyInfo = $this->EasyAuditConfig->company();
+?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
 <head>
     <title><?= $this->fetch('title') ?></title>
+    <style type="text/css">
+        .disclaimer {
+            color: #777;
+            font-size: smaller;
+        }
+    </style>
 </head>
 <body>
     <?= $this->fetch('content') ?>
+
+    <footer>
+        <div class="company-info">
+            <?= $this->Html->image("/images/logo/email-footer.png", ['fullBase' => true, 'alt' => $companyInfo->name]) ?><br/>
+            <?= $companyInfo->phone ?><br/>
+            <?= $this->Html->link($companyInfo->website, $this->EasyAuditConfig->mainUrl()) ?><br/>
+            <?= $companyInfo->address ?>
+        </div>
+        <div class="disclaimer">
+            <?= $this->element('Layout/email_disclaimer') ?>
+        </div>
+    </footer>
 </body>
 </html>

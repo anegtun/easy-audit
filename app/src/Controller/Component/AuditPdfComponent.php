@@ -42,7 +42,7 @@ class AuditPDF extends FPDF {
     }
 
     function Cover() {
-        $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'report-cover.png', 30, 30, 150);
+        $this->Image(WWW_ROOT . DS . 'images' . DS . 'logo' . DS . 'report-cover.png', 50, 30, 110);
         $this->SetY(-110);
         $this->SetFont('Arial', 'B', 25);
         $this->Cell(0, 0, utf8_decode('Informe Auditoría Higiénico-Sanitaria'), 0, 0, 'C');
