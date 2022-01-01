@@ -95,19 +95,20 @@ $(document).ready(function() {
     $('.audit-field-select input').change(function() {
         const value = $(this).val();
         const container = $(this).parents('.audit-field-select');
+        const fieldDiv = container.parents('.audit-field');
         const optionsConfig = $('#optionset-'+container.attr('data-optionset-id'));
         if(optionsConfig) {
             optionsConfig.find('div[data-opt-color]').each(function(i, div) {
                 const color = $(div).attr('data-opt-color');
                 if(color) {
-                    container.removeClass('audit-field-select-'+color);
+                    fieldDiv.removeClass('audit-field-'+color);
                 }
             });
             if(value) {
                 optionsConfig.find('div[data-opt-id='+value+']').each(function(i, div) {
                     const color = $(div).attr('data-opt-color');
                     if(color) {
-                        container.addClass('audit-field-select-'+color);
+                        fieldDiv.addClass('audit-field-'+color);
                     }
                 });
             }
