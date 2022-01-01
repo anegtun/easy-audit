@@ -7,6 +7,8 @@ use Cake\Filesystem\Folder;
 
 class AuditFileComponent extends Component {
 
+    const MAX_SIZE = 1600;
+
     public function readPhotos($auditId) {
         $result = [];
         $dir = new Folder($this->pathToAuditFolder($auditId));
@@ -33,8 +35,19 @@ class AuditFileComponent extends Component {
         foreach($imgs as $fieldId => $fieldImgs) {
             if(!empty($fieldImgs && !empty($fieldImgs[0]['name']))) {
                 $dirField = new Folder($this->pathToFieldFolder($auditId, $templateId, $fieldId), true, 0755);
+                $dirFieldOriginal = new Folder($this->pathToFieldFolderOriginals($auditId, $templateId, $fieldId), true, 0755);
                 foreach($fieldImgs as $img) {
-                    move_uploaded_file($img['tmp_name'], $dirField->path . DS . "{$img['name']}");
+                    if(!empty($img['tmp_name'])) {
+                        $dst = $dirField->path . DS . $img['name'];
+                        $dstOrig = $dirFieldOriginal->path . DS . $img['name'];
+                        move_uploaded_file($img['tmp_name'], $dstOrig);
+                        list($srcW, $srcH) = getimagesize($dstOrig);
+                        list($trgW, $trgH) = $this->calculateResizedSize($srcW, $srcH);
+                        $srcImg = imagecreatefromjpeg($dstOrig);
+                        $trgImg = imagecreatetruecolor($trgW, $trgH);
+                        imagecopyresized($trgImg, $srcImg, 0, 0, 0, 0, $trgW, $trgH, $srcW, $srcH);
+                        imagejpeg($trgImg, $dst, 75);
+                    }
                 }
             }
         }
@@ -82,12 +95,22 @@ class AuditFileComponent extends Component {
         return "uploads/audits/audit_$auditId/template_$templateId/field_$fieldId/$filename";
     }
 
+    private function pathToFieldFolderOriginals($auditId, $templateId, $fieldId) {
+        return WWW_ROOT . "uploads/audits/audit_$auditId/template_$templateId/field_$fieldId/original";
+    }
+
     private function getTemplateId($dir_name) {
         return str_replace('template_', '', $dir_name);
     }
 
     private function getFieldId($dir_name) {
         return str_replace('field_', '', $dir_name);
+    }
+
+    private function calculateResizedSize($srcW, $srcH) {
+        $largerSize = max($srcW, $srcH);
+        $ratio = $largerSize > self::MAX_SIZE ? self::MAX_SIZE / $largerSize : 1;
+        return [$srcW * $ratio, $srcH * $ratio];
     }
 
 }
