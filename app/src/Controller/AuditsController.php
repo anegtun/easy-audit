@@ -195,28 +195,31 @@ class AuditsController extends AppController {
 
     public function print($id) {
         $audit = $this->Audits->getComplete($id);
-        $audits = $this->Audits->findHistory($audit)->toList();
-        $images = $this->AuditFile->readPhotos($id);
-
-        $content = $this->AuditPdf->generate($audit, $audits, $images);
+        $content = $this->generateReport($audit);
 
         $response = $this->response
             ->withStringBody($content)
             ->withType('application/pdf');
         if(!empty($this->request->getQuery('download'))) {
-            $date = $audit->date->i18nFormat('yyyy-MM');
-            $filename = __('Audit')." {$audit->customer->name} - $date.pdf";
-            $response = $response->withDownload($filename);
+            $response = $response->withDownload($audit->getReportFilename());
         }
         return $response;
     }
 
     public function send($id) {
         $audit = $this->Audits->getComplete($id);
-        $content = $this->AuditEmail->send($audit);
+        $content = $this->generateReport($audit);
+
+        $this->AuditEmail->sendReport($audit, $content);
         die('YAI!');
         $this->Flash->success(__('Email sent correctly.'));
         $this->redirect(['action'=>'index']);
+    }
+
+    private function generateReport($audit) {
+        $audits = $this->Audits->findHistory($audit)->toList();
+        $images = $this->AuditFile->readPhotos($audit->id);
+        return $this->AuditPdf->generate($audit, $audits, $images);
     }
 
     private function parseDate($date) {
