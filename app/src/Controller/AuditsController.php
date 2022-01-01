@@ -213,6 +213,7 @@ class AuditsController extends AppController {
 
     public function send($id) {
         $content = $this->AuditEmail->send();
+        die('YAI!');
         $this->Flash->success(__('Email sent correctly.'));
         $this->redirect(['action'=>'index']);
     }

@@ -151,7 +151,7 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
                 <div id="footer-info">
                     <div class="row row-no-gutters">
                         <div id="footer-text" class="hidden-xs col-sm-7">
-                            Easy Audit System
+                            <?= $this->EasyAuditConfig->company()->motto ?>
                         </div>
                         <div id="footer-menu" class="col-xs-12 col-sm-5">
                             <ul class="list-inline">

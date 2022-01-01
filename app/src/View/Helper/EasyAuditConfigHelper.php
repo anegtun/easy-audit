@@ -9,11 +9,13 @@ class EasyAuditConfigHelper extends Helper {
     public function company() {
         return (object) [
             'name' => Configure::read('easy-audit.company.name'),
+            'nameFull' => Configure::read('easy-audit.company.name-full'),
             'legal' => Configure::read('easy-audit.company.legal'),
             'email' => Configure::read('easy-audit.company.email'),
             'phone' => Configure::read('easy-audit.company.phone'),
             'website' => Configure::read('easy-audit.company.website'),
             'address' => Configure::read('easy-audit.company.address'),
+            'motto' => Configure::read('easy-audit.company.motto'),
         ];
     }
 
