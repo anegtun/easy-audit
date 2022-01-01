@@ -213,10 +213,9 @@ class AuditsController extends AppController {
         } else {
             $content = $this->generateReport($audit);
             $this->AuditEmail->sendReport($audit, $content);
-            die('YAI!');
             $this->Flash->success(__('Email sent correctly.'));
         }
-        $this->redirect(['action'=>'index']);
+        return $this->redirect($this->referer());
     }
 
     private function generateReport($audit) {
