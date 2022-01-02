@@ -14,6 +14,7 @@ class MainController extends AppController {
         if(!$this->Auth->user()) {
             return $this->redirect(['controller'=>'users', 'action'=>'login' ]);
         }
+        return $this->redirect(['controller'=>'audits', 'action'=>'index' ]);
     }
 
 }
