@@ -94,7 +94,7 @@ $(document).ready(function() {
         link.siblings('.audit-observations-open').show();
     });
 
-    const onClickPhoto = function() {
+    const onPhotoToggleSelected = function() {
         const img = $(this);
         const templateId = img.parents('.audit-img-display').attr('data-template-id');
         const fieldId = img.parents('.audit-img-display').attr('data-field-id');
@@ -110,29 +110,40 @@ $(document).ready(function() {
         auditDirty = true;
     }
 
+    const onPhotoUpload = (url, imageUri, inputConainer) => {
+        const imgContainer = inputConainer.siblings('.audit-img-display').show();
+        const loadingBox = inputConainer.siblings('.audit-img-aux-container').find('.audit-img-loader').clone().appendTo(imgContainer);
+        const errorPhoto = inputConainer.siblings('.audit-img-aux-container').find('.audit-img-photo-error img');
+        $.ajax({
+            url: url,
+            processData: false,
+            data: imageUri,
+            type: 'POST',
+            success : (result) => {
+                $('<img>').attr('src', result).click(onPhotoToggleSelected).appendTo(imgContainer);
+                loadingBox.remove();
+            },
+            error : (error) => {
+                console.log('Error uploading photo ', error);
+                errorPhoto.clone().click((e) => {
+                    $(e.currentTarget).remove();
+                    onPhotoUpload(url, imageUri, inputConainer);
+                }).appendTo(imgContainer);
+                loadingBox.remove();
+            }
+        });
+    }
+
     $('input[type="file"]').change(function() {
         const file = this.files && this.files[0];
         const input = $(this).val('');
         const inputConainer = $(this).parents('.audit-img-input');
-        const imgConainer = inputConainer.siblings('.audit-img-display').show();
-        const loadingBox = inputConainer.siblings('.audit-img-loader-container').find('span').clone().appendTo(imgConainer);        
-        
-        EasyAuditCompress.compress(file, 1200, 0.8, 'image/jpeg').then((imageUrl) => {
-            $.ajax({
-                url: input.attr('data-post-url'),
-                processData: false,
-                data: imageUrl,
-                type: 'POST',
-                success : (result) => {
-                    $('<img>').attr('src', result).click(onClickPhoto).insertBefore(loadingBox);
-                    loadingBox.remove();
-                },
-                error : (e) => alert(e)
-            });
+        EasyAuditCompress.compress(file, 1200, 0.8, 'image/jpeg').then((imageUri) => {
+            onPhotoUpload(input.attr('data-post-url'), imageUri, inputConainer);
         });
     });
 
-    $('.audit-img-display > img').click(onClickPhoto);
+    $('.audit-img-display > img').click(onPhotoToggleSelected);
 
 
 

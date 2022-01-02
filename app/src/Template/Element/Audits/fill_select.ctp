@@ -112,9 +112,12 @@ foreach($audit->audit_field_optionset_values as $fv) {
                                     <?= $this->EasyAuditHtml->gliphiconText('camera', __('Add photo')) ?>
                                 </label>
                             </div>
-                            <div class="audit-img-loader-container" style="display:none">
+                            <div class="audit-img-aux-container" style="display:none">
                                 <span class="audit-img-loader">
                                     <?= $this->Html->image('/images/components/loading-dots.gif') ?>
+                                </span>
+                                <span class="audit-img-photo-error">
+                                    <?= $this->Html->image('/images/components/photo-error.png') ?>
                                 </span>
                             </div>
                         </div>
