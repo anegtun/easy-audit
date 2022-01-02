@@ -32,6 +32,7 @@ $this->Html->script('audit-fill', ['block' => 'script']);
         <?php endforeach ?>
     </div>
 
+    <button type="button" class="btn btn-warning audit-retry-photos" style="display:none"><?= $this->EasyAuditHtml->gliphiconText('repeat', __('Retry failed photos')) ?></button>
     <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
     <?= $this->EasyAuditHtml->linkButton(['action' => 'data', $audit->id], 'cog', _('Audit data')) ?>
     <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', _('History')) ?>

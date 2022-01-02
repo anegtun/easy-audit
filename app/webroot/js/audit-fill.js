@@ -111,27 +111,38 @@ $(document).ready(function() {
     }
 
     const onPhotoUpload = (url, imageUri, inputConainer) => {
-        const imgContainer = inputConainer.siblings('.audit-img-display').show();
-        const loadingBox = inputConainer.siblings('.audit-img-aux-container').find('.audit-img-loader').clone().appendTo(imgContainer);
-        const errorPhoto = inputConainer.siblings('.audit-img-aux-container').find('.audit-img-photo-error img');
-        $.ajax({
-            url: url,
-            processData: false,
-            data: imageUri,
-            type: 'POST',
-            success : (result) => {
-                $('<img>').attr('src', result).click(onPhotoToggleSelected).appendTo(imgContainer);
-                loadingBox.remove();
-            },
-            error : (error) => {
-                console.log('Error uploading photo ', error);
-                errorPhoto.clone().click((e) => {
-                    $(e.currentTarget).remove();
-                    onPhotoUpload(url, imageUri, inputConainer);
-                }).appendTo(imgContainer);
-                loadingBox.remove();
-            }
+        return new Promise((resolve, reject) => {
+            const imgContainer = inputConainer.siblings('.audit-img-display').show();
+            const loadingBox = inputConainer.siblings('.audit-img-aux-container').find('.audit-img-loader').clone().appendTo(imgContainer);
+            const errorPhoto = inputConainer.siblings('.audit-img-aux-container').find('.audit-img-photo-error img');
+            $('.audit-retry-photos').show();
+            $.ajax({
+                url: url,
+                processData: false,
+                data: imageUri,
+                type: 'POST',
+                success : (result) => {
+                    const img = $('<img>').attr('src', result).click(onPhotoToggleSelected).appendTo(imgContainer);
+                    loadingBox.remove();
+                    resolve(img);
+                },
+                error : (error) => {
+                    console.log('Error uploading photo ', error);
+                    const placeholder = errorPhoto
+                        .clone()
+                        .appendTo(imgContainer)
+                        .attr('data-photo-uri', imageUri)
+                        .click((e) => onPhotoRetryUpload(e.currentTarget, url, imageUri, inputConainer).catch(() => {}));
+                    loadingBox.remove();
+                    reject(placeholder);
+                }
+            });
         });
+    }
+
+    const onPhotoRetryUpload = (placeholder, url, imageUri, inputConainer) => {
+        $(placeholder).remove();
+        return onPhotoUpload(url, imageUri, inputConainer);
     }
 
     $('input[type="file"]').change(function() {
@@ -139,11 +150,30 @@ $(document).ready(function() {
         const input = $(this).val('');
         const inputConainer = $(this).parents('.audit-img-input');
         EasyAuditCompress.compress(file, 1200, 0.8, 'image/jpeg').then((imageUri) => {
-            onPhotoUpload(input.attr('data-post-url'), imageUri, inputConainer);
+            onPhotoUpload(input.attr('data-post-url'), imageUri, inputConainer).catch(() => {});
         });
     });
 
     $('.audit-img-display > img').click(onPhotoToggleSelected);
+
+    $('.audit-retry-photos').click(function() {
+        const button = $(this).prop('disabled', true);
+        const toRetry = $('[data-photo-uri]');
+        let ok = 0, nok = 0;
+        toRetry.each((i, item) => {
+            const inputContainer = $(item).parents('.audit-img-display').siblings('.audit-img-input');
+            onPhotoRetryUpload(item, $(item).attr('data-post-url'), $(item).attr('data-photo-uri'), inputContainer)
+                .then(() => ok++)
+                .catch(() => nok++);
+        });
+        waitFor(() => (ok+nok) >= toRetry.length).then(() => {
+            console.log('Finished! ', ok, '/', nok);
+            button.prop('disabled', false);
+            if(!nok) {
+                button.hide();
+            }
+        });
+    });
 
 
 

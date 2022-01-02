@@ -117,7 +117,9 @@ foreach($audit->audit_field_optionset_values as $fv) {
                                     <?= $this->Html->image('/images/components/loading-dots.gif') ?>
                                 </span>
                                 <span class="audit-img-photo-error">
-                                    <?= $this->Html->image('/images/components/photo-error.png') ?>
+                                    <?= $this->Html->image('/images/components/photo-error.png', [
+                                        'data-post-url' => $this->Url->build(['action'=>'addPhoto', $audit->id, $template->id, $f->id])
+                                    ]) ?>
                                 </span>
                             </div>
                         </div>
