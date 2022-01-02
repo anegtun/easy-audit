@@ -28,7 +28,7 @@ $(document).ready(function() {
     });
 
     $('a[data-section-id]').click(function() {
-        openModalToEdit(sectionModal, $(this), 'data-section-', ['id', 'name']);
+        openModalToEdit(sectionModal, $(this), 'data-section-', ['id', 'name', 'weigth']);
         sectionModal.find('*[name=position]').val(Number($(this).attr('data-section-position')) + 1).prop('disabled', true);
     });
 
