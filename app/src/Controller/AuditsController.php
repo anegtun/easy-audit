@@ -158,8 +158,6 @@ class AuditsController extends AppController {
     public function update() {
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
-            echo "<pre>"; var_dump($data); echo "</pre>";
-            die();
             if(!empty($data['field_values'])) {
                 foreach($data['field_values'] as $templateId => $field_values) {
                     $field_observations = $data['field_observations'][$templateId];
@@ -169,11 +167,6 @@ class AuditsController extends AppController {
             if(!empty($data['audit_measure'])) {
                 foreach($data['audit_measure'] as $templateId => $audit_measures) {
                     $this->AuditFieldMeasureValues->upsertAll($data['id'], $templateId, $audit_measures);
-                }
-            }
-            if(!empty($data['field_photo'])) {
-                foreach($data['field_photo'] as $templateId => $photos) {
-                    $this->AuditFile->addPhotos($data['id'], $templateId, $photos);
                 }
             }
             if(!empty($data['field_img_removed'])) {

@@ -86,12 +86,15 @@ foreach($audit->audit_field_optionset_values as $fv) {
                         <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations & photos') ?></a>
                         <?= $hasObservations ? $this->EasyAuditHtml->gliphicon('comment', ['classes'=>['text-warning']]) : '' ?>
                         <?= $hasImgs ? $this->EasyAuditHtml->gliphicon('camera', ['classes'=>['text-warning']]) : '' ?>
+                        
                         <div class="audit-observations-input" style="display:none">
+                            
                             <textarea name="<?="field_observations[{$template->id}][{$f->id}]"?>" class="form-control"><?= $hasObservations ? $value->observations : '' ?></textarea>
-                            <div class="audit-img-current" <?= $hasImgs ? '': 'style="display:none"' ?>>
+                            
+                            <div class="audit-img-display" data-template-id="<?= $template->id ?>" data-field-id="<?= $f->id ?>" <?= $hasImgs ? '': 'style="display:none"' ?>>
                                 <p><strong><?= __('Photos') ?></strong></p>
                                 <?php foreach($imgs as $img) : ?>
-                                    <?= $this->Html->image("/$img", ['data-template-id'=>$template->id, 'data-field-id'=>$f->id]) ?>
+                                    <?= $this->Html->image("/$img") ?>
                                 <?php endforeach ?>
                             </div>
                             <div class="audit-img-input">

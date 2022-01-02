@@ -7,7 +7,6 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('Form templates'), 'url'=>['action'=>'index']],
     ['label'=>$title]
 ]);
-$this->Html->script('modal-utils', ['block' => 'script']);
 $this->Html->script('form-templates', ['block' => 'script']);
 $optionsetOptions = iterator_to_array($optionsets);
 $has_audits = !empty($template->audits);

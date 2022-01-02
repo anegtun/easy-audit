@@ -5,7 +5,6 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('Config')],
     ['label'=>__('Form templates')]
 ]);
-$this->Html->script('modal-utils', ['block' => 'script']);
 $this->Html->script('form-templates', ['block' => 'script']);
 ?>
 
