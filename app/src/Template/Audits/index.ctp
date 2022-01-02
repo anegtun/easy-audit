@@ -4,8 +4,7 @@ $this->set('headerTitle', __('Audits'));
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Audits')]
 ]);
-$this->Html->script('modal-utils', ['block' => 'script']);
-$this->Html->script('audits', ['block' => 'script']);
+$this->Html->script('audit-list', ['block' => 'script']);
 ?>
 
 <div class="row">

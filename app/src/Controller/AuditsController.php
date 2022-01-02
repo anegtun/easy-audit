@@ -7,6 +7,7 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
 use FPDF;
 
 
@@ -168,11 +169,6 @@ class AuditsController extends AppController {
                     $this->AuditFieldMeasureValues->upsertAll($data['id'], $templateId, $audit_measures);
                 }
             }
-            if(!empty($data['field_photo'])) {
-                foreach($data['field_photo'] as $templateId => $photos) {
-                    $this->AuditFile->addPhotos($data['id'], $templateId, $photos);
-                }
-            }
             if(!empty($data['field_img_removed'])) {
                 foreach($data['field_img_removed'] as $templateId => $photos) {
                     $this->AuditFile->removePhotos($data['id'], $templateId, $photos);
@@ -180,6 +176,11 @@ class AuditsController extends AppController {
             }
         }
         return $this->redirect(['action'=>'fill', $data['id']]);
+    }
+
+    public function addPhoto($auditId, $templateId, $fieldId) {
+        $path = $this->AuditFile->addPhoto($auditId, $templateId, $fieldId, $this->request->input());
+        return $this->response->withStringBody(Router::url("/$path"));
     }
 
     public function delete($id) {

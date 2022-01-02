@@ -7,6 +7,8 @@ use Cake\Filesystem\Folder;
 
 class AuditFileComponent extends Component {
 
+    const MAX_SIZE = 1200;
+
     public function readPhotos($auditId) {
         $result = [];
         $dir = new Folder($this->pathToAuditFolder($auditId));
@@ -31,13 +33,21 @@ class AuditFileComponent extends Component {
     public function addPhotos($auditId, $templateId, $imgs) {
         $dir = new Folder($this->pathToTemplateFolder($auditId, $templateId), true, 0755);
         foreach($imgs as $fieldId => $fieldImgs) {
-            if(!empty($fieldImgs && !empty($fieldImgs[0]['name']))) {
+            if(!empty($fieldImgs)) {
                 $dirField = new Folder($this->pathToFieldFolder($auditId, $templateId, $fieldId), true, 0755);
                 foreach($fieldImgs as $img) {
-                    move_uploaded_file($img['tmp_name'], $dirField->path . DS . "{$img['name']}");
+                    $filename = $this->generateFilename($img);
+                    $this->writeTo($dirField->path . DS . $filename, $img);
                 }
             }
         }
+    }
+
+    public function addPhoto($auditId, $templateId, $fieldId, $img) {
+        $dirField = new Folder($this->pathToFieldFolder($auditId, $templateId, $fieldId), true, 0755);
+        $filename = $this->generateFilename($img);
+        $this->writeTo($dirField->path . DS . $filename, $img);
+        return $this->urlToImage($auditId, $templateId, $fieldId, $filename);
     }
 
     public function removePhotos($auditId, $templateId, $imgs) {
@@ -54,6 +64,16 @@ class AuditFileComponent extends Component {
     public function removeAllPhotos($auditId) {
         $dir = new Folder($this->pathToAuditFolder($auditId));
         $dir->delete();
+    }
+
+    private function generateFilename($img) {
+        return md5($img).'.jpg';
+    }
+
+    private function writeTo($path, $data) {
+        $fp = fopen($path, 'w');
+        fwrite($fp, file_get_contents($data));
+        fclose($fp);
     }
 
     private function readSubdirectories($parentFolder, $name) {

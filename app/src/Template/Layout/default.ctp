@@ -20,7 +20,7 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
         <?= $this->Html->script("/libs/ckeditor5-build-classic/ckeditor") ?>
         <?= $this->Html->script("/libs/chartjs/chart.min") ?>
         <!-- custom:js -->
-        <?= $this->Html->script(["/maqint/maqint-config", "/maqint/maqint", "/maqint/support", "collapse-unique"]) ?>
+        <?= $this->Html->script(["/maqint/maqint-config", "/maqint/maqint", "/maqint/support", "collapse-unique", "compress", "csrf", "modal-utils", "wait"]) ?>
         <!-- outros -->
         <?= $this->fetch('meta') ?>
         <?= $this->fetch('css') ?>

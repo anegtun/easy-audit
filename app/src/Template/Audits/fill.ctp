@@ -7,8 +7,7 @@ $this->set('headerBreadcrumbs', [
     ['label'=>$title],
     ['label'=>__('Fill')]
 ]);
-$this->Html->script('modal-utils', ['block' => 'script']);
-$this->Html->script('audits', ['block' => 'script']);
+$this->Html->script('audit-fill', ['block' => 'script']);
 ?>
 
 <?= $this->Form->create(null, ['id'=>'auditForm', 'type'=>'file', 'url'=>['action'=>'update']]) ?>
@@ -33,6 +32,7 @@ $this->Html->script('audits', ['block' => 'script']);
         <?php endforeach ?>
     </div>
 
+    <button type="button" class="btn btn-warning audit-retry-photos" style="display:none"><?= $this->EasyAuditHtml->gliphiconText('repeat', __('Retry failed photos')) ?></button>
     <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
     <?= $this->EasyAuditHtml->linkButton(['action' => 'data', $audit->id], 'cog', _('Audit data')) ?>
     <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', _('History')) ?>
