@@ -12,8 +12,11 @@ class UsersController extends AppController {
         $this->Roles = new Roles();
     }
 
-    public function beforeFilter(Event $event) {
-        $this->Auth->allow(array('login','logout'));
+    public function isAuthorized($user) {
+        if (in_array($this->request->getParam('action'), ['login','logout'])) {
+            return true;
+        }
+        return $user['role'] === 'admin';
     }
 
     public function index() {

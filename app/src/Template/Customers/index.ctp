@@ -5,6 +5,8 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('Config')],
     ['label'=>__('Customers')]
 ]);
+$authUser = $this->request->getSession()->read('Auth.User');
+$isAdmin = $authUser['role'] === 'admin';
 ?>
 
 <div class="row">
@@ -12,14 +14,18 @@ $this->set('headerBreadcrumbs', [
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th class="cell-small"></th>
+                    <?php if($isAdmin) : ?>
+                        <th class="cell-small"></th>
+                    <?php endif ?>
                     <th class="celda-titulo"><?= __('Name') ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach($customers as $c) : ?>
                     <tr>
-                        <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'delete', $c->id]) ?></td>
+                        <?php if($isAdmin) : ?>
+                            <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'delete', $c->id]) ?></td>
+                        <?php endif ?>
                         <td><?= $this->Html->link($c->name, ['action'=>'detail', $c->id]) ?></td>
                     </tr>
                 <?php endforeach ?>
@@ -27,7 +33,9 @@ $this->set('headerBreadcrumbs', [
         </table>
     </div>
 
-    <div class="button-group">
-        <?= $this->Html->link(__('Create'), ['action'=>'detail'], ['class'=>'btn btn-primary']) ?>
-    </div>
+    <?php if($isAdmin) : ?>
+        <div class="button-group">
+            <?= $this->Html->link(__('Create'), ['action'=>'detail'], ['class'=>'btn btn-primary']) ?>
+        </div>
+    <?php endif ?>
 </div>
