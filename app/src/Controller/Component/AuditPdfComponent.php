@@ -278,8 +278,9 @@ class AuditPDF extends FPDF {
                             $this->SetX($newX);
                             $rowMaxH = max($rowMaxH, $sizes->trgH);
                         }
+                        $this->Ln($rowMaxH + 10);
                     }
-                    $this->Ln($rowMaxH + 10);
+                    $this->Ln(10);
                 }
             }
         }
