@@ -111,8 +111,8 @@ msgid "Error deleting template."
 msgstr "Error eliminando la plantilla."
 
 #: Controller/FormTemplatesController.php:139
-msgid "Section created."
-msgstr "Sección añadida."
+msgid "Section saved."
+msgstr "Sección guardada correctamete."
 
 #: Controller/FormTemplatesController.php:141
 msgid "Error saving section."
@@ -127,8 +127,8 @@ msgid "Error deleting section."
 msgstr "Error eliminando sección."
 
 #: Controller/FormTemplatesController.php:203
-msgid "Field created."
-msgstr "Campo creado."
+msgid "Field saved."
+msgstr "Campo guardado correctamente."
 
 #: Controller/FormTemplatesController.php:205
 msgid "Error saving field."
@@ -546,8 +546,8 @@ msgid "See audits"
 msgstr "Ver auditorías asociadas"
 
 #: Template/FormTemplates/detail.ctp:40
-msgid "This template is associated with at least one audit, so it can't be edited anymore."
-msgstr "Esta plantilla está asociada con al menos una auditoría, por lo que ya no se puede editar."
+msgid "This template is associated with at least one audit, so the editing options are limited."
+msgstr "Esta plantilla está asociada con al menos una auditoría, por lo que las opciones de edición son limiatadas."
 
 #: Template/FormTemplates/detail.ctp:49
 msgid "This template is disabled, so it can't be edited anymore. To edit please re-enable."

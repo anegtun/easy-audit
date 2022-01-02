@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-01-02 23:22+0000\n"
+"POT-Creation-Date: 2022-01-02 23:25+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -111,7 +111,7 @@ msgid "Error deleting template."
 msgstr ""
 
 #: Controller/FormTemplatesController.php:143
-msgid "Section created."
+msgid "Section saved."
 msgstr ""
 
 #: Controller/FormTemplatesController.php:145
@@ -127,7 +127,7 @@ msgid "Error deleting section."
 msgstr ""
 
 #: Controller/FormTemplatesController.php:207
-msgid "Field created."
+msgid "Field saved."
 msgstr ""
 
 #: Controller/FormTemplatesController.php:209
@@ -555,7 +555,7 @@ msgid "See audits"
 msgstr ""
 
 #: Template/FormTemplates/detail.ctp:42
-msgid "This template is associated with at least one audit, so it can't be edited anymore."
+msgid "This template is associated with at least one audit, so the editing options are limited."
 msgstr ""
 
 #: Template/FormTemplates/detail.ctp:49

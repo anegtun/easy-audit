@@ -39,7 +39,7 @@ $is_editable = !$has_audits && !$is_disabled;
     <?php if($has_audits) : ?>
         <div class="alert alert-info form-template-audit-info">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            <?= $this->EasyAuditHtml->gliphiconText('info-sign', __('This template is associated with at least one audit, so it can\'t be edited anymore.')) ?>
+            <?= $this->EasyAuditHtml->gliphiconText('info-sign', __('This template is associated with at least one audit, so the editing options are limited.')) ?>
         </div>
     <?php endif ?>
 
