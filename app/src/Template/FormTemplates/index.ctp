@@ -64,4 +64,4 @@ $this->Html->script('form-templates', ['block' => 'script']);
     <?= $this->Form->end() ?>
 </div>
 
-<?= $this->element('FormTemplate/modal_clone') ?>
+<?= $this->element('FormTemplates/modal_clone') ?>
