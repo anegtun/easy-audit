@@ -172,27 +172,24 @@ legend > a:hover, legend > a:active, legend > a:focus {
     color: #134876;
 }
 
+.audit-img-loader img {
+    max-height: 10px;
+}
+
 .audit-img-current {
     margin-top: 1em;
 }
 
-.audit-img-preview .img-loader img {
-    max-height: 15px;
-}
-
-.audit-img-current > img,
-.audit-img-preview > img {
+.audit-img-current > img {
     margin: .5em;
     max-height: 100px;
 }
 
-.audit-img-current > img,
-.audit-img-preview > img {
+.audit-img-current > img {
     cursor: pointer;
 }
 
-.audit-img-current > img.to-remove,
-.audit-img-preview > img.to-remove {
+.audit-img-current > img.to-remove {
     border: 2px solid red;
 }
 

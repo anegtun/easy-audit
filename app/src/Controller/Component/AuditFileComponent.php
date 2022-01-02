@@ -36,11 +36,18 @@ class AuditFileComponent extends Component {
             if(!empty($fieldImgs)) {
                 $dirField = new Folder($this->pathToFieldFolder($auditId, $templateId, $fieldId), true, 0755);
                 foreach($fieldImgs as $img) {
-                    $filename = md5($img).'.jpg';
+                    $filename = $this->generateFilename($img);
                     $this->writeTo($dirField->path . DS . $filename, $img);
                 }
             }
         }
+    }
+
+    public function addPhoto($auditId, $templateId, $fieldId, $img) {
+        $dirField = new Folder($this->pathToFieldFolder($auditId, $templateId, $fieldId), true, 0755);
+        $filename = $this->generateFilename($img);
+        $this->writeTo($dirField->path . DS . $filename, $img);
+        return $this->urlToImage($auditId, $templateId, $fieldId, $filename);
     }
 
     public function removePhotos($auditId, $templateId, $imgs) {
@@ -57,6 +64,10 @@ class AuditFileComponent extends Component {
     public function removeAllPhotos($auditId) {
         $dir = new Folder($this->pathToAuditFolder($auditId));
         $dir->delete();
+    }
+
+    private function generateFilename($img) {
+        return md5($img).'.jpg';
     }
 
     private function writeTo($path, $data) {

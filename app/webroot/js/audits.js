@@ -127,28 +127,34 @@ $(document).ready(function() {
     });
 
     $('input[type="file"]').change(function() {
-        const label = $(this).siblings('label').hide();
         const file = this.files && this.files[0];
-        const previewBox = $(this).parents('.audit-img-input').siblings('.audit-img-preview').show();
-        const loadingBox = previewBox.find('.img-loader').show();
-        const hiddenInputsDiv = $('.audit-img-hidden-inputs');
-        const inputName = $(this).attr('data-target-name');
-
+        const input = $(this).val('');
+        const inputConainer = $(this).parents('.audit-img-input');
+        const imgConainer = inputConainer.siblings('.audit-img-current').show();
+        const loadingBox = inputConainer.siblings('.audit-img-loader-container').find('span').clone().appendTo(imgConainer);        
+        
         EasyAuditCompress.compress(file, 1200, 0.8, 'image/jpeg').then((imageUrl) => {
-            const id = 'photo-' + Math.random();
-            $('<input type="hidden" name="'+inputName+'">').val(imageUrl).attr('data-photo-id', id).appendTo(hiddenInputsDiv);
-            const img = $('<img>').attr('src', imageUrl).attr('data-name', file.name).click(function() {
+            $.ajax({
+                url: input.attr('data-post-url'),
+                processData: false,
+                data: imageUrl,
+                type: 'POST',
+                success : (result) => {
+                    const img = $('<img>').attr('src', result).insertBefore(loadingBox);
+                    loadingBox.remove();
+                },
+                error : (e) => alert(e)
+            });
+
+            /*const img = $('<img>').attr('src', imageUrl).attr('data-name', file.name).click(function() {
                 if($(this).hasClass('to-remove')) {
                     $(this).removeClass('to-remove');
-                    hiddenInputsDiv.find('input[data-photo-id="'+id+'"]').prop('disabled', false);
                 } else {
                     $(this).addClass('to-remove');
-                    hiddenInputsDiv.find('input[data-photo-id="'+id+'"]').prop('disabled', true);
                 }
             });
-            img.insertBefore(loadingBox);
-            loadingBox.hide();
             label.show();
+            */
         });
     });
 
@@ -168,7 +174,7 @@ $(document).ready(function() {
         auditDirty = true;
     });
 
-    $('#auditForm input, #auditForm select, #auditForm textarea').change(function() {
+    $('#auditForm input, #auditForm select, #auditForm textarea').not(':input[type=file]').change(function() {
         auditDirty = true;
     });
 

@@ -7,6 +7,7 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
 use FPDF;
 
 
@@ -157,6 +158,8 @@ class AuditsController extends AppController {
     public function update() {
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
+            echo "<pre>"; var_dump($data); echo "</pre>";
+            die();
             if(!empty($data['field_values'])) {
                 foreach($data['field_values'] as $templateId => $field_values) {
                     $field_observations = $data['field_observations'][$templateId];
@@ -180,6 +183,12 @@ class AuditsController extends AppController {
             }
         }
         return $this->redirect(['action'=>'fill', $data['id']]);
+    }
+
+    public function addPhoto($auditId, $templateId, $fieldId) {
+        $path = $this->AuditFile->addPhoto($auditId, $templateId, $fieldId, $this->request->input());
+        $this->response->body(Router::url("/$path"));
+        return $this->response;
     }
 
     public function delete($id) {
