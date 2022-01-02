@@ -4,10 +4,12 @@ namespace App\Model;
 class FormTemplateTypes {
     
     public function getAll() {
-        return array(
+        $values = [
             'measure' => __('Measure'),
             'select' => __('Select form')
-        );
+        ];
+        asort($values);
+        return $values;
     }
     
     public function getAllWithEmpty() {
