@@ -8,14 +8,17 @@ $this->set('headerBreadcrumbs', [
     ['label'=>$title]
 ]);
 $this->Html->script('form-templates', ['block' => 'script']);
+
 $has_audits = !empty($template->audits);
+$is_disabled = !empty($template->disabled);
+$is_editable = !$has_audits && !$is_disabled;
 ?>
 
 <div class="row">
 
     <div class="button-group">
         <div>
-            <?php if(!$has_audits && $template->type === 'select') : ?>
+            <?php if($is_editable && $template->type === 'select') : ?>
                 <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
                 <button type="button" id="modal-field-button" class="btn btn-primary" data-target="#modal-field"><?= __('Add field') ?></button>
             <?php endif ?>
@@ -26,7 +29,7 @@ $has_audits = !empty($template->audits);
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-audits"><?= __('See audits') ?></button>
             <?php endif ?>
         </div>
-        <?php if(!$has_audits) : ?>
+        <?php if($is_editable) : ?>
             <div>
                 <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $template->id]) ?>
             </div>
@@ -40,7 +43,14 @@ $has_audits = !empty($template->audits);
         </div>
     <?php endif ?>
 
-    <?= $this->element("FormTemplates/detail_{$template->type}", ['has_audits'=>$has_audits]) ?>
+    <?php if($is_disabled) : ?>
+        <div class="alert alert-info form-template-audit-info">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <?= $this->EasyAuditHtml->gliphiconText('info-sign', __('This template is disabled, so it can\'t be edited anymore. To edit please re-enable.')) ?>
+        </div>
+    <?php endif ?>
+
+    <?= $this->element("FormTemplates/detail_{$template->type}", ['is_editable'=>$is_editable]) ?>
 </div>
 
 

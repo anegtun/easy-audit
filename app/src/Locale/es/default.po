@@ -421,6 +421,10 @@ msgstr "¿Estás seguro de querer enviar el informe de la auditoría al cliente?
 msgid "Email addresses"
 msgstr "Direcciones de correo"
 
+#: Template/Element/Audits/modal_send.ctp:16
+msgid "Observations"
+msgstr "Observaciones"
+
 #: Template/Element/Audits/modal_send.ctp:18
 msgid "Send"
 msgstr "Enviar"
@@ -440,6 +444,30 @@ msgstr "Si tiene alguna cuestión no dude en ponerse en contacto con nosotros."
 #: Template/Element/Email/audit_report.ctp:5
 msgid "Regards."
 msgstr "Un saludo."
+
+#: Template/Element/FormTemplates/detail_select.ctp:26
+msgid "Are you sure you want to remove this field? This can't be undone"
+msgstr "¿Estás seguro de querer eliminar este campo? Esta operación no se puede deshacer."
+
+#: Template/Element/FormTemplates/detail_select.ctp:55
+msgid "Weigth"
+msgstr "Peso"
+
+#: Template/Element/FormTemplates/detail_select.ctp:56;87
+msgid "Place before..."
+msgstr "Colocar antes de..."
+
+#: Template/Element/FormTemplates/detail_select.ctp:77
+msgid "Field"
+msgstr "Campo"
+
+#: Template/Element/FormTemplates/detail_select.ctp:85
+msgid "Text"
+msgstr "Texto"
+
+#: Template/Element/FormTemplates/detail_select.ctp:86
+msgid "Option Set"
+msgstr "Conjunto de opciones"
 
 #: Template/Element/FormTemplate/modal_clone.ctp:7
 msgid "Clone template"
@@ -521,25 +549,9 @@ msgstr "Ver auditorías asociadas"
 msgid "This template is associated with at least one audit, so it can't be edited anymore."
 msgstr "Esta plantilla está asociada con al menos una auditoría, por lo que ya no se puede editar."
 
-#: Template/FormTemplates/detail.ctp:65
-msgid "Are you sure you want to remove this field? This can't be undone"
-msgstr "¿Estás seguro de querer eliminar este campo? Esta operación no se puede deshacer."
-
-#: Template/FormTemplates/detail.ctp:98;129
-msgid "Place before..."
-msgstr "Colocar antes de..."
-
-#: Template/FormTemplates/detail.ctp:119
-msgid "Field"
-msgstr "Campo"
-
-#: Template/FormTemplates/detail.ctp:127
-msgid "Text"
-msgstr "Texto"
-
-#: Template/FormTemplates/detail.ctp:128
-msgid "Option Set"
-msgstr "Conjunto de opciones"
+#: Template/FormTemplates/detail.ctp:49
+msgid "This template is disabled, so it can't be edited anymore. To edit please re-enable."
+msgstr "Esta plantilla está deshabilitada, por lo que ya no se puede editar. Para editarla, habílitala antes."
 
 #: Template/FormTemplates/detail.ctp:210
 msgid "New name"

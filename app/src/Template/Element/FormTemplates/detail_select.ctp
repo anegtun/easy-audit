@@ -5,7 +5,7 @@ $optionsetOptions = iterator_to_array($optionsets);
 <?php foreach($sections as $s) : ?>
     <fieldset>
         <legend>
-            <?php if(!$has_audits) : ?>
+            <?php if($is_editable) : ?>
                 <?= $this->EasyAuditForm->editModalLink($s, 'data-section', ['id', 'position', 'name', 'weigth']) ?>
                 <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $s->id]) ?>
                 <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $s->id]) ?>
@@ -18,7 +18,7 @@ $optionsetOptions = iterator_to_array($optionsets);
         </legend>
         <?php foreach($s->form_template_fields_optionset as $f) : ?>
             <div class="row form-template-field">
-                <?php if(!$has_audits) : ?>
+                <?php if($is_editable) : ?>
                     <div class="col-sm-1">
                         <?= $this->EasyAuditForm->editModalLink($f, 'data-field', ['id', 'form_template_section_id', 'position', 'text']) ?>
                         <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveFieldUp', $f->id]) ?>
