@@ -232,12 +232,13 @@ class AuditPDF extends FPDF {
             $section = ['title' => $s->name, 'fields' => []];
             foreach($s->form_template_fields_optionset as $f) {
                 $value = $this->audit->getFieldOptionsetValue($f);
-                if($value && (empty($value->form_template_optionset_value->is_default) || !empty($value->observations))) {
+                $photos = empty($this->photos[$template->id][$f->id]) ? [] : $this->photos[$template->id][$f->id];
+                if($value && (empty($value->form_template_optionset_value->is_default) || !empty($value->observations) || !empty($photos))) {
                     $section['fields'][] = [
                         'text' => $f->text,
                         'result' => empty($value->form_template_optionset_value->label) ? '' : $value->form_template_optionset_value->label,
                         'observations' => empty($value->observations) ? '-' : $value->observations,
-                        'photos' => empty($this->photos[$template->id][$f->id]) ? [] : $this->photos[$template->id][$f->id]
+                        'photos' => $photos
                     ];
                 }
             }
@@ -256,7 +257,7 @@ class AuditPDF extends FPDF {
                     $this->Ln(7);
                     $this->SetFont('Arial', '', 12);
                     $this->Cell(35, 5, utf8_decode($f['result']));
-                    $this->MultiCell(0, 5, utf8_decode(strip_tags($f['observations'])));
+                    $this->MultiCell(0, 5, utf8_decode(print_r($f['observations'], true)));
                     if(!empty($f['photos'])) {
                         $this->Ln(5);
                         $y = $this->GetY();
