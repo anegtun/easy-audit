@@ -116,8 +116,8 @@ class AuditPDF extends FPDF {
             ['height' => 7, 'width' => [10, 50, 30], 'marginLeft' => 60]
         );
         $this->Ln(10);
-        $this->Paragraph('Además de las puntuaciones de cada apartado, en el apartado de Detalles de la auditoría indicando las oportunidades de mejora detectadas de cada premisa durante la auditoría en cada uno de ellos. También se indican en este apartado las posibles No Conformidades que el auditor ha encontrado (puntuadas como C en cada premisa).');
-        $this->Paragraph('Se recuerda que es posible que lo detectable en la presente auditoría pueda estar sujeto a modificaciones a corto plazo por lo que es primordial la colaboración y el trabajo constante del personal responsable para llevar a cabo un adecuado Sistema de Autocontrol.');
+        $this->Paragraph('Además de las puntuaciones de cada apartado, en el apartado Detalles de la auditoría se detallan los aspectos que han mostrado desviaciones en la auditoría, los cuales se han puntuado como una B o C, acompañándonos de una una observación y/o imagen según corresponda. Se recomienda que las desviaciones puntuadas con C, se las de asistencia inmediata para su subsanación inmediata o mejora.');
+        $this->Paragraph('Se recuerda que los resultados del presente informe sólo corresponden con las oportunidades de mejora detectadas en el momento de la auditoría, pudiendo variar con el tiempo.');
         $this->Paragraph('Apthisa agradece a la dirección y empleados del establecimiento su atención y colaboración durante la auditoría.');
 
         $this->Ln(15);
