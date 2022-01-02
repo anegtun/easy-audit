@@ -180,8 +180,7 @@ class AuditsController extends AppController {
 
     public function addPhoto($auditId, $templateId, $fieldId) {
         $path = $this->AuditFile->addPhoto($auditId, $templateId, $fieldId, $this->request->input());
-        $this->response->body(Router::url("/$path"));
-        return $this->response;
+        return $this->response->withStringBody(Router::url("/$path"));
     }
 
     public function delete($id) {
