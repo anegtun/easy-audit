@@ -82,8 +82,8 @@ foreach($audit->audit_field_optionset_values as $fv) {
                     </div>
 
                     <div class="audit-observations" data-has-observations="<?= $hasImgsOrObs ? true : false ?>">
-                        <a class="audit-observations-open" href="#"><?= __('+ add observations & photos') ?></a>
-                        <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations & photos') ?></a>
+                        <a class="audit-observations-open" href="#"><?= __('+ add observations') ?></a>
+                        <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations') ?></a>
                         <?= $hasObservations ? $this->EasyAuditHtml->gliphicon('comment', ['classes'=>['text-warning']]) : '' ?>
                         <?= $hasImgs ? $this->EasyAuditHtml->gliphicon('camera', ['classes'=>['text-warning']]) : '' ?>
                         
