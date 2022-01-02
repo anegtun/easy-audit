@@ -28,7 +28,7 @@ class AuditPDF extends FPDF {
             $this->Ln(5);
             $this->Cell(0, 5, utf8_decode($this->audit->customer->name), 0, 0, 'R');
             $this->Ln(5);
-            $this->Cell(0, 5, utf8_decode($this->getAuditDate()), 0, 0, 'R');
+            $this->Cell(0, 5, utf8_decode($this->getAuditShortDate()), 0, 0, 'R');
             $this->Ln(15);
         }
     }
@@ -335,6 +335,10 @@ class AuditPDF extends FPDF {
     }
 
     private function getAuditDate() {
+        return $this->audit->date->i18nFormat('dd MMMM yyyy');
+    }
+
+    private function getAuditShortDate() {
         $date = $this->audit->date->i18nFormat('MMMM yyyy');
         return strtoupper(substr($date,0,1)) . substr($date,1);
     }
