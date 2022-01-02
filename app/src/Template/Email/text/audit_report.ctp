@@ -1,1 +1,4 @@
-<?= strip_tags($this->element('Email/audit_report', ['audit' => $audit])) ?>
+<?= strip_tags($this->element('Email/audit_report', [
+    'audit' => $audit,
+    'content' => $observations,
+])) ?>
