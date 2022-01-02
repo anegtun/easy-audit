@@ -1,7 +1,9 @@
 <ul class="nav nav-pills nav-stacked" id="left-menu-content" role="navigation">
+    <?php /*
     <li data-toggle="tooltip">
         <?= $this->EasyAuditHtml->gliphiconLink('home', __('Home'), ['controller'=>'Main', 'action'=>'index']) ?>
     </li>
+    */ ?>
 
     <li data-toggle="tooltip" <?=$menu_option==='audits'?'class="active"':''?>>
         <?= $this->EasyAuditHtml->gliphiconLink('check', __('Audits'), ['controller'=>'Audits', 'action'=>'index']) ?>

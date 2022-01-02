@@ -32,12 +32,18 @@ $this->Html->script('audit-fill', ['block' => 'script']);
         <?php endforeach ?>
     </div>
 
-    <button type="button" class="btn btn-warning audit-retry-photos" style="display:none"><?= $this->EasyAuditHtml->gliphiconText('repeat', __('Retry failed photos')) ?></button>
-    <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
-    <?= $this->EasyAuditHtml->linkButton(['action' => 'data', $audit->id], 'cog', _('Audit data')) ?>
-    <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', _('History')) ?>
-    <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', _('View report'), ['target'=>'_blank']) ?>
-    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-send-report"><?= $this->EasyAuditHtml->gliphiconText('envelope', __('Send report')) ?></button>
+    <div class="button-group">
+        <div>
+            <button type="button" class="btn btn-warning audit-retry-photos" style="display:none"><?= $this->EasyAuditHtml->gliphiconText('repeat', __('Retry failed photos')) ?></button>
+            <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
+        </div>
+        <div>
+            <?= $this->EasyAuditHtml->linkButton(['action' => 'data', $audit->id], 'cog', _('Audit data')) ?>
+            <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', _('Audit history')) ?>
+            <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', _('View report'), ['target'=>'_blank']) ?>
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-send-report"><?= $this->EasyAuditHtml->gliphiconText('envelope', __('Send report')) ?></button>
+        </div>
+    </div>
 
 <?= $this->Form->end() ?>
 

@@ -7,13 +7,13 @@
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
         <!-- Favicon -->
-        <?= $this->Html->meta('favicon.ico', '/images/favicon/favicon.ico', array('type' => 'icon')) ?>
+        <?= $this->Html->meta('favicon.ico', '/images/favicon/favicon.ico', ['type' => 'icon']) ?>
         <!-- custom:css -->
-        <?= $this->Html->css(array("/maqint/maqint", "login-page", "custom")) ?>
+        <?= $this->Html->css(["/maqint/maqint", "basic-page", "easy-audit-commons", "easy-audit-audits", "easy-audit-form-templates"]) ?>
         <!-- libs:js -->
         <?= $this->Html->script("/libs/ckeditor/ckeditor") ?>
         <!-- custom:js -->
-        <?= $this->Html->script(array("/maqint/maqint-config", "/maqint/maqint", "/maqint/support")) ?>
+        <?= $this->Html->script(["/maqint/maqint-config", "/maqint/maqint", "/maqint/support"]) ?>
     </head>
 
     <body>

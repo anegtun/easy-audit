@@ -1,70 +1,42 @@
-#main-content .login-logo {
-    margin-left: 0 !important;
-}
-
-#main-footer img {
-    max-width: 150px;
-}
-
-th.cell-small , td.cell-small {
-    width: 10px;
-}
-
-td.border-right, th.border-right {
-    border-right: 1px solid #ccc;
-}
-
-legend > a:hover, legend > a:active, legend > a:focus {
-    text-decoration: none !important;
-}
-
-.form-template-field p {
-    display: inline;
-}
-
-.form-template-audit-info {
-    margin-top: 1em;
-}
-
 #auditForm .tab-content {
     margin-bottom: 1em;
 }
 
+
+
 .audit-open-all {
     margin-top: 1em;
 }
-
 .audit-open-all > a {
     margin-right: 1em;
     text-decoration: none;
 }
+
+
 
 .audit-field {
     border-radius: 15px;
     padding: 1em;
     margin-bottom: 2em;
 }
-
-.audit-field > label > * {
-    display: inline;
-}
-
 .audit-field-success {
     background-color: #dff0d8;
     border: 1px solid #d6e9c6;
     color: #3c763d;
 }
-
 .audit-field-warning {
     background-color: #fcf8e3;
     border: 1px solid #faebcc;
     color: #8a6d3b;
 }
-
 .audit-field-danger {
     background-color: #f2dede;
     border: 1px solid #ebccd1;
     color: #a94442;
+}
+
+.audit-field > label > * {
+    display: inline;
 }
 
 .audit-field-position {
@@ -76,6 +48,8 @@ legend > a:hover, legend > a:active, legend > a:focus {
 .audit-field-select {
     display: flex;
 }
+
+
 
 .audit-measure {
     align-items: center;
@@ -99,11 +73,9 @@ legend > a:hover, legend > a:active, legend > a:focus {
     flex-grow: 1;
     margin-bottom: .5em;
 }
-
 .audit-measure-item > * {
     margin-right: 1em;
 }
-
 .audit-measure-item > *:last-child {
     max-width: 5em;
 }
@@ -127,23 +99,21 @@ legend > a:hover, legend > a:active, legend > a:focus {
 .audit-measure-result .glyphicon {
     margin-top: .8em;
 }
-
 .audit-measure-result .glyphicon-ok-sign {
     color: #28a745;
 }
-
 .audit-measure-result .glyphicon-remove-sign {
     color: #dc3545;
 }
 
+
+
 .audit-observations {
     margin-top: .5em;
 }
-
 .audit-observations a {
     text-decoration: none;
 }
-
 .audit-observations > .glyphicon {
     font-size: larger;
     margin-left: .5em;
@@ -156,7 +126,6 @@ legend > a:hover, legend > a:active, legend > a:focus {
 .audit-img-input {
     margin-top: .5em;
 }
-
 .audit-img-input input {
     width: 0.1px;
 	height: 0.1px;
@@ -165,13 +134,11 @@ legend > a:hover, legend > a:active, legend > a:focus {
 	position: absolute;
 	z-index: -1;
 }
-
 .audit-img-input label {
 	cursor: pointer;
     color: #1d71b8;
     display: inline-block;
 }
-
 .audit-img-input label:hover {
     color: #134876;
 }
@@ -183,73 +150,33 @@ legend > a:hover, legend > a:active, legend > a:focus {
 .audit-img-display {
     margin-top: 1em;
 }
-
 .audit-img-display > img {
+    cursor: pointer;
     margin: .5em;
     max-height: 100px;
 }
-
-.audit-img-display > img {
-    cursor: pointer;
-}
-
 .audit-img-display > img.to-remove {
-    border: 2px solid red;
+    border: 2px solid #dc3545;
 }
 
 .audit-alert-obervations-cloned {
     margin-top: 1em;
 }
-
 .audit-alert-obervations-cloned ul {
     list-style-type: disc;
     margin-left: 2em;
 }
+
+
 
 .audit-history-chart-container {
     display: flex;
     justify-content: center;
 }
 
-.checkbox-container {
-    display: block;
-}
 
-.checkbox-container > span {
-    margin-left: .5em;
-}
 
 @media (max-width: 990px) {
-    #main-wrapper #main-content {
-        min-height: calc(100% - 85px);
-    }
-    #main-footer {
-        height: 30px;
-    }
-    #main-footer #footer-logo,
-    #main-footer #footer-info,
-    #main-footer img {
-        height: 25px;
-        font-size: 0.65em;
-    }
-    #main-footer #footer-info #footer-menu {
-        padding-top: 3px;
-    }
-
-    .login-left {
-        padding: 0 35px !important;
-    }
-    .container-full {
-        padding-left: 20px;
-        padding-right: 20px;
-    }
-    .breadcrumb {
-        margin-top: 10px;
-    }
-
-    fieldset legend {
-        font-size: 1.1em;
-    }
 
     .audit-field-select {
         justify-content: space-between;
@@ -262,19 +189,10 @@ legend > a:hover, legend > a:active, legend > a:focus {
     .audit-observations textarea {
         min-height: 10em;
     }
+
 }
 
 @media (min-width: 990px) {
-    .form-row {
-        display: flex;
-    }
-    .form-row > * {
-        flex-basis: 100%;
-        margin-right: 25px;
-    }
-    .form-row > *:last-child {
-        margin-right: 0;
-    }
 
     .audit-field-select label {
         min-width: 5em;
@@ -282,6 +200,7 @@ legend > a:hover, legend > a:active, legend > a:focus {
     .audit-field-select input {
         margin-right: .5em;
     }
+
 }
 
 @media (min-width: 1200px) {

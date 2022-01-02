@@ -26,12 +26,18 @@ $this->set('headerBreadcrumbs', [
         </div>
     </fieldset>
 
-    <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
-    <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $audit->id]) ?>
-    <?= $this->EasyAuditHtml->linkButton(['action' => 'fill', $audit->id], 'edit', _('Fill')) ?>
-    <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', _('History')) ?>
-    <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', _('View report'), ['target'=>'_blank']) ?>
-    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-send-report"><?= $this->EasyAuditHtml->gliphiconText('envelope', __('Send report')) ?></button>
+    <div class="button-group">
+        <div>
+            <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
+            <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $audit->id]) ?>
+        </div>
+        <div>
+            <?= $this->EasyAuditHtml->linkButton(['action' => 'fill', $audit->id], 'edit', _('Fill audit')) ?>
+            <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', _('Audit history')) ?>
+            <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', _('View report'), ['target'=>'_blank']) ?>
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-send-report"><?= $this->EasyAuditHtml->gliphiconText('envelope', __('Send report')) ?></button>
+        </div>
+    </div>
 
 <?= $this->Form->end() ?>
 
