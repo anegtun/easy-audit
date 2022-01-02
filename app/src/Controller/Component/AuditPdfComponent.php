@@ -141,7 +141,7 @@ class AuditPDF extends FPDF {
 
     private function SelectReportSummaryTable($template) {
         $history_to_show = count($this->history) > 6 ? array_slice($this->history, -6) : $this->history;
-        $sectionNameMaxLength = 110 - count($history_to_show) * 10;
+        $sectionNameMaxLength = 105 - count($history_to_show) * 10;
         $sectionNameMaxWidth = 175 - count($history_to_show) * 15;
         $rows = [];
         $headerRow = ['values' => [''], 'bg' => [237,239,246], 'color'=>[29,113,184],  'font' => ['Arial','B',10]];
@@ -154,6 +154,7 @@ class AuditPDF extends FPDF {
             if(strlen($sectionName) > $sectionNameMaxLength) {
                 $sectionName = substr($s->name, 0, 110 - count($history_to_show) * 10).'...';
             }
+            $sectionName .= " ($s->weigth)";
             $row = ['values' => [$sectionName]];
             foreach($history_to_show as $h) {
                 $row['values'][] = $h->score_section[$s->id];

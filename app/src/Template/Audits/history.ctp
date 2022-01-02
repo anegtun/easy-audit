@@ -40,7 +40,10 @@ $this->Html->script('audit-history', ['block' => 'script']);
                         <tbody>
                             <?php foreach($t->form_template_sections as $s) : ?>
                                 <tr>
-                                    <td><?= $this->EasyAuditTemplate->section($s) ?></td>
+                                    <td>
+                                        <?= $this->EasyAuditTemplate->section($s) ?>
+                                        (<?= $s->weigth ?>)
+                                    </td>
                                     <?php foreach($template_audits as $a) : ?>
                                         <td><?= $a->score_section[$s->id] ?></td>
                                     <?php endforeach ?>
@@ -49,7 +52,9 @@ $this->Html->script('audit-history', ['block' => 'script']);
                                 <tr>
                                     <td><strong><?= __('TOTAL') ?></strong></td>
                                     <?php foreach($template_audits as $a) : ?>
-                                        <td class="audit-history-total" data-audit-date="<?= strtoupper($a->date->i18nFormat('MMM yy')) ?>"><strong><?= $a->score_templates[$t->id] ?></strong></td>
+                                        <td class="audit-history-total" data-audit-date="<?= strtoupper($a->date->i18nFormat('MMM yy')) ?>">
+                                            <strong><?= $a->score_templates[$t->id] ?></strong>
+                                        </td>
                                     <?php endforeach ?>
                                 </tr>
                         </tbody>
