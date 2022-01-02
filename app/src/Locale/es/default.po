@@ -228,7 +228,7 @@ msgstr "Guardar"
 
 #: Template/Audits/data.ctp:35
 msgid "Fill audit"
-msgstr "Rellenar audotoría"
+msgstr "Rellenar auditoría"
 
 #: Template/Audits/data.ctp:36
 msgid "Audit history"
