@@ -396,10 +396,11 @@ class AuditPdfComponent extends Component {
 
     public function generate($audit, $audits, $images) {
         $pdf = new AuditPDF();
-        $pdf->AliasNbPages();
         $pdf->audit = $audit;
         $pdf->history = $audits;
         $pdf->photos = $images;
+        $pdf->AliasNbPages();
+        $pdf->SetTitle(utf8_decode($audit->getReportName()));
 
         $pdf->AddPage();
         $pdf->Cover();
