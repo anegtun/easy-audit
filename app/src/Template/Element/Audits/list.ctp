@@ -9,6 +9,7 @@ $show_user = empty($hide_user);
                 <th class="cell-small"></th>
                 <th class="cell-small"></th>
                 <th class="cell-small"></th>
+                <th class="cell-small"></th>
                 <th class="cell-small celda-titulo"><?= __('Date') ?></th>
                 <th class="celda-titulo"><?= __('Name') ?></th>
                 <?php if($show_user) : ?>

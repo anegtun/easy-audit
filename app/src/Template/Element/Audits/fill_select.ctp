@@ -109,7 +109,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
                                     capture="capture"
                                 />
                                 <label for="<?=$fieldId?>">
-                                    <?= $this->EasyAuditHtml->gliphiconText('camera', __('Add photo')) ?>
+                                    <?= $this->EasyAuditHtml->gliphiconText('camera', __('Take photo')) ?>
                                 </label>
                             </div>
                             <div class="audit-img-aux-container" style="display:none">

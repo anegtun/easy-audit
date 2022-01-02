@@ -1,0 +1,616 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2022-01-02 16:27+0000\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: Controller/AuditsController.php:107
+msgid "Audit created."
+msgstr ""
+
+#: Controller/AuditsController.php:109
+msgid "Error creating audit."
+msgstr ""
+
+#: Controller/AuditsController.php:122
+msgid "Audit data updated."
+msgstr ""
+
+#: Controller/AuditsController.php:134
+#: Controller/CustomersController.php:71
+msgid "Template added correctly."
+msgstr ""
+
+#: Controller/AuditsController.php:136
+#: Controller/CustomersController.php:73
+msgid "Error adding template."
+msgstr ""
+
+#: Controller/AuditsController.php:151
+#: Controller/CustomersController.php:88
+msgid "Template removed correctly."
+msgstr ""
+
+#: Controller/AuditsController.php:153
+#: Controller/CustomersController.php:90
+msgid "Error removing template."
+msgstr ""
+
+#: Controller/AuditsController.php:190
+msgid "Audit deleted correctly."
+msgstr ""
+
+#: Controller/AuditsController.php:192
+msgid "Error deleting audit."
+msgstr ""
+
+#: Controller/AuditsController.php:213
+msgid "There are no emails configured for this customer."
+msgstr ""
+
+#: Controller/AuditsController.php:217
+msgid "Email sent correctly."
+msgstr ""
+
+#: Controller/CustomersController.php:41
+msgid "Customer saved correctly."
+msgstr ""
+
+#: Controller/CustomersController.php:43
+msgid "Error saving customer."
+msgstr ""
+
+#: Controller/CustomersController.php:52
+msgid "This customer has at least one audit, so it can't be deleted."
+msgstr ""
+
+#: Controller/CustomersController.php:56
+msgid "Customer deleted correctly."
+msgstr ""
+
+#: Controller/CustomersController.php:58
+msgid "Error deleting customer."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:30;59
+msgid "Template created."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:33
+msgid "Error saving template."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:69
+msgid "Template enabled or disabled successfully."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:79
+msgid "Template renamed."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:88
+msgid "This template is used in at least one audit, so it can't be deleted. You can instead disable it."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:92
+msgid "Template deleted successfully."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:94
+msgid "Error deleting template."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:139
+msgid "Section created."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:141
+msgid "Error saving section."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:151
+msgid "Section deleted successfully."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:153
+msgid "Error deleting section."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:203
+msgid "Field created."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:205
+msgid "Error saving field."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:215
+msgid "Field deleted successfully."
+msgstr ""
+
+#: Controller/FormTemplatesController.php:217
+msgid "Error deleting field."
+msgstr ""
+
+#: Controller/UsersController.php:42
+msgid "User saved correctly."
+msgstr ""
+
+#: Controller/UsersController.php:44
+msgid "Error saving user."
+msgstr ""
+
+#: Controller/UsersController.php:53
+msgid "This user is assigned to at least one audit, so it can't be deleted."
+msgstr ""
+
+#: Controller/UsersController.php:57
+msgid "User deleted correctly."
+msgstr ""
+
+#: Controller/UsersController.php:59
+msgid "Error deleting user."
+msgstr ""
+
+#: Controller/UsersController.php:71
+msgid "Invalid username or password, try again"
+msgstr ""
+
+#: Controller/Component/AuditEmailComponent.php:19
+msgid "Audit report"
+msgstr ""
+
+#: Model/FormTemplateTypes.php:8
+msgid "Measure"
+msgstr ""
+
+#: Model/FormTemplateTypes.php:9
+msgid "Select form"
+msgstr ""
+
+#: Model/Roles.php:8
+msgid "Admin"
+msgstr ""
+
+#: Model/Roles.php:9
+#: Template/Audits/data.ctp:23
+#: Template/Element/Audits/list.ctp:15
+msgid "Auditor"
+msgstr ""
+
+#: Model/Entity/Audit.php:46
+#: Template/Audits/data.ctp:2
+#: Template/Audits/fill.ctp:2
+#: Template/Audits/history.ctp:2
+msgid "Audit"
+msgstr ""
+
+#: Template/Audits/data.ctp:6
+#: Template/Audits/fill.ctp:6
+#: Template/Audits/history.ctp:6
+#: Template/Audits/index.ctp:3;5
+#: Template/Customers/detail.ctp:93
+#: Template/Element/Layout/menu.ctp:9
+#: Template/FormTemplates/detail.ctp:180
+#: Template/Users/detail.ctp:46
+msgid "Audits"
+msgstr ""
+
+#: Template/Audits/data.ctp:8;16
+msgid "Audit data"
+msgstr ""
+
+#: Template/Audits/data.ctp:20
+#: Template/Audits/index.ctp:34
+#: Template/Element/Audits/list.ctp:12
+msgid "Date"
+msgstr ""
+
+#: Template/Audits/data.ctp:31;89
+#: Template/Audits/fill.ctp:38
+#: Template/Customers/detail.ctp:27;81
+#: Template/Element/FormTemplate/modal_clone.ctp:20
+#: Template/FormTemplates/detail.ctp:102;133;214
+#: Template/FormTemplates/index.ctp:59
+#: Template/Users/detail.ctp:30
+msgid "Save"
+msgstr ""
+
+#: Template/Audits/data.ctp:38
+#: Template/Audits/fill.ctp:44
+#: Template/Audits/history.ctp:75
+msgid "Send report"
+msgstr ""
+
+#: Template/Audits/data.ctp:48
+#: Template/Customers/detail.ctp:41
+msgid "Associated templates"
+msgstr ""
+
+#: Template/Audits/data.ctp:54
+#: Template/Customers/detail.ctp:18;47
+#: Template/Customers/index.ctp:16
+#: Template/Element/Audits/list.ctp:13
+#: Template/FormTemplates/detail.ctp:97;156
+#: Template/FormTemplates/index.ctp:19;54
+#: Template/Users/detail.ctp:25
+#: Template/Users/index.ctp:17
+msgid "Name"
+msgstr ""
+
+#: Template/Audits/data.ctp:67;78
+#: Template/Customers/detail.ctp:60;70
+msgid "Add template"
+msgstr ""
+
+#: Template/Audits/data.ctp:85
+#: Template/Audits/index.ctp:31
+#: Template/Customers/detail.ctp:77
+#: Template/FormTemplates/detail.ctp:2
+msgid "Template"
+msgstr ""
+
+#: Template/Audits/data.ctp:90
+#: Template/Audits/index.ctp:40
+#: Template/Customers/detail.ctp:82
+#: Template/Element/Audits/modal_send.ctp:19
+#: Template/Element/FormTemplate/modal_clone.ctp:21
+#: Template/FormTemplates/detail.ctp:103;134;169;189;215
+#: Template/FormTemplates/index.ctp:60
+msgid "Close"
+msgstr ""
+
+#: Template/Audits/fill.ctp:8
+msgid "Fill"
+msgstr ""
+
+#: Template/Audits/fill.ctp:17
+msgid "There are unsaved changed."
+msgstr ""
+
+#: Template/Audits/fill.ctp:37
+msgid "Retry failed photos"
+msgstr ""
+
+#: Template/Audits/history.ctp:8
+msgid "History"
+msgstr ""
+
+#: Template/Audits/history.ctp:34
+#: Template/FormTemplates/detail.ctp:90;126
+msgid "Section"
+msgstr ""
+
+#: Template/Audits/history.ctp:50
+msgid "TOTAL"
+msgstr ""
+
+#: Template/Audits/index.ctp:13;22
+msgid "New audit"
+msgstr ""
+
+#: Template/Audits/index.ctp:29
+#: Template/Customers/detail.ctp:2
+#: Template/Element/Audits/modal_send.ctp:14
+msgid "Customer"
+msgstr ""
+
+#: Template/Audits/index.ctp:35
+msgid "Copy last audit values & observations (no photos)?"
+msgstr ""
+
+#: Template/Audits/index.ctp:39
+#: Template/Customers/index.ctp:31
+#: Template/FormTemplates/index.ctp:38
+#: Template/Users/index.ctp:37
+msgid "Create"
+msgstr ""
+
+#: Template/Customers/detail.ctp:6
+#: Template/Customers/index.ctp:5
+#: Template/Element/Layout/menu.ctp:18
+#: Template/FormTemplates/detail.ctp:6
+#: Template/FormTemplates/index.ctp:5
+#: Template/Users/detail.ctp:6
+#: Template/Users/index.ctp:5
+msgid "Config"
+msgstr ""
+
+#: Template/Customers/detail.ctp:7
+#: Template/Customers/index.ctp:3;6
+#: Template/Element/Layout/menu.ctp:13
+#: Template/FormTemplates/detail.ctp:147
+msgid "Customers"
+msgstr ""
+
+#: Template/Customers/detail.ctp:16
+msgid "Customer details"
+msgstr ""
+
+#: Template/Customers/detail.ctp:22
+msgid "Emails"
+msgstr ""
+
+#: Template/Element/Audits/fill_measure.ctp:14;41
+msgid "Item"
+msgstr ""
+
+#: Template/Element/Audits/fill_measure.ctp:15;42
+msgid "Unit"
+msgstr ""
+
+#: Template/Element/Audits/fill_measure.ctp:18;45
+msgid "Expected"
+msgstr ""
+
+#: Template/Element/Audits/fill_measure.ctp:19;46
+msgid "Actual"
+msgstr ""
+
+#: Template/Element/Audits/fill_measure.ctp:23;50
+msgid "Thredshold"
+msgstr ""
+
+#: Template/Element/Audits/fill_measure.ctp:60
+msgid "+ add measure"
+msgstr ""
+
+#: Template/Element/Audits/fill_select.ctp:13
+msgid "Warning!"
+msgstr ""
+
+#: Template/Element/Audits/fill_select.ctp:13
+msgid "Observations for the following items are the same as the last audit: "
+msgstr ""
+
+#: Template/Element/Audits/fill_select.ctp:25
+msgid "Open all"
+msgstr ""
+
+#: Template/Element/Audits/fill_select.ctp:26
+msgid "Close all"
+msgstr ""
+
+#: Template/Element/Audits/fill_select.ctp:85
+msgid "+ add observations"
+msgstr ""
+
+#: Template/Element/Audits/fill_select.ctp:86
+msgid "- close observations"
+msgstr ""
+
+#: Template/Element/Audits/fill_select.ctp:95
+msgid "Photos"
+msgstr ""
+
+#: Template/Element/Audits/fill_select.ctp:112
+msgid "Take photo"
+msgstr ""
+
+#: Template/Element/Audits/modal_send.ctp:7
+msgid "Send audit"
+msgstr ""
+
+#: Template/Element/Audits/modal_send.ctp:13
+msgid "Are you sure you want to send the report to the customer?"
+msgstr ""
+
+#: Template/Element/Audits/modal_send.ctp:15
+msgid "Email addresses"
+msgstr ""
+
+#: Template/Element/Audits/modal_send.ctp:18
+msgid "Send"
+msgstr ""
+
+#: Template/Element/Email/audit_report.ctp:2
+msgid "Esteemed client"
+msgstr ""
+
+#: Template/Element/Email/audit_report.ctp:3
+msgid "Please find attached the result of the audit carried out on <strong>{0}</strong>."
+msgstr ""
+
+#: Template/Element/Email/audit_report.ctp:4
+msgid "If you have any inquiry, please do not hesitate to contact us."
+msgstr ""
+
+#: Template/Element/Email/audit_report.ctp:5
+msgid "Regards."
+msgstr ""
+
+#: Template/Element/FormTemplate/modal_clone.ctp:7
+msgid "Clone template"
+msgstr ""
+
+#: Template/Element/FormTemplate/modal_clone.ctp:14
+msgid "New template name"
+msgstr ""
+
+#: Template/Element/FormTemplate/modal_clone.ctp:15
+msgid "Rename old template?"
+msgstr ""
+
+#: Template/Element/FormTemplate/modal_clone.ctp:16
+msgid "Disable old template?"
+msgstr ""
+
+#: Template/Element/Layout/email_disclaimer.ctp:6
+msgid "This message and all of its attachments are meant to be sent exclusively to its recipient and contain confidential information."
+msgstr ""
+
+#: Template/Element/Layout/email_disclaimer.ctp:7
+msgid "In the event of accidantally receiving this message, please delete all of its content and inform us at {0}."
+msgstr ""
+
+#: Template/Element/Layout/email_disclaimer.ctp:8
+msgid "We also comunicate that the distribution, copy or any use of this message or any of its attachments is not permitted."
+msgstr ""
+
+#: Template/Element/Layout/email_disclaimer.ctp:11
+msgid "Please think in the environment before printing this email."
+msgstr ""
+
+#: Template/Element/Layout/email_disclaimer.ctp:14
+msgid "{0} has implemented all the needed technical and organizational measures to protect all your personal data required by law."
+msgstr ""
+
+#: Template/Element/Layout/email_disclaimer.ctp:15
+msgid "In any case, the owner of this data can exercise its right to access, rectify, eliminate or limitate its exposure by writing to the postal address previously indicated or through the following email address: {0}."
+msgstr ""
+
+#: Template/Element/Layout/menu.ctp:23
+#: Template/FormTemplates/detail.ctp:7
+#: Template/FormTemplates/index.ctp:3;6
+msgid "Form templates"
+msgstr ""
+
+#: Template/Element/Layout/menu.ctp:26
+#: Template/Users/detail.ctp:7
+#: Template/Users/index.ctp:3;6
+msgid "Users"
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:20
+msgid "Add section"
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:21
+msgid "Add field"
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:23;203
+msgid "Rename"
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:24
+msgid "Clone"
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:25
+msgid "See customers"
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:27
+msgid "See audits"
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:40
+msgid "This template is associated with at least one audit, so it can't be edited anymore."
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:65
+msgid "Are you sure you want to remove this field? This can't be undone"
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:98;129
+msgid "Place before..."
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:119
+msgid "Field"
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:127
+msgid "Text"
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:128
+msgid "Option Set"
+msgstr ""
+
+#: Template/FormTemplates/detail.ctp:210
+msgid "New name"
+msgstr ""
+
+#: Template/FormTemplates/index.ctp:20;55
+msgid "Type"
+msgstr ""
+
+#: Template/FormTemplates/index.ctp:47
+msgid "New template"
+msgstr ""
+
+#: Template/Layout/default.ctp:82;91
+msgid "Logout"
+msgstr ""
+
+#: Template/Layout/default.ctp:122
+msgid "Home"
+msgstr ""
+
+#: Template/Layout/error.ctp:35
+#: Template/Error/error400.ctp:36
+#: Template/Error/error500.ctp:41
+msgid "Error"
+msgstr ""
+
+#: Template/Layout/error.ctp:43
+msgid "Back"
+msgstr ""
+
+#: Template/Layout/login.ctp:57
+msgid "Easy Audit system"
+msgstr ""
+
+#: Template/Main/index.ctp:2;7
+msgid "Dashboard"
+msgstr ""
+
+#: Template/Users/detail.ctp:2
+msgid "New user"
+msgstr ""
+
+#: Template/Users/detail.ctp:17
+msgid "User details"
+msgstr ""
+
+#: Template/Users/detail.ctp:19
+#: Template/Users/index.ctp:16
+msgid "Username"
+msgstr ""
+
+#: Template/Users/detail.ctp:21
+msgid "Password"
+msgstr ""
+
+#: Template/Users/detail.ctp:21
+msgid "Fill to set new password"
+msgstr ""
+
+#: Template/Users/detail.ctp:26
+#: Template/Users/index.ctp:18
+msgid "Company position"
+msgstr ""
+
+#: Template/Users/detail.ctp:27
+#: Template/Users/index.ctp:19
+msgid "Role"
+msgstr ""
+
+#: Template/Users/login.ctp:2
+msgid "Login"
+msgstr ""
+
+#: View/Helper/EasyAuditHtmlHelper.php:11;15
+msgid "This operation can't be undone, are you sure?"
+msgstr ""
+
+#: Template/Error/error400.ctp:37
+msgid "The requested address {0} was not found on this server."
+msgstr ""
+
+#: Template/Error/error500.ctp:39
+msgid "An Internal Error Has Occurred"
+msgstr ""
+

@@ -150,7 +150,7 @@ class FormTemplatesController extends AppController {
         if($this->FormTemplateSections->delete($section)) {
             $this->Flash->success(__('Section deleted successfully.'));
         } else {
-            $this->Flash->error(__('Section deleting field.'));
+            $this->Flash->error(__('Error deleting section.'));
         }
         return $this->redirect(['action'=>'detail', $section->form_template_id]);
     }
