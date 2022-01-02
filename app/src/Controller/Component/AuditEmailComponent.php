@@ -6,7 +6,7 @@ use Cake\Mailer\Email;
 
 class AuditEmailComponent extends Component {
 
-    public function sendReport($audit, $content) {
+    public function sendReport($audit, $content, $observations) {
         $filename = $audit->getReportFilename();
         $to = explode(',', $audit->customer->emails);
         array_walk($to, function (&$e) { $e = trim($e); });
@@ -15,9 +15,10 @@ class AuditEmailComponent extends Component {
         $email->viewBuilder()->setTemplate('audit_report', 'default');
         $email
             ->setEmailFormat('both')
+            ->setFrom($audit->auditor->email)
             ->setTo($to)
             ->setSubject(__('Audit report'))
-            ->setViewVars(compact('audit'))
+            ->setViewVars(compact('audit', 'observations'))
             ->setAttachments([
                 $filename => [
                     'data' => $content,

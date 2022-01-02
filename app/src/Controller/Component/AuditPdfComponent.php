@@ -15,6 +15,8 @@ class AuditPDF extends FPDF {
 
     public $photos;
 
+    public $graph_color;
+
     const MAX_PHOTO_HEIGHT = 90;
 
     const MAX_PHOTO_WIDTH = 80;
@@ -28,7 +30,7 @@ class AuditPDF extends FPDF {
             $this->Ln(5);
             $this->Cell(0, 5, utf8_decode($this->audit->customer->name), 0, 0, 'R');
             $this->Ln(5);
-            $this->Cell(0, 5, utf8_decode($this->getAuditDate()), 0, 0, 'R');
+            $this->Cell(0, 5, utf8_decode($this->getAuditShortDate()), 0, 0, 'R');
             $this->Ln(15);
         }
     }
@@ -114,8 +116,8 @@ class AuditPDF extends FPDF {
             ['height' => 7, 'width' => [10, 50, 30], 'marginLeft' => 60]
         );
         $this->Ln(10);
-        $this->Paragraph('Además de las puntuaciones de cada apartado, en el apartado de Detalles de la auditoría indicando las oportunidades de mejora detectadas de cada premisa durante la auditoría en cada uno de ellos. También se indican en este apartado las posibles No Conformidades que el auditor ha encontrado (puntuadas como C en cada premisa).');
-        $this->Paragraph('Se recuerda que es posible que lo detectable en la presente auditoría pueda estar sujeto a modificaciones a corto plazo por lo que es primordial la colaboración y el trabajo constante del personal responsable para llevar a cabo un adecuado Sistema de Autocontrol.');
+        $this->Paragraph('Además de las puntuaciones de cada apartado, en el apartado Detalles de la auditoría se detallan los aspectos que han mostrado desviaciones en la auditoría, los cuales se han puntuado como una B o C, acompañándonos de una una observación y/o imagen según corresponda. Se recomienda que las desviaciones puntuadas con C, se las de asistencia inmediata para su subsanación inmediata o mejora.');
+        $this->Paragraph('Se recuerda que los resultados del presente informe sólo corresponden con las oportunidades de mejora detectadas en el momento de la auditoría, pudiendo variar con el tiempo.');
         $this->Paragraph('Apthisa agradece a la dirección y empleados del establecimiento su atención y colaboración durante la auditoría.');
 
         $this->Ln(15);
@@ -185,7 +187,7 @@ class AuditPDF extends FPDF {
         $colWidth = min([20, $maxWidth / count($this->history) / 2]);
         $gap = ($maxWidth - $colWidth * count($this->history)) / (2 * count($this->history));
         $y = $this->GetY();
-        $this->SetFillColor(29, 113, 184);
+        $this->SetFillColor($this->graph_color[0], $this->graph_color[1], $this->graph_color[2]);
         foreach($this->history as $i => $h) {
             $x = $marginLeft + $gap + $i * ($colWidth + 2 * $gap);
             $score = $h->score_templates[$template->id];
@@ -235,6 +237,7 @@ class AuditPDF extends FPDF {
                 $photos = empty($this->photos[$template->id][$f->id]) ? [] : $this->photos[$template->id][$f->id];
                 if($value && (empty($value->form_template_optionset_value->is_default) || !empty($value->observations) || !empty($photos))) {
                     $section['fields'][] = [
+                        'warn' => $value->form_template_optionset_value->color === 'danger',
                         'text' => $f->text,
                         'result' => empty($value->form_template_optionset_value->label) ? '' : $value->form_template_optionset_value->label,
                         'observations' => empty($value->observations) ? '-' : $value->observations,
@@ -256,7 +259,13 @@ class AuditPDF extends FPDF {
                     $this->Cell(35, 5, utf8_decode('Observaciones'));
                     $this->Ln(7);
                     $this->SetFont('Arial', '', 12);
+                    if($f['warn']) {
+                        $this->SetFont('Arial', 'B', 14);
+                        $this->SetTextColor(169, 68, 66);
+                    }
                     $this->Cell(35, 5, utf8_decode($f['result']));
+                    $this->SetFont('Arial', '', 12);
+                    $this->SetTextColor(0, 0, 0);
                     $this->MultiCell(0, 5, utf8_decode(print_r($f['observations'], true)));
                     if(!empty($f['photos'])) {
                         $this->Ln(5);
@@ -335,6 +344,10 @@ class AuditPDF extends FPDF {
     }
 
     private function getAuditDate() {
+        return $this->audit->date->i18nFormat('dd MMMM yyyy');
+    }
+
+    private function getAuditShortDate() {
         $date = $this->audit->date->i18nFormat('MMMM yyyy');
         return strtoupper(substr($date,0,1)) . substr($date,1);
     }
@@ -392,11 +405,13 @@ class AuditPdfComponent extends Component {
 
     public function generate($audit, $audits, $images) {
         $pdf = new AuditPDF();
-        $pdf->AliasNbPages();
         $pdf->audit = $audit;
         $pdf->history = $audits;
         $pdf->photos = $images;
+        $pdf->graph_color = sscanf(Configure::read('easy-audit.report.graph-color'), "#%02x%02x%02x");
 
+        $pdf->AliasNbPages();
+        $pdf->SetTitle(utf8_decode($audit->getReportName()));
         $pdf->AddPage();
         $pdf->Cover();
 

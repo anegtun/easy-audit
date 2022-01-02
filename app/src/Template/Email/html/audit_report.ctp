@@ -1,1 +1,4 @@
-<?= $this->element('Email/audit_report', ['audit' => $audit]) ?>
+<?= $this->element('Email/audit_report', [
+    'audit' => $audit,
+    'observations' => $observations,
+]) ?>

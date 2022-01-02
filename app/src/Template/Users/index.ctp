@@ -15,6 +15,7 @@ $this->set('headerBreadcrumbs', [
                     <th class="cell-small"></th>
                     <th class="celda-titulo"><?= __('Username') ?></th>
                     <th class="celda-titulo"><?= __('Name') ?></th>
+                    <th class="celda-titulo"><?= __('Email') ?></th>
                     <th class="celda-titulo"><?= __('Company position') ?></th>
                     <th class="celda-titulo"><?= __('Role') ?></th>
                 </tr>
@@ -25,6 +26,7 @@ $this->set('headerBreadcrumbs', [
                         <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'delete', $u->id]) ?></td>
                         <td><?= $this->Html->link($u->username, ['action'=>'detail', $u->id]) ?></td>
                         <td><?= $u->name ?></td>
+                        <td><?= $u->email ?></td>
                         <td><?= $u->position ?></td>
                         <td><?= $roles[$u->role] ?></td>
                     </tr>

@@ -212,8 +212,10 @@ class AuditsController extends AppController {
         if(empty($audit->customer->emails)) {
             $this->Flash->error(__('There are no emails configured for this customer.'));
         } else {
+            $data = $this->request->getData();
+            $observations = !empty($data) ? $data['observations'] : '';
             $content = $this->generateReport($audit);
-            $this->AuditEmail->sendReport($audit, $content);
+            $this->AuditEmail->sendReport($audit, $content, $observations);
             $this->Flash->success(__('Email sent correctly.'));
         }
         return $this->redirect($this->referer());
