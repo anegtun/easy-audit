@@ -15,6 +15,10 @@ class AuditPDF extends FPDF {
 
     public $photos;
 
+    const MAX_PHOTO_HEIGHT = 90;
+
+    const MAX_PHOTO_WIDTH = 80;
+
     function Header() {
         $this->SetTextColor(0, 0, 0);
         if($this->PageNo() > 1) {
@@ -256,23 +260,43 @@ class AuditPDF extends FPDF {
                     if(!empty($f['photos'])) {
                         $this->Ln(5);
                         $y = $this->GetY();
+                        $rowMaxH = 0;
                         foreach($f['photos'] as $i => $photo) {
-                            $x = ($i % 2 === 0) ? 20 : 110;
-                            if($y + 110 > 290) {
+                            $path = WWW_ROOT . DS . $photo;
+                            $sizes = $this->CalculateImageSize($path);
+                            $newX = $this->GetX() + $sizes->trgW + 10;
+                            if($newX > 210) {
+                                $this->Ln($rowMaxH + 10);
+                                $rowMaxH = 0;
+                                $newX = $this->GetX() + $sizes->trgW + 10;
+                            }
+                            $newY = $this->GetY() + $sizes->trgH + 10;
+                            if($newY > 290) {
                                 $this->AddPage();
-                                $y = $this->GetY();
                             }
-                            $this->Image(WWW_ROOT . DS . $photo, $x, $y, 60);
-                            if($i % 2 === 1 || $i === count($f['photos']) - 1) {
-                                $this->Ln(120);
-                                $y = $this->GetY();
-                            }
+                            $this->Image(WWW_ROOT . DS . $photo, $this->GetX(), $this->GetY(), $sizes->trgW, $sizes->trgH);
+                            $this->SetX($newX);
+                            $rowMaxH = max($rowMaxH, $sizes->trgH);
                         }
                     }
-                    $this->Ln(12);
+                    $this->Ln($rowMaxH + 10);
                 }
             }
         }
+    }
+
+    private function CalculateImageSize($path) {
+        list($photoW, $photoH) = getimagesize($path);
+        $largest = max($photoW, $photoH);
+        $ratioW = $photoW > self::MAX_PHOTO_WIDTH ? self::MAX_PHOTO_WIDTH / $photoW : 1;
+        $ratioH = $photoH > self::MAX_PHOTO_HEIGHT ? self::MAX_PHOTO_HEIGHT / $photoH : 1;
+        $ratio = min($ratioW, $ratioH);
+        return (object) [
+            'srcW' => $photoW,
+            'srcH' => $photoH,
+            'trgW' => $photoW * $ratio,
+            'trgH' => $photoH * $ratio,
+        ];
     }
 
     private function H1($str) {
