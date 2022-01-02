@@ -16,6 +16,10 @@ class FormTemplatesController extends AppController {
         $this->FormTemplateSections = TableRegistry::getTableLocator()->get('FormTemplateSections');
     }
 
+    public function isAuthorized($user) {
+        return $user['role'] === 'admin';
+    }
+
     public function index() {
         $template_types = $this->FormTemplateTypes->getAll();
         $templates = $this->FormTemplates->find()->order(['disabled'=>'ASC', 'name'=>'ASC']);

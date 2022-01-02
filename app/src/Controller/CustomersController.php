@@ -12,6 +12,13 @@ class CustomersController extends AppController {
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
     }
 
+    public function isAuthorized($user) {
+        if (in_array($this->request->getParam('action'), ['save','delete'])) {
+            return $user['role'] === 'admin';
+        }
+        return true;
+    }
+
     public function index() {
         $customers = $this->Customers->find('all', ['order'=>'name']);
         $this->set(compact('customers'));

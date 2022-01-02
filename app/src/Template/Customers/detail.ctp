@@ -7,6 +7,8 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('Customers'), 'url'=>['action'=>'index']],
     ['label'=>$title]
 ]);
+$authUser = $this->request->getSession()->read('Auth.User');
+$isAdmin = $authUser['role'] === 'admin';
 ?>
 
 <div class="row">
@@ -15,20 +17,23 @@ $this->set('headerBreadcrumbs', [
         <fieldset>
             <legend><?= __('Customer details') ?></legend>
             <div class="form-row">
-                <?= $this->Form->control('name', ['label'=>__('Name')]) ?>
+                <?= $this->Form->control('name', ['label'=>__('Name'), 'disabled' => !$isAdmin]) ?>
                 </div>
             <div class="form-row">
                 <div class="form-group">
                     <label><?= __('Emails') ?></label>
-                    <?= $this->Form->textarea('emails') ?>
+                    <?= $this->Form->textarea('emails', ['disabled' => !$isAdmin]) ?>
                 </div>
             </div>
-            <div class="button-group">
-                <div><?= $this->EasyAuditForm->saveButton(__('Save')) ?></div>
-                <?php if(!empty($customer->id)) : ?>
-                    <div><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $customer->id]) ?></div>
-                <?php endif ?>
-            </div>
+
+            <?php if($authUser['role'] === 'admin') : ?>
+                <div class="button-group">
+                    <div><?= $this->EasyAuditForm->saveButton(__('Save')) ?></div>
+                    <?php if(!empty($customer->id)) : ?>
+                        <div><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $customer->id]) ?></div>
+                    <?php endif ?>
+                </div>
+            <?php endif ?>
         </fieldset>
     <?= $this->Form->end() ?>
 </div>
