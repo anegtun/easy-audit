@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-01-02 16:27+0000\n"
+"POT-Creation-Date: 2022-01-02 17:17+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -184,7 +184,7 @@ msgstr ""
 
 #: Model/Roles.php:9
 #: Template/Audits/data.ctp:23
-#: Template/Element/Audits/list.ctp:15
+#: Template/Element/Audits/list.ctp:16
 msgid "Auditor"
 msgstr ""
 
@@ -212,7 +212,7 @@ msgstr ""
 
 #: Template/Audits/data.ctp:20
 #: Template/Audits/index.ctp:34
-#: Template/Element/Audits/list.ctp:12
+#: Template/Element/Audits/list.ctp:13
 msgid "Date"
 msgstr ""
 
@@ -224,6 +224,18 @@ msgstr ""
 #: Template/FormTemplates/index.ctp:59
 #: Template/Users/detail.ctp:30
 msgid "Save"
+msgstr ""
+
+#: Template/Audits/data.ctp:35
+msgid "Fill audit"
+msgstr ""
+
+#: Template/Audits/data.ctp:36
+msgid "Audit history"
+msgstr ""
+
+#: Template/Audits/data.ctp:37
+msgid "View report"
 msgstr ""
 
 #: Template/Audits/data.ctp:38
@@ -240,7 +252,7 @@ msgstr ""
 #: Template/Audits/data.ctp:54
 #: Template/Customers/detail.ctp:18;47
 #: Template/Customers/index.ctp:16
-#: Template/Element/Audits/list.ctp:13
+#: Template/Element/Audits/list.ctp:14
 #: Template/FormTemplates/detail.ctp:97;156
 #: Template/FormTemplates/index.ctp:19;54
 #: Template/Users/detail.ctp:25
@@ -604,6 +616,10 @@ msgstr ""
 
 #: View/Helper/EasyAuditHtmlHelper.php:11;15
 msgid "This operation can't be undone, are you sure?"
+msgstr ""
+
+#: View/Helper/EasyAuditHtmlHelper.php:15
+msgid "Delete"
 msgstr ""
 
 #: Template/Error/error400.ctp:37
