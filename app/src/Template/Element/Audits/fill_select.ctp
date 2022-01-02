@@ -96,16 +96,27 @@ foreach($audit->audit_field_optionset_values as $fv) {
                                     <?php endforeach ?>
                                 <?php endif ?>
                             </div>
-                            <div class="audit-img-preview">
-                                <p style="display:none"><strong><?= __('New images') ?></strong></p>
-                            </div>
-                            <div class="audit-img-inputs">
-                                <div class="audit-img-input">
-                                    <?php $fieldId = "field_photo_{$f->id}"; ?>
-                                    <input type="file" name="<?="field_photo[{$template->id}][{$f->id}][]"?>" id="<?=$fieldId?>" accept="image/*" capture="capture" />
-                                    <label for="<?=$fieldId?>"><?= $this->EasyAuditHtml->gliphiconText('camera', __('Add photo')) ?></label>
+                            <div class="audit-img-preview" style="display:none">
+                                <p><strong><?= __('New images') ?></strong></p>
+                                <div class="img-loader" style="display:none">
+                                    <?= $this->Html->image('/images/components/loading-dots.gif') ?>
                                 </div>
                             </div>
+                            <div class="audit-img-input">
+                                <?php $fieldId = "field_photo_{$f->id}"; ?>
+                                <input
+                                    type="file"
+                                    name="field_photo_dummy"
+                                    data-target-name="<?="field_photo[{$template->id}][{$f->id}][]"?>"
+                                    id="<?=$fieldId?>"
+                                    accept="image/*"
+                                    capture="capture"
+                                />
+                                <label for="<?=$fieldId?>">
+                                    <?= $this->EasyAuditHtml->gliphiconText('camera', __('Add photo')) ?>
+                                </label>
+                            </div>
+                            <div class="audit-img-hidden-inputs"></div>
                         </div>
                     </div>
                 </div>

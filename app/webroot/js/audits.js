@@ -30,35 +30,6 @@ $(document).ready(function() {
         }
     };
 
-    const onAddPhoto = function() {
-        const file = this.files && this.files[0];
-        const inputsDiv = $(this).parents('.audit-img-inputs');
-        const previewBox = inputsDiv.siblings('.audit-img-preview');
-        previewBox.find('p').show();
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = $('<img>').attr('src', e.target.result).attr('data-name', file.name).click(function() {
-                if($(this).hasClass('to-remove')) {
-                    $(this).removeClass('to-remove');
-                    inputsDiv.find('[data-photo-name="'+$(this).attr('data-name')+'"] input').prop('disabled', false);
-                } else {
-                    $(this).addClass('to-remove');
-                    inputsDiv.find('[data-photo-name="'+$(this).attr('data-name')+'"] input').prop('disabled', true);
-                }
-            });
-            previewBox.append(img);
-        }
-        reader.readAsDataURL(file);
-
-        const newId = 'photo-' + Math.random();
-        const newInput = $(this).parents('.audit-img-input').clone();
-        newInput.find('input[type="file"]').attr('id',newId).val('').change(onAddPhoto);
-        newInput.find('label').attr('for',newId);
-        $(this).parents('.audit-img-input').attr('data-photo-name', file.name).hide();
-        inputsDiv.append(newInput);
-    };
-
     $('#modal-new-audit select[name=customer_id]').change(function() {
         const templateContainer = $('#template-check-container').empty();
         const customerId = $(this).val();
@@ -155,7 +126,31 @@ $(document).ready(function() {
         link.siblings('.audit-observations-open').show();
     });
 
-    $('input[type="file"]').change(onAddPhoto);
+    $('input[type="file"]').change(function() {
+        const label = $(this).siblings('label').hide();
+        const file = this.files && this.files[0];
+        const previewBox = $(this).parents('.audit-img-input').siblings('.audit-img-preview').show();
+        const loadingBox = previewBox.find('.img-loader').show();
+        const hiddenInputsDiv = $('.audit-img-hidden-inputs');
+        const inputName = $(this).attr('data-target-name');
+
+        EasyAuditCompress.compress(file, 1200, 0.8, 'image/jpeg').then((imageUrl) => {
+            const id = 'photo-' + Math.random();
+            $('<input type="hidden" name="'+inputName+'">').val(imageUrl).attr('data-photo-id', id).appendTo(hiddenInputsDiv);
+            const img = $('<img>').attr('src', imageUrl).attr('data-name', file.name).click(function() {
+                if($(this).hasClass('to-remove')) {
+                    $(this).removeClass('to-remove');
+                    hiddenInputsDiv.find('input[data-photo-id="'+id+'"]').prop('disabled', false);
+                } else {
+                    $(this).addClass('to-remove');
+                    hiddenInputsDiv.find('input[data-photo-id="'+id+'"]').prop('disabled', true);
+                }
+            });
+            img.insertBefore(loadingBox);
+            loadingBox.hide();
+            label.show();
+        });
+    });
 
     $('.audit-img-current img').click(function() {
         const img = $(this);

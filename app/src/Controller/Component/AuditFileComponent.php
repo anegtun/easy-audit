@@ -33,21 +33,11 @@ class AuditFileComponent extends Component {
     public function addPhotos($auditId, $templateId, $imgs) {
         $dir = new Folder($this->pathToTemplateFolder($auditId, $templateId), true, 0755);
         foreach($imgs as $fieldId => $fieldImgs) {
-            if(!empty($fieldImgs && !empty($fieldImgs[0]['name']))) {
+            if(!empty($fieldImgs)) {
                 $dirField = new Folder($this->pathToFieldFolder($auditId, $templateId, $fieldId), true, 0755);
-                $dirFieldOriginal = new Folder($this->pathToFieldFolderOriginals($auditId, $templateId, $fieldId), true, 0755);
                 foreach($fieldImgs as $img) {
-                    if(!empty($img['tmp_name'])) {
-                        $dst = $dirField->path . DS . $img['name'];
-                        $dstOrig = $dirFieldOriginal->path . DS . $img['name'];
-                        move_uploaded_file($img['tmp_name'], $dstOrig);
-                        list($srcW, $srcH) = getimagesize($dstOrig);
-                        list($trgW, $trgH) = $this->calculateResizedSize($srcW, $srcH);
-                        $srcImg = imagecreatefromjpeg($dstOrig);
-                        $trgImg = imagecreatetruecolor($trgW, $trgH);
-                        imagecopyresized($trgImg, $srcImg, 0, 0, 0, 0, $trgW, $trgH, $srcW, $srcH);
-                        imagejpeg($trgImg, $dst, 75);
-                    }
+                    $filename = md5($img).'.jpg';
+                    $this->writeTo($dirField->path . DS . $filename, $img);
                 }
             }
         }
@@ -67,6 +57,12 @@ class AuditFileComponent extends Component {
     public function removeAllPhotos($auditId) {
         $dir = new Folder($this->pathToAuditFolder($auditId));
         $dir->delete();
+    }
+
+    private function writeTo($path, $data) {
+        $fp = fopen($path, 'w');
+        fwrite($fp, file_get_contents($data));
+        fclose($fp);
     }
 
     private function readSubdirectories($parentFolder, $name) {
@@ -95,22 +91,12 @@ class AuditFileComponent extends Component {
         return "uploads/audits/audit_$auditId/template_$templateId/field_$fieldId/$filename";
     }
 
-    private function pathToFieldFolderOriginals($auditId, $templateId, $fieldId) {
-        return WWW_ROOT . "uploads/audits/audit_$auditId/template_$templateId/field_$fieldId/original";
-    }
-
     private function getTemplateId($dir_name) {
         return str_replace('template_', '', $dir_name);
     }
 
     private function getFieldId($dir_name) {
         return str_replace('field_', '', $dir_name);
-    }
-
-    private function calculateResizedSize($srcW, $srcH) {
-        $largerSize = max($srcW, $srcH);
-        $ratio = $largerSize > self::MAX_SIZE ? self::MAX_SIZE / $largerSize : 1;
-        return [$srcW * $ratio, $srcH * $ratio];
     }
 
 }
