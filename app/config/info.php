@@ -11,4 +11,5 @@ return [
     'easy-audit.company.website' => 'www.mywebsite.com',
     'easy-audit.company.address' => 'Fake St. 123 Springfield',
     'easy-audit.company.motto' => 'Best-company-ever',
+    'easy-audit.report.graph-color' => '#1d71b8',
 ];

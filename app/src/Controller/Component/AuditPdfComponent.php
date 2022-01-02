@@ -15,6 +15,8 @@ class AuditPDF extends FPDF {
 
     public $photos;
 
+    public $graph_color;
+
     const MAX_PHOTO_HEIGHT = 90;
 
     const MAX_PHOTO_WIDTH = 80;
@@ -185,7 +187,7 @@ class AuditPDF extends FPDF {
         $colWidth = min([20, $maxWidth / count($this->history) / 2]);
         $gap = ($maxWidth - $colWidth * count($this->history)) / (2 * count($this->history));
         $y = $this->GetY();
-        $this->SetFillColor(29, 113, 184);
+        $this->SetFillColor($this->graph_color[0], $this->graph_color[1], $this->graph_color[2]);
         foreach($this->history as $i => $h) {
             $x = $marginLeft + $gap + $i * ($colWidth + 2 * $gap);
             $score = $h->score_templates[$template->id];
@@ -399,9 +401,10 @@ class AuditPdfComponent extends Component {
         $pdf->audit = $audit;
         $pdf->history = $audits;
         $pdf->photos = $images;
+        $pdf->graph_color = sscanf(Configure::read('easy-audit.report.graph-color'), "#%02x%02x%02x");
+
         $pdf->AliasNbPages();
         $pdf->SetTitle(utf8_decode($audit->getReportName()));
-
         $pdf->AddPage();
         $pdf->Cover();
 
