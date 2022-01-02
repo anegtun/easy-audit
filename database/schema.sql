@@ -63,6 +63,7 @@ CREATE TABLE easy_audit_form_template_sections (
   form_template_id int unsigned NOT NULL,
   position int unsigned NOT NULL,
   name varchar(200) DEFAULT NULL,
+  weigth int unsigned DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT FK_FormTemplateSection_FormTemplate
     FOREIGN KEY (form_template_id)
