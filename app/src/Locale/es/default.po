@@ -184,7 +184,7 @@ msgstr "Administrador"
 
 #: Model/Roles.php:9
 #: Template/Audits/data.ctp:23
-#: Template/Element/Audits/list.ctp:15
+#: Template/Element/Audits/list.ctp:16
 msgid "Auditor"
 msgstr "Auditor"
 
@@ -212,7 +212,7 @@ msgstr "Datos de la auditoría"
 
 #: Template/Audits/data.ctp:20
 #: Template/Audits/index.ctp:34
-#: Template/Element/Audits/list.ctp:12
+#: Template/Element/Audits/list.ctp:13
 msgid "Date"
 msgstr "Fecha"
 
@@ -225,6 +225,18 @@ msgstr "Fecha"
 #: Template/Users/detail.ctp:30
 msgid "Save"
 msgstr "Guardar"
+
+#: Template/Audits/data.ctp:35
+msgid "Fill audit"
+msgstr "Rellenar audotoría"
+
+#: Template/Audits/data.ctp:36
+msgid "Audit history"
+msgstr "Historial auditoría"
+
+#: Template/Audits/data.ctp:37
+msgid "View report"
+msgstr "Ver informe"
 
 #: Template/Audits/data.ctp:38
 #: Template/Audits/fill.ctp:44
@@ -240,7 +252,7 @@ msgstr "Plantillas asociadas"
 #: Template/Audits/data.ctp:54
 #: Template/Customers/detail.ctp:18;47
 #: Template/Customers/index.ctp:16
-#: Template/Element/Audits/list.ctp:13
+#: Template/Element/Audits/list.ctp:14
 #: Template/FormTemplates/detail.ctp:97;156
 #: Template/FormTemplates/index.ctp:19;54
 #: Template/Users/detail.ctp:25
@@ -605,6 +617,10 @@ msgstr "Entrar"
 #: View/Helper/EasyAuditHtmlHelper.php:11;15
 msgid "This operation can't be undone, are you sure?"
 msgstr "Esta opetación no se puede deshacer, ¿estás seguro?"
+
+#: View/Helper/EasyAuditHtmlHelper.php:15
+msgid "Delete"
+msgstr "Eliminar"
 
 #: Template/Error/error400.ctp:37
 msgid "The requested address {0} was not found on this server."
