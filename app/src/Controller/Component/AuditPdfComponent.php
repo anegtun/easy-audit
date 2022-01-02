@@ -237,6 +237,7 @@ class AuditPDF extends FPDF {
                 $photos = empty($this->photos[$template->id][$f->id]) ? [] : $this->photos[$template->id][$f->id];
                 if($value && (empty($value->form_template_optionset_value->is_default) || !empty($value->observations) || !empty($photos))) {
                     $section['fields'][] = [
+                        'warn' => $value->form_template_optionset_value->color === 'danger',
                         'text' => $f->text,
                         'result' => empty($value->form_template_optionset_value->label) ? '' : $value->form_template_optionset_value->label,
                         'observations' => empty($value->observations) ? '-' : $value->observations,
@@ -258,7 +259,13 @@ class AuditPDF extends FPDF {
                     $this->Cell(35, 5, utf8_decode('Observaciones'));
                     $this->Ln(7);
                     $this->SetFont('Arial', '', 12);
+                    if($f['warn']) {
+                        $this->SetFont('Arial', 'B', 14);
+                        $this->SetTextColor(169, 68, 66);
+                    }
                     $this->Cell(35, 5, utf8_decode($f['result']));
+                    $this->SetFont('Arial', '', 12);
+                    $this->SetTextColor(0, 0, 0);
                     $this->MultiCell(0, 5, utf8_decode(print_r($f['observations'], true)));
                     if(!empty($f['photos'])) {
                         $this->Ln(5);
