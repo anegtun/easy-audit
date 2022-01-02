@@ -18,7 +18,9 @@ td.border-right, th.border-right {
 
 
 
-legend > a:hover, legend > a:active, legend > a:focus {
+legend > a:hover,
+legend > a:active,
+legend > a:focus {
     text-decoration: none !important;
 }
 
@@ -29,6 +31,24 @@ legend > a:hover, legend > a:active, legend > a:focus {
 }
 .checkbox-container > span {
     margin-left: .5em;
+}
+
+
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1em;
+    flex-wrap: wrap;
+}
+
+.button-group > * {
+    margin-bottom: 1em;
+}
+
+.button-group > * > *{
+    margin-right: 1em;
+    margin-bottom: 1em;
 }
 
 

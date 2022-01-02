@@ -26,10 +26,12 @@ $authUser = $this->request->getSession()->read('Auth.User');
                 <?= $this->Form->control('position', ['label'=>__('Company position')]) ?>
                 <?= $this->Form->control('role', ['options'=>$roles, 'label'=>__('Role')]) ?>
             </div>
-            <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
-            <?php if(!empty($user->id)) : ?>
-                <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $user->id]) ?>
-            <?php endif ?>
+            <div class="button-group">
+                <div><?= $this->EasyAuditForm->saveButton(__('Save')) ?></div>
+                <?php if(!empty($user->id)) : ?>
+                    <div><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $user->id]) ?></div>
+                <?php endif ?>
+            </div>
         </fieldset>
     <?= $this->Form->end() ?>
 </div>

@@ -23,11 +23,12 @@ $this->set('headerBreadcrumbs', [
                     <?= $this->Form->textarea('emails') ?>
                 </div>
             </div>
-            <p></p>
-            <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
-            <?php if(!empty($customer->id)) : ?>
-                <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $customer->id]) ?>
-            <?php endif ?>
+            <div class="button-group">
+                <div><?= $this->EasyAuditForm->saveButton(__('Save')) ?></div>
+                <?php if(!empty($customer->id)) : ?>
+                    <div><?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $customer->id]) ?></div>
+                <?php endif ?>
+            </div>
         </fieldset>
     <?= $this->Form->end() ?>
 </div>

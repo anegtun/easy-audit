@@ -33,5 +33,7 @@ $this->set('headerBreadcrumbs', [
         </table>
     </div>
 
-    <?= $this->Html->link(__('Create'), ['action'=>'detail'], ['class'=>'btn btn-primary']) ?>
+    <div class="button-group">
+        <?= $this->Html->link(__('Create'), ['action'=>'detail'], ['class'=>'btn btn-primary']) ?>
+    </div>
 </div>

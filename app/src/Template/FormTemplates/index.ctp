@@ -34,7 +34,9 @@ $this->Html->script('form-templates', ['block' => 'script']);
         </table>
     </div>
 
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-new-template"><?= __('Create') ?></button>
+    <div class="button-group">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-new-template"><?= __('Create') ?></button>
+    </div>
 </div>
 
 <div id="modal-new-template" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">

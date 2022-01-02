@@ -13,21 +13,26 @@ $has_audits = !empty($template->audits);
 ?>
 
 <div class="row">
-    <?php if(!$has_audits) : ?>
-        <?php if($template->type === 'select') : ?>
-            <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
-            <button type="button" id="modal-field-button" class="btn btn-primary" data-target="#modal-field"><?= __('Add field') ?></button>
+
+    <div class="button-group">
+        <div>
+            <?php if(!$has_audits && $template->type === 'select') : ?>
+                <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
+                <button type="button" id="modal-field-button" class="btn btn-primary" data-target="#modal-field"><?= __('Add field') ?></button>
+            <?php endif ?>
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-rename"><?= __('Rename') ?></button>
+            <button type="button" class="btn btn-default modal-clone-button" data-template-id="<?=$template->id?>" data-template-name="<?=$template->name?>"><?= __('Clone') ?></button>
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
+            <?php if($has_audits) : ?>
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-audits"><?= __('See audits') ?></button>
+            <?php endif ?>
+        </div>
+        <?php if(!$has_audits) : ?>
+            <div>
+                <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $template->id]) ?>
+            </div>
         <?php endif ?>
-        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-rename"><?= __('Rename template') ?></button>
-    <?php endif ?>
-    <button type="button" class="btn btn-default modal-clone-button" data-template-id="<?=$template->id?>" data-template-name="<?=$template->name?>"><?= __('Clone template') ?></button>
-    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
-    <?php if($has_audits) : ?>
-        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-audits"><?= __('See audits') ?></button>
-    <?php endif ?>
-    <?php if(!$has_audits) : ?>
-        <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $template->id]) ?>
-    <?php endif ?>
+    </div>
 
     <?php if($has_audits) : ?>
         <div class="alert alert-info form-template-audit-info">
