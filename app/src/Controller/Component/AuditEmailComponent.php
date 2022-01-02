@@ -15,6 +15,7 @@ class AuditEmailComponent extends Component {
         $email->viewBuilder()->setTemplate('audit_report', 'default');
         $email
             ->setEmailFormat('both')
+            ->setFrom($audit->auditor->email)
             ->setTo($to)
             ->setSubject(__('Audit report'))
             ->setViewVars(compact('audit'))

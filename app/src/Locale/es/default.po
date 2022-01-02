@@ -602,6 +602,11 @@ msgstr "Rellena para cambiar contraseña"
 
 #: Template/Users/detail.ctp:26
 #: Template/Users/index.ctp:18
+msgid "Email"
+msgstr "Correo"
+
+#: Template/Users/detail.ctp:26
+#: Template/Users/index.ctp:18
 msgid "Company position"
 msgstr "Puesto en la compañía"
 
