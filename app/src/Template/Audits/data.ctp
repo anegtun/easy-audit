@@ -32,9 +32,9 @@ $this->set('headerBreadcrumbs', [
             <?= $this->EasyAuditHtml->deleteButton(['action'=>'delete', $audit->id]) ?>
         </div>
         <div>
-            <?= $this->EasyAuditHtml->linkButton(['action' => 'fill', $audit->id], 'edit', _('Fill audit')) ?>
-            <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', _('Audit history')) ?>
-            <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', _('View report'), ['target'=>'_blank']) ?>
+            <?= $this->EasyAuditHtml->linkButton(['action' => 'fill', $audit->id], 'edit', __('Fill audit')) ?>
+            <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', __('Audit history')) ?>
+            <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', __('View report'), ['target'=>'_blank']) ?>
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-send-report"><?= $this->EasyAuditHtml->gliphiconText('envelope', __('Send report')) ?></button>
         </div>
     </div>

@@ -12,7 +12,7 @@ class EasyAuditHtmlHelper extends Helper {
     }
 
     public function deleteButton($url, $icon = 'trash') {
-        return $this->gliphiconLink($icon, _('Delete'), $url, ['class'=>['btn','btn-danger'], 'role'=>'button', 'confirm'=>__('This operation can\'t be undone, are you sure?')]);
+        return $this->gliphiconLink($icon, __('Delete'), $url, ['class'=>['btn','btn-danger'], 'role'=>'button', 'confirm'=>__('This operation can\'t be undone, are you sure?')]);
     }
 
     public function linkButton($url, $icon, $label, $options = []) {

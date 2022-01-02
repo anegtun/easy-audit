@@ -38,9 +38,9 @@ $this->Html->script('audit-fill', ['block' => 'script']);
             <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
         </div>
         <div>
-            <?= $this->EasyAuditHtml->linkButton(['action' => 'data', $audit->id], 'cog', _('Audit data')) ?>
-            <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', _('Audit history')) ?>
-            <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', _('View report'), ['target'=>'_blank']) ?>
+            <?= $this->EasyAuditHtml->linkButton(['action' => 'data', $audit->id], 'cog', __('Audit data')) ?>
+            <?= $this->EasyAuditHtml->linkButton(['action' => 'history', $audit->id], 'stats', __('Audit history')) ?>
+            <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', __('View report'), ['target'=>'_blank']) ?>
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-send-report"><?= $this->EasyAuditHtml->gliphiconText('envelope', __('Send report')) ?></button>
         </div>
     </div>
