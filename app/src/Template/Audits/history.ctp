@@ -69,9 +69,9 @@ $this->Html->script('audit-history', ['block' => 'script']);
 <div class="button-group">
     <div></div>
     <div>
-        <?= $this->EasyAuditHtml->linkButton(['action' => 'fill', $audit->id], 'edit', _('Fill audit')) ?>
-        <?= $this->EasyAuditHtml->linkButton(['action' => 'data', $audit->id], 'cog', _('Audit data')) ?>
-        <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', _('View report'), ['target'=>'_blank']) ?>
+        <?= $this->EasyAuditHtml->linkButton(['action' => 'fill', $audit->id], 'edit', __('Fill audit')) ?>
+        <?= $this->EasyAuditHtml->linkButton(['action' => 'data', $audit->id], 'cog', __('Audit data')) ?>
+        <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', __('View report'), ['target'=>'_blank']) ?>
         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-send-report"><?= $this->EasyAuditHtml->gliphiconText('envelope', __('Send report')) ?></button>
         <?= $this->element('Audits/modal_send', ['audit' => $audit]) ?>
     </div>
