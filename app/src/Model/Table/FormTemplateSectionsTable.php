@@ -21,6 +21,7 @@ class FormTemplateSectionsTable extends Table {
             $new_section->form_template_id = $target_template_id;
             $new_section->position = $s->position;
             $new_section->name = $s->name;
+            $new_section->weigth = $s->weigth;
             $new_section = $this->save($new_section);
             $sections_id_map[$s->id] = $new_section->id;
         }

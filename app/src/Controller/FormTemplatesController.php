@@ -140,7 +140,7 @@ class FormTemplatesController extends AppController {
                 $section = $this->FormTemplateSections->patchEntity($section, $formData);
             }
             if ($this->FormTemplateSections->save($section)) {
-                $this->Flash->success(__('Section created.'));
+                $this->Flash->success(__('Section saved.'));
             } else {
                 $this->Flash->error(__('Error saving section.'));
             }
@@ -204,7 +204,7 @@ class FormTemplatesController extends AppController {
                 $field = $this->FormTemplateFieldsOptionset->patchEntity($field, $formData);
             }
             if ($this->FormTemplateFieldsOptionset->save($field)) {
-                $this->Flash->success(__('Field created.'));
+                $this->Flash->success(__('Field saved.'));
             } else {
                 $this->Flash->error(__('Error saving field.'));
             }

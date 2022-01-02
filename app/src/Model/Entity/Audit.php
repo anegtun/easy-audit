@@ -29,15 +29,15 @@ class Audit extends Entity {
         $this->score_section = [];
         $this->score_templates = [];
         foreach($this->form_templates as $t) {
-            $count = 0;
             $score = 0;
+            $weigth = 0;
             foreach($t->form_template_sections as $s) {
-                $count++;
                 $tmp = $s->calculateSectionScore($this->audit_field_optionset_values);
                 $this->score_section[$s->id] = $tmp;
-                $score += $tmp;
+                $score += $tmp * $s->weigth;
+                $weigth += $s->weigth;
             }
-            $this->score_templates[$t->id] = $count === 0 ? 0 : round($score / $count, 0);
+            $this->score_templates[$t->id] = $weigth === 0 ? 0 : round($score / $weigth, 0);
         }
     }
 
