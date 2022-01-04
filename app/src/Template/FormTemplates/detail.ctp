@@ -18,7 +18,7 @@ $is_editable = !$has_audits && !$is_disabled;
 
     <div class="button-group">
         <div>
-            <?php if($is_editable && $template->type === 'select') : ?>
+            <?php if($is_editable && $template->type !== 'measure') : ?>
                 <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
                 <button type="button" id="modal-field-button" class="btn btn-primary" data-target="#modal-field"><?= __('Add field') ?></button>
             <?php endif ?>
@@ -137,3 +137,13 @@ $is_editable = !$has_audits && !$is_disabled;
 
 
 <?= $this->element('FormTemplates/modal_clone') ?>
+
+<div id='all-field-options'>
+    <?php foreach($allFields as $f) : ?>
+        <?= $this->Form->hidden("field-{$f->id}", [
+            'data-id' => $f->id,
+            'data-position' => $f->position,
+            'data-section' => $f->form_template_section_id,
+            'value'=>"{$f->position}. {$f->text}"]) ?>
+    <?php endforeach ?>
+</div>

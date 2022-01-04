@@ -6,7 +6,8 @@ class FormTemplateTypes {
     public function getAll() {
         $values = [
             'measure' => __('Measure'),
-            'select' => __('Select form')
+            'simple' => __('Simple'),
+            'select' => __('Checklist'),
         ];
         asort($values);
         return $values;

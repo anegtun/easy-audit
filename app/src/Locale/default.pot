@@ -175,7 +175,7 @@ msgid "Measure"
 msgstr ""
 
 #: Model/FormTemplateTypes.php:9
-msgid "Select form"
+msgid "Checklist"
 msgstr ""
 
 #: Model/Roles.php:8
