@@ -144,6 +144,6 @@ $is_editable = !$has_audits && !$is_disabled;
             'data-id' => $f->id,
             'data-position' => $f->position,
             'data-section' => $f->form_template_section_id,
-            'value'=>"{$f->position}. {$f->text}"]) ?>
+            'value'=>"{$f->position}. ".strip_tags($f->text)]) ?>
     <?php endforeach ?>
 </div>

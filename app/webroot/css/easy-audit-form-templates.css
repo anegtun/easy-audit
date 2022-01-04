@@ -1,5 +1,13 @@
+.form-template-field {
+    margin-bottom: 1em;
+}
+
 .form-template-field p {
     display: inline;
+}
+
+.form-template-field .form-group {
+    margin-bottom: 0;
 }
 
 .form-template-audit-info {
