@@ -34,36 +34,35 @@ class FormTemplatesController extends AppController {
         ]]);
         $field_types = $this->FormTemplateFieldTypes->getAll();
         $optionsets = $this->FormTemplateOptionsets->findForSelect();
-        $allFields = [];
-        /*$sections = $this->FormTemplateSections->find()
-            ->where(['form_template_id' => $id])
-            ->order('position')
-            ->contain(['FormTemplateFieldsOptionset' => ['sort' => 'position']]);*/
-        /*$allFields = $this->FormTemplateFieldsOptionset->find()
-            ->where(['form_template_id' => $id])
-            ->order('position');*/
-        $this->set(compact('template', 'field_types', 'optionsets', 'allFields'));
+        $this->set(compact('template', 'field_types', 'optionsets'));
     }
 
-
-
-
-
-
-
-
-    public function save() {
-        $field_types = $this->FormTemplateFieldTypes->getAll();
+    public function create() {
         $template = $this->FormTemplates->newEntity();
         if ($this->request->is('post') || $this->request->is('put')) {
             $template = $this->FormTemplates->patchEntity($template, $this->request->getData());
-            if ($this->FormTemplates->save($template)) {
+            $template = $this->FormTemplates->save($template);
+            if ($template) {
                 $this->Flash->success(__('Template created.'));
-                return $this->redirect(['action'=>'index']);
+                return $this->redirect(['action'=>'detail', $template->id]);
             }
             $this->Flash->error(__('Error saving template.'));
         }
-        return $this->redirect(['action'=>'index']);
+        return $this->redirect($this->referer());
+    }
+
+    public function delete($id) {
+        $template = $this->FormTemplates->get($id, [ 'contain' => ['Audits'] ]);
+        if(!empty($template->audits)) {
+            $this->Flash->error(__('This template is used in at least one audit, so it can\'t be deleted. You can instead disable it.'));
+            return $this->redirect($this->referer());
+        }
+        if(!$this->FormTemplates->delete($template)) {
+            $this->Flash->error(__('Error deleting template.'));
+            return $this->redirect($this->referer());
+        }
+        $this->Flash->success(__('Template deleted successfully.'));
+        return $this->redirect(['controller'=>'Forms', 'action'=>'detail', $template->form_id]);
     }
 
     public function clone() {

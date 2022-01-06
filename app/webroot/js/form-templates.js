@@ -7,13 +7,7 @@ $(document).ready(function() {
         .catch(error => console.error(error));
 
     const cloneModal = $('#modal-clone-template');
-    const sectionModal = $('#modal-section');
     const fieldModal = $('#modal-field');
-
-    $('#modal-section-button').click(function() {
-        openModalToCreate(sectionModal, ['id']);
-        sectionModal.find('*[name=position]').prop('disabled', false);
-    });
 
     $('#modal-field-button').click(function() {
         openModalToCreate(fieldModal, ['id']);
@@ -25,11 +19,6 @@ $(document).ready(function() {
         e.preventDefault();
         openModalToEdit(cloneModal, $(this), 'data-template-', ['id', 'name']);
         cloneModal.find('*[name=name_old]').prop('placeholder', $(this).attr('data-template-name'));
-    });
-
-    $('a[data-section-id]').click(function() {
-        openModalToEdit(sectionModal, $(this), 'data-section-', ['id', 'name', 'weigth']);
-        sectionModal.find('*[name=position]').val(Number($(this).attr('data-section-position')) + 1).prop('disabled', true);
     });
 
     $('a[data-field-id]').click(function() {

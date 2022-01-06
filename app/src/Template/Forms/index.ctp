@@ -5,7 +5,7 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('Config')],
     ['label'=>__('Forms')]
 ]);
-$this->Html->script('form-templates', ['block' => 'script']);
+$this->Html->script('form', ['block' => 'script']);
 ?>
 
 <div class="row">

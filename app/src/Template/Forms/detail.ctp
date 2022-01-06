@@ -7,7 +7,7 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('Forms'), 'url'=>['action'=>'index']],
     ['label'=>$title]
 ]);
-$this->Html->script('form-templates', ['block' => 'script']);
+$this->Html->script('form', ['block' => 'script']);
 
 $has_audits = !empty($form->audits);
 $is_disabled = !empty($form->disabled);
@@ -103,6 +103,10 @@ $is_editable = !$has_audits && !$is_disabled;
                     </div>
                 </div>
             <?php endif ?>
+
+            <div class="button-group">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-new-template"><?= __('Add template') ?></button>
+            </div>
         </fieldset>
 
     <?php endif ?>
@@ -117,3 +121,4 @@ $is_editable = !$has_audits && !$is_disabled;
 <?= $this->element('Forms/modals/section', ['modal_id' => 'modal-section']) ?>
 <?= $this->element('Forms/modals/rename', ['modal_id' => 'modal-rename', 'form' => $form]) ?>
 <?= $this->element('Forms/modals/clone', ['modal_id' => 'modal-clone-template']) ?>
+<?= $this->element('Forms/modals/new_template', ['modal_id' => 'modal-new-template']) ?>

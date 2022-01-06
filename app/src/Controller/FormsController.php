@@ -36,8 +36,7 @@ class FormsController extends AppController {
             $form = $this->Forms->save($form);
             if ($form) {
                 $this->Flash->success(__('Form created.'));
-                return $this->redirect(['action'=>'index']);
-                return $this->redirect(['action'=>'detail', $form->form_id]);
+                return $this->redirect(['action'=>'detail', $form->id]);
             }
             $this->Flash->error(__('Error saving form.'));
         }
