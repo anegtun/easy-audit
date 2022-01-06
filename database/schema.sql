@@ -27,13 +27,13 @@ CREATE TABLE easy_audit_users (
 
 
 
-CREATE TABLE easy_audit_form_template_optionsets (
+CREATE TABLE easy_audit_form_optionsets (
   id int unsigned NOT NULL AUTO_INCREMENT,
   name varchar(200) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-CREATE TABLE easy_audit_form_template_optionset_values (
+CREATE TABLE easy_audit_form_optionset_values (
   id int unsigned NOT NULL AUTO_INCREMENT,
   color varchar(200) DEFAULT NULL,
   is_default int unsigned NOT NULL DEFAULT 0,
@@ -44,7 +44,7 @@ CREATE TABLE easy_audit_form_template_optionset_values (
   PRIMARY KEY (id),
   CONSTRAINT FK_FormTemplateOptionsetValue_FormTemplateOptionset
     FOREIGN KEY (optionset_id)
-    REFERENCES easy_audit_form_template_optionsets(id)
+    REFERENCES easy_audit_form_optionsets(id)
     ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
@@ -173,7 +173,7 @@ CREATE TABLE easy_audit_audit_field_optionset_values (
     REFERENCES easy_audit_form_template_fields(id),
   CONSTRAINT FK_AuditOptionsetValues_FormTemplateOptionsetValue
     FOREIGN KEY (optionset_value_id),
-    REFERENCES easy_audit_form_template_optionset_values(id),
+    REFERENCES easy_audit_form_optionset_values(id),
   CONSTRAINT UQ_AuditOptionsetValues_AuditFormTemplateField
     UNIQUE (audit_id,form_template_field_id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
@@ -217,8 +217,8 @@ INSERT INTO easy_audit_users (
 );
 
 
-INSERT INTO easy_audit_form_template_optionsets (id, name) VALUES (1, 'A, B, C');
+INSERT INTO easy_audit_form_optionsets (id, name) VALUES (1, 'A, B, C');
 
-INSERT INTO easy_audit_form_template_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'A', 'A', 10, 1);
-INSERT INTO easy_audit_form_template_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'B', 'B', 5, 0);
-INSERT INTO easy_audit_form_template_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'C', 'C', 0, 0);
+INSERT INTO easy_audit_form_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'A', 'A', 10, 1);
+INSERT INTO easy_audit_form_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'B', 'B', 5, 0);
+INSERT INTO easy_audit_form_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'C', 'C', 0, 0);
