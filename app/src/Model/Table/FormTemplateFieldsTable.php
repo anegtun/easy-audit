@@ -9,6 +9,10 @@ class FormTemplateFieldsTable extends Table {
     public function initialize(array $config) {
         $this->setTable('easy_audit_form_template_fields');
 
+        $this->belongsTo('FormSections')
+            ->setForeignKey('form_section_id')
+            ->setProperty('section');
+
         $this->belongsTo('FormTemplates')
             ->setForeignKey('form_template_id');
 

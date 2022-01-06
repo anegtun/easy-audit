@@ -3,15 +3,15 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 
-class FormTemplateSection extends Entity {
+class FormSection extends Entity {
 
     public function calculateSectionScore($field_values) {
         $count = 0;
         $score = 0;
         foreach($field_values as $f) {
-            if($f->form_template_fields_optionset->form_section_id === $this->id) {
+            if($f->field->form_section_id === $this->id) {
                 $count++;
-                $score += $f->form_template_optionset_value->value_numeric;
+                $score += $f->optionset_value->value_numeric;
             }
         }
         return $count === 0 ? 0 : round(100 * ($score / $count), 1);

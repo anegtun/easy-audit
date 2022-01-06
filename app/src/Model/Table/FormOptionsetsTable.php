@@ -6,7 +6,7 @@ use Cake\ORM\Table;
 class FormOptionsetsTable extends Table {
     
     public function initialize(array $config) {
-        $this->setTable('easy_audit_form_template_optionsets');
+        $this->setTable('easy_audit_form_optionsets');
 
         $this->hasMany('FormTemplateFields')
             ->setForeignKey('optionset_id');

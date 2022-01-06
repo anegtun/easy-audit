@@ -6,8 +6,8 @@ DROP TABLE IF EXISTS easy_audit_customers;
 DROP TABLE IF EXISTS easy_audit_form_template_fields;
 DROP TABLE IF EXISTS easy_audit_form_templates;
 DROP TABLE IF EXISTS easy_audit_form_sections;
-DROP TABLE IF EXISTS easy_audit_form_template_optionset_values;
-DROP TABLE IF EXISTS easy_audit_form_template_optionsets;
+DROP TABLE IF EXISTS easy_audit_form_optionset_values;
+DROP TABLE IF EXISTS easy_audit_form_optionsets;
 DROP TABLE IF EXISTS easy_audit_users;
 
 

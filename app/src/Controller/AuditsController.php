@@ -19,7 +19,6 @@ class AuditsController extends AppController {
         $this->AuditFieldOptionsetValues = TableRegistry::getTableLocator()->get('AuditFieldOptionsetValues');
         $this->Customers = TableRegistry::getTableLocator()->get('Customers');
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
-        $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
         $this->FormTemplateSections = TableRegistry::getTableLocator()->get('FormTemplateSections');
         $this->FormOptionsetValues = TableRegistry::getTableLocator()->get('FormOptionsetValues');
         $this->Users = TableRegistry::getTableLocator()->get('Users');
@@ -55,11 +54,11 @@ class AuditsController extends AppController {
     public function fill($id) {
         $audit = $this->Audits->getComplete($id);
         $optionset_values = $this->FormOptionsetValues->findAllByOptionset();
-        foreach($audit->form_templates as $t) {
+        foreach($audit->templates as $t) {
             $last_audit = $this->Audits->findLast($t->id, $audit);
             if($last_audit) {
-                foreach($audit->audit_field_optionset_values as $i => $newV) {
-                    foreach($last_audit->audit_field_optionset_values as $oldV) {
+                foreach($audit->field_values as $i => $newV) {
+                    foreach($last_audit->field_values as $oldV) {
                         if($newV->form_template_field_id === $oldV->form_template_field_id && !empty($newV->observations) && $newV->observations === $oldV->observations) {
                             $newV->observations_cloned = true;
                         }

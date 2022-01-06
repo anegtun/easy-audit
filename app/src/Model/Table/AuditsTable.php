@@ -10,10 +10,12 @@ class AuditsTable extends Table {
         $this->setTable('easy_audit_audits');
 
         $this->hasMany('AuditFieldMeasureValues')
-            ->setForeignKey('audit_id');
+            ->setForeignKey('audit_id')
+            ->setProperty('measure_values');
 
         $this->hasMany('AuditFieldOptionsetValues')
-            ->setForeignKey('audit_id');
+            ->setForeignKey('audit_id')
+            ->setProperty('field_values');
 
         $this->belongsTo('Customers')
             ->setForeignKey('customer_id');
@@ -21,7 +23,8 @@ class AuditsTable extends Table {
         $this->belongsToMany('FormTemplates', [
             'joinTable' => 'easy_audit_audit_forms',
             'foreignKey' => 'audit_id',
-        ]);
+        ])
+        ->setProperty('templates');
 
         $this->belongsTo('Users', [
             'foreignKey' => 'auditor_user_id',
@@ -33,16 +36,16 @@ class AuditsTable extends Table {
         $audit = $this->get($id, [ 'contain' => [
             'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
             'AuditFieldOptionsetValues' => [
-                'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
+                'FormTemplateFields' => ['FormSections'],
                 'FormOptionsetValues'
             ],
             'Customers',
             'FormTemplates' => [
-                'sort' => 'name',
-                'FormTemplateSections' => [
-                    'sort' => 'position',
-                    'FormTemplateFieldsOptionset' => [ 'sort' => 'position' ]
-                ]
+                'sort' => 'FormTemplates.name',
+                'Forms' => [
+                    'FormSections' => ['sort' => 'FormSections.position']
+                ],
+                'FormTemplateFields' => [ 'sort' => 'FormTemplateFields.position' ]
             ],
             'Users'
         ]]);

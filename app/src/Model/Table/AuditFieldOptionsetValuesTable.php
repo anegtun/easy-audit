@@ -11,11 +11,13 @@ class AuditFieldOptionsetValuesTable extends Table {
         $this->belongsTo('Audits')
             ->setForeignKey('audit_id');
 
-        $this->belongsTo('FormTemplateFieldsOptionset')
-            ->setForeignKey('form_template_field_id');
+        $this->belongsTo('FormTemplateFields')
+            ->setForeignKey('form_template_field_id')
+            ->setProperty('field');
 
         $this->belongsTo('FormOptionsetValues')
-            ->setForeignKey('optionset_value_id');
+            ->setForeignKey('optionset_value_id')
+            ->setProperty('optionset_value');
     }
 
     public function clone($template_id, $source_audit_id, $target_audit_id) {
