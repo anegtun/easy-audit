@@ -65,9 +65,9 @@ CREATE TABLE easy_audit_form_sections (
   name varchar(200) DEFAULT NULL,
   weigth int unsigned DEFAULT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT FK_FormTemplateSection_FormTemplate
-    FOREIGN KEY (form_template_id)
-    REFERENCES easy_audit_form_templates(id)
+  CONSTRAINT FK_FormSection_Form
+    FOREIGN KEY (form_id)
+    REFERENCES easy_audit_forms(id)
     ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
