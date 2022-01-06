@@ -28,36 +28,4 @@ class FormSectionsTable extends Table {
         return $sections_id_map;
     }
 
-    public function decrementPositionAfter($formId, $startPosition, $excludedId = NULL) {
-        $expression = new QueryExpression('position = position - 1');
-        $conditions = ['form_id' => $formId, 'position >=' => $startPosition];
-        if (!empty($excludedId )) {
-            $conditions['id !='] = $excludedId;
-        }
-        return $this->updateAll(
-            [$expression],
-            $conditions
-        );
-    }
-
-    public function decrementPositionBefore($formId, $startPosition, $excludedId = NULL) {
-        $expression = new QueryExpression('position = position - 1');
-        $conditions = ['form_id' => $formId, 'position <=' => $startPosition];
-        if (!empty($excludedId )) {
-            $conditions['id !='] = $excludedId;
-        }
-        return $this->updateAll(
-            [$expression],
-            $conditions
-        );
-    }
-
-    public function incrementPositionAfter($formId, $startPosition) {
-        $expression = new QueryExpression('position = position + 1');
-        return $this->updateAll(
-            [$expression],
-            ['form_id' => $formId, 'position >=' => $startPosition]
-        );
-    }
-
 }

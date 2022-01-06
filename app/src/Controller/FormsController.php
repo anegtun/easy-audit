@@ -13,7 +13,6 @@ class FormsController extends AppController {
         parent::initialize();
         $this->FormTemplateFieldTypes = new FormTemplateFieldTypes();
         $this->FormTypes = new FormTypes();
-        $this->FormSections = TableRegistry::getTableLocator()->get('FormSections');
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
         $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
         $this->FormTemplateOptionsets = TableRegistry::getTableLocator()->get('FormTemplateOptionsets');
@@ -25,14 +24,12 @@ class FormsController extends AppController {
 
     public function index() {
         $form_types = $this->FormTypes->getAll();
-        $forms = $this->Forms->find()->order(['name'=>'ASC']);
+        $forms = $this->Forms->find()->order('name');
         $this->set(compact('forms', 'form_types'));
     }
 
     public function detail($id) {
-        $form = $this->Forms->get($id, ['contain' => [
-            'FormSections' => ['sort' => 'position']
-        ]]);
+        $form = $this->getForm($id);
         $this->set(compact('form'));
     }
 
@@ -70,61 +67,62 @@ class FormsController extends AppController {
         $formId = $formData['form_id'];
         if ($this->request->is('post') || $this->request->is('put')) {
             if(empty($formData['id'])) {
-                $section = $this->FormSections->newEntity();
-                $section = $this->FormSections->patchEntity($section, $formData);
-                $count = $this->FormSections->find()
-                    ->where(['form_id' => $formId])
-                    ->count();
-                if(empty($section->position) || $section->position > $count) {
-                    $section->position = $count + 1;
-                }
-                $this->FormSections->incrementPositionAfter($formId, $section->position);
+                $section = $this->Forms->FormSections->newEntity();
+                $section = $this->Forms->FormSections->patchEntity($section, $formData);
             } else {
-                $section = $this->FormSections->get($formData['id']);
+                $section = $this->Forms->FormSections->get($formData['id']);
                 unset($formData['position']);
-                $section = $this->FormSections->patchEntity($section, $formData);
+                $section = $this->Forms->FormSections->patchEntity($section, $formData);
             }
-            if ($this->FormSections->save($section)) {
-                $this->Flash->success(__('Section saved.'));
+            $form = $this->getForm($formData['form_id']);
+            if(!empty($formData['position'])) {
+                array_splice($form->sections, $formData['position'] - 1, 0, [$section]);
             } else {
-                $this->Flash->error(__('Error saving section.'));
+                $form->sections[] = $section;
             }
+            $form->reindexSections();
+            $form->setDirty('sections', true);
+            $this->Forms->save($form);
         }
-        return $this->redirect(['action'=>'detail', $formId]);
+        return $this->redirect($this->referer());
     }
 
     public function deleteSection($id) {
-        $section = $this->FormSections->get($id);
-        $this->FormSections->decrementPositionAfter($section->form_id, $section->position);
-        if($this->FormSections->delete($section)) {
-            $this->Flash->success(__('Section deleted successfully.'));
-        } else {
-            $this->Flash->error(__('Error deleting section.'));
-        }
-        return $this->redirect(['action'=>'detail', $section->form_id]);
+        $section = $this->Forms->FormSections->get($id);
+        $form = $this->getForm($section->form_id);
+        $index = $form->findSectionIndex($id);
+        unset($form->sections[$index]);
+        $form->reindexSections();
+        $form->setDirty('sections', true);
+        $this->Forms->FormSections->delete($section);
+        $this->Forms->save($form);
+        return $this->redirect($this->referer());
     }
 
-    public function moveSectionUp($id) {
-        $section = $this->FormSections->get($id);
-        if($section->position > 1) {
-            $this->FormSections->incrementPositionAfter($section->form_id, $section->position - 1, $section->id);
-            $section->position--;
-            $this->FormSections->save($section);
+    public function moveSectionUp($formId, $sectionId) {
+        $form = $this->getForm($formId);
+        $index = $form->findSectionIndex($sectionId);
+        if($index > 0) {
+            $form->swapSection($index, $index - 1);
         }
-        return $this->redirect(['action'=>'detail', $section->form_id]);
+        $form->setDirty('sections', true);
+        if(!$this->Forms->save($form)) {
+            $this->Flash->error(__('Error moving section.'));
+        }
+        return $this->redirect($this->referer());
     }
 
-    public function moveSectionDown($id) {
-        $section = $this->FormSections->get($id);
-        $count = $this->FormSections->find()
-                ->where(['form_id' => $section->form_id])
-                ->count();
-        if($section->position < $count) {
-            $this->FormSections->decrementPositionBefore($section->form_id, $section->position + 1, $section->id);
-            $section->position++;
-            $this->FormSections->save($section);
+    public function moveSectionDown($formId, $sectionId) {
+        $form = $this->getForm($formId);
+        $index = $form->findSectionIndex($sectionId);
+        if($index < count($form->sections)) {
+            $form->swapSection($index, $index + 1);
         }
-        return $this->redirect(['action'=>'detail', $section->form_id]);
+        $form->setDirty('sections', true);
+        if(!$this->Forms->save($form)) {
+            $this->Flash->error(__('Error moving section.'));
+        }
+        return $this->redirect($this->referer());
     }
 
     public function rename() {
@@ -138,6 +136,12 @@ class FormsController extends AppController {
             return $this->redirect($this->referer());
         }
         return $this->redirect(['action'=>'index']);
+    }
+
+    private function getForm($id) {
+        return $this->Forms->get($id, ['contain' => [
+            'FormSections' => ['sort' => 'position']
+        ]]);
     }
 
 

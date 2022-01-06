@@ -18,9 +18,6 @@ $is_editable = !$has_audits && !$is_disabled;
 
     <div class="button-group">
         <div>
-            <?php if($is_editable && $form->type !== 'measure') : ?>
-                <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
-            <?php endif ?>
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-rename"><?= __('Rename') ?></button>
             <button type="button" class="btn btn-default modal-clone-button" data-form-id="<?=$form->id?>" data-form-name="<?=$form->name?>" data-form-public_name="<?=$form->public_name?>"><?= __('Clone') ?></button>
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
@@ -58,8 +55,8 @@ $is_editable = !$has_audits && !$is_disabled;
                     <div>
                         <?= $this->EasyAuditForm->editModalLink($s, 'data-section', ['id', 'position', 'name', 'weigth']) ?>
                         <?php if($is_editable) : ?>
-                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $s->id]) ?>
-                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $s->id]) ?>
+                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $form->id, $s->id]) ?>
+                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $form->id, $s->id]) ?>
                             <?php if(empty($s->form_template_fields)) : ?>
                                 <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteSection', $s->id]) ?>
                             <?php endif ?>
@@ -72,6 +69,12 @@ $is_editable = !$has_audits && !$is_disabled;
                 </div>
             <?php endforeach ?>
         <?php endif ?>
+
+        <div class="button-group">
+            <?php if($is_editable && $form->type !== 'measure') : ?>
+                <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
+            <?php endif ?>
+        </div>
     </fieldset>
 </div>
 
