@@ -14,7 +14,7 @@ class AuditFieldOptionsetValuesTable extends Table {
         $this->belongsTo('FormTemplateFieldsOptionset')
             ->setForeignKey('form_template_field_id');
 
-        $this->belongsTo('FormTemplateOptionsetValues')
+        $this->belongsTo('FormOptionsetValues')
             ->setForeignKey('optionset_value_id');
     }
 

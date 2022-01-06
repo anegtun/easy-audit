@@ -34,7 +34,7 @@ class AuditsTable extends Table {
             'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
             'AuditFieldOptionsetValues' => [
                 'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
-                'FormTemplateOptionsetValues'
+                'FormOptionsetValues'
             ],
             'Customers',
             'FormTemplates' => [
@@ -61,7 +61,7 @@ class AuditsTable extends Table {
                 'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
                 'AuditFieldOptionsetValues' => [
                     'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
-                    'FormTemplateOptionsetValues'
+                    'FormOptionsetValues'
                 ],
                 'FormTemplates' => [
                     'FormTemplateSections' => [ 'FormTemplateFieldsOptionset' ],

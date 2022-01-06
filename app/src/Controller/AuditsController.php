@@ -21,7 +21,7 @@ class AuditsController extends AppController {
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
         $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
         $this->FormTemplateSections = TableRegistry::getTableLocator()->get('FormTemplateSections');
-        $this->FormTemplateOptionsetValues = TableRegistry::getTableLocator()->get('FormTemplateOptionsetValues');
+        $this->FormOptionsetValues = TableRegistry::getTableLocator()->get('FormOptionsetValues');
         $this->Users = TableRegistry::getTableLocator()->get('Users');
         $this->loadComponent('AuditFile');
         $this->loadComponent('AuditInitialization');
@@ -54,7 +54,7 @@ class AuditsController extends AppController {
 
     public function fill($id) {
         $audit = $this->Audits->getComplete($id);
-        $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
+        $optionset_values = $this->FormOptionsetValues->findAllByOptionset();
         foreach($audit->form_templates as $t) {
             $last_audit = $this->Audits->findLast($t->id, $audit);
             if($last_audit) {

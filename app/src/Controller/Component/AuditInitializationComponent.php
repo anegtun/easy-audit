@@ -8,13 +8,13 @@ class AuditInitializationComponent extends Component {
     
     public function startup() {
         $this->AuditFieldOptionsetValues = TableRegistry::getTableLocator()->get('AuditFieldOptionsetValues');
-        $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
+        $this->FormTemplateFields = TableRegistry::getTableLocator()->get('FormTemplateFields');
     }
 
     public function createDefaults($template_id, $audit_id) {
-        $fields = $this->FormTemplateFieldsOptionset->find('all')
+        $fields = $this->FormTemplateFields->find('all')
             ->where(['form_template_id' => $template_id])
-            ->contain(['FormTemplateOptionsets' => ['FormTemplateOptionsetValues']]);
+            ->contain(['FormOptionsets' => ['FormOptionsetValues']]);
         foreach($fields as $f) {
             $defaultVal = $this->findDefaultValue($f);
             if($defaultVal) {

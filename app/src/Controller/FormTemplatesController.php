@@ -13,8 +13,7 @@ class FormTemplatesController extends AppController {
         parent::initialize();
         $this->FormTemplateFieldTypes = new FormTemplateFieldTypes();
         $this->FormTypes = new FormTypes();
-        $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
-        $this->FormTemplateOptionsets = TableRegistry::getTableLocator()->get('FormTemplateOptionsets');
+        $this->FormOptionsets = TableRegistry::getTableLocator()->get('FormOptionsets');
     }
 
     public function isAuthorized($user) {
@@ -30,10 +29,13 @@ class FormTemplatesController extends AppController {
             ],
             'Customers',
             'Forms' => ['FormSections' => ['sort' => 'position']],
-            'FormTemplateFields' => ['sort' => ['form_section_id', 'position']]
+            'FormTemplateFields' => [
+                'FormOptionsets',
+                'sort' => ['form_section_id', 'position']
+            ]
         ]]);
         $field_types = $this->FormTemplateFieldTypes->getAll();
-        $optionsets = $this->FormTemplateOptionsets->findForSelect();
+        $optionsets = $this->FormOptionsets->findForSelect();
         $this->set(compact('template', 'field_types', 'optionsets'));
     }
 
@@ -84,7 +86,7 @@ class FormTemplatesController extends AppController {
             $new_template = $this->FormTemplates->save($new_template);
 
             $sections_id_map = $this->FormTemplateSections->clone($data['id'], $new_template->id);
-            $this->FormTemplateFieldsOptionset->clone($data['id'], $new_template->id, $sections_id_map);
+            $this->FormTemplates->FormTemplateFields->clone($data['id'], $new_template->id, $sections_id_map);
             
             $this->Flash->success(__('Template created.'));
             return $this->redirect(['action'=>'index']);

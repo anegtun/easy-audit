@@ -12,8 +12,9 @@ class FormTemplateFieldsTable extends Table {
         $this->belongsTo('FormTemplates')
             ->setForeignKey('form_template_id');
 
-        $this->belongsTo('FormTemplateOptionsets')
-            ->setForeignKey('optionset_id');
+        $this->belongsTo('FormOptionsets')
+            ->setForeignKey('optionset_id')
+            ->setProperty('optionset');
     }
 
     public function clone($source_template_id, $target_template_id, $sections_id_map) {
@@ -28,42 +29,6 @@ class FormTemplateFieldsTable extends Table {
             $this->save($new_field);
         }
         return true;
-    }
-
-    public function decrementPositionAfter($templateId, $sectionId, $startPosition, $excludedId = NULL) {
-        $updateExpr = new QueryExpression('position = position - 1');
-        $conditions = ['form_template_id' => $templateId, 'form_section_id' => $sectionId, 'position >=' => $startPosition];
-        if (!empty($excludedId )) {
-            $conditions['id !='] = $excludedId;
-        }
-        return $this->updateAll(
-            [$updateExpr],
-            $conditions
-        );
-    }
-
-    public function decrementPositionBefore($templateId, $sectionId, $startPosition, $excludedId = NULL) {
-        $updateExpr = new QueryExpression('position = position - 1');
-        $conditions = ['form_template_id' => $templateId, 'form_section_id' => $sectionId, 'position <=' => $startPosition];
-        if (!empty($excludedId )) {
-            $conditions['id !='] = $excludedId;
-        }
-        return $this->updateAll(
-            [$updateExpr],
-            $conditions
-        );
-    }
-
-    public function incrementPositionAfter($templateId, $sectionId, $startPosition, $excludedId = NULL) {
-        $updateExpr = new QueryExpression('position = position + 1');
-        $conditions = ['form_template_id' => $templateId, 'form_section_id' => $sectionId, 'position >=' => $startPosition];
-        if (!empty($excludedId )) {
-            $conditions['id !='] = $excludedId;
-        }
-        return $this->updateAll(
-            [$updateExpr],
-            $conditions
-        );
     }
 
 }
