@@ -122,21 +122,20 @@ class FormTemplatesController extends AppController {
                 $template->fields[] = $field;
             }
             $template->reindexFields();
-            $template->setDirty('fields', true);
             $this->FormTemplates->save($template);
         }
         return $this->redirect($this->referer());
     }
 
     public function deleteField($id) {
-        $field = $this->FormTemplateFieldsOptionset->get($id);
-        $this->FormTemplateFieldsOptionset->decrementPositionAfter($field->form_template_id, $field->form_section_id, $field->position);
-        if($this->FormTemplateFieldsOptionset->delete($field)) {
-            $this->Flash->success(__('Field deleted successfully.'));
-        } else {
-            $this->Flash->error(__('Error deleting field.'));
-        }
-        return $this->redirect(['action'=>'detail', $field->form_template_id]);
+        $field = $this->FormTemplates->FormTemplateFields->get($id);
+        $template = $this->getTemplateWithFields($field->form_template_id);
+        $index = $template->findFieldIndex($id);
+        unset($template->fields[$index]);
+        $template->reindexFields();
+        $this->FormTemplates->FormTemplateFields->delete($field);
+        $this->FormTemplates->save($template);
+        return $this->redirect($this->referer());
     }
 
     public function moveFieldUp($templateId, $fieldId) {
