@@ -3,16 +3,17 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use App\Model\FormTemplateFieldTypes;
-use App\Model\FormTemplateTypes;
+use App\Model\FormTypes;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 
-class FormTemplatesController extends AppController {
+class FormsController extends AppController {
     
     public function initialize() {
         parent::initialize();
         $this->FormTemplateFieldTypes = new FormTemplateFieldTypes();
-        $this->FormTemplateTypes = new FormTemplateTypes();
+        $this->FormTypes = new FormTypes();
+        $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
         $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
         $this->FormTemplateOptionsets = TableRegistry::getTableLocator()->get('FormTemplateOptionsets');
         $this->FormTemplateSections = TableRegistry::getTableLocator()->get('FormTemplateSections');
@@ -23,10 +24,30 @@ class FormTemplatesController extends AppController {
     }
 
     public function index() {
-        $template_types = $this->FormTemplateTypes->getAll();
-        $templates = $this->FormTemplates->find()->order(['disabled'=>'ASC', 'name'=>'ASC']);
-        $this->set(compact('templates', 'template_types'));
+        $form_types = $this->FormTypes->getAll();
+        $forms = $this->Forms->find()->order(['name'=>'ASC']);
+        $this->set(compact('forms', 'form_types'));
     }
+
+    public function createForm() {
+        $form = $this->Forms->newEntity();
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $form = $this->Forms->patchEntity($form, $this->request->getData());
+            if ($this->Forms->save($form)) {
+                $this->Flash->success(__('Form created.'));
+                return $this->redirect(['action'=>'index']);
+            }
+            $this->Flash->error(__('Error saving form.'));
+        }
+        return $this->redirect(['action'=>'index']);
+    }
+
+
+
+
+
+
+
 
     public function save() {
         $field_types = $this->FormTemplateFieldTypes->getAll();

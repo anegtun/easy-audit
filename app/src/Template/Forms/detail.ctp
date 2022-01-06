@@ -4,7 +4,7 @@ $this->extend('template');
 $this->set('headerTitle', $title);
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Config')],
-    ['label'=>__('Form templates'), 'url'=>['action'=>'index']],
+    ['label'=>__('Forms'), 'url'=>['action'=>'index']],
     ['label'=>$title]
 ]);
 $this->Html->script('form-templates', ['block' => 'script']);
@@ -136,7 +136,7 @@ $is_editable = !$has_audits && !$is_disabled;
 </div>
 
 
-<?= $this->element('FormTemplates/modal_clone') ?>
+<?= $this->element('Forms/modal_clone', ['modal_id' => 'modal-clone-template']) ?>
 
 <div id='all-field-options'>
     <?php foreach($allFields as $f) : ?>

@@ -24,8 +24,8 @@ $authUser = $this->request->getSession()->read('Auth.User');
                 <span class="caret caret-right"></span>
             </a>
             <ul id="config-entries" class="nav nav-pills nav-stacked left-submenu collapse <?=$menu_option==='config'?'in':''?>"  <?=$menu_option==='config'?'aria-expanded="true"':''?>>
-                <li <?=$submenu_option==='config-form-templates'?'class="active"':''?>>
-                    <?= $this->Html->link(__('Form templates'), ['controller'=>'FormTemplates', 'action'=>'index']) ?>
+                <li <?=$submenu_option==='config-forms'?'class="active"':''?>>
+                    <?= $this->Html->link(__('Forms'), ['controller'=>'Forms', 'action'=>'index']) ?>
                 </li>
                 <li <?=$submenu_option==='config-users'?'class="active"':''?>>
                     <?= $this->Html->link(__('Users'), ['controller'=>'Users', 'action'=>'index']) ?>

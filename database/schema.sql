@@ -49,6 +49,15 @@ CREATE TABLE easy_audit_form_template_optionset_values (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 
+CREATE TABLE easy_audit_forms (
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  name varchar(200) DEFAULT NULL,
+  pubic_name varchar(200) DEFAULT NULL,
+  type varchar(20) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+
 CREATE TABLE easy_audit_form_templates (
   id int unsigned NOT NULL AUTO_INCREMENT,
   disabled int unsigned NOT NULL DEFAULT 0,
