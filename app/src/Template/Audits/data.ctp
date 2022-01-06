@@ -55,7 +55,7 @@ $this->set('headerBreadcrumbs', [
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach($audit->form_templates as $t) : ?>
+                    <?php foreach($audit->templates as $t) : ?>
                         <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
                             <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'deleteTemplate', $audit->id, $t->id], 'remove') ?></td>
                             <td><?= $this->Html->link($t->name, ['controller' => 'FormTemplates', 'action' => 'detail', $t->id]) ?></td>

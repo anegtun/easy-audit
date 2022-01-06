@@ -53,7 +53,7 @@ $isAdmin = $authUser['role'] === 'admin';
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach($customer->form_templates as $t) : ?>
+                        <?php foreach($customer->templates as $t) : ?>
                             <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
                                 <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'deleteTemplate', $customer->id, $t->id], 'remove') ?></td>
                                 <td><?= $this->Html->link($t->name, ['controller' => 'FormTemplates', 'action' => 'detail', $t->id]) ?></td>

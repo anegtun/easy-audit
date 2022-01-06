@@ -11,7 +11,8 @@ class CustomersTable extends Table {
         $this->belongsToMany('FormTemplates', [
             'joinTable' => 'easy_audit_customer_forms',
             'foreignKey' => 'customer_id',
-        ]);
+        ])
+        ->setProperty('templates');
 
         $this->hasMany('Audits')
             ->setForeignKey('customer_id');
