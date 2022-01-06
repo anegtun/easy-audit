@@ -47,35 +47,66 @@ $is_editable = !$has_audits && !$is_disabled;
     <?php endif ?>
 
 
-    <fieldset>
-        <legend><?= __('Sections') ?></legend>
-        <?php if(!empty($form->sections)) : ?>
-            <?php foreach($form->sections as $s) : ?>
-                <div class="form-section">
-                    <div>
-                        <?= $this->EasyAuditForm->editModalLink($s, 'data-section', ['id', 'position', 'name', 'weigth']) ?>
-                        <?php if($is_editable) : ?>
-                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $form->id, $s->id]) ?>
-                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $form->id, $s->id]) ?>
-                            <?php if(empty($s->form_template_fields)) : ?>
-                                <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteSection', $s->id]) ?>
+    <?php if($is_editable && $form->type !== 'measure') : ?>
+
+        <fieldset>
+            <legend><?= __('Sections') ?></legend>
+            <?php if(!empty($form->sections)) : ?>
+                <?php foreach($form->sections as $s) : ?>
+                    <div class="form-section">
+                        <div>
+                            <?= $this->EasyAuditForm->editModalLink($s, 'data-section', ['id', 'position', 'name', 'weigth']) ?>
+                            <?php if($is_editable) : ?>
+                                <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $form->id, $s->id]) ?>
+                                <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $form->id, $s->id]) ?>
+                                <?php if(empty($s->form_template_fields)) : ?>
+                                    <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteSection', $s->id]) ?>
+                                <?php endif ?>
                             <?php endif ?>
-                        <?php endif ?>
+                        </div>
+                        <div>
+                            <?= $this->EasyAuditTemplate->section($s) ?>
+                            (<?= $s->weigth ?>)
+                        </div>
                     </div>
-                    <div>
-                        <?= $this->EasyAuditTemplate->section($s) ?>
-                        (<?= $s->weigth ?>)
+                <?php endforeach ?>
+            <?php endif ?>
+
+            <div class="button-group">
+                <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend><?= __('Templates') ?></legend>
+            <?php if(!empty($form->templates)) : ?>
+                <div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="cell-small"></th>
+                                    <th class="cell-small"></th>
+                                    <th class="celda-titulo"><?= __('Name') ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($form->templates as $t) : ?>
+                                    <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
+                                        <td><?= $this->EasyAuditHtml->deleteLink(['controller'=>'FormTemplates', 'action'=>'delete', $t->id]) ?></td>
+                                        <td><?= $this->Html->link('', '', ['class'=>'glyphicon glyphicon-duplicate modal-clone-button', 'data-template-id'=>$t->id, 'data-form-id'=>$t->form_id, 'data-template-name'=>$t->name]) ?></td>
+                                        <td><?= $this->Html->link($t->name, ['controller'=>'FormTemplates', 'action'=>'detail', $t->id]) ?></td>
+                                    </tr>
+                                <?php endforeach ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            <?php endforeach ?>
-        <?php endif ?>
-
-        <div class="button-group">
-            <?php if($is_editable && $form->type !== 'measure') : ?>
-                <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
             <?php endif ?>
-        </div>
-    </fieldset>
+        </fieldset>
+
+    <?php endif ?>
+
 </div>
 
 

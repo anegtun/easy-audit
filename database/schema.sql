@@ -3,9 +3,9 @@ DROP TABLE IF EXISTS easy_audit_audit_field_optionset_values;
 DROP TABLE IF EXISTS easy_audit_audits;
 DROP TABLE IF EXISTS easy_audit_customer_forms;
 DROP TABLE IF EXISTS easy_audit_customers;
-DROP TABLE IF EXISTS easy_audit_form_template_fields_optionset;
-DROP TABLE IF EXISTS easy_audit_form_template_sections;
+DROP TABLE IF EXISTS easy_audit_form_template_fields;
 DROP TABLE IF EXISTS easy_audit_form_templates;
+DROP TABLE IF EXISTS easy_audit_form_sections;
 DROP TABLE IF EXISTS easy_audit_form_template_optionset_values;
 DROP TABLE IF EXISTS easy_audit_form_template_optionsets;
 DROP TABLE IF EXISTS easy_audit_users;
@@ -78,14 +78,18 @@ CREATE TABLE easy_audit_form_templates (
   form_id int unsigned NOT NULL,
   disabled int unsigned NOT NULL DEFAULT 0,
   name varchar(200) DEFAULT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  CONSTRAINT FK_FormTemplate_Form
+    FOREIGN KEY (form_id)
+    REFERENCES easy_audit_forms(id)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE easy_audit_form_template_fields_optionset (
+CREATE TABLE easy_audit_form_template_fields (
   id int unsigned NOT NULL AUTO_INCREMENT,
   form_template_id int unsigned NOT NULL,
-  form_template_section_id int unsigned NOT NULL,
+  form_section_id int unsigned NOT NULL,
   optionset_id int unsigned DEFAULT NULL,
   position int unsigned NOT NULL,
   text varchar(4000) DEFAULT NULL,
@@ -95,9 +99,9 @@ CREATE TABLE easy_audit_form_template_fields_optionset (
     FOREIGN KEY (form_template_id)
     REFERENCES easy_audit_form_templates(id)
     ON DELETE CASCADE,
-  CONSTRAINT FK_FormTemplateField_FormTemplateSection
-    FOREIGN KEY (form_template_section_id)
-    REFERENCES easy_audit_form_template_sections(id)
+  CONSTRAINT FK_FormTemplateField_FormSection
+    FOREIGN KEY (form_section_id)
+    REFERENCES easy_audit_form_sections(id)
     ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
@@ -166,7 +170,7 @@ CREATE TABLE easy_audit_audit_field_optionset_values (
     ON DELETE CASCADE,
   CONSTRAINT FK_AuditOptionsetValues_FormTemplateOptionsetField
     FOREIGN KEY (form_template_field_id)
-    REFERENCES easy_audit_form_template_fields_optionset(id),
+    REFERENCES easy_audit_form_template_fields(id),
   CONSTRAINT FK_AuditOptionsetValues_FormTemplateOptionsetValue
     FOREIGN KEY (optionset_value_id),
     REFERENCES easy_audit_form_template_optionset_values(id),

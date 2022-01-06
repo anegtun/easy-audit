@@ -4,13 +4,13 @@ namespace App\Model\Table;
 use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Table;
 
-class FormTemplateFieldsOptionsetTable extends Table {
+class FormTemplateFieldsTable extends Table {
     
     public function initialize(array $config) {
-        $this->setTable('easy_audit_form_template_fields_optionset');
+        $this->setTable('easy_audit_form_template_fields');
 
-        $this->belongsTo('FormTemplateSections')
-            ->setForeignKey('form_template_section_id');
+        $this->belongsTo('FormTemplates')
+            ->setForeignKey('form_template_id');
 
         $this->belongsTo('FormTemplateOptionsets')
             ->setForeignKey('optionset_id');

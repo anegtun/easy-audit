@@ -12,9 +12,11 @@ class FormsTable extends Table {
             ->setForeignKey('form_id')
             ->setProperty('sections');
 
-        /*$this->hasMany('FormTemplateFieldsOptionset')
-            ->setForeignKey('form_template_id');
+        $this->hasMany('FormTemplates')
+            ->setForeignKey('form_id')
+            ->setProperty('templates');
 
+        /*
         $this->belongsToMany('Customers', [
             'joinTable' => 'easy_audit_customer_forms',
             'foreignKey' => 'form_template_id',
@@ -23,7 +25,8 @@ class FormsTable extends Table {
         $this->belongsToMany('Audits', [
             'joinTable' => 'easy_audit_audit_forms',
             'foreignKey' => 'form_template_id',
-        ]);*/
+        ]);
+        */
     }
 
 }

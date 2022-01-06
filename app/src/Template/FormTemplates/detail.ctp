@@ -5,6 +5,7 @@ $this->set('headerTitle', $title);
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Config')],
     ['label'=>__('Forms'), 'url'=>['action'=>'index']],
+    ['label'=>$template->form->name, 'url'=>['controller'=>'forms', 'action'=>'detail', $template->form->id]],
     ['label'=>$title]
 ]);
 $this->Html->script('form-templates', ['block' => 'script']);
@@ -18,7 +19,7 @@ $is_editable = !$has_audits && !$is_disabled;
 
     <div class="button-group">
         <div>
-            <?php if($is_editable && $template->type !== 'measure') : ?>
+            <?php if($is_editable && $template->form->type !== 'measure') : ?>
                 <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
                 <button type="button" id="modal-field-button" class="btn btn-primary" data-target="#modal-field"><?= __('Add field') ?></button>
             <?php endif ?>
@@ -50,7 +51,7 @@ $is_editable = !$has_audits && !$is_disabled;
         </div>
     <?php endif ?>
 
-    <?= $this->element("Forms/detail/editor_{$template->type}", ['is_editable'=>$is_editable]) ?>
+    <?= $this->element("FormTemplates/detail/editor_{$template->form->type}", ['is_editable'=>$is_editable]) ?>
 </div>
 
 

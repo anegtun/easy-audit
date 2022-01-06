@@ -1,1 +1,0 @@
-<?= $this->element("Forms/detail/field_editor", ['is_editable' => $is_editable]) ?>
