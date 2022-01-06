@@ -1,7 +1,7 @@
 <div id="modal-section" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <?= $this->Form->create(null, ['url'=>['action'=>'saveSection']]) ?>
         <?= $this->Form->hidden('id') ?>
-        <?= $this->Form->hidden('form_template_id', ['value' => $template->id]) ?>
+        <?= $this->Form->hidden('form_id', ['value' => $form->id]) ?>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -14,7 +14,7 @@
                     <fieldset>
                         <?= $this->Form->control('name', ['label'=>__('Name')]) ?>
                         <?= $this->Form->control('weigth', ['label'=>__('Weigth')]) ?>
-                        <?= $this->Form->control('position', ['options' => $this->EasyAuditForm->objectToKeyValue($sections, 'position', 'name'), 'label'=>__('Place before...')]) ?>
+                        <?= $this->Form->control('position', ['options' => $this->EasyAuditForm->objectToKeyValue($form->sections, 'position', 'name'), 'label'=>__('Place before...')]) ?>
                     </fieldset>
                 </div>
                 <div class="modal-footer">

@@ -58,18 +58,9 @@ CREATE TABLE easy_audit_forms (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE easy_audit_form_templates (
+CREATE TABLE easy_audit_form_sections (
   id int unsigned NOT NULL AUTO_INCREMENT,
-  disabled int unsigned NOT NULL DEFAULT 0,
-  name varchar(200) DEFAULT NULL,
-  type varchar(20) NOT NULL,
-  PRIMARY KEY (id)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
-
-
-CREATE TABLE easy_audit_form_template_sections (
-  id int unsigned NOT NULL AUTO_INCREMENT,
-  form_template_id int unsigned NOT NULL,
+  form_id int unsigned NOT NULL,
   position int unsigned NOT NULL,
   name varchar(200) DEFAULT NULL,
   weigth int unsigned DEFAULT NULL,
@@ -78,6 +69,15 @@ CREATE TABLE easy_audit_form_template_sections (
     FOREIGN KEY (form_template_id)
     REFERENCES easy_audit_form_templates(id)
     ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE easy_audit_form_templates (
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  disabled int unsigned NOT NULL DEFAULT 0,
+  name varchar(200) DEFAULT NULL,
+  type varchar(20) NOT NULL,
+  PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 

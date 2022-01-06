@@ -1,3 +1,18 @@
+.form-section {
+    display: flex;
+    margin-bottom: 1em;
+}
+
+.form-section > *:first-child {
+    width: 100px;
+}
+
+.form-section a {
+    text-decoration: none;
+}
+
+
+
 .form-template-field {
     margin-bottom: 1em;
 }

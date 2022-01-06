@@ -42,5 +42,5 @@ $optionsetOptions = iterator_to_array($optionsets);
 
 
 
-<?= $this->element("FormTemplates/modal_section") ?>
-<?= $this->element("FormTemplates/modal_field") ?>
+<?= $this->element("Forms/modals/section") ?>
+<?= $this->element("Forms/modals/field") ?>

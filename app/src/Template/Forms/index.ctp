@@ -24,8 +24,9 @@ $this->Html->script('form-templates', ['block' => 'script']);
                 <?php foreach($forms as $f) : ?>
                     <tr class="<?= $f->disabled ? 'disabled' : '' ?>">
                         <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'delete', $f->id]) ?></td>
-                        <td><?= $this->Html->link('', '', ['class'=>'glyphicon glyphicon-duplicate modal-clone-button', 'data-template-id'=>$f->id, 'data-template-name'=>$f->name, 'data-template-public-name'=>$f->public_name]) ?></td>
+                        <td><?= $this->Html->link('', '', ['class'=>'glyphicon glyphicon-duplicate modal-clone-button', 'data-form-id'=>$f->id, 'data-form-name'=>$f->name, 'data-form-public_name'=>$f->public_name]) ?></td>
                         <td><?= $this->Html->link($f->name, ['action'=>'detail', $f->id]) ?></td>
+                        <td><?= $f->public_name ?></td>
                         <td><?= $form_types[$f->type] ?></td>
                     </tr>
                 <?php endforeach ?>
@@ -40,6 +41,6 @@ $this->Html->script('form-templates', ['block' => 'script']);
 
 
 
-<?= $this->element('Forms/modal_new_form', ['modal_id' => 'modal-new-form']) ?>
+<?= $this->element('Forms/modals/new_form', ['modal_id' => 'modal-new-form']) ?>
 
-<?= $this->element('Forms/modal_clone', ['modal_id' => 'modal-clone-template']) ?>
+<?= $this->element('Forms/modals/clone', ['modal_id' => 'modal-clone-template']) ?>

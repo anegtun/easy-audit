@@ -13,10 +13,10 @@ class FormsController extends AppController {
         parent::initialize();
         $this->FormTemplateFieldTypes = new FormTemplateFieldTypes();
         $this->FormTypes = new FormTypes();
+        $this->FormSections = TableRegistry::getTableLocator()->get('FormSections');
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
         $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
         $this->FormTemplateOptionsets = TableRegistry::getTableLocator()->get('FormTemplateOptionsets');
-        $this->FormTemplateSections = TableRegistry::getTableLocator()->get('FormTemplateSections');
     }
 
     public function isAuthorized($user) {
@@ -40,6 +40,75 @@ class FormsController extends AppController {
             $this->Flash->error(__('Error saving form.'));
         }
         return $this->redirect(['action'=>'index']);
+    }
+
+    public function detail($id) {
+        $form = $this->Forms->get($id, ['contain' => [
+            'FormSections' => ['sort' => 'position']
+        ]]);
+        $this->set(compact('form'));
+    }
+
+    public function saveSection() {
+        $formData = $this->request->getData();
+        $formId = $formData['form_id'];
+        if ($this->request->is('post') || $this->request->is('put')) {
+            if(empty($formData['id'])) {
+                $section = $this->FormSections->newEntity();
+                $section = $this->FormSections->patchEntity($section, $formData);
+                $count = $this->FormSections->find()
+                    ->where(['form_id' => $formId])
+                    ->count();
+                if(empty($section->position) || $section->position > $count) {
+                    $section->position = $count + 1;
+                }
+                $this->FormSections->incrementPositionAfter($formId, $section->position);
+            } else {
+                $section = $this->FormSections->get($formData['id']);
+                unset($formData['position']);
+                $section = $this->FormSections->patchEntity($section, $formData);
+            }
+            if ($this->FormSections->save($section)) {
+                $this->Flash->success(__('Section saved.'));
+            } else {
+                $this->Flash->error(__('Error saving section.'));
+            }
+        }
+        return $this->redirect(['action'=>'detail', $formId]);
+    }
+
+    public function deleteSection($id) {
+        $section = $this->FormSections->get($id);
+        $this->FormSections->decrementPositionAfter($section->form_id, $section->position);
+        if($this->FormSections->delete($section)) {
+            $this->Flash->success(__('Section deleted successfully.'));
+        } else {
+            $this->Flash->error(__('Error deleting section.'));
+        }
+        return $this->redirect(['action'=>'detail', $section->form_id]);
+    }
+
+    public function moveSectionUp($id) {
+        $section = $this->FormSections->get($id);
+        if($section->position > 1) {
+            $this->FormSections->incrementPositionAfter($section->form_id, $section->position - 1, $section->id);
+            $section->position--;
+            $this->FormSections->save($section);
+        }
+        return $this->redirect(['action'=>'detail', $section->form_id]);
+    }
+
+    public function moveSectionDown($id) {
+        $section = $this->FormSections->get($id);
+        $count = $this->FormSections->find()
+                ->where(['form_id' => $section->form_id])
+                ->count();
+        if($section->position < $count) {
+            $this->FormSections->decrementPositionBefore($section->form_id, $section->position + 1, $section->id);
+            $section->position++;
+            $this->FormSections->save($section);
+        }
+        return $this->redirect(['action'=>'detail', $section->form_id]);
     }
 
 
@@ -124,7 +193,7 @@ class FormsController extends AppController {
         return $this->redirect(['action'=>'index']);
     }
 
-    public function detail($id) {
+    public function detail2($id) {
         $template = $this->FormTemplates->get($id, [ 'contain' => [
             'Audits' => [
                 'Customers',
@@ -143,68 +212,6 @@ class FormsController extends AppController {
             ->where(['form_template_id' => $id])
             ->order('position');
         $this->set(compact('template', 'field_types', 'optionsets', 'sections', 'allFields'));
-    }
-
-    public function saveSection() {
-        $formData = $this->request->getData();
-        $templateId = $formData['form_template_id'];
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if(empty($formData['id'])) {
-                $section = $this->FormTemplateSections->newEntity();
-                $section = $this->FormTemplateSections->patchEntity($section, $formData);
-                $count = $this->FormTemplateSections->find()
-                    ->where(['form_template_id' => $templateId])
-                    ->count();
-                if(empty($section->position) || $section->position > $count) {
-                    $section->position = $count + 1;
-                }
-                $this->FormTemplateSections->incrementPositionAfter($templateId, $section->position);
-            } else {
-                $section = $this->FormTemplateSections->get($formData['id']);
-                unset($formData['position']);
-                $section = $this->FormTemplateSections->patchEntity($section, $formData);
-            }
-            if ($this->FormTemplateSections->save($section)) {
-                $this->Flash->success(__('Section saved.'));
-            } else {
-                $this->Flash->error(__('Error saving section.'));
-            }
-        }
-        return $this->redirect(['action'=>'detail', $templateId]);
-    }
-
-    public function deleteSection($id) {
-        $section = $this->FormTemplateSections->get($id);
-        $this->FormTemplateSections->decrementPositionAfter($section->form_template_id, $section->position);
-        if($this->FormTemplateSections->delete($section)) {
-            $this->Flash->success(__('Section deleted successfully.'));
-        } else {
-            $this->Flash->error(__('Error deleting section.'));
-        }
-        return $this->redirect(['action'=>'detail', $section->form_template_id]);
-    }
-
-    public function moveSectionUp($id) {
-        $section = $this->FormTemplateSections->get($id);
-        if($section->position > 1) {
-            $this->FormTemplateSections->incrementPositionAfter($section->form_template_id, $section->position - 1, $section->id);
-            $section->position--;
-            $this->FormTemplateSections->save($section);
-        }
-        return $this->redirect(['action'=>'detail', $section->form_template_id]);
-    }
-
-    public function moveSectionDown($id) {
-        $section = $this->FormTemplateSections->get($id);
-        $count = $this->FormTemplateSections->find()
-                ->where(['form_template_id' => $section->form_template_id])
-                ->count();
-        if($section->position < $count) {
-            $this->FormTemplateSections->decrementPositionBefore($section->form_template_id, $section->position + 1, $section->id);
-            $section->position++;
-            $this->FormTemplateSections->save($section);
-        }
-        return $this->redirect(['action'=>'detail', $section->form_template_id]);
     }
 
     public function saveField() {

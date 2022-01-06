@@ -4,10 +4,10 @@ namespace App\Model\Table;
 use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Table;
 
-class FormTemplateSectionsTable extends Table {
+class FormSectionsTable extends Table {
     
     public function initialize(array $config) {
-        $this->setTable('easy_audit_form_template_sections');
+        $this->setTable('easy_audit_form_sections');
 
         $this->hasMany('FormTemplateFieldsOptionset')
             ->setForeignKey('form_template_section_id');
@@ -28,9 +28,9 @@ class FormTemplateSectionsTable extends Table {
         return $sections_id_map;
     }
 
-    public function decrementPositionAfter($templateId, $startPosition, $excludedId = NULL) {
+    public function decrementPositionAfter($formId, $startPosition, $excludedId = NULL) {
         $expression = new QueryExpression('position = position - 1');
-        $conditions = ['form_template_id' => $templateId, 'position >=' => $startPosition];
+        $conditions = ['form_id' => $formId, 'position >=' => $startPosition];
         if (!empty($excludedId )) {
             $conditions['id !='] = $excludedId;
         }
@@ -40,9 +40,9 @@ class FormTemplateSectionsTable extends Table {
         );
     }
 
-    public function decrementPositionBefore($templateId, $startPosition, $excludedId = NULL) {
+    public function decrementPositionBefore($formId, $startPosition, $excludedId = NULL) {
         $expression = new QueryExpression('position = position - 1');
-        $conditions = ['form_template_id' => $templateId, 'position <=' => $startPosition];
+        $conditions = ['form_id' => $formId, 'position <=' => $startPosition];
         if (!empty($excludedId )) {
             $conditions['id !='] = $excludedId;
         }
@@ -52,11 +52,11 @@ class FormTemplateSectionsTable extends Table {
         );
     }
 
-    public function incrementPositionAfter($templateId, $startPosition) {
+    public function incrementPositionAfter($formId, $startPosition) {
         $expression = new QueryExpression('position = position + 1');
         return $this->updateAll(
             [$expression],
-            ['form_template_id' => $templateId, 'position >=' => $startPosition]
+            ['form_id' => $formId, 'position >=' => $startPosition]
         );
     }
 

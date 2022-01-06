@@ -8,10 +8,11 @@ class FormsTable extends Table {
     public function initialize(array $config) {
         $this->setTable('easy_audit_forms');
 
-        /*$this->hasMany('FormTemplateSections')
-            ->setForeignKey('form_template_id');
+        $this->hasMany('FormSections')
+            ->setForeignKey('form_id')
+            ->setProperty('sections');
 
-        $this->hasMany('FormTemplateFieldsOptionset')
+        /*$this->hasMany('FormTemplateFieldsOptionset')
             ->setForeignKey('form_template_id');
 
         $this->belongsToMany('Customers', [
