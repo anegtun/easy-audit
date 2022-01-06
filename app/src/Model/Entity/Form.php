@@ -28,6 +28,7 @@ class Form extends Entity {
         foreach($this->sections as $s) {
             $s->position = $count++;
         }
+        $this->setDirty('sections', true);
     }
 
 }

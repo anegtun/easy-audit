@@ -76,7 +76,6 @@ class FormsController extends AppController {
                 $form->sections[] = $section;
             }
             $form->reindexSections();
-            $form->setDirty('sections', true);
             $this->Forms->save($form);
         }
         return $this->redirect($this->referer());
@@ -88,7 +87,6 @@ class FormsController extends AppController {
         $index = $form->findSectionIndex($id);
         unset($form->sections[$index]);
         $form->reindexSections();
-        $form->setDirty('sections', true);
         $this->Forms->FormSections->delete($section);
         $this->Forms->save($form);
         return $this->redirect($this->referer());
@@ -100,7 +98,6 @@ class FormsController extends AppController {
         if($index > 0) {
             $form->swapSection($index, $index - 1);
         }
-        $form->setDirty('sections', true);
         if(!$this->Forms->save($form)) {
             $this->Flash->error(__('Error moving section.'));
         }
@@ -113,7 +110,6 @@ class FormsController extends AppController {
         if($index < count($form->sections)) {
             $form->swapSection($index, $index + 1);
         }
-        $form->setDirty('sections', true);
         if(!$this->Forms->save($form)) {
             $this->Flash->error(__('Error moving section.'));
         }

@@ -17,6 +17,10 @@
     margin-bottom: 1em;
 }
 
+.form-template-field a {
+    text-decoration: none;
+}
+
 .form-template-field p {
     display: inline;
 }
