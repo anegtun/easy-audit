@@ -87,6 +87,7 @@ $is_editable = !$has_audits && !$is_disabled;
                                 <tr>
                                     <th class="cell-small"></th>
                                     <th class="cell-small"></th>
+                                    <th class="cell-small"></th>
                                     <th class="celda-titulo"><?= __('Name') ?></th>
                                 </tr>
                             </thead>
@@ -95,6 +96,7 @@ $is_editable = !$has_audits && !$is_disabled;
                                     <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
                                         <td><?= $this->EasyAuditHtml->deleteLink(['controller'=>'FormTemplates', 'action'=>'delete', $t->id]) ?></td>
                                         <td><?= $this->Html->link('', '', ['class'=>'glyphicon glyphicon-duplicate modal-clone-button', 'data-template-id'=>$t->id, 'data-form-id'=>$t->form_id, 'data-template-name'=>$t->name]) ?></td>
+                                        <td><?= $this->Html->link('', ['controller'=>'FormTemplates', 'action'=>'toggleEnabled', $t->id], ['class'=>'glyphicon glyphicon-'.($t->disabled?'thumbs-up':'thumbs-down')]) ?></td>
                                         <td><?= $this->Html->link($t->name, ['controller'=>'FormTemplates', 'action'=>'detail', $t->id]) ?></td>
                                     </tr>
                                 <?php endforeach ?>

@@ -89,9 +89,8 @@ class FormTemplatesController extends AppController {
             $this->FormTemplates->FormTemplateFields->clone($data['id'], $new_template->id, $sections_id_map);
             
             $this->Flash->success(__('Template created.'));
-            return $this->redirect(['action'=>'index']);
         }
-        return $this->redirect(['action'=>'index']);
+        return $this->redirect($this->referer());
     }
 
     public function toggleEnabled($id) {
@@ -99,7 +98,7 @@ class FormTemplatesController extends AppController {
         $template->disabled = $template->disabled ? 0 : 1;
         $this->FormTemplates->save($template);
         $this->Flash->success(__('Template enabled or disabled successfully.'));
-        return $this->redirect(['action'=>'index']);
+        return $this->redirect($this->referer());
     }
 
     public function saveField() {
