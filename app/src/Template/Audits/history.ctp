@@ -10,9 +10,9 @@ $this->set('headerBreadcrumbs', [
 $this->Html->script('audit-history', ['block' => 'script']);
 ?>
 
-<?php foreach($audit->form_templates as $t) : ?>
+<?php foreach($audit->templates as $t) : ?>
 
-    <?php if($t->type === 'select') : ?>
+    <?php if($t->form->type === 'select') : ?>
 
         <?php
         $template_audits = [];
@@ -38,7 +38,7 @@ $this->Html->script('audit-history', ['block' => 'script']);
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach($t->form_template_sections as $s) : ?>
+                            <?php foreach($t->form->sections as $s) : ?>
                                 <tr>
                                     <td>
                                         <?= $this->EasyAuditTemplate->section($s) ?>

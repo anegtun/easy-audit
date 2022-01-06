@@ -36,14 +36,14 @@ class AuditsTable extends Table {
         $audit = $this->get($id, [ 'contain' => [
             'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
             'AuditFieldOptionsetValues' => [
-                'FormTemplateFields' => ['FormSections'],
+                'FormTemplateFields' => [ 'FormSections' ],
                 'FormOptionsetValues'
             ],
             'Customers',
             'FormTemplates' => [
                 'sort' => 'FormTemplates.name',
                 'Forms' => [
-                    'FormSections' => ['sort' => 'FormSections.position']
+                    'FormSections' => [ 'sort' => 'FormSections.position' ]
                 ],
                 'FormTemplateFields' => [ 'sort' => 'FormTemplateFields.position' ]
             ],
@@ -63,12 +63,16 @@ class AuditsTable extends Table {
             ->contain([
                 'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
                 'AuditFieldOptionsetValues' => [
-                    'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
+                    'FormTemplateFields' => [ 'FormSections' ],
                     'FormOptionsetValues'
                 ],
                 'FormTemplates' => [
-                    'FormTemplateSections' => [ 'FormTemplateFieldsOptionset' ],
-                ]
+                    'sort' => 'FormTemplates.name',
+                    'Forms' => [
+                        'FormSections' => [ 'sort' => 'FormSections.position' ]
+                    ],
+                    'FormTemplateFields' => [ 'sort' => 'FormTemplateFields.position' ]
+                ],
             ]);
         foreach($audits as $a) {
             $a->calculateScores();
