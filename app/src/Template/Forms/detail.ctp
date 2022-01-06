@@ -1,7 +1,7 @@
 <?php
-$title = empty($template->name) ? __('Template') : $template->name;
+$title = empty($form->name) ? __('Template') : $form->name;
 $this->extend('template');
-$this->set('headerTitle', $title);
+$this->set('headerTitle', $title . (empty($form->public_name) ? '' : " ({$form->public_name})"));
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Config')],
     ['label'=>__('Forms'), 'url'=>['action'=>'index']],
@@ -77,31 +77,9 @@ $is_editable = !$has_audits && !$is_disabled;
 
 
 
-
-
-
-
-<div id="modal-audits" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><?= __('Audits') ?></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <?= $this->element('Audits/list', ['audits' => $form->audits]) ?>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
-            </div>
-        </div>
-    </div>
-</div>
-
+<?= $this->element('Forms/modals/audits', ['modal_id' => 'modal-audits', 'audits' => $form->audits]) ?>
 <?= $this->element('Forms/modals/customers', ['modal_id' => 'modal-customers', 'customers' => $form->customers]) ?>
 
 <?= $this->element('Forms/modals/section', ['modal_id' => 'modal-section']) ?>
-<?= $this->element('Forms/modals/rename', ['modal_id' => 'modal-rename']) ?>
+<?= $this->element('Forms/modals/rename', ['modal_id' => 'modal-rename', 'form' => $form]) ?>
 <?= $this->element('Forms/modals/clone', ['modal_id' => 'modal-clone-template']) ?>

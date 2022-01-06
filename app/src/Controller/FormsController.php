@@ -29,24 +29,40 @@ class FormsController extends AppController {
         $this->set(compact('forms', 'form_types'));
     }
 
-    public function createForm() {
+    public function detail($id) {
+        $form = $this->Forms->get($id, ['contain' => [
+            'FormSections' => ['sort' => 'position']
+        ]]);
+        $this->set(compact('form'));
+    }
+
+    public function create() {
         $form = $this->Forms->newEntity();
         if ($this->request->is('post') || $this->request->is('put')) {
             $form = $this->Forms->patchEntity($form, $this->request->getData());
-            if ($this->Forms->save($form)) {
+            $form = $this->Forms->save($form);
+            if ($form) {
                 $this->Flash->success(__('Form created.'));
                 return $this->redirect(['action'=>'index']);
+                return $this->redirect(['action'=>'detail', $form->form_id]);
             }
             $this->Flash->error(__('Error saving form.'));
         }
         return $this->redirect(['action'=>'index']);
     }
 
-    public function detail($id) {
-        $form = $this->Forms->get($id, ['contain' => [
-            'FormSections' => ['sort' => 'position']
-        ]]);
-        $this->set(compact('form'));
+    public function delete($id) {
+        $form = $this->Forms->get($id/*, [ 'contain' => ['Audits'] ]*/);
+        if(!empty($form->audits)) {
+            $this->Flash->error(__('This form is used in at least one audit, so it can\'t be deleted. You can instead disable it.'));
+            return $this->redirect($this->referer());
+        }
+        if(!$this->Forms->delete($form)) {
+            $this->Flash->error(__('Error deleting form.'));
+            return $this->redirect($this->referer());
+        }
+        $this->Flash->success(__('Form deleted successfully.'));
+        return $this->redirect(['action'=>'index']);
     }
 
     public function saveSection() {
@@ -111,6 +127,19 @@ class FormsController extends AppController {
         return $this->redirect(['action'=>'detail', $section->form_id]);
     }
 
+    public function rename() {
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $data = $this->request->getData();
+            $form = $this->Forms->get($data['id']);
+            $form->name = $data['name'];
+            $form->public_name = $data['public_name'];
+            $this->Forms->save($form);
+            $this->Flash->success(__('Form renamed.'));
+            return $this->redirect($this->referer());
+        }
+        return $this->redirect(['action'=>'index']);
+    }
+
 
 
 
@@ -164,32 +193,6 @@ class FormsController extends AppController {
         $template->disabled = $template->disabled ? 0 : 1;
         $this->FormTemplates->save($template);
         $this->Flash->success(__('Template enabled or disabled successfully.'));
-        return $this->redirect(['action'=>'index']);
-    }
-
-    public function rename() {
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $data = $this->request->getData();
-            $template = $this->FormTemplates->get($data['id']);
-            $template->name = $data['name'];
-            $this->FormTemplates->save($template);
-            $this->Flash->success(__('Template renamed.'));
-            return $this->redirect(['action'=>'detail', $template->id]);
-        }
-        return $this->redirect(['action'=>'index']);
-    }
-
-    public function delete($id) {
-        $template = $this->FormTemplates->get($id, [ 'contain' => ['Audits'] ]);
-        if(!empty($template->audits)) {
-            $this->Flash->error(__('This template is used in at least one audit, so it can\'t be deleted. You can instead disable it.'));
-            return $this->redirect(['action'=>'index']);
-        }
-        if($this->FormTemplates->delete($template)) {
-            $this->Flash->success(__('Template deleted successfully.'));
-        } else {
-            $this->Flash->error(__('Error deleting template.'));
-        }
         return $this->redirect(['action'=>'index']);
     }
 

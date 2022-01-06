@@ -1,5 +1,5 @@
 <div id="<?= $modal_id ?>" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <?= $this->Form->create(null, ['type'=>'post', 'url'=>['action'=>'createForm']]) ?>
+    <?= $this->Form->create(null, ['type'=>'post', 'url'=>['controller'=>'forms', 'action'=>'create']]) ?>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">

@@ -26,12 +26,12 @@ CREATE TABLE easy_audit_users (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 
+
 CREATE TABLE easy_audit_form_template_optionsets (
   id int unsigned NOT NULL AUTO_INCREMENT,
   name varchar(200) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
-
 
 CREATE TABLE easy_audit_form_template_optionset_values (
   id int unsigned NOT NULL AUTO_INCREMENT,
@@ -49,6 +49,7 @@ CREATE TABLE easy_audit_form_template_optionset_values (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 
+
 CREATE TABLE easy_audit_forms (
   id int unsigned NOT NULL AUTO_INCREMENT,
   name varchar(200) DEFAULT NULL,
@@ -56,7 +57,6 @@ CREATE TABLE easy_audit_forms (
   type varchar(20) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
-
 
 CREATE TABLE easy_audit_form_sections (
   id int unsigned NOT NULL AUTO_INCREMENT,
@@ -72,11 +72,12 @@ CREATE TABLE easy_audit_form_sections (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 
+
 CREATE TABLE easy_audit_form_templates (
   id int unsigned NOT NULL AUTO_INCREMENT,
+  form_id int unsigned NOT NULL,
   disabled int unsigned NOT NULL DEFAULT 0,
   name varchar(200) DEFAULT NULL,
-  type varchar(20) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
