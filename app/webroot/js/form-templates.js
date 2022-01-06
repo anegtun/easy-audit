@@ -33,11 +33,17 @@ $(document).ready(function() {
     });
 
     $('a[data-field-id]').click(function() {
-        openModalToEdit(fieldModal, $(this), 'data-field-', ['id', 'form_template_section_id', 'text']);
+        openModalToEdit(fieldModal, $(this), 'data-field-', ['id', 'form_template_section_id', 'text', 'type']);
         editor.setData($(this).attr('data-field-text'));
+        fieldModal.find('*[name=type]').trigger("change");
         fieldModal.find('*[name=form_template_section_id]').trigger("change");
         fieldModal.find('*[name=position]').val(Number($(this).attr('data-field-position')) + 1).prop('disabled', true);
     });
+
+    $('#modal-field select[name=type]').change(function() {
+        const optionsetField = $('#modal-field select[name=optionset_id]').parents('.form-group');
+        $(this).val() === 'select' ? optionsetField.show() : optionsetField.hide();
+    }).change();
 
     $('#modal-field select[name=form_template_section_id]').change(function() {
         const sectionId = $(this).val();

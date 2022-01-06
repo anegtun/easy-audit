@@ -1,13 +1,12 @@
 <?php
 namespace App\Model;
 
-class FormTemplateTypes {
+class FormTemplateFieldTypes {
     
     public function getAll() {
         $values = [
-            'measure' => __('Measure'),
-            'simple' => __('Simple'),
-            'select' => __('Checklist'),
+            'select' => __('Select'),
+            'text' => __('Text'),
         ];
         asort($values);
         return $values;

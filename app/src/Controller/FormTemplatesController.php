@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Model\FormTemplateFieldTypes;
 use App\Model\FormTemplateTypes;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
@@ -10,6 +11,7 @@ class FormTemplatesController extends AppController {
     
     public function initialize() {
         parent::initialize();
+        $this->FormTemplateFieldTypes = new FormTemplateFieldTypes();
         $this->FormTemplateTypes = new FormTemplateTypes();
         $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
         $this->FormTemplateOptionsets = TableRegistry::getTableLocator()->get('FormTemplateOptionsets');
@@ -27,6 +29,7 @@ class FormTemplatesController extends AppController {
     }
 
     public function save() {
+        $field_types = $this->FormTemplateFieldTypes->getAll();
         $template = $this->FormTemplates->newEntity();
         if ($this->request->is('post') || $this->request->is('put')) {
             $template = $this->FormTemplates->patchEntity($template, $this->request->getData());
@@ -109,6 +112,7 @@ class FormTemplatesController extends AppController {
             ],
             'Customers'
         ]]);
+        $field_types = $this->FormTemplateFieldTypes->getAll();
         $optionsets = $this->FormTemplateOptionsets->findForSelect();
         $sections = $this->FormTemplateSections->find()
             ->where(['form_template_id' => $id])
@@ -117,7 +121,7 @@ class FormTemplatesController extends AppController {
         $allFields = $this->FormTemplateFieldsOptionset->find()
             ->where(['form_template_id' => $id])
             ->order('position');
-        $this->set(compact('template', 'optionsets', 'sections', 'allFields'));
+        $this->set(compact('template', 'field_types', 'optionsets', 'sections', 'allFields'));
     }
 
     public function saveSection() {
@@ -202,6 +206,9 @@ class FormTemplatesController extends AppController {
                 $field = $this->FormTemplateFieldsOptionset->get($formData['id']);
                 unset($formData['position']);
                 $field = $this->FormTemplateFieldsOptionset->patchEntity($field, $formData);
+            }
+            if($field->type!=='select') {
+                $$field->optionset_id = null;
             }
             if ($this->FormTemplateFieldsOptionset->save($field)) {
                 $this->Flash->success(__('Field saved.'));

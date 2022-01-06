@@ -79,6 +79,7 @@ CREATE TABLE easy_audit_form_template_fields_optionset (
   optionset_id int unsigned DEFAULT NULL,
   position int unsigned NOT NULL,
   text varchar(4000) DEFAULT NULL,
+  type varchar(20) DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT FK_FormTemplateField_FormTemplate
     FOREIGN KEY (form_template_id)
@@ -146,6 +147,7 @@ CREATE TABLE easy_audit_audit_field_optionset_values (
   form_template_id int unsigned NOT NULL,
   form_template_field_id int unsigned NOT NULL,
   optionset_value_id int unsigned NOT NULL,
+  value varchar(4000) DEFAULT NULL,
   observations varchar(4000) DEFAULT NULL,
   PRIMARY KEY (id),
   CONSTRAINT FK_AuditOptionsetValues_AuditFormTemplate
