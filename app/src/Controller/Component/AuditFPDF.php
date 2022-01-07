@@ -26,6 +26,8 @@ class AuditFPDF extends FPDF {
 
     use AuditFPDFFormSelectTraits;
 
+    use AuditFPDFFormSimpleTraits;
+
     function Header() {
         $this->SetTextColor(0, 0, 0);
         if($this->PageNo() > 1) {

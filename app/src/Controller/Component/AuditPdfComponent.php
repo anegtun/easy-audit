@@ -22,10 +22,16 @@ class AuditPdfComponent extends Component {
         $pdf->Intro();
 
         foreach($audit->templates as $t) {
-            if($t->form->type === 'select') {
-                $pdf->SelectReport($t);
-            } elseif($t->form->type === 'measure') {
-                $pdf->MeasureReport($t);
+            switch($t->form->type) {
+                case 'measure':
+                    $pdf->MeasureReport($t);
+                    break;
+                case 'select':
+                    $pdf->SelectReport($t);
+                    break;
+                case 'simple':
+                    $pdf->SimpleReport($t);
+                    break;
             }
         }
 
