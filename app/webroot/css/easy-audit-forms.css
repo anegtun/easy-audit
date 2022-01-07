@@ -32,3 +32,8 @@
 .form-template-audit-info {
     margin-top: 1em;
 }
+
+
+.table-templates th:nth-child(2) {
+    width: 200px;
+}

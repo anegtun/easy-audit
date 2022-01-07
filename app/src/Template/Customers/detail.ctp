@@ -45,18 +45,20 @@ $isAdmin = $authUser['role'] === 'admin';
         <fieldset>
             <legend><?= __('Associated templates') ?></legend>
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
+                <table class="table table-striped table-hover table-templates">
                     <thead>
                         <tr>
                             <th class="cell-small"></th>
-                            <th class="celda-titulo"><?= __('Name') ?></th>
+                            <th class="celda-titulo"><?= __('Form') ?></th>
+                            <th class="celda-titulo"><?= __('Template') ?></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach($customer->templates as $t) : ?>
                             <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
                                 <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'deleteTemplate', $customer->id, $t->id], 'remove') ?></td>
-                                <td><?= $this->Html->link($t->name, ['controller' => 'FormTemplates', 'action' => 'detail', $t->id]) ?></td>
+                                <td><?= $this->Html->link($t->form->name, ['controller'=>'Forms', 'action'=>'detail', $t->form->id]) ?></td>
+                                <td><?= $this->Html->link($t->name, ['controller'=>'FormTemplates', 'action'=>'detail', $t->id]) ?></td>
                             </tr>
                         <?php endforeach ?>
                     </tbody>
@@ -79,7 +81,7 @@ $isAdmin = $authUser['role'] === 'admin';
                     </div>
                     <div class="modal-body">
                         <fieldset>
-                            <?= $this->Form->control('form_template_id', ['options' => $this->EasyAuditForm->objectToKeyValue($templates, 'id', 'name'), 'label'=>__('Template')]) ?>
+                            <?= $this->Form->control('form_template_id', ['options' => $this->EasyAuditForm->objectToKeyValue($templates, 'id', '{$e->form->name} - {$e->name}'), 'label'=>__('Template')]) ?>
                         </fieldset>
                     </div>
                     <div class="modal-footer">

@@ -82,7 +82,7 @@ $this->set('headerBreadcrumbs', [
                 </div>
                 <div class="modal-body">
                     <fieldset>
-                        <?= $this->Form->control('form_template_id', ['options' => $this->EasyAuditForm->objectToKeyValue($audit->customer->form_templates, 'id', 'name'), 'label'=>__('Template')]) ?>
+                        <?= $this->Form->control('form_template_id', ['options' => $this->EasyAuditForm->objectToKeyValue($audit->customer->templates, 'id', '{$e->form->name} - {$e->name}'), 'label'=>__('Template')]) ?>
                     </fieldset>
                 </div>
                 <div class="modal-footer">

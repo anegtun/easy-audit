@@ -27,10 +27,13 @@ class CustomersController extends AppController {
     public function detail($id=null) {
         $customer = empty($id) ? $this->Customers->newEntity() : $this->getCustomer($id);
         if(!empty($id)) {
-            $templates = $this->FormTemplates->find('all')->where(['disabled'=>0]);
+            $templates = $this->FormTemplates->find('all')
+                ->contain(['Forms'])
+                ->order('Forms.name', 'FormTemplates.name')
+                ->where(['disabled'=>0]);
             $templateIds = $customer->getTemplateIds();
             if(!empty($templateIds)) {
-                $templates->where(['id NOT IN' => $templateIds]);
+                $templates->where(['FormTemplates.id NOT IN' => $templateIds]);
             }
             $this->set(compact('templates'));
         }
@@ -72,8 +75,8 @@ class CustomersController extends AppController {
         $customerId = $data['customer_id'];
         $template = $this->FormTemplates->get($data['form_template_id']);
         $customer = $this->getCustomer($customerId);
-        $customer->form_templates[] = $template;
-        $customer->setDirty('form_templates', true);
+        $customer->templates[] = $template;
+        $customer->setDirty('templates', true);
         if ($this->Customers->save($customer)) {
             $this->Flash->success(__('Template added correctly.'));
         } else {
@@ -84,13 +87,13 @@ class CustomersController extends AppController {
 
     public function deleteTemplate($customerId, $templateId) {
         $customer = $this->getCustomer($customerId);
-        $customer->form_templates = array_filter(
-            $customer->form_templates,
+        $customer->templates = array_filter(
+            $customer->templates,
             function ($e) use (&$templateId) {
                 return $e->id != $templateId;
             }
         );
-        $customer->setDirty('form_templates', true);
+        $customer->setDirty('templates', true);
         if ($this->Customers->save($customer)) {
             $this->Flash->success(__('Template removed correctly.'));
         } else {
@@ -102,7 +105,7 @@ class CustomersController extends AppController {
     public function templates($id) {
         $customer = $this->getCustomer($id);
         $result = [];
-        foreach($customer->form_templates as $t) {
+        foreach($customer->templates as $t) {
             if(!$t->disabled) {
                 $result[] = ['id' => $t->id, 'name' => $t->name];
             }
@@ -113,7 +116,7 @@ class CustomersController extends AppController {
     private function getCustomer($id) {
         return $this->Customers->get($id, ['contain' => [
             'Audits' => [ 'Customers', 'FormTemplates', 'Users', 'sort' => ['date'=>'DESC'] ],
-            'FormTemplates'
+            'FormTemplates' => [ 'Forms' ]
         ]]);
     }
 

@@ -416,7 +416,7 @@ class AuditPdfComponent extends Component {
         $pdf->AddPage();
         $pdf->Cover();
 
-        foreach($audit->form_templates as $t) {
+        foreach($audit->templates as $t) {
             if($t->type === 'select') {
                 $pdf->SelectReport($t);
             } elseif($t->type === 'measure') {

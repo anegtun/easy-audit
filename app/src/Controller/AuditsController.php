@@ -42,9 +42,9 @@ class AuditsController extends AppController {
             'Users'
         ]]);
         $auditTemplateIds = $audit->getTemplateIds();
-        foreach($audit->customer->form_templates as $i=>$template) {
+        foreach($audit->customer->templates as $i=>$template) {
             if(in_array($template->id, $auditTemplateIds)) {
-                unset($audit->customer->form_templates[$i]);
+                unset($audit->customer->templates[$i]);
             }
         }
         $users = $this->Users->find('all');
@@ -82,12 +82,12 @@ class AuditsController extends AppController {
             $audit = $this->Audits->patchEntity($this->Audits->newEntity(), $data);
             $audit->date = $this->parseDate($data['date']);
             $audit->auditor_user_id = $this->Auth->user('id');
-            $audit->form_templates = $this->FormTemplates->find('all')->where(['id IN' => $data['form_template_id']])->toArray();
+            $audit->templates = $this->FormTemplates->find('all')->where(['id IN' => $data['form_template_id']])->toArray();
             $audit = $this->Audits->save($audit);
 
             $cloned = false;
             if(!empty($data['clone'])) {
-                foreach($audit->form_templates as $t) {
+                foreach($audit->templates as $t) {
                     $last_audit = $this->Audits->findLast($t->id, $audit);
                     if($last_audit) {
                         $this->AuditFieldOptionsetValues->clone($t->id, $last_audit->id, $audit->id);
@@ -97,7 +97,7 @@ class AuditsController extends AppController {
                 }
             }
             if(!$cloned) {
-                foreach($audit->form_templates as $t) {
+                foreach($audit->templates as $t) {
                     $this->AuditInitialization->createDefaults($t->id, $audit->id);
                 }
             }
@@ -127,8 +127,8 @@ class AuditsController extends AppController {
         $data = $this->request->getData();
         $auditId = $data['audit_id'];
         $audit = $this->Audits->get($auditId, [ 'contain' => ['FormTemplates'] ]);
-        $audit->form_templates[] = $this->FormTemplates->get($data['form_template_id']);
-        $audit->setDirty('form_templates', true);
+        $audit->templates[] = $this->FormTemplates->get($data['form_template_id']);
+        $audit->setDirty('templates', true);
         if ($this->Audits->save($audit)) {
             $this->Flash->success(__('Template added correctly.'));
         } else {
@@ -139,13 +139,13 @@ class AuditsController extends AppController {
 
     public function deleteTemplate($auditId, $templateId) {
         $audit = $this->Audits->get($auditId, [ 'contain' => ['FormTemplates'] ]);
-        $audit->form_templates = array_filter(
-            $audit->form_templates,
+        $audit->templates = array_filter(
+            $audit->templates,
             function ($e) use (&$templateId) {
                 return $e->id != $templateId;
             }
         );
-        $audit->setDirty('form_templates', true);
+        $audit->setDirty('templates', true);
         if ($this->Audits->save($audit)) {
             $this->Flash->success(__('Template removed correctly.'));
         } else {

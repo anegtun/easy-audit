@@ -9,9 +9,8 @@ $this->set('headerBreadcrumbs', [
 ]);
 $this->Html->script('form', ['block' => 'script']);
 
-$has_audits = !empty($form->audits);
-$is_disabled = !empty($form->disabled);
-$is_editable = !$has_audits && !$is_disabled;
+$has_audits = !empty($audits);
+$is_editable = !$has_audits;
 ?>
 
 <div class="row">
@@ -39,15 +38,8 @@ $is_editable = !$has_audits && !$is_disabled;
         </div>
     <?php endif ?>
 
-    <?php if($is_disabled) : ?>
-        <div class="alert alert-info form-template-audit-info">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            <?= $this->EasyAuditHtml->gliphiconText('info-sign', __('This form is disabled, so it can\'t be edited anymore. To edit please re-enable.')) ?>
-        </div>
-    <?php endif ?>
 
-
-    <?php if($is_editable && $form->type !== 'measure') : ?>
+    <?php if($form->type !== 'measure') : ?>
 
         <fieldset>
             <legend><?= __('Sections') ?></legend>
@@ -117,8 +109,8 @@ $is_editable = !$has_audits && !$is_disabled;
 
 
 
-<?= $this->element('Forms/modals/audits', ['modal_id' => 'modal-audits', 'audits' => $form->audits]) ?>
-<?= $this->element('Forms/modals/customers', ['modal_id' => 'modal-customers', 'customers' => $form->customers]) ?>
+<?= $this->element('Forms/modals/audits', ['modal_id' => 'modal-audits', 'audits' => $audits]) ?>
+<?= $this->element('Forms/modals/customers', ['modal_id' => 'modal-customers', 'customers' => $customers]) ?>
 
 <?= $this->element('Forms/modals/section', ['modal_id' => 'modal-section']) ?>
 <?= $this->element('Forms/modals/rename', ['modal_id' => 'modal-rename', 'form' => $form]) ?>

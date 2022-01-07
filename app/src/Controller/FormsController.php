@@ -5,6 +5,7 @@ use App\Controller\AppController;
 use App\Model\FormTemplateFieldTypes;
 use App\Model\FormTypes;
 use Cake\Event\Event;
+use Cake\ORM\TableRegistry;
 
 class FormsController extends AppController {
     
@@ -12,6 +13,8 @@ class FormsController extends AppController {
         parent::initialize();
         $this->FormTemplateFieldTypes = new FormTemplateFieldTypes();
         $this->FormTypes = new FormTypes();
+        $this->Audits = TableRegistry::getTableLocator()->get('Audits');
+        $this->Customers = TableRegistry::getTableLocator()->get('Customers');
     }
 
     public function isAuthorized($user) {
@@ -26,7 +29,28 @@ class FormsController extends AppController {
 
     public function detail($id) {
         $form = $this->getForm($id);
-        $this->set(compact('form'));
+        $templateIds = $form->getTemplateIds();
+        $templates = $this->Forms->FormTemplates->find('all')
+            ->contain(['Audits', 'Customers'])
+            ->where(['id IN ' => $templateIds]);
+        $auditIds = [];
+        $customerIds = [];
+        foreach($templates as $t) {
+            foreach($t->audits as $a) {
+                $auditIds[] = $a->id;
+            }
+            foreach($t->customers as $c) {
+                $customerIds[] = $c->id;
+            }
+        }
+        $audits = $this->Audits->find('all')
+            ->contain(['Customers', 'Users'])
+            ->order('date')
+            ->where(['Audits.id IN' => $auditIds]);
+        $customers = $this->Customers->find('all')
+            ->order('name')
+            ->where(['id IN' => $customerIds]);
+        $this->set(compact('form', 'audits', 'customers'));
     }
 
     public function create() {

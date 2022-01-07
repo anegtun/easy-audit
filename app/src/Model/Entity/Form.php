@@ -5,6 +5,17 @@ use Cake\ORM\Entity;
 
 class Form extends Entity {
 
+    public function getTemplateIds() {
+        if(empty($this->templates)) {
+            return [];
+        }
+        return array_map(
+            function ($e) {
+                return $e->id;
+            },
+            $this->templates);
+    }
+
     public function findSectionIndex($id) {
         if(!empty($this->sections)) {
             foreach($this->sections as $i => $s) {
