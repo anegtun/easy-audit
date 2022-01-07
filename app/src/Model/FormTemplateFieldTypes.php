@@ -5,6 +5,7 @@ class FormTemplateFieldTypes {
     
     public function getAll() {
         $values = [
+            'date' => __('Date'),
             'select' => __('Select'),
             'text' => __('Text'),
         ];

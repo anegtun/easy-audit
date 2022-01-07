@@ -4,8 +4,8 @@ $this->extend('template');
 $this->set('headerTitle', $title);
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Config')],
-    ['label'=>__('Forms'), 'url'=>['action'=>'index']],
-    ['label'=>$template->form->name, 'url'=>['controller'=>'forms', 'action'=>'detail', $template->form->id]],
+    ['label'=>__('Forms'), 'url'=>['controller'=>'Forms', 'action'=>'index']],
+    ['label'=>$template->form->name, 'url'=>['controller'=>'Forms', 'action'=>'detail', $template->form->id]],
     ['label'=>$title]
 ]);
 $this->Html->script('form-templates', ['block' => 'script']);

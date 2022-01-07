@@ -29,7 +29,7 @@ class CustomersController extends AppController {
         if(!empty($id)) {
             $templates = $this->FormTemplates->find('all')
                 ->contain(['Forms'])
-                ->order('Forms.name', 'FormTemplates.name')
+                ->order(['Forms.name', 'FormTemplates.name'])
                 ->where(['disabled'=>0]);
             $templateIds = $customer->getTemplateIds();
             if(!empty($templateIds)) {
@@ -116,7 +116,10 @@ class CustomersController extends AppController {
     private function getCustomer($id) {
         return $this->Customers->get($id, ['contain' => [
             'Audits' => [ 'Customers', 'FormTemplates', 'Users', 'sort' => ['date'=>'DESC'] ],
-            'FormTemplates' => [ 'Forms' ]
+            'FormTemplates' => [
+                'Forms',
+                'sort' => [ 'Forms.name', 'FormTemplates.name' ]
+            ]
         ]]);
     }
 
