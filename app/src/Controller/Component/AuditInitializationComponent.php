@@ -29,9 +29,11 @@ class AuditInitializationComponent extends Component {
     }
 
     private function findDefaultValue($field) {
-        foreach($field->form_template_optionset->form_template_optionset_values as $option) {
-            if($option->is_default) {
-                return $option;
+        if(!empty($field->optionset)) {
+            foreach($field->optionset->values as $option) {
+                if($option->is_default) {
+                    return $option;
+                }
             }
         }
         return false;

@@ -111,8 +111,9 @@ class AuditsController extends AppController {
             } else {
                 $this->Flash->error(__('Error creating audit.'));
             }
+            return $this->redirect(['action'=>'fill', $audit->id]);
         }
-        return $this->redirect(['action'=>'index']);
+        return $this->redirect($this->referer());
     }
 
     public function updateData() {
