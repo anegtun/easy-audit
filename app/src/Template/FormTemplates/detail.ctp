@@ -16,6 +16,7 @@ $is_disabled = !empty($template->disabled);
 $is_editable = !$has_audits && !$is_disabled;
 ?>
 
+
 <div class="row">
 
     <div class="button-group">
