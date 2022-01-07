@@ -63,32 +63,35 @@ class AuditPDF extends FPDF {
 
     function MeasureReport($template) {
         $this->AddPage();
-        $this->H1($template->name);
+        $this->H1($template->form->public_name);
         $this->H2('Resultados');
 
-        $rows = [
-            [
-                'align' => ['C','C','C','C','C','C'],
-                'bg' => [237,239,246],
-                'color' => [29,113,184],
-                'font' => ['Arial','B',12],
-                'values' => ['Equipo a verificar', 'Dato', 'M. equipo', 'M. verificada', 'Diferencia', 'Resultado']
-            ]
-        ];
-        foreach($this->audit->audit_field_measure_values as $m) {
-            $img = WWW_ROOT . DS . 'images' . DS . 'components' . DS . ($m->isInThreshold() ? 'ok.png' : 'nok.png');
-            $rows[] = ['values' => [$m->item, $m->unit, $m->expected, $m->actual, $m->calculateDifference(), ['type'=>'img', 'path'=>$img, 'width'=>5]]];
+        if(!empty($this->audit->measure_values)) {
+            $rows = [
+                [
+                    'align' => ['C','C','C','C','C','C'],
+                    'bg' => [237,239,246],
+                    'color' => [29,113,184],
+                    'font' => ['Arial','B',12],
+                    'values' => ['Equipo a verificar', 'Dato', 'M. equipo', 'M. verificada', 'Diferencia', 'Resultado']
+                ]
+            ];
+            foreach($this->audit->measure_values as $m) {
+                $img = WWW_ROOT . DS . 'images' . DS . 'components' . DS . ($m->isInThreshold() ? 'ok.png' : 'nok.png');
+                $rows[] = ['values' => [$m->item, $m->unit, $m->expected, $m->actual, $m->calculateDifference(), ['type'=>'img', 'path'=>$img, 'width'=>5]]];
+            }
+            $this->Table(
+                $rows,
+                ['align' => ['L','C','C','C','C','C'], 'font' => ['Arial','',10], 'height' => 7, 'width' => [70,15,25,30,25,25]]
+            );
+        } else {
+            $this->Cell(80, 5, utf8_decode('No se han encontrado mediciones.'));
         }
-        $this->Table(
-            $rows,
-            ['align' => ['L','C','C','C','C','C'], 'font' => ['Arial','',10], 'height' => 7, 'width' => [70,15,25,30,25,25]]
-        );
     }
 
     function SelectReport($template) {
         $this->AddPage();
-        $this->H1($template->name);
-        $this->H2('Evaluación de la auditoría');
+        $this->H1($template->form->public_name);
         $this->SelectReportIntro($template);
         $this->AddPage();
         $this->H2('Resumen de puntuaciones');
@@ -149,7 +152,7 @@ class AuditPDF extends FPDF {
             $headerRow['values'][] = strtoupper($h->date->i18nFormat('MMM yy'));
         }
         $rows[] = $headerRow;
-        foreach($template->form_template_sections as $s) {
+        foreach($template->form->sections as $s) {
             $sectionName = $s->name;
             if(strlen($sectionName) > $sectionNameMaxLength) {
                 $sectionName = substr($s->name, 0, 110 - count($history_to_show) * 10).'...';
@@ -231,25 +234,29 @@ class AuditPDF extends FPDF {
 
     private function SelectReportDetail($template) {
         $data = [];
-        foreach($template->form_template_sections as $s) {
+        foreach($template->form->sections as $s) {
             $section = ['title' => $s->name, 'fields' => []];
-            foreach($s->form_template_fields_optionset as $f) {
-                $value = $this->audit->getFieldOptionsetValue($f);
-                $photos = empty($this->photos[$template->id][$f->id]) ? [] : $this->photos[$template->id][$f->id];
-                if($value && (empty($value->form_template_optionset_value->is_default) || !empty($value->observations) || !empty($photos))) {
-                    $section['fields'][] = [
-                        'warn' => $value->form_template_optionset_value->color === 'danger',
-                        'text' => $f->text,
-                        'result' => empty($value->form_template_optionset_value->label) ? '' : $value->form_template_optionset_value->label,
-                        'observations' => empty($value->observations) ? '-' : $value->observations,
-                        'photos' => $photos
-                    ];
+            foreach($template->fields as $f) {
+                if($f->form_section_id === $s->id) {
+                    $value = $this->audit->getFieldValue($f);
+                    $photos = empty($this->photos[$template->id][$f->id]) ? [] : $this->photos[$template->id][$f->id];
+                    if($value && (empty($value->optionset_value->is_default) || !empty($value->observations) || !empty($photos))) {
+                        $section['fields'][] = [
+                            'warn' => $value->optionset_value->color === 'danger',
+                            'text' => $f->text,
+                            'result' => empty($value->optionset_value->label) ? '' : $value->optionset_value->label,
+                            'observations' => empty($value->observations) ? '-' : $value->observations,
+                            'photos' => $photos
+                        ];
+                    }
                 }
             }
             $data[] = $section;
         }
+        $hasData = false;
         foreach($data as $e) {
             if(!empty($e['fields'])) {
+                $hasData = true;
                 $this->H3($e['title']);
                 foreach($e['fields'] as $f) {
                     $this->SetFont('Arial', 'BI', 12);
@@ -294,6 +301,9 @@ class AuditPDF extends FPDF {
                     $this->Ln(10);
                 }
             }
+        }
+        if(!$hasData) {
+            $this->Cell(80, 5, utf8_decode('No se han encontrado evidencias.'));
         }
     }
 
@@ -416,10 +426,10 @@ class AuditPdfComponent extends Component {
         $pdf->AddPage();
         $pdf->Cover();
 
-        foreach($audit->form_templates as $t) {
-            if($t->type === 'select') {
+        foreach($audit->templates as $t) {
+            if($t->form->type === 'select') {
                 $pdf->SelectReport($t);
-            } elseif($t->type === 'measure') {
+            } elseif($t->form->type === 'measure') {
                 $pdf->MeasureReport($t);
             }
         }

@@ -7,31 +7,33 @@ use Cake\ORM\TableRegistry;
 class AuditInitializationComponent extends Component {
     
     public function startup() {
-        $this->AuditFieldOptionsetValues = TableRegistry::getTableLocator()->get('AuditFieldOptionsetValues');
-        $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
+        $this->AuditFieldValues = TableRegistry::getTableLocator()->get('AuditFieldValues');
+        $this->FormTemplateFields = TableRegistry::getTableLocator()->get('FormTemplateFields');
     }
 
     public function createDefaults($template_id, $audit_id) {
-        $fields = $this->FormTemplateFieldsOptionset->find('all')
+        $fields = $this->FormTemplateFields->find('all')
             ->where(['form_template_id' => $template_id])
-            ->contain(['FormTemplateOptionsets' => ['FormTemplateOptionsetValues']]);
+            ->contain(['FormOptionsets' => ['FormOptionsetValues']]);
         foreach($fields as $f) {
             $defaultVal = $this->findDefaultValue($f);
             if($defaultVal) {
-                $value = $this->AuditFieldOptionsetValues->newEntity();
+                $value = $this->AuditFieldValues->newEntity();
                 $value->audit_id = $audit_id;
                 $value->form_template_id = $f->form_template_id;
                 $value->form_template_field_id = $f->id;
                 $value->optionset_value_id = $defaultVal->id;
-                $this->AuditFieldOptionsetValues->save($value);
+                $this->AuditFieldValues->save($value);
             }
         }
     }
 
     private function findDefaultValue($field) {
-        foreach($field->form_template_optionset->form_template_optionset_values as $option) {
-            if($option->is_default) {
-                return $option;
+        if(!empty($field->optionset)) {
+            foreach($field->optionset->values as $option) {
+                if($option->is_default) {
+                    return $option;
+                }
             }
         }
         return false;

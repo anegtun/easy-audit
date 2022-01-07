@@ -1,8 +1,8 @@
 <fieldset>
     <div class="audit-measures">
 
-        <?php if(!empty($audit->audit_field_measure_values)) : ?>
-            <?php foreach($audit->audit_field_measure_values as $i => $v) : ?>
+        <?php if(!empty($audit->measure_values)) : ?>
+            <?php foreach($audit->measure_values as $i => $v) : ?>
 
                 <?php $index = $i + 1 ?>
                 <div class="audit-measure">

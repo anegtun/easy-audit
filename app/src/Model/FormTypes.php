@@ -1,7 +1,7 @@
 <?php
 namespace App\Model;
 
-class FormTemplateTypes {
+class FormTypes {
     
     public function getAll() {
         $values = [

@@ -3,7 +3,7 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 
-class AuditFieldMeasureValue extends Entity {
+class AuditMeasureValue extends Entity {
 
     public function calculateDifference() {
         return $this->expected - $this->actual;

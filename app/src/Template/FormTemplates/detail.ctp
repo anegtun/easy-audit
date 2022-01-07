@@ -4,10 +4,12 @@ $this->extend('template');
 $this->set('headerTitle', $title);
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Config')],
-    ['label'=>__('Form templates'), 'url'=>['action'=>'index']],
+    ['label'=>__('Forms'), 'url'=>['action'=>'index']],
+    ['label'=>$template->form->name, 'url'=>['controller'=>'forms', 'action'=>'detail', $template->form->id]],
     ['label'=>$title]
 ]);
 $this->Html->script('form-templates', ['block' => 'script']);
+$this->Html->script('form-clone', ['block' => 'script']);
 
 $has_audits = !empty($template->audits);
 $is_disabled = !empty($template->disabled);
@@ -18,12 +20,11 @@ $is_editable = !$has_audits && !$is_disabled;
 
     <div class="button-group">
         <div>
-            <?php if($is_editable && $template->type !== 'measure') : ?>
-                <button type="button" id="modal-section-button" class="btn btn-primary" data-target="#modal-section"><?= __('Add section') ?></button>
+            <?php if($is_editable && $template->form->type !== 'measure') : ?>
                 <button type="button" id="modal-field-button" class="btn btn-primary" data-target="#modal-field"><?= __('Add field') ?></button>
             <?php endif ?>
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-rename"><?= __('Rename') ?></button>
-            <button type="button" class="btn btn-default modal-clone-button" data-template-id="<?=$template->id?>" data-template-name="<?=$template->name?>"><?= __('Clone') ?></button>
+            <button type="button" class="btn btn-default modal-clone-template-button" data-template-id="<?=$template->id?>" data-template-name="<?=$template->name?>"><?= __('Clone') ?></button>
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
             <?php if($has_audits) : ?>
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-audits"><?= __('See audits') ?></button>
@@ -50,100 +51,25 @@ $is_editable = !$has_audits && !$is_disabled;
         </div>
     <?php endif ?>
 
-    <?= $this->element("FormTemplates/detail_{$template->type}", ['is_editable'=>$is_editable]) ?>
+    <?= $this->element("FormTemplates/detail/editor_{$template->form->type}", ['is_editable'=>$is_editable]) ?>
 </div>
 
 
-
-<div id="modal-customers" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><?= __('Customers') ?></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th class="celda-titulo"><?= __('Name') ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($template->customers as $c) : ?>
-                            <tr>
-                                <td><?= $this->Html->link($c->name, ['controller'=>'customers', 'action'=>'detail', $c->id]) ?></td>
-                            </tr>
-                        <?php endforeach ?>
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-<div id="modal-audits" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><?= __('Audits') ?></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <?= $this->element('Audits/list', ['audits' => $template->audits]) ?>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-<div id="modal-rename" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <?= $this->Form->create(null, ['id'=>'field-form', 'url'=>['action'=>'rename']]) ?>
-        <?= $this->Form->hidden('id', ['value' => $template->id]) ?>
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><?= __('Rename') ?></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <fieldset>
-                        <?= $this->Form->control('name', ['label'=>__('New name'), 'value'=>$template->name]) ?>
-                    </fieldset>
-                </div>
-                <div class="modal-footer">
-                    <?= $this->EasyAuditForm->saveButton(__('Save')) ?>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>
-                </div>
-            </div>
-        </div>
-    <?= $this->Form->end() ?>
-</div>
-
-
-<?= $this->element('FormTemplates/modal_clone') ?>
 
 <div id='all-field-options'>
-    <?php foreach($allFields as $f) : ?>
+    <?php foreach($template->fields as $f) : ?>
         <?= $this->Form->hidden("field-{$f->id}", [
             'data-id' => $f->id,
             'data-position' => $f->position,
-            'data-section' => $f->form_template_section_id,
+            'data-section' => $f->form_section_id,
             'value'=>"{$f->position}. ".strip_tags($f->text)]) ?>
     <?php endforeach ?>
 </div>
+
+
+
+<?= $this->element('FormTemplates/modals/rename', ['modal_id' => 'modal-rename']) ?>
+<?= $this->element('FormTemplates/modals/clone', ['modal_id' => 'modal-clone-template']) ?>
+
+<?= $this->element('Audits/modals/list', ['modal_id' => 'modal-audits', 'audits' => $template->audits]) ?>
+<?= $this->element('Customers/modals/list', ['modal_id' => 'modal-customers', 'customers' => $template->customers]) ?>

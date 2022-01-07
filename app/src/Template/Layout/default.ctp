@@ -15,7 +15,7 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
         <!-- Favicon -->
         <?= $this->Html->meta('favicon.ico', '/images/favicon/favicon.ico', ['type' => 'icon']) ?>
         <!-- custom:css -->
-        <?= $this->Html->css(["/maqint/maqint", "basic-page", "easy-audit-commons", "easy-audit-audits", "easy-audit-form-templates"]) ?>
+        <?= $this->Html->css(["/maqint/maqint", "basic-page", "easy-audit-commons", "easy-audit-audits", "easy-audit-forms"]) ?>
         <!-- libs:js -->
         <?= $this->Html->script("/libs/ckeditor5-build-classic/ckeditor") ?>
         <?= $this->Html->script("/libs/chartjs/chart.min") ?>

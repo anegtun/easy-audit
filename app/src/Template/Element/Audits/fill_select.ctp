@@ -1,6 +1,6 @@
 <?php
 $fields_cloned = [];
-foreach($audit->audit_field_optionset_values as $fv) {
+foreach($audit->field_values as $fv) {
     if(!empty($fv->observations_cloned)) {
         $fields_cloned[] = $fv;
     }
@@ -13,7 +13,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
         <strong><?= __('Warning!') ?></strong> <?= __('Observations for the following items are the same as the last audit: ') ?>
         <ul>
             <?php foreach($fields_cloned as $f) : ?>
-                <li><?= $this->EasyAuditTemplate->fieldLabel($f->form_template_fields_optionset->form_template_section, $f->form_template_fields_optionset, false) ?></li>
+                <li><?= $this->EasyAuditTemplate->fieldLabel($f->field->section, $f->field, false) ?></li>
             <?php endforeach ?>
         </ul>
     </div>
@@ -26,7 +26,7 @@ foreach($audit->audit_field_optionset_values as $fv) {
     <?= $this->Html->link(__('Close all'), '#', ['class' => 'close-button']) ?>
 </div>
 
-<?php foreach($template->form_template_sections as $s) : ?>
+<?php foreach($template->form->sections as $s) : ?>
 
     <?php $collapseId = "section{$s->id}" ?>
 
@@ -40,91 +40,95 @@ foreach($audit->audit_field_optionset_values as $fv) {
 
         <div id="<?= $collapseId ?>" class="collapse">
 
-            <?php foreach($s->form_template_fields_optionset as $f) : ?>
+            <?php foreach($template->fields as $f) : ?>
 
-                <?php
-                    $value = $audit->getFieldOptionsetValue($f);
-                    $hasObservations = !empty($value) && !empty($value->observations);
-                    $imgs = empty($field_images[$template->id][$f->id]) ? [] : $field_images[$template->id][$f->id];
-                    $hasImgs = !empty($imgs);
-                    $hasImgsOrObs = $hasObservations || $hasImgs;
-                ?>
+                <?php if($f->form_section_id === $s->id) : ?>
 
-                <div class="form-group audit-field">
+                    <?php
+                        $value = $audit->getFieldValue($f);
+                        $hasObservations = !empty($value) && !empty($value->observations);
+                        $imgs = empty($field_images[$template->id][$f->id]) ? [] : $field_images[$template->id][$f->id];
+                        $hasImgs = !empty($imgs);
+                        $hasImgsOrObs = $hasObservations || $hasImgs;
+                    ?>
 
-                    <label>
-                        <span class="audit-field-position"><?= $this->EasyAuditTemplate->fieldLabel($s, $f, false) ?>.</span>
-                        <?= $f->text ?>
-                    </label>
+                    <div class="form-group audit-field">
 
-                    <div class="audit-field-select" data-optionset-id="<?= $f->optionset_id ?>">
-                        <?php foreach($optionset_values[$f->optionset_id] as $option) : ?>
+                        <label>
+                            <span class="audit-field-position"><?= $this->EasyAuditTemplate->fieldLabel($s, $f, false) ?>.</span>
+                            <?= $f->text ?>
+                        </label>
+
+                        <div class="audit-field-select" data-optionset-id="<?= $f->optionset_id ?>">
+                            <?php foreach($optionset_values[$f->optionset_id] as $option) : ?>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="<?= "field_values[{$template->id}][{$f->id}]" ?>"
+                                        value="<?= $option->id ?>"
+                                        <?= !empty($value) && $value->optionset_value_id === $option->id ? 'checked="checked"' : '' ?>
+                                        <?= empty($option->is_default) ? 'data-open-observations="true"' : '' ?>
+                                    />
+                                    <span><?= $option->label ?></span>
+                                </label>
+                            <?php endforeach ?>
                             <label>
                                 <input
                                     type="radio"
                                     name="<?= "field_values[{$template->id}][{$f->id}]" ?>"
-                                    value="<?= $option->id ?>"
-                                    <?= !empty($value) && $value->optionset_value_id === $option->id ? 'checked="checked"' : '' ?>
-                                    <?= empty($option->is_default) ? 'data-open-observations="true"' : '' ?>
+                                    value=""
+                                    <?= empty($value) ? 'checked="checked"' : '' ?>
                                 />
-                                <span><?= $option->label ?></span>
+                                <span>N/A</span>
                             </label>
-                        <?php endforeach ?>
-                        <label>
-                            <input
-                                type="radio"
-                                name="<?= "field_values[{$template->id}][{$f->id}]" ?>"
-                                value=""
-                                <?= empty($value) ? 'checked="checked"' : '' ?>
-                            />
-                            <span>N/A</span>
-                        </label>
-                    </div>
+                        </div>
 
-                    <div class="audit-observations" data-has-observations="<?= $hasImgsOrObs ? true : false ?>">
-                        <a class="audit-observations-open" href="#"><?= __('+ add observations') ?></a>
-                        <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations') ?></a>
-                        <?= $hasObservations ? $this->EasyAuditHtml->gliphicon('comment', ['classes'=>['text-warning']]) : '' ?>
-                        <?= $hasImgs ? $this->EasyAuditHtml->gliphicon('camera', ['classes'=>['text-warning']]) : '' ?>
-                        
-                        <div class="audit-observations-input" style="display:none">
+                        <div class="audit-observations" data-has-observations="<?= $hasImgsOrObs ? true : false ?>">
+                            <a class="audit-observations-open" href="#"><?= __('+ add observations') ?></a>
+                            <a class="audit-observations-close" href="#" style="display:none;"><?= __('- close observations') ?></a>
+                            <?= $hasObservations ? $this->EasyAuditHtml->gliphicon('comment', ['classes'=>['text-warning']]) : '' ?>
+                            <?= $hasImgs ? $this->EasyAuditHtml->gliphicon('camera', ['classes'=>['text-warning']]) : '' ?>
                             
-                            <textarea name="<?="field_observations[{$template->id}][{$f->id}]"?>" class="form-control"><?= $hasObservations ? $value->observations : '' ?></textarea>
-                            
-                            <div class="audit-img-display" data-template-id="<?= $template->id ?>" data-field-id="<?= $f->id ?>" <?= $hasImgs ? '': 'style="display:none"' ?>>
-                                <p><strong><?= __('Photos') ?></strong></p>
-                                <?php foreach($imgs as $img) : ?>
-                                    <?= $this->Html->image("/$img") ?>
-                                <?php endforeach ?>
-                            </div>
-                            <div class="audit-img-input">
-                                <?php $fieldId = "field_photo_{$f->id}"; ?>
-                                <input
-                                    id="<?=$fieldId?>"
-                                    type="file"
-                                    name="field_photo"
-                                    data-post-url="<?= $this->Url->build(['action'=>'addPhoto', $audit->id, $template->id, $f->id]) ?>"
-                                    data-target-name="<?="field_photo[{$template->id}][{$f->id}][]"?>"
-                                    accept="image/*"
-                                    capture="capture"
-                                />
-                                <label for="<?=$fieldId?>">
-                                    <?= $this->EasyAuditHtml->gliphiconText('camera', __('Take photo')) ?>
-                                </label>
-                            </div>
-                            <div class="audit-img-aux-container" style="display:none">
-                                <span class="audit-img-loader">
-                                    <?= $this->Html->image('/images/components/loading-dots.gif') ?>
-                                </span>
-                                <span class="audit-img-photo-error">
-                                    <?= $this->Html->image('/images/components/photo-error.png', [
-                                        'data-post-url' => $this->Url->build(['action'=>'addPhoto', $audit->id, $template->id, $f->id])
-                                    ]) ?>
-                                </span>
+                            <div class="audit-observations-input" style="display:none">
+                                
+                                <textarea name="<?="field_observations[{$template->id}][{$f->id}]"?>" class="form-control"><?= $hasObservations ? $value->observations : '' ?></textarea>
+                                
+                                <div class="audit-img-display" data-template-id="<?= $template->id ?>" data-field-id="<?= $f->id ?>" <?= $hasImgs ? '': 'style="display:none"' ?>>
+                                    <p><strong><?= __('Photos') ?></strong></p>
+                                    <?php foreach($imgs as $img) : ?>
+                                        <?= $this->Html->image("/$img") ?>
+                                    <?php endforeach ?>
+                                </div>
+                                <div class="audit-img-input">
+                                    <?php $fieldId = "field_photo_{$f->id}"; ?>
+                                    <input
+                                        id="<?=$fieldId?>"
+                                        type="file"
+                                        name="field_photo"
+                                        data-post-url="<?= $this->Url->build(['action'=>'addPhoto', $audit->id, $template->id, $f->id]) ?>"
+                                        data-target-name="<?="field_photo[{$template->id}][{$f->id}][]"?>"
+                                        accept="image/*"
+                                        capture="capture"
+                                    />
+                                    <label for="<?=$fieldId?>">
+                                        <?= $this->EasyAuditHtml->gliphiconText('camera', __('Take photo')) ?>
+                                    </label>
+                                </div>
+                                <div class="audit-img-aux-container" style="display:none">
+                                    <span class="audit-img-loader">
+                                        <?= $this->Html->image('/images/components/loading-dots.gif') ?>
+                                    </span>
+                                    <span class="audit-img-photo-error">
+                                        <?= $this->Html->image('/images/components/photo-error.png', [
+                                            'data-post-url' => $this->Url->build(['action'=>'addPhoto', $audit->id, $template->id, $f->id])
+                                        ]) ?>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                <?php endif ?>
 
             <?php endforeach ?>
 

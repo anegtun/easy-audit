@@ -1,20 +1,17 @@
-<div id="modal-section" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <?= $this->Form->create(null, ['url'=>['action'=>'saveSection']]) ?>
-        <?= $this->Form->hidden('id') ?>
-        <?= $this->Form->hidden('form_template_id', ['value' => $template->id]) ?>
+<div id="<?= $modal_id ?>" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <?= $this->Form->create(null, ['id'=>'field-form', 'url'=>['controller'=>'FormTemplates', 'action'=>'rename']]) ?>
+        <?= $this->Form->hidden('id', ['value' => $template->id]) ?>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><?= __('Section') ?></h5>
+                    <h5 class="modal-title"><?= __('Rename') ?></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <fieldset>
-                        <?= $this->Form->control('name', ['label'=>__('Name')]) ?>
-                        <?= $this->Form->control('weigth', ['label'=>__('Weigth')]) ?>
-                        <?= $this->Form->control('position', ['options' => $this->EasyAuditForm->objectToKeyValue($sections, 'position', 'name'), 'label'=>__('Place before...')]) ?>
+                        <?= $this->Form->control('name', ['label'=>__('Name'), 'value'=>$template->name]) ?>
                     </fieldset>
                 </div>
                 <div class="modal-footer">

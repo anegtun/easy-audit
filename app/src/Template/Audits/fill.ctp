@@ -1,10 +1,10 @@
 <?php
-$title = __('Audit') . " ". $audit->customer->name;
+$title = $audit->customer->name." ({$audit->date})";
 $this->extend('template');
 $this->set('headerTitle', $title);
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Audits'), 'url'=>['action'=>'index']],
-    ['label'=>$title],
+    ['label'=>$audit->customer->name],
     ['label'=>__('Fill')]
 ]);
 $this->Html->script('audit-fill', ['block' => 'script']);
@@ -17,7 +17,7 @@ $this->Html->script('audit-fill', ['block' => 'script']);
     <div id="dirtyFormMsg" style="display:none"><?=__('There are unsaved changed.')?></div>
 
     <ul class="nav nav-tabs">
-        <?php foreach($audit->form_templates as $i => $t) : ?>
+        <?php foreach($audit->templates as $i => $t) : ?>
             <li class="<?= $i==0 ? "active" : "" ?>">
                 <a data-toggle="tab" href="#form<?= $t->id ?>"><?= $t->name ?></a>
             </li>
@@ -25,9 +25,9 @@ $this->Html->script('audit-fill', ['block' => 'script']);
     </ul>
 
     <div class="tab-content">
-        <?php foreach($audit->form_templates as $i => $t) : ?>
+        <?php foreach($audit->templates as $i => $t) : ?>
             <div id="form<?= $t->id ?>" class="tab-pane fade <?= $i==0 ? "in active" : "" ?>">
-                <?= $this->element("Audits/fill_{$t->type}", ['audit'=>$audit, 'template'=>$t]) ?>
+                <?= $this->element("Audits/fill_{$t->form->type}", ['audit'=>$audit, 'template'=>$t]) ?>
             </div>
         <?php endforeach ?>
     </div>
@@ -55,4 +55,4 @@ $this->Html->script('audit-fill', ['block' => 'script']);
     </div>
 <?php endforeach ?>
 
-<?= $this->element('Audits/modal_send', ['audit' => $audit]) ?>
+<?= $this->element('Audits/modals/send', ['audit' => $audit]) ?>
