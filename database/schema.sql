@@ -1,13 +1,13 @@
-DROP TABLE IF EXISTS easy_audit_audit_field_measure_values;
-DROP TABLE IF EXISTS easy_audit_audit_field_optionset_values;
+DROP TABLE IF EXISTS easy_audit_audit_measure_values;
+DROP TABLE IF EXISTS easy_audit_audit_field_values;
 DROP TABLE IF EXISTS easy_audit_audits;
 DROP TABLE IF EXISTS easy_audit_customer_forms;
 DROP TABLE IF EXISTS easy_audit_customers;
-DROP TABLE IF EXISTS easy_audit_form_template_fields_optionset;
-DROP TABLE IF EXISTS easy_audit_form_template_sections;
+DROP TABLE IF EXISTS easy_audit_form_template_fields;
 DROP TABLE IF EXISTS easy_audit_form_templates;
-DROP TABLE IF EXISTS easy_audit_form_template_optionset_values;
-DROP TABLE IF EXISTS easy_audit_form_template_optionsets;
+DROP TABLE IF EXISTS easy_audit_form_sections;
+DROP TABLE IF EXISTS easy_audit_form_optionset_values;
+DROP TABLE IF EXISTS easy_audit_form_optionsets;
 DROP TABLE IF EXISTS easy_audit_users;
 
 
@@ -26,14 +26,14 @@ CREATE TABLE easy_audit_users (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE easy_audit_form_template_optionsets (
+
+CREATE TABLE easy_audit_form_optionsets (
   id int unsigned NOT NULL AUTO_INCREMENT,
   name varchar(200) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-
-CREATE TABLE easy_audit_form_template_optionset_values (
+CREATE TABLE easy_audit_form_optionset_values (
   id int unsigned NOT NULL AUTO_INCREMENT,
   color varchar(200) DEFAULT NULL,
   is_default int unsigned NOT NULL DEFAULT 0,
@@ -44,38 +44,52 @@ CREATE TABLE easy_audit_form_template_optionset_values (
   PRIMARY KEY (id),
   CONSTRAINT FK_FormTemplateOptionsetValue_FormTemplateOptionset
     FOREIGN KEY (optionset_id)
-    REFERENCES easy_audit_form_template_optionsets(id)
+    REFERENCES easy_audit_form_optionsets(id)
     ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE easy_audit_form_templates (
+
+CREATE TABLE easy_audit_forms (
   id int unsigned NOT NULL AUTO_INCREMENT,
-  disabled int unsigned NOT NULL DEFAULT 0,
   name varchar(200) DEFAULT NULL,
+  pubic_name varchar(200) DEFAULT NULL,
   type varchar(20) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-
-CREATE TABLE easy_audit_form_template_sections (
+CREATE TABLE easy_audit_form_sections (
   id int unsigned NOT NULL AUTO_INCREMENT,
-  form_template_id int unsigned NOT NULL,
+  form_id int unsigned NOT NULL,
   position int unsigned NOT NULL,
   name varchar(200) DEFAULT NULL,
   weigth int unsigned DEFAULT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT FK_FormTemplateSection_FormTemplate
-    FOREIGN KEY (form_template_id)
-    REFERENCES easy_audit_form_templates(id)
+  CONSTRAINT FK_FormSection_Form
+    FOREIGN KEY (form_id)
+    REFERENCES easy_audit_forms(id)
     ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE easy_audit_form_template_fields_optionset (
+
+CREATE TABLE easy_audit_form_templates (
+  id int unsigned NOT NULL AUTO_INCREMENT,
+  form_id int unsigned NOT NULL,
+  disabled int unsigned NOT NULL DEFAULT 0,
+  name varchar(200) DEFAULT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT FK_FormTemplate_Form
+    FOREIGN KEY (form_id)
+    REFERENCES easy_audit_forms(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE easy_audit_form_template_fields (
   id int unsigned NOT NULL AUTO_INCREMENT,
   form_template_id int unsigned NOT NULL,
-  form_template_section_id int unsigned NOT NULL,
+  form_section_id int unsigned NOT NULL,
   optionset_id int unsigned DEFAULT NULL,
   position int unsigned NOT NULL,
   text varchar(4000) DEFAULT NULL,
@@ -85,9 +99,9 @@ CREATE TABLE easy_audit_form_template_fields_optionset (
     FOREIGN KEY (form_template_id)
     REFERENCES easy_audit_form_templates(id)
     ON DELETE CASCADE,
-  CONSTRAINT FK_FormTemplateField_FormTemplateSection
-    FOREIGN KEY (form_template_section_id)
-    REFERENCES easy_audit_form_template_sections(id)
+  CONSTRAINT FK_FormTemplateField_FormSection
+    FOREIGN KEY (form_section_id)
+    REFERENCES easy_audit_form_sections(id)
     ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
@@ -141,7 +155,7 @@ CREATE TABLE easy_audit_audit_forms (
     REFERENCES easy_audit_form_templates(id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-CREATE TABLE easy_audit_audit_field_optionset_values (
+CREATE TABLE easy_audit_audit_field_values (
   id int unsigned NOT NULL AUTO_INCREMENT,
   audit_id int unsigned NOT NULL,
   form_template_id int unsigned NOT NULL,
@@ -156,15 +170,15 @@ CREATE TABLE easy_audit_audit_field_optionset_values (
     ON DELETE CASCADE,
   CONSTRAINT FK_AuditOptionsetValues_FormTemplateOptionsetField
     FOREIGN KEY (form_template_field_id)
-    REFERENCES easy_audit_form_template_fields_optionset(id),
+    REFERENCES easy_audit_form_template_fields(id),
   CONSTRAINT FK_AuditOptionsetValues_FormTemplateOptionsetValue
     FOREIGN KEY (optionset_value_id),
-    REFERENCES easy_audit_form_template_optionset_values(id),
+    REFERENCES easy_audit_form_optionset_values(id),
   CONSTRAINT UQ_AuditOptionsetValues_AuditFormTemplateField
     UNIQUE (audit_id,form_template_field_id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-CREATE TABLE easy_audit_audit_field_measure_values (
+CREATE TABLE easy_audit_audit_measure_values (
   id int unsigned NOT NULL AUTO_INCREMENT,
   audit_id int unsigned NOT NULL,
   form_template_id int unsigned NOT NULL,
@@ -203,8 +217,8 @@ INSERT INTO easy_audit_users (
 );
 
 
-INSERT INTO easy_audit_form_template_optionsets (id, name) VALUES (1, 'A, B, C');
+INSERT INTO easy_audit_form_optionsets (id, name) VALUES (1, 'A, B, C');
 
-INSERT INTO easy_audit_form_template_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'A', 'A', 10, 1);
-INSERT INTO easy_audit_form_template_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'B', 'B', 5, 0);
-INSERT INTO easy_audit_form_template_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'C', 'C', 0, 0);
+INSERT INTO easy_audit_form_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'A', 'A', 10, 1);
+INSERT INTO easy_audit_form_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'B', 'B', 5, 0);
+INSERT INTO easy_audit_form_optionset_values (optionset_id, label, value, value_numeric, is_default) VALUES (1, 'C', 'C', 0, 0);

@@ -6,18 +6,18 @@ use Cake\ORM\Entity;
 class Audit extends Entity {
 
     public function getTemplateIds() {
-        if(empty($this->form_templates)) {
+        if(empty($this->templates)) {
             return [];
         }
         return array_map(
             function ($e) {
                 return $e->id;
             },
-            $this->form_templates);
+            $this->templates);
     }
 
-    public function getFieldOptionsetValue($field) {
-        foreach($this->audit_field_optionset_values as $fv) {
+    public function getFieldValue($field) {
+        foreach($this->field_values as $fv) {
             if($fv->form_template_id === $field->form_template_id && $fv->form_template_field_id === $field->id) {
                 return $fv;
             }
@@ -28,14 +28,16 @@ class Audit extends Entity {
     public function calculateScores() {
         $this->score_section = [];
         $this->score_templates = [];
-        foreach($this->form_templates as $t) {
+        foreach($this->templates as $t) {
             $score = 0;
             $weigth = 0;
-            foreach($t->form_template_sections as $s) {
-                $tmp = $s->calculateSectionScore($this->audit_field_optionset_values);
-                $this->score_section[$s->id] = $tmp;
-                $score += $tmp * $s->weigth;
-                $weigth += $s->weigth;
+            if(!empty($t->form->sections)) {
+                foreach($t->form->sections as $s) {
+                    $tmp = $s->calculateSectionScore($this->field_values);
+                    $this->score_section[$s->id] = $tmp;
+                    $score += $tmp * $s->weigth;
+                    $weigth += $s->weigth;
+                }
             }
             $this->score_templates[$t->id] = $weigth === 0 ? 0 : round($score / $weigth, 0);
         }

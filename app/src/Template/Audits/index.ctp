@@ -32,7 +32,7 @@ $this->Html->script('audit-list', ['block' => 'script']);
                             <div id="template-check-container"></div>
                         </div>
                         <?= $this->EasyAuditForm->dateControl('date', ['label'=>__('Date')]) ?>
-                        <?= $this->EasyAuditForm->checkbox('clone', ['label'=>__('Copy last audit values & observations (no photos)?'), 'value'=>true]) ?>
+                        <?= $this->EasyAuditForm->checkbox('clone', ['label'=>__('Copy last audit values & observations (no photos)?'), 'checked'=>true]) ?>
                     </fieldset>
                 </div>
                 <div class="modal-footer">

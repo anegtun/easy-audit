@@ -89,8 +89,7 @@ class AppController extends Controller
         } else {
             Date::setToStringFormat('dd/MM/yyyy');
             FrozenDate::setToStringFormat('dd/MM/yyyy');
+            $this->set('isMobile', $this->request->is('mobile'));
         }
-
-        $this->set('isMobile', $this->request->is('mobile'));
     }
 }

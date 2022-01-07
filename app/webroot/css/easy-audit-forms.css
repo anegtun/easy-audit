@@ -1,0 +1,39 @@
+.form-section {
+    display: flex;
+    margin-bottom: 1em;
+}
+
+.form-section > *:first-child {
+    width: 100px;
+}
+
+.form-section a {
+    text-decoration: none;
+}
+
+
+
+.form-template-field {
+    margin-bottom: 1em;
+}
+
+.form-template-field a {
+    text-decoration: none;
+}
+
+.form-template-field p {
+    display: inline;
+}
+
+.form-template-field .form-group {
+    margin-bottom: 0;
+}
+
+.form-template-audit-info {
+    margin-top: 1em;
+}
+
+
+.table-templates th:nth-child(2) {
+    width: 200px;
+}

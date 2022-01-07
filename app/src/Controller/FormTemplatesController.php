@@ -3,7 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use App\Model\FormTemplateFieldTypes;
-use App\Model\FormTemplateTypes;
+use App\Model\FormTypes;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 
@@ -12,32 +12,69 @@ class FormTemplatesController extends AppController {
     public function initialize() {
         parent::initialize();
         $this->FormTemplateFieldTypes = new FormTemplateFieldTypes();
-        $this->FormTemplateTypes = new FormTemplateTypes();
-        $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
-        $this->FormTemplateOptionsets = TableRegistry::getTableLocator()->get('FormTemplateOptionsets');
-        $this->FormTemplateSections = TableRegistry::getTableLocator()->get('FormTemplateSections');
+        $this->FormTypes = new FormTypes();
+        $this->FormOptionsets = TableRegistry::getTableLocator()->get('FormOptionsets');
     }
 
     public function isAuthorized($user) {
         return $user['role'] === 'admin';
     }
 
-    public function index() {
-        $template_types = $this->FormTemplateTypes->getAll();
-        $templates = $this->FormTemplates->find()->order(['disabled'=>'ASC', 'name'=>'ASC']);
-        $this->set(compact('templates', 'template_types'));
+    public function detail($id) {
+        $template = $this->FormTemplates->get($id, [ 'contain' => [
+            'Audits' => [
+                'Customers',
+                'Users',
+                'sort' => ['date' => 'DESC']
+            ],
+            'Customers',
+            'Forms' => ['FormSections' => ['sort' => 'position']],
+            'FormTemplateFields' => [
+                'FormOptionsets',
+                'sort' => ['form_section_id', 'position']
+            ]
+        ]]);
+        $field_types = $this->FormTemplateFieldTypes->getAll();
+        $optionsets = $this->FormOptionsets->findForSelect();
+        $this->set(compact('template', 'field_types', 'optionsets'));
     }
 
-    public function save() {
-        $field_types = $this->FormTemplateFieldTypes->getAll();
+    public function create() {
         $template = $this->FormTemplates->newEntity();
         if ($this->request->is('post') || $this->request->is('put')) {
             $template = $this->FormTemplates->patchEntity($template, $this->request->getData());
-            if ($this->FormTemplates->save($template)) {
+            $template = $this->FormTemplates->save($template);
+            if ($template) {
                 $this->Flash->success(__('Template created.'));
-                return $this->redirect(['action'=>'index']);
+                return $this->redirect(['action'=>'detail', $template->id]);
             }
             $this->Flash->error(__('Error saving template.'));
+        }
+        return $this->redirect($this->referer());
+    }
+
+    public function delete($id) {
+        $template = $this->FormTemplates->get($id, [ 'contain' => ['Audits'] ]);
+        if(!empty($template->audits)) {
+            $this->Flash->error(__('This template is used in at least one audit, so it can\'t be deleted. You can instead disable it.'));
+            return $this->redirect($this->referer());
+        }
+        if(!$this->FormTemplates->delete($template)) {
+            $this->Flash->error(__('Error deleting template.'));
+            return $this->redirect($this->referer());
+        }
+        $this->Flash->success(__('Template deleted successfully.'));
+        return $this->redirect(['controller'=>'Forms', 'action'=>'detail', $template->form_id]);
+    }
+
+    public function rename() {
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $data = $this->request->getData();
+            $template = $this->FormTemplates->get($data['id']);
+            $template->name = $data['name'];
+            $this->FormTemplates->save($template);
+            $this->Flash->success(__('Template renamed.'));
+            return $this->redirect($this->referer());
         }
         return $this->redirect(['action'=>'index']);
     }
@@ -57,16 +94,16 @@ class FormTemplatesController extends AppController {
 
             $new_template = $this->FormTemplates->newEntity();
             $new_template->name = $data['name'];
-            $new_template->type = $old_template->type;
+            $new_template->form_id = $old_template->form_id;
+
             $new_template = $this->FormTemplates->save($new_template);
 
-            $sections_id_map = $this->FormTemplateSections->clone($data['id'], $new_template->id);
-            $this->FormTemplateFieldsOptionset->clone($data['id'], $new_template->id, $sections_id_map);
+            $this->FormTemplates->FormTemplateFields->clone($data['id'], $new_template->id);
             
             $this->Flash->success(__('Template created.'));
-            return $this->redirect(['action'=>'index']);
+            return $this->redirect(['action'=>'detail', $new_template->id]);
         }
-        return $this->redirect(['action'=>'index']);
+        return $this->redirect($this->referer());
     }
 
     public function toggleEnabled($id) {
@@ -74,183 +111,75 @@ class FormTemplatesController extends AppController {
         $template->disabled = $template->disabled ? 0 : 1;
         $this->FormTemplates->save($template);
         $this->Flash->success(__('Template enabled or disabled successfully.'));
-        return $this->redirect(['action'=>'index']);
-    }
-
-    public function rename() {
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $data = $this->request->getData();
-            $template = $this->FormTemplates->get($data['id']);
-            $template->name = $data['name'];
-            $this->FormTemplates->save($template);
-            $this->Flash->success(__('Template renamed.'));
-            return $this->redirect(['action'=>'detail', $template->id]);
-        }
-        return $this->redirect(['action'=>'index']);
-    }
-
-    public function delete($id) {
-        $template = $this->FormTemplates->get($id, [ 'contain' => ['Audits'] ]);
-        if(!empty($template->audits)) {
-            $this->Flash->error(__('This template is used in at least one audit, so it can\'t be deleted. You can instead disable it.'));
-            return $this->redirect(['action'=>'index']);
-        }
-        if($this->FormTemplates->delete($template)) {
-            $this->Flash->success(__('Template deleted successfully.'));
-        } else {
-            $this->Flash->error(__('Error deleting template.'));
-        }
-        return $this->redirect(['action'=>'index']);
-    }
-
-    public function detail($id) {
-        $template = $this->FormTemplates->get($id, [ 'contain' => [
-            'Audits' => [
-                'Customers',
-                'Users',
-                'sort' => ['date' => 'DESC']
-            ],
-            'Customers'
-        ]]);
-        $field_types = $this->FormTemplateFieldTypes->getAll();
-        $optionsets = $this->FormTemplateOptionsets->findForSelect();
-        $sections = $this->FormTemplateSections->find()
-            ->where(['form_template_id' => $id])
-            ->order('position')
-            ->contain(['FormTemplateFieldsOptionset' => ['sort' => 'position']]);
-        $allFields = $this->FormTemplateFieldsOptionset->find()
-            ->where(['form_template_id' => $id])
-            ->order('position');
-        $this->set(compact('template', 'field_types', 'optionsets', 'sections', 'allFields'));
-    }
-
-    public function saveSection() {
-        $formData = $this->request->getData();
-        $templateId = $formData['form_template_id'];
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if(empty($formData['id'])) {
-                $section = $this->FormTemplateSections->newEntity();
-                $section = $this->FormTemplateSections->patchEntity($section, $formData);
-                $count = $this->FormTemplateSections->find()
-                    ->where(['form_template_id' => $templateId])
-                    ->count();
-                if(empty($section->position) || $section->position > $count) {
-                    $section->position = $count + 1;
-                }
-                $this->FormTemplateSections->incrementPositionAfter($templateId, $section->position);
-            } else {
-                $section = $this->FormTemplateSections->get($formData['id']);
-                unset($formData['position']);
-                $section = $this->FormTemplateSections->patchEntity($section, $formData);
-            }
-            if ($this->FormTemplateSections->save($section)) {
-                $this->Flash->success(__('Section saved.'));
-            } else {
-                $this->Flash->error(__('Error saving section.'));
-            }
-        }
-        return $this->redirect(['action'=>'detail', $templateId]);
-    }
-
-    public function deleteSection($id) {
-        $section = $this->FormTemplateSections->get($id);
-        $this->FormTemplateSections->decrementPositionAfter($section->form_template_id, $section->position);
-        if($this->FormTemplateSections->delete($section)) {
-            $this->Flash->success(__('Section deleted successfully.'));
-        } else {
-            $this->Flash->error(__('Error deleting section.'));
-        }
-        return $this->redirect(['action'=>'detail', $section->form_template_id]);
-    }
-
-    public function moveSectionUp($id) {
-        $section = $this->FormTemplateSections->get($id);
-        if($section->position > 1) {
-            $this->FormTemplateSections->incrementPositionAfter($section->form_template_id, $section->position - 1, $section->id);
-            $section->position--;
-            $this->FormTemplateSections->save($section);
-        }
-        return $this->redirect(['action'=>'detail', $section->form_template_id]);
-    }
-
-    public function moveSectionDown($id) {
-        $section = $this->FormTemplateSections->get($id);
-        $count = $this->FormTemplateSections->find()
-                ->where(['form_template_id' => $section->form_template_id])
-                ->count();
-        if($section->position < $count) {
-            $this->FormTemplateSections->decrementPositionBefore($section->form_template_id, $section->position + 1, $section->id);
-            $section->position++;
-            $this->FormTemplateSections->save($section);
-        }
-        return $this->redirect(['action'=>'detail', $section->form_template_id]);
+        return $this->redirect($this->referer());
     }
 
     public function saveField() {
         $formData = $this->request->getData();
         $templateId = $formData['form_template_id'];
-        $sectionId = $formData['form_template_section_id'];
-        $field = empty($formData['id']) ? $this->FormTemplateFieldsOptionset->newEntity() : $this->FormTemplateFieldsOptionset->get($formData['id']);
         if ($this->request->is('post') || $this->request->is('put')) {
             if(empty($formData['id'])) {
-                $field = $this->FormTemplateFieldsOptionset->newEntity();
-                $field = $this->FormTemplateFieldsOptionset->patchEntity($field, $formData);
-                $count = $this->FormTemplateFieldsOptionset->find()
-                    ->where(['form_template_id' => $templateId, 'form_template_section_id' => $sectionId])
-                    ->count();
-                if(empty($field->position) || $field->position > $count) {
-                    $field->position = $count + 1;
-                }
-                $this->FormTemplateFieldsOptionset->incrementPositionAfter($templateId, $sectionId, $field->position);
+                $field = $this->FormTemplates->FormTemplateFields->newEntity();
+                $field = $this->FormTemplates->FormTemplateFields->patchEntity($field, $formData);
             } else {
-                $field = $this->FormTemplateFieldsOptionset->get($formData['id']);
+                $field = $this->FormTemplates->FormTemplateFields->get($formData['id']);
                 unset($formData['position']);
-                $field = $this->FormTemplateFieldsOptionset->patchEntity($field, $formData);
+                $field = $this->FormTemplates->FormTemplateFields->patchEntity($field, $formData);
             }
             if($field->type!=='select') {
-                $$field->optionset_id = null;
+                $field->optionset_id = null;
             }
-            if ($this->FormTemplateFieldsOptionset->save($field)) {
-                $this->Flash->success(__('Field saved.'));
+            $template = $this->getTemplateWithFields($templateId);
+            if(!empty($formData['position'])) {
+                array_splice($template->fields, $formData['position'] - 1, 0, [$field]);
             } else {
-                $this->Flash->error(__('Error saving field.'));
+                $template->fields[] = $field;
             }
+            $template->reindexFields();
+            $this->FormTemplates->save($template);
         }
-        return $this->redirect(['action'=>'detail', $templateId]);
+        return $this->redirect($this->referer());
     }
 
     public function deleteField($id) {
-        $field = $this->FormTemplateFieldsOptionset->get($id);
-        $this->FormTemplateFieldsOptionset->decrementPositionAfter($field->form_template_id, $field->form_template_section_id, $field->position);
-        if($this->FormTemplateFieldsOptionset->delete($field)) {
-            $this->Flash->success(__('Field deleted successfully.'));
-        } else {
-            $this->Flash->error(__('Error deleting field.'));
-        }
-        return $this->redirect(['action'=>'detail', $field->form_template_id]);
+        $field = $this->FormTemplates->FormTemplateFields->get($id);
+        $template = $this->getTemplateWithFields($field->form_template_id);
+        $index = $template->findFieldIndex($id);
+        unset($template->fields[$index]);
+        $template->reindexFields();
+        $this->FormTemplates->FormTemplateFields->delete($field);
+        $this->FormTemplates->save($template);
+        return $this->redirect($this->referer());
     }
 
-    public function moveFieldUp($id) {
-        $field = $this->FormTemplateFieldsOptionset->get($id);
-        if($field->position > 1) {
-            $this->FormTemplateFieldsOptionset->incrementPositionAfter($field->form_template_id, $field->form_template_section_id, $field->position - 1, $field->id);
-            $field->position--;
-            $this->FormTemplateFieldsOptionset->save($field);
+    public function moveFieldUp($templateId, $fieldId) {
+        $template = $this->getTemplateWithFields($templateId);
+        $index = $template->findFieldIndex($fieldId);
+        if($index > 0) {
+            $template->swapField($index, $index - 1);
         }
-        return $this->redirect(['action'=>'detail', $field->form_template_id]);
+        if(!$this->FormTemplates->save($template)) {
+            $this->Flash->error(__('Error moving field.'));
+        }
+        return $this->redirect($this->referer());
     }
 
-    public function moveFieldDown($id) {
-        $field = $this->FormTemplateFieldsOptionset->get($id);
-        $count = $this->FormTemplateFieldsOptionset->find()
-                ->where(['form_template_id' => $field->form_template_id, 'form_template_section_id' => $field->form_template_section_id])
-                ->count();
-        if($field->position < $count) {
-            $this->FormTemplateFieldsOptionset->decrementPositionBefore($field->form_template_id, $field->form_template_section_id, $field->position + 1, $field->id);
-            $field->position++;
-            $this->FormTemplateFieldsOptionset->save($field);
+    public function moveFieldDown($templateId, $fieldId) {
+        $template = $this->getTemplateWithFields($templateId);
+        $index = $template->findFieldIndex($fieldId);
+        if($index < count($template->fields)) {
+            $template->swapField($index, $index + 1);
         }
-        return $this->redirect(['action'=>'detail', $field->form_template_id]);
+        if(!$this->FormTemplates->save($template)) {
+            $this->Flash->error(__('Error moving field.'));
+        }
+        return $this->redirect($this->referer());
+    }
+
+    private function getTemplateWithFields($id) {
+        return $this->FormTemplates->get($id, ['contain' => [
+            'FormTemplateFields' => ['sort' => ['form_section_id', 'position']]
+        ]]);
     }
 
 }

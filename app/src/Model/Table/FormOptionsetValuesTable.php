@@ -3,13 +3,14 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 
-class FormTemplateOptionsetValuesTable extends Table {
+class FormOptionsetValuesTable extends Table {
 
     public function initialize(array $config) {
-        $this->setTable('easy_audit_form_template_optionset_values');
+        $this->setTable('easy_audit_form_optionset_values');
 
-        $this->belongsTo('FormTemplateOptionsets')
-            ->setForeignKey('optionset_id');
+        $this->belongsTo('FormOptionsets')
+            ->setForeignKey('optionset_id')
+            ->setProperty('optionset');
     }
 
     public function findAllByOptionset() {

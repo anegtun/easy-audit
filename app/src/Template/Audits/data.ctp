@@ -1,10 +1,10 @@
 <?php
-$title = __('Audit') . " ". $audit->customer->name;
+$title = $audit->customer->name." ({$audit->date})";
 $this->extend('template');
 $this->set('headerTitle', $title);
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Audits'), 'url'=>['action'=>'index']],
-    ['label'=>$title],
+    ['label'=>$audit->customer->name],
     ['label'=>__('Audit data')]
 ]);
 ?>
@@ -47,18 +47,20 @@ $this->set('headerBreadcrumbs', [
     <fieldset>
         <legend><?= __('Associated templates') ?></legend>
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover table-templates">
                 <thead>
                     <tr>
                         <th class="cell-small"></th>
-                        <th class="celda-titulo"><?= __('Name') ?></th>
+                        <th class="celda-titulo"><?= __('Form') ?></th>
+                        <th class="celda-titulo"><?= __('Template') ?></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach($audit->form_templates as $t) : ?>
+                    <?php foreach($audit->templates as $t) : ?>
                         <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
                             <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'deleteTemplate', $audit->id, $t->id], 'remove') ?></td>
-                            <td><?= $this->Html->link($t->name, ['controller' => 'FormTemplates', 'action' => 'detail', $t->id]) ?></td>
+                            <td><?= $this->Html->link($t->form->name, ['controller'=>'Forms', 'action'=>'detail', $t->form->id]) ?></td>
+                            <td><?= $this->Html->link($t->name, ['controller'=>'FormTemplates', 'action'=>'detail', $t->id]) ?></td>
                         </tr>
                     <?php endforeach ?>
                 </tbody>
@@ -82,7 +84,7 @@ $this->set('headerBreadcrumbs', [
                 </div>
                 <div class="modal-body">
                     <fieldset>
-                        <?= $this->Form->control('form_template_id', ['options' => $this->EasyAuditForm->objectToKeyValue($audit->customer->form_templates, 'id', 'name'), 'label'=>__('Template')]) ?>
+                        <?= $this->Form->control('form_template_id', ['options' => $this->EasyAuditForm->objectToKeyValue($audit->customer->templates, 'id', '{$e->form->name} - {$e->name}'), 'label'=>__('Template')]) ?>
                     </fieldset>
                 </div>
                 <div class="modal-footer">
@@ -94,4 +96,4 @@ $this->set('headerBreadcrumbs', [
     <?= $this->Form->end() ?>
 </div>
 
-<?= $this->element('Audits/modal_send', ['audit' => $audit]) ?>
+<?= $this->element('Audits/modals/send', ['audit' => $audit]) ?>

@@ -9,40 +9,42 @@ class AuditsTable extends Table {
     public function initialize(array $config) {
         $this->setTable('easy_audit_audits');
 
-        $this->hasMany('AuditFieldMeasureValues')
-            ->setForeignKey('audit_id');
+        $this->hasMany('AuditMeasureValues')
+            ->setForeignKey('audit_id')
+            ->setProperty('measure_values');
 
-        $this->hasMany('AuditFieldOptionsetValues')
-            ->setForeignKey('audit_id');
+        $this->hasMany('AuditFieldValues')
+            ->setForeignKey('audit_id')
+            ->setProperty('field_values');
 
         $this->belongsTo('Customers')
-            ->setForeignKey('customer_id');
+            ->setForeignKey('customer_id')
+            ->setProperty('customer');
 
         $this->belongsToMany('FormTemplates', [
             'joinTable' => 'easy_audit_audit_forms',
             'foreignKey' => 'audit_id',
-        ]);
+        ])->setProperty('templates');
 
-        $this->belongsTo('Users', [
-            'foreignKey' => 'auditor_user_id',
-            'propertyName' => 'auditor'
-        ]);
+        $this->belongsTo('Users')
+            ->setForeignKey('auditor_user_id')
+            ->setProperty('auditor');
     }
 
     public function getComplete($id) {
         $audit = $this->get($id, [ 'contain' => [
-            'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
-            'AuditFieldOptionsetValues' => [
-                'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
-                'FormTemplateOptionsetValues'
+            'AuditMeasureValues' => [ 'sort' => 'item' ],
+            'AuditFieldValues' => [
+                'FormTemplateFields' => [ 'FormSections' ],
+                'FormOptionsetValues'
             ],
             'Customers',
             'FormTemplates' => [
-                'sort' => 'name',
-                'FormTemplateSections' => [
-                    'sort' => 'position',
-                    'FormTemplateFieldsOptionset' => [ 'sort' => 'position' ]
-                ]
+                'sort' => 'FormTemplates.name',
+                'Forms' => [
+                    'FormSections' => [ 'sort' => 'FormSections.position' ]
+                ],
+                'FormTemplateFields' => [ 'sort' => 'FormTemplateFields.position' ]
             ],
             'Users'
         ]]);
@@ -58,14 +60,18 @@ class AuditsTable extends Table {
             ])
             ->order('date')
             ->contain([
-                'AuditFieldMeasureValues' => [ 'sort' => 'item' ],
-                'AuditFieldOptionsetValues' => [
-                    'FormTemplateFieldsOptionset' => [ 'FormTemplateSections' ],
-                    'FormTemplateOptionsetValues'
+                'AuditMeasureValues' => [ 'sort' => 'item' ],
+                'AuditFieldValues' => [
+                    'FormTemplateFields' => [ 'FormSections' ],
+                    'FormOptionsetValues'
                 ],
                 'FormTemplates' => [
-                    'FormTemplateSections' => [ 'FormTemplateFieldsOptionset' ],
-                ]
+                    'sort' => 'FormTemplates.name',
+                    'Forms' => [
+                        'FormSections' => [ 'sort' => 'FormSections.position' ]
+                    ],
+                    'FormTemplateFields' => [ 'sort' => 'FormTemplateFields.position' ]
+                ],
             ]);
         foreach($audits as $a) {
             $a->calculateScores();
@@ -80,7 +86,7 @@ class AuditsTable extends Table {
                 'date <' => empty($audit->date) ? Time::now() : $audit->date
             ])
             ->order(['date' => 'DESC'])
-            ->contain(['AuditFieldMeasureValues', 'AuditFieldOptionsetValues', 'FormTemplates'])
+            ->contain(['AuditMeasureValues', 'AuditFieldValues', 'FormTemplates'])
             ->toArray();
         foreach($audits as $audit) {
             if(in_array($templateId, $audit->getTemplateIds())) {

@@ -1,27 +1,22 @@
 <?php
 namespace App\Controller;
 
-require_once(ROOT . DS . 'vendor' . DS  . 'fpdf' . DS . 'fpdf.php');
-
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
-use FPDF;
-
 
 class AuditsController extends AppController {
     
     public function initialize() {
         parent::initialize();
-        $this->AuditFieldMeasureValues = TableRegistry::getTableLocator()->get('AuditFieldMeasureValues');
-        $this->AuditFieldOptionsetValues = TableRegistry::getTableLocator()->get('AuditFieldOptionsetValues');
+        $this->AuditFieldValues = TableRegistry::getTableLocator()->get('AuditFieldValues');
+        $this->AuditMeasureValues = TableRegistry::getTableLocator()->get('AuditMeasureValues');
         $this->Customers = TableRegistry::getTableLocator()->get('Customers');
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
-        $this->FormTemplateFieldsOptionset = TableRegistry::getTableLocator()->get('FormTemplateFieldsOptionset');
         $this->FormTemplateSections = TableRegistry::getTableLocator()->get('FormTemplateSections');
-        $this->FormTemplateOptionsetValues = TableRegistry::getTableLocator()->get('FormTemplateOptionsetValues');
+        $this->FormOptionsetValues = TableRegistry::getTableLocator()->get('FormOptionsetValues');
         $this->Users = TableRegistry::getTableLocator()->get('Users');
         $this->loadComponent('AuditFile');
         $this->loadComponent('AuditInitialization');
@@ -38,14 +33,22 @@ class AuditsController extends AppController {
 
     public function data($id) {
         $audit = $this->Audits->get($id, ['contain' => [
-            'Customers' => [ 'FormTemplates' => ['sort' => 'name'] ],
-            'FormTemplates',
+            'Customers' => [
+                'FormTemplates' => [
+                    'sort' => ['Forms.name', 'FormTemplates.name'],
+                    'Forms',
+                ]
+            ],
+            'FormTemplates' => [
+                'Forms',
+                'sort' => ['Forms.name', 'FormTemplates.name'],
+            ],
             'Users'
         ]]);
         $auditTemplateIds = $audit->getTemplateIds();
-        foreach($audit->customer->form_templates as $i=>$template) {
+        foreach($audit->customer->templates as $i=>$template) {
             if(in_array($template->id, $auditTemplateIds)) {
-                unset($audit->customer->form_templates[$i]);
+                unset($audit->customer->templates[$i]);
             }
         }
         $users = $this->Users->find('all');
@@ -54,12 +57,12 @@ class AuditsController extends AppController {
 
     public function fill($id) {
         $audit = $this->Audits->getComplete($id);
-        $optionset_values = $this->FormTemplateOptionsetValues->findAllByOptionset();
-        foreach($audit->form_templates as $t) {
+        $optionset_values = $this->FormOptionsetValues->findAllByOptionset();
+        foreach($audit->templates as $t) {
             $last_audit = $this->Audits->findLast($t->id, $audit);
             if($last_audit) {
-                foreach($audit->audit_field_optionset_values as $i => $newV) {
-                    foreach($last_audit->audit_field_optionset_values as $oldV) {
+                foreach($audit->field_values as $i => $newV) {
+                    foreach($last_audit->field_values as $oldV) {
                         if($newV->form_template_field_id === $oldV->form_template_field_id && !empty($newV->observations) && $newV->observations === $oldV->observations) {
                             $newV->observations_cloned = true;
                         }
@@ -83,22 +86,22 @@ class AuditsController extends AppController {
             $audit = $this->Audits->patchEntity($this->Audits->newEntity(), $data);
             $audit->date = $this->parseDate($data['date']);
             $audit->auditor_user_id = $this->Auth->user('id');
-            $audit->form_templates = $this->FormTemplates->find('all')->where(['id IN' => $data['form_template_id']])->toArray();
+            $audit->templates = $this->FormTemplates->find('all')->where(['id IN' => $data['form_template_id']])->toArray();
             $audit = $this->Audits->save($audit);
 
             $cloned = false;
             if(!empty($data['clone'])) {
-                foreach($audit->form_templates as $t) {
+                foreach($audit->templates as $t) {
                     $last_audit = $this->Audits->findLast($t->id, $audit);
                     if($last_audit) {
-                        $this->AuditFieldOptionsetValues->clone($t->id, $last_audit->id, $audit->id);
-                        $this->AuditFieldMeasureValues->clone($t->id, $last_audit->id, $audit->id);
+                        $this->AuditFieldValues->clone($t->id, $last_audit->id, $audit->id);
+                        $this->AuditMeasureValues->clone($t->id, $last_audit->id, $audit->id);
                         $cloned = true;
                     }
                 }
             }
             if(!$cloned) {
-                foreach($audit->form_templates as $t) {
+                foreach($audit->templates as $t) {
                     $this->AuditInitialization->createDefaults($t->id, $audit->id);
                 }
             }
@@ -108,8 +111,9 @@ class AuditsController extends AppController {
             } else {
                 $this->Flash->error(__('Error creating audit.'));
             }
+            return $this->redirect(['action'=>'fill', $audit->id]);
         }
-        return $this->redirect(['action'=>'index']);
+        return $this->redirect($this->referer());
     }
 
     public function updateData() {
@@ -128,8 +132,8 @@ class AuditsController extends AppController {
         $data = $this->request->getData();
         $auditId = $data['audit_id'];
         $audit = $this->Audits->get($auditId, [ 'contain' => ['FormTemplates'] ]);
-        $audit->form_templates[] = $this->FormTemplates->get($data['form_template_id']);
-        $audit->setDirty('form_templates', true);
+        $audit->templates[] = $this->FormTemplates->get($data['form_template_id']);
+        $audit->setDirty('templates', true);
         if ($this->Audits->save($audit)) {
             $this->Flash->success(__('Template added correctly.'));
         } else {
@@ -140,13 +144,13 @@ class AuditsController extends AppController {
 
     public function deleteTemplate($auditId, $templateId) {
         $audit = $this->Audits->get($auditId, [ 'contain' => ['FormTemplates'] ]);
-        $audit->form_templates = array_filter(
-            $audit->form_templates,
+        $audit->templates = array_filter(
+            $audit->templates,
             function ($e) use (&$templateId) {
                 return $e->id != $templateId;
             }
         );
-        $audit->setDirty('form_templates', true);
+        $audit->setDirty('templates', true);
         if ($this->Audits->save($audit)) {
             $this->Flash->success(__('Template removed correctly.'));
         } else {
@@ -161,12 +165,12 @@ class AuditsController extends AppController {
             if(!empty($data['field_values'])) {
                 foreach($data['field_values'] as $templateId => $field_values) {
                     $field_observations = $data['field_observations'][$templateId];
-                    $this->AuditFieldOptionsetValues->upsertAll($data['id'], $templateId, $field_values, $field_observations);
+                    $this->AuditFieldValues->upsertAll($data['id'], $templateId, $field_values, $field_observations);
                 }
             }
             if(!empty($data['audit_measure'])) {
                 foreach($data['audit_measure'] as $templateId => $audit_measures) {
-                    $this->AuditFieldMeasureValues->upsertAll($data['id'], $templateId, $audit_measures);
+                    $this->AuditMeasureValues->upsertAll($data['id'], $templateId, $audit_measures);
                 }
             }
             if(!empty($data['field_img_removed'])) {
@@ -214,8 +218,9 @@ class AuditsController extends AppController {
         } else {
             $data = $this->request->getData();
             $observations = !empty($data) ? $data['observations'] : '';
+            $bcc = !empty($data) ? $data['bcc'] : '';
             $content = $this->generateReport($audit);
-            $this->AuditEmail->sendReport($audit, $content, $observations);
+            $this->AuditEmail->sendReport($audit, $content, $observations, $bcc);
             $this->Flash->success(__('Email sent correctly.'));
         }
         return $this->redirect($this->referer());

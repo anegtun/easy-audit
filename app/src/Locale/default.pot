@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-01-02 23:25+0000\n"
+"POT-Creation-Date: 2022-01-07 10:46+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -14,132 +14,132 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: Controller/AuditsController.php:107
+#: Controller/AuditsController.php:110
 msgid "Audit created."
 msgstr ""
 
-#: Controller/AuditsController.php:109
+#: Controller/AuditsController.php:112
 msgid "Error creating audit."
 msgstr ""
 
-#: Controller/AuditsController.php:122
+#: Controller/AuditsController.php:126
 msgid "Audit data updated."
 msgstr ""
 
-#: Controller/AuditsController.php:134
-#: Controller/CustomersController.php:78
+#: Controller/AuditsController.php:138
+#: Controller/CustomersController.php:81
 msgid "Template added correctly."
 msgstr ""
 
-#: Controller/AuditsController.php:136
-#: Controller/CustomersController.php:80
+#: Controller/AuditsController.php:140
+#: Controller/CustomersController.php:83
 msgid "Error adding template."
 msgstr ""
 
-#: Controller/AuditsController.php:151
-#: Controller/CustomersController.php:95
+#: Controller/AuditsController.php:155
+#: Controller/CustomersController.php:98
 msgid "Template removed correctly."
 msgstr ""
 
-#: Controller/AuditsController.php:153
-#: Controller/CustomersController.php:97
+#: Controller/AuditsController.php:157
+#: Controller/CustomersController.php:100
 msgid "Error removing template."
 msgstr ""
 
-#: Controller/AuditsController.php:190
+#: Controller/AuditsController.php:194
 msgid "Audit deleted correctly."
 msgstr ""
 
-#: Controller/AuditsController.php:192
+#: Controller/AuditsController.php:196
 msgid "Error deleting audit."
 msgstr ""
 
-#: Controller/AuditsController.php:213
+#: Controller/AuditsController.php:217
 msgid "There are no emails configured for this customer."
 msgstr ""
 
-#: Controller/AuditsController.php:219
+#: Controller/AuditsController.php:224
 msgid "Email sent correctly."
 msgstr ""
 
-#: Controller/CustomersController.php:48
+#: Controller/CustomersController.php:51
 msgid "Customer saved correctly."
 msgstr ""
 
-#: Controller/CustomersController.php:50
+#: Controller/CustomersController.php:53
 msgid "Error saving customer."
 msgstr ""
 
-#: Controller/CustomersController.php:59
+#: Controller/CustomersController.php:62
 msgid "This customer has at least one audit, so it can't be deleted."
 msgstr ""
 
-#: Controller/CustomersController.php:63
+#: Controller/CustomersController.php:66
 msgid "Customer deleted correctly."
 msgstr ""
 
-#: Controller/CustomersController.php:65
+#: Controller/CustomersController.php:68
 msgid "Error deleting customer."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:34;63
+#: Controller/FormTemplatesController.php:48;103
 msgid "Template created."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:37
+#: Controller/FormTemplatesController.php:51
 msgid "Error saving template."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:73
-msgid "Template enabled or disabled successfully."
-msgstr ""
-
-#: Controller/FormTemplatesController.php:83
-msgid "Template renamed."
-msgstr ""
-
-#: Controller/FormTemplatesController.php:92
+#: Controller/FormTemplatesController.php:59
 msgid "This template is used in at least one audit, so it can't be deleted. You can instead disable it."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:96
-msgid "Template deleted successfully."
-msgstr ""
-
-#: Controller/FormTemplatesController.php:98
+#: Controller/FormTemplatesController.php:63
 msgid "Error deleting template."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:143
-msgid "Section saved."
+#: Controller/FormTemplatesController.php:66
+msgid "Template deleted successfully."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:145
-msgid "Error saving section."
+#: Controller/FormTemplatesController.php:76
+msgid "Template renamed."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:155
-msgid "Section deleted successfully."
+#: Controller/FormTemplatesController.php:113
+msgid "Template enabled or disabled successfully."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:157
-msgid "Error deleting section."
+#: Controller/FormTemplatesController.php:162;174
+msgid "Error moving field."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:207
-msgid "Field saved."
+#: Controller/FormsController.php:44;173
+msgid "Form created."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:209
-msgid "Error saving field."
+#: Controller/FormsController.php:47
+msgid "Error saving form."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:219
-msgid "Field deleted successfully."
+#: Controller/FormsController.php:57
+msgid "This form is used in at least one audit, so it can't be deleted. You can instead disable it."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:221
-msgid "Error deleting field."
+#: Controller/FormsController.php:61
+msgid "Error deleting form."
+msgstr ""
+
+#: Controller/FormsController.php:64
+msgid "Form deleted successfully."
+msgstr ""
+
+#: Controller/FormsController.php:110;122
+msgid "Error moving section."
+msgstr ""
+
+#: Controller/FormsController.php:134
+msgid "Form renamed."
 msgstr ""
 
 #: Controller/UsersController.php:45
@@ -166,15 +166,28 @@ msgstr ""
 msgid "Invalid username or password, try again"
 msgstr ""
 
-#: Controller/Component/AuditEmailComponent.php:20
+#: Controller/Component/AuditEmailComponent.php:30
 msgid "Audit report"
 msgstr ""
 
-#: Model/FormTemplateTypes.php:8
+#: Model/FormTemplateFieldTypes.php:8
+msgid "Select"
+msgstr ""
+
+#: Model/FormTemplateFieldTypes.php:9
+#: Template/Element/FormTemplates/modals/field.ctp:19
+msgid "Text"
+msgstr ""
+
+#: Model/FormTypes.php:8
 msgid "Measure"
 msgstr ""
 
-#: Model/FormTemplateTypes.php:9
+#: Model/FormTypes.php:9
+msgid "Simple"
+msgstr ""
+
+#: Model/FormTypes.php:10
 msgid "Checklist"
 msgstr ""
 
@@ -188,10 +201,7 @@ msgstr ""
 msgid "Auditor"
 msgstr ""
 
-#: Model/Entity/Audit.php:46
-#: Template/Audits/data.ctp:2
-#: Template/Audits/fill.ctp:2
-#: Template/Audits/history.ctp:2
+#: Model/Entity/Audit.php:48
 msgid "Audit"
 msgstr ""
 
@@ -199,16 +209,16 @@ msgstr ""
 #: Template/Audits/fill.ctp:6
 #: Template/Audits/history.ctp:6
 #: Template/Audits/index.ctp:3;5
-#: Template/Customers/detail.ctp:98
+#: Template/Customers/detail.ctp:100
+#: Template/Element/Audits/modals/list.ctp:5
 #: Template/Element/Layout/menu.ctp:13
-#: Template/FormTemplates/detail.ctp:96
 #: Template/Users/detail.ctp:47
 msgid "Audits"
 msgstr ""
 
 #: Template/Audits/data.ctp:8;16
 #: Template/Audits/fill.ctp:41
-#: Template/Audits/history.ctp:73
+#: Template/Audits/history.ctp:78
 msgid "Audit data"
 msgstr ""
 
@@ -218,19 +228,23 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: Template/Audits/data.ctp:31;89
+#: Template/Audits/data.ctp:31;91
 #: Template/Audits/fill.ctp:38
-#: Template/Customers/detail.ctp:31;86
-#: Template/Element/FormTemplates/detail_select.ctp:60;91
-#: Template/Element/FormTemplates/modal_clone.ctp:20
-#: Template/FormTemplates/detail.ctp:130
-#: Template/FormTemplates/index.ctp:59
+#: Template/Customers/detail.ctp:31;88
+#: Template/Element/FormTemplates/modals/clone.ctp:23
+#: Template/Element/FormTemplates/modals/field.ctp:26
+#: Template/Element/FormTemplates/modals/new_template.ctp:19
+#: Template/Element/FormTemplates/modals/rename.ctp:18
+#: Template/Element/Forms/modals/clone.ctp:30
+#: Template/Element/Forms/modals/new_form.ctp:19
+#: Template/Element/Forms/modals/rename.ctp:19
+#: Template/Element/Forms/modals/section.ctp:21
 #: Template/Users/detail.ctp:31
 msgid "Save"
 msgstr ""
 
 #: Template/Audits/data.ctp:35
-#: Template/Audits/history.ctp:72
+#: Template/Audits/history.ctp:77
 msgid "Fill audit"
 msgstr ""
 
@@ -241,13 +255,13 @@ msgstr ""
 
 #: Template/Audits/data.ctp:37
 #: Template/Audits/fill.ctp:43
-#: Template/Audits/history.ctp:74
+#: Template/Audits/history.ctp:79
 msgid "View report"
 msgstr ""
 
 #: Template/Audits/data.ctp:38
 #: Template/Audits/fill.ctp:44
-#: Template/Audits/history.ctp:75
+#: Template/Audits/history.ctp:80
 msgid "Send report"
 msgstr ""
 
@@ -257,37 +271,38 @@ msgid "Associated templates"
 msgstr ""
 
 #: Template/Audits/data.ctp:54
-#: Template/Customers/detail.ctp:20;52
-#: Template/Customers/index.ctp:20
-#: Template/Element/Audits/list.ctp:14
-#: Template/Element/FormTemplates/detail_select.ctp:54
-#: Template/FormTemplates/detail.ctp:71
-#: Template/FormTemplates/index.ctp:19;54
-#: Template/Users/detail.ctp:25
-#: Template/Users/index.ctp:17
-msgid "Name"
+#: Template/Customers/detail.ctp:52
+msgid "Form"
 msgstr ""
 
-#: Template/Audits/data.ctp:67;78
-#: Template/Customers/detail.ctp:65;75
-msgid "Add template"
-msgstr ""
-
-#: Template/Audits/data.ctp:85
+#: Template/Audits/data.ctp:55;87
 #: Template/Audits/index.ctp:31
-#: Template/Customers/detail.ctp:82
+#: Template/Customers/detail.ctp:53;84
 #: Template/FormTemplates/detail.ctp:2
+#: Template/Forms/detail.ctp:2
 msgid "Template"
 msgstr ""
 
-#: Template/Audits/data.ctp:90
+#: Template/Audits/data.ctp:69;80
+#: Template/Customers/detail.ctp:67;77
+#: Template/Forms/detail.ctp:125
+msgid "Add template"
+msgstr ""
+
+#: Template/Audits/data.ctp:92
 #: Template/Audits/index.ctp:40
-#: Template/Customers/detail.ctp:87
-#: Template/Element/Audits/modal_send.ctp:20
-#: Template/Element/FormTemplates/detail_select.ctp:61;92
-#: Template/Element/FormTemplates/modal_clone.ctp:21
-#: Template/FormTemplates/detail.ctp:84;105;131
-#: Template/FormTemplates/index.ctp:60
+#: Template/Customers/detail.ctp:89
+#: Template/Element/Audits/modals/list.ctp:14
+#: Template/Element/Audits/modals/send.ctp:27
+#: Template/Element/Customers/modals/list.ctp:29
+#: Template/Element/FormTemplates/modals/clone.ctp:24
+#: Template/Element/FormTemplates/modals/field.ctp:27
+#: Template/Element/FormTemplates/modals/new_template.ctp:20
+#: Template/Element/FormTemplates/modals/rename.ctp:19
+#: Template/Element/Forms/modals/clone.ctp:31
+#: Template/Element/Forms/modals/new_form.ctp:20
+#: Template/Element/Forms/modals/rename.ctp:20
+#: Template/Element/Forms/modals/section.ctp:22
 msgid "Close"
 msgstr ""
 
@@ -308,11 +323,12 @@ msgid "History"
 msgstr ""
 
 #: Template/Audits/history.ctp:34
-#: Template/Element/FormTemplates/detail_select.ctp:47;84
+#: Template/Element/FormTemplates/modals/field.ctp:18
+#: Template/Element/Forms/modals/section.ctp:8
 msgid "Section"
 msgstr ""
 
-#: Template/Audits/history.ctp:50
+#: Template/Audits/history.ctp:53
 msgid "TOTAL"
 msgstr ""
 
@@ -322,7 +338,7 @@ msgstr ""
 
 #: Template/Audits/index.ctp:29
 #: Template/Customers/detail.ctp:2
-#: Template/Element/Audits/modal_send.ctp:13
+#: Template/Element/Audits/modals/send.ctp:13
 msgid "Customer"
 msgstr ""
 
@@ -332,7 +348,7 @@ msgstr ""
 
 #: Template/Audits/index.ctp:39
 #: Template/Customers/index.ctp:38
-#: Template/FormTemplates/index.ctp:38
+#: Template/Forms/index.ctp:37
 #: Template/Users/index.ctp:39
 msgid "Create"
 msgstr ""
@@ -341,7 +357,8 @@ msgstr ""
 #: Template/Customers/index.ctp:5
 #: Template/Element/Layout/menu.ctp:23
 #: Template/FormTemplates/detail.ctp:6
-#: Template/FormTemplates/index.ctp:5
+#: Template/Forms/detail.ctp:6
+#: Template/Forms/index.ctp:5
 #: Template/Users/detail.ctp:6
 #: Template/Users/index.ctp:5
 msgid "Config"
@@ -349,13 +366,30 @@ msgstr ""
 
 #: Template/Customers/detail.ctp:7
 #: Template/Customers/index.ctp:3;6
+#: Template/Element/Customers/modals/list.ctp:5
 #: Template/Element/Layout/menu.ctp:17
-#: Template/FormTemplates/detail.ctp:62
 msgid "Customers"
 msgstr ""
 
 #: Template/Customers/detail.ctp:18
 msgid "Customer details"
+msgstr ""
+
+#: Template/Customers/detail.ctp:20
+#: Template/Customers/index.ctp:20
+#: Template/Element/Audits/list.ctp:14
+#: Template/Element/Customers/modals/list.ctp:14
+#: Template/Element/FormTemplates/modals/new_template.ctp:15
+#: Template/Element/FormTemplates/modals/rename.ctp:14
+#: Template/Element/Forms/modals/clone.ctp:24
+#: Template/Element/Forms/modals/new_form.ctp:13
+#: Template/Element/Forms/modals/rename.ctp:14
+#: Template/Element/Forms/modals/section.ctp:15
+#: Template/Forms/detail.ctp:56;106
+#: Template/Forms/index.ctp:18
+#: Template/Users/detail.ctp:25
+#: Template/Users/index.ctp:17
+msgid "Name"
 msgstr ""
 
 #: Template/Customers/detail.ctp:24
@@ -402,39 +436,43 @@ msgstr ""
 msgid "Close all"
 msgstr ""
 
-#: Template/Element/Audits/fill_select.ctp:85
+#: Template/Element/Audits/fill_select.ctp:87
 msgid "+ add observations"
 msgstr ""
 
-#: Template/Element/Audits/fill_select.ctp:86
+#: Template/Element/Audits/fill_select.ctp:88
 msgid "- close observations"
 msgstr ""
 
-#: Template/Element/Audits/fill_select.ctp:95
+#: Template/Element/Audits/fill_select.ctp:97
 msgid "Photos"
 msgstr ""
 
-#: Template/Element/Audits/fill_select.ctp:112
+#: Template/Element/Audits/fill_select.ctp:114
 msgid "Take photo"
 msgstr ""
 
-#: Template/Element/Audits/modal_send.ctp:6
+#: Template/Element/Audits/modals/send.ctp:6
 msgid "Send audit"
 msgstr ""
 
-#: Template/Element/Audits/modal_send.ctp:12
+#: Template/Element/Audits/modals/send.ctp:12
 msgid "Are you sure you want to send the report to the customer?"
 msgstr ""
 
-#: Template/Element/Audits/modal_send.ctp:14
+#: Template/Element/Audits/modals/send.ctp:14
 msgid "Email addresses"
 msgstr ""
 
-#: Template/Element/Audits/modal_send.ctp:16
+#: Template/Element/Audits/modals/send.ctp:17
+msgid "BCC"
+msgstr ""
+
+#: Template/Element/Audits/modals/send.ctp:21
 msgid "Observations"
 msgstr ""
 
-#: Template/Element/Audits/modal_send.ctp:19
+#: Template/Element/Audits/modals/send.ctp:26
 msgid "Send"
 msgstr ""
 
@@ -454,44 +492,90 @@ msgstr ""
 msgid "Regards."
 msgstr ""
 
-#: Template/Element/FormTemplates/detail_select.ctp:26
+#: Template/Element/FormTemplates/detail/field_editor.ctp:16
 msgid "Are you sure you want to remove this field? This can't be undone"
 msgstr ""
 
-#: Template/Element/FormTemplates/detail_select.ctp:55
-msgid "Weigth"
-msgstr ""
-
-#: Template/Element/FormTemplates/detail_select.ctp:56;87
-msgid "Place before..."
-msgstr ""
-
-#: Template/Element/FormTemplates/detail_select.ctp:77
-msgid "Field"
-msgstr ""
-
-#: Template/Element/FormTemplates/detail_select.ctp:85
-msgid "Text"
-msgstr ""
-
-#: Template/Element/FormTemplates/detail_select.ctp:86
-msgid "Option Set"
-msgstr ""
-
-#: Template/Element/FormTemplates/modal_clone.ctp:7
+#: Template/Element/FormTemplates/modals/clone.ctp:7
 msgid "Clone template"
 msgstr ""
 
-#: Template/Element/FormTemplates/modal_clone.ctp:14
+#: Template/Element/FormTemplates/modals/clone.ctp:14
 msgid "New template name"
 msgstr ""
 
-#: Template/Element/FormTemplates/modal_clone.ctp:15
+#: Template/Element/FormTemplates/modals/clone.ctp:15
 msgid "Rename old template?"
 msgstr ""
 
-#: Template/Element/FormTemplates/modal_clone.ctp:16
+#: Template/Element/FormTemplates/modals/clone.ctp:19
 msgid "Disable old template?"
+msgstr ""
+
+#: Template/Element/FormTemplates/modals/field.ctp:11
+msgid "Field"
+msgstr ""
+
+#: Template/Element/FormTemplates/modals/field.ctp:20
+#: Template/Element/Forms/modals/new_form.ctp:15
+#: Template/Forms/index.ctp:20
+msgid "Type"
+msgstr ""
+
+#: Template/Element/FormTemplates/modals/field.ctp:21
+msgid "Option Set"
+msgstr ""
+
+#: Template/Element/FormTemplates/modals/field.ctp:22
+#: Template/Element/Forms/modals/section.ctp:17
+msgid "Place before..."
+msgstr ""
+
+#: Template/Element/FormTemplates/modals/new_template.ctp:8
+msgid "New template"
+msgstr ""
+
+#: Template/Element/FormTemplates/modals/rename.ctp:7
+#: Template/Element/Forms/modals/rename.ctp:7
+#: Template/FormTemplates/detail.ctp:26
+#: Template/Forms/detail.ctp:21
+msgid "Rename"
+msgstr ""
+
+#: Template/Element/Forms/modals/clone.ctp:7
+msgid "Clone form"
+msgstr ""
+
+#: Template/Element/Forms/modals/clone.ctp:14
+msgid "New form name"
+msgstr ""
+
+#: Template/Element/Forms/modals/clone.ctp:15
+msgid "New form public name"
+msgstr ""
+
+#: Template/Element/Forms/modals/clone.ctp:17
+msgid "Copy the selected templates:"
+msgstr ""
+
+#: Template/Element/Forms/modals/clone.ctp:22
+msgid "Rename old form?"
+msgstr ""
+
+#: Template/Element/Forms/modals/clone.ctp:25
+#: Template/Element/Forms/modals/new_form.ctp:14
+#: Template/Element/Forms/modals/rename.ctp:15
+#: Template/Forms/index.ctp:19
+msgid "Public name"
+msgstr ""
+
+#: Template/Element/Forms/modals/new_form.ctp:6
+msgid "New form"
+msgstr ""
+
+#: Template/Element/Forms/modals/section.ctp:16
+#: Template/Forms/detail.ctp:57
+msgid "Weigth"
 msgstr ""
 
 #: Template/Element/Layout/email_disclaimer.ctp:6
@@ -520,8 +604,9 @@ msgstr ""
 
 #: Template/Element/Layout/menu.ctp:28
 #: Template/FormTemplates/detail.ctp:7
-#: Template/FormTemplates/index.ctp:3;6
-msgid "Form templates"
+#: Template/Forms/detail.ctp:7
+#: Template/Forms/index.ctp:6
+msgid "Forms"
 msgstr ""
 
 #: Template/Element/Layout/menu.ctp:31
@@ -530,48 +615,51 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: Template/FormTemplates/detail.ctp:22
-msgid "Add section"
-msgstr ""
-
-#: Template/FormTemplates/detail.ctp:23
+#: Template/FormTemplates/detail.ctp:24
 msgid "Add field"
 msgstr ""
 
-#: Template/FormTemplates/detail.ctp:25;119
-msgid "Rename"
-msgstr ""
-
-#: Template/FormTemplates/detail.ctp:26
+#: Template/FormTemplates/detail.ctp:27
+#: Template/Forms/detail.ctp:22
 msgid "Clone"
 msgstr ""
 
-#: Template/FormTemplates/detail.ctp:27
+#: Template/FormTemplates/detail.ctp:28
+#: Template/Forms/detail.ctp:23
 msgid "See customers"
 msgstr ""
 
-#: Template/FormTemplates/detail.ctp:29
+#: Template/FormTemplates/detail.ctp:30
+#: Template/Forms/detail.ctp:25
 msgid "See audits"
 msgstr ""
 
-#: Template/FormTemplates/detail.ctp:42
+#: Template/FormTemplates/detail.ctp:43
 msgid "This template is associated with at least one audit, so the editing options are limited."
 msgstr ""
 
-#: Template/FormTemplates/detail.ctp:49
+#: Template/FormTemplates/detail.ctp:50
 msgid "This template is disabled, so it can't be edited anymore. To edit please re-enable."
 msgstr ""
 
-#: Template/FormTemplates/detail.ctp:126
-msgid "New name"
+#: Template/Forms/detail.ctp:38
+msgid "This form is associated with at least one audit, so the editing options are limited."
 msgstr ""
 
-#: Template/FormTemplates/index.ctp:20;55
-msgid "Type"
+#: Template/Forms/detail.ctp:46
+msgid "Sections"
 msgstr ""
 
-#: Template/FormTemplates/index.ctp:47
-msgid "New template"
+#: Template/Forms/detail.ctp:89
+msgid "Add section"
+msgstr ""
+
+#: Template/Forms/detail.ctp:96
+msgid "Templates"
+msgstr ""
+
+#: Template/Forms/index.ctp:3
+msgid "Form templates"
 msgstr ""
 
 #: Template/Layout/default.ctp:82;91

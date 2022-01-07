@@ -9,8 +9,9 @@ class EasyAuditFormHelper extends Helper {
 
     public function checkbox($key, $attrs=[]) {
         $label = empty($attrs['label']) ? "" : "<span>{$attrs['label']}</span>";
-        $checked = empty($attrs['value']) ? "" : "checked";
-        return "<label class=\"checkbox-container\"><input type=\"checkbox\" name=\"$key\" checked=\"$checked\">$label</label>";
+        $checked = empty($attrs['checked']) ? "" : "checked=\"checked\"";
+        $value = empty($attrs['value']) ? "" : "value=\"{$attrs['value']}\"";
+        return "<label class=\"checkbox-container\"><input type=\"checkbox\" name=\"$key\" $value $checked>$label</label>";
     }
 
     public function dateControl($key, $attrs=[]) {
@@ -33,14 +34,16 @@ class EasyAuditFormHelper extends Helper {
     
     public function objectToKeyValue($array, $key, $value, $allowEmpty=true, $order=false) {
         $tmp = $allowEmpty ? [''=>''] : [];
-        foreach($array as $e) {
-            $v = '';
-            if(isset($e->$value)) {
-                $v = $e->$value;
-            } else {
-                eval("\$v = \"$value\";");
+        if(!empty($array)) {
+            foreach($array as $e) {
+                $v = '';
+                if(isset($e->$value)) {
+                    $v = $e->$value;
+                } else {
+                    eval("\$v = \"$value\";");
+                }
+                $tmp[$e->$key] = $v;
             }
-            $tmp[$e->$key] = $v;
         }
         if($order) {
             asort($tmp);

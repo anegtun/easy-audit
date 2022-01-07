@@ -1,18 +1,18 @@
 <?php
-$title = __('Audit') . " ". $audit->customer->name;
+$title = $audit->customer->name." ({$audit->date})";
 $this->extend('template');
 $this->set('headerTitle', $title);
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Audits'), 'url'=>['action'=>'index']],
-    ['label'=>$title],
+    ['label'=>$audit->customer->name],
     ['label'=>__('History')]
 ]);
 $this->Html->script('audit-history', ['block' => 'script']);
 ?>
 
-<?php foreach($audit->form_templates as $t) : ?>
+<?php foreach($audit->templates as $t) : ?>
 
-    <?php if($t->type === 'select') : ?>
+    <?php if($t->form->type === 'select') : ?>
 
         <?php
         $template_audits = [];
@@ -38,7 +38,7 @@ $this->Html->script('audit-history', ['block' => 'script']);
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach($t->form_template_sections as $s) : ?>
+                            <?php foreach($t->form->sections as $s) : ?>
                                 <tr>
                                     <td>
                                         <?= $this->EasyAuditTemplate->section($s) ?>
@@ -78,6 +78,6 @@ $this->Html->script('audit-history', ['block' => 'script']);
         <?= $this->EasyAuditHtml->linkButton(['action' => 'data', $audit->id], 'cog', __('Audit data')) ?>
         <?= $this->EasyAuditHtml->linkButton(['action' => 'print', $audit->id], 'list-alt', __('View report'), ['target'=>'_blank']) ?>
         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-send-report"><?= $this->EasyAuditHtml->gliphiconText('envelope', __('Send report')) ?></button>
-        <?= $this->element('Audits/modal_send', ['audit' => $audit]) ?>
+        <?= $this->element('Audits/modals/send', ['audit' => $audit]) ?>
     </div>
 </div>
