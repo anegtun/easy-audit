@@ -18,6 +18,8 @@ class AuditPdfComponent extends Component {
         $pdf->SetTitle(utf8_decode($audit->getReportName()));
         $pdf->AddPage();
         $pdf->Cover();
+        $pdf->AddPage();
+        $pdf->Intro();
 
         foreach($audit->templates as $t) {
             if($t->form->type === 'select') {

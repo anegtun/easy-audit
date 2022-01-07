@@ -46,6 +46,7 @@ trait AuditFPDFCommonTraits {
     }
 
     public function Paragraph($text) {
+        $this->SetFont('Arial', '', 12);
         $this->MultiCell(0, 5, utf8_decode($text));
         $this->Ln(5);
     }
