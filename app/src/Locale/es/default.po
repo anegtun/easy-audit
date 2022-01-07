@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-01-07 10:09+0000\n"
-"PO-Revision-Date: 2022-01-07 11:21+0100\n"
+"POT-Creation-Date: 2022-01-07 10:46+0000\n"
+"PO-Revision-Date: 2022-01-07 11:47+0100\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -55,7 +55,7 @@ msgstr "Error borrando la auditoría."
 msgid "There are no emails configured for this customer."
 msgstr "No hay correos electrónicos configurados para este cliente."
 
-#: Controller/AuditsController.php:223
+#: Controller/AuditsController.php:224
 msgid "Email sent correctly."
 msgstr "Correo enviado correctamente."
 
@@ -118,7 +118,6 @@ msgid "Error moving field."
 msgstr "Error moviendo el campo."
 
 #: Controller/FormsController.php:44;173
-#| msgid "Audit created."
 msgid "Form created."
 msgstr "Formulario creado correctament."
 
@@ -176,7 +175,7 @@ msgstr "Error eliminando el usuario."
 msgid "Invalid username or password, try again"
 msgstr "Usuario o contraseña incorrectos, por favor inténtalo de nuevo"
 
-#: Controller/Component/AuditEmailComponent.php:20
+#: Controller/Component/AuditEmailComponent.php:30
 msgid "Audit report"
 msgstr "Informe"
 
@@ -283,7 +282,7 @@ msgstr "Añadir plantilla"
 
 #: Template/Audits/data.ctp:92 Template/Audits/index.ctp:40
 #: Template/Customers/detail.ctp:89 Template/Element/Audits/modals/list.ctp:14
-#: Template/Element/Audits/modals/send.ctp:20
+#: Template/Element/Audits/modals/send.ctp:27
 #: Template/Element/Customers/modals/list.ctp:29
 #: Template/Element/FormTemplates/modals/clone.ctp:24
 #: Template/Element/FormTemplates/modals/field.ctp:27
@@ -445,11 +444,15 @@ msgstr "¿Estás seguro de querer enviar el informe de la auditoría al cliente?
 msgid "Email addresses"
 msgstr "Direcciones de correo"
 
-#: Template/Element/Audits/modals/send.ctp:16
+#: Template/Element/Audits/modals/send.ctp:17
+msgid "BCC"
+msgstr "CCO"
+
+#: Template/Element/Audits/modals/send.ctp:21
 msgid "Observations"
 msgstr "Observaciones"
 
-#: Template/Element/Audits/modals/send.ctp:19
+#: Template/Element/Audits/modals/send.ctp:26
 msgid "Send"
 msgstr "Enviar"
 
