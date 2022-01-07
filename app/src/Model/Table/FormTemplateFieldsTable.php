@@ -14,7 +14,8 @@ class FormTemplateFieldsTable extends Table {
             ->setProperty('section');
 
         $this->belongsTo('FormTemplates')
-            ->setForeignKey('form_template_id');
+            ->setForeignKey('form_template_id')
+            ->setProperty('template');
 
         $this->belongsTo('FormOptionsets')
             ->setForeignKey('optionset_id')

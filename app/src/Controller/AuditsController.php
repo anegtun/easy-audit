@@ -11,8 +11,8 @@ class AuditsController extends AppController {
     
     public function initialize() {
         parent::initialize();
-        $this->AuditFieldMeasureValues = TableRegistry::getTableLocator()->get('AuditFieldMeasureValues');
-        $this->AuditFieldOptionsetValues = TableRegistry::getTableLocator()->get('AuditFieldOptionsetValues');
+        $this->AuditFieldValues = TableRegistry::getTableLocator()->get('AuditFieldValues');
+        $this->AuditMeasureValues = TableRegistry::getTableLocator()->get('AuditMeasureValues');
         $this->Customers = TableRegistry::getTableLocator()->get('Customers');
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
         $this->FormTemplateSections = TableRegistry::getTableLocator()->get('FormTemplateSections');
@@ -94,8 +94,8 @@ class AuditsController extends AppController {
                 foreach($audit->templates as $t) {
                     $last_audit = $this->Audits->findLast($t->id, $audit);
                     if($last_audit) {
-                        $this->AuditFieldOptionsetValues->clone($t->id, $last_audit->id, $audit->id);
-                        $this->AuditFieldMeasureValues->clone($t->id, $last_audit->id, $audit->id);
+                        $this->AuditFieldValues->clone($t->id, $last_audit->id, $audit->id);
+                        $this->AuditMeasureValues->clone($t->id, $last_audit->id, $audit->id);
                         $cloned = true;
                     }
                 }
@@ -164,12 +164,12 @@ class AuditsController extends AppController {
             if(!empty($data['field_values'])) {
                 foreach($data['field_values'] as $templateId => $field_values) {
                     $field_observations = $data['field_observations'][$templateId];
-                    $this->AuditFieldOptionsetValues->upsertAll($data['id'], $templateId, $field_values, $field_observations);
+                    $this->AuditFieldValues->upsertAll($data['id'], $templateId, $field_values, $field_observations);
                 }
             }
             if(!empty($data['audit_measure'])) {
                 foreach($data['audit_measure'] as $templateId => $audit_measures) {
-                    $this->AuditFieldMeasureValues->upsertAll($data['id'], $templateId, $audit_measures);
+                    $this->AuditMeasureValues->upsertAll($data['id'], $templateId, $audit_measures);
                 }
             }
             if(!empty($data['field_img_removed'])) {

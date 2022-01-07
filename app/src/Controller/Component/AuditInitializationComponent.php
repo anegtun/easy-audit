@@ -7,7 +7,7 @@ use Cake\ORM\TableRegistry;
 class AuditInitializationComponent extends Component {
     
     public function startup() {
-        $this->AuditFieldOptionsetValues = TableRegistry::getTableLocator()->get('AuditFieldOptionsetValues');
+        $this->AuditFieldValues = TableRegistry::getTableLocator()->get('AuditFieldValues');
         $this->FormTemplateFields = TableRegistry::getTableLocator()->get('FormTemplateFields');
     }
 
@@ -18,12 +18,12 @@ class AuditInitializationComponent extends Component {
         foreach($fields as $f) {
             $defaultVal = $this->findDefaultValue($f);
             if($defaultVal) {
-                $value = $this->AuditFieldOptionsetValues->newEntity();
+                $value = $this->AuditFieldValues->newEntity();
                 $value->audit_id = $audit_id;
                 $value->form_template_id = $f->form_template_id;
                 $value->form_template_field_id = $f->id;
                 $value->optionset_value_id = $defaultVal->id;
-                $this->AuditFieldOptionsetValues->save($value);
+                $this->AuditFieldValues->save($value);
             }
         }
     }

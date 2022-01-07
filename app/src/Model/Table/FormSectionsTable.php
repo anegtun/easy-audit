@@ -8,6 +8,10 @@ class FormSectionsTable extends Table {
     
     public function initialize(array $config) {
         $this->setTable('easy_audit_form_sections');
+
+        $this->belongsTo('Forms')
+            ->setForeignKey('form_id')
+            ->setProperty('form');
     }
 
     public function clone($source_template_id, $target_template_id) {

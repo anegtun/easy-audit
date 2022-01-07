@@ -3,10 +3,10 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 
-class AuditFieldOptionsetValuesTable extends Table {
+class AuditFieldValuesTable extends Table {
 
     public function initialize(array $config) {
-        $this->setTable('easy_audit_audit_field_optionset_values');
+        $this->setTable('easy_audit_audit_field_values');
 
         $this->belongsTo('Audits')
             ->setForeignKey('audit_id');

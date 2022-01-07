@@ -15,7 +15,8 @@ class CustomersTable extends Table {
         ->setProperty('templates');
 
         $this->hasMany('Audits')
-            ->setForeignKey('customer_id');
+            ->setForeignKey('customer_id')
+            ->setProperty('audits');
     }
 
 }

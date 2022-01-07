@@ -8,9 +8,6 @@ class FormOptionsetsTable extends Table {
     public function initialize(array $config) {
         $this->setTable('easy_audit_form_optionsets');
 
-        $this->hasMany('FormTemplateFields')
-            ->setForeignKey('optionset_id');
-
         $this->hasMany('FormOptionsetValues')
             ->setForeignKey('optionset_id')
             ->setProperty('values');

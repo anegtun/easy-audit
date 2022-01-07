@@ -3,13 +3,14 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 
-class AuditFieldMeasureValuesTable extends Table {
+class AuditMeasureValuesTable extends Table {
 
     public function initialize(array $config) {
-        $this->setTable('easy_audit_audit_field_measure_values');
+        $this->setTable('easy_audit_audit_measure_values');
 
         $this->belongsTo('Audits')
-            ->setForeignKey('audit_id');
+            ->setForeignKey('audit_id')
+            ->setProperty('audit');
     }
 
     public function clone($template_id, $source_audit_id, $target_audit_id) {

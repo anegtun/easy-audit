@@ -15,18 +15,6 @@ class FormsTable extends Table {
         $this->hasMany('FormTemplates')
             ->setForeignKey('form_id')
             ->setProperty('templates');
-
-        /*
-        $this->belongsToMany('Customers', [
-            'joinTable' => 'easy_audit_customer_forms',
-            'foreignKey' => 'form_template_id',
-        ]);
-
-        $this->belongsToMany('Audits', [
-            'joinTable' => 'easy_audit_audit_forms',
-            'foreignKey' => 'form_template_id',
-        ]);
-        */
     }
 
 }
