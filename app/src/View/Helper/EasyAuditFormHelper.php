@@ -9,8 +9,8 @@ class EasyAuditFormHelper extends Helper {
 
     public function checkbox($key, $attrs=[]) {
         $label = empty($attrs['label']) ? "" : "<span>{$attrs['label']}</span>";
-        $checked = empty($attrs['value']) ? "" : "checked";
-        return "<label class=\"checkbox-container\"><input type=\"checkbox\" name=\"$key\" checked=\"$checked\">$label</label>";
+        $checked = empty($attrs['value']) ? "" : "checked=\"checked\"";
+        return "<label class=\"checkbox-container\"><input type=\"checkbox\" name=\"$key\" $checked>$label</label>";
     }
 
     public function dateControl($key, $attrs=[]) {

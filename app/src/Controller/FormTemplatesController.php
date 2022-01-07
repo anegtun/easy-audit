@@ -82,13 +82,15 @@ class FormTemplatesController extends AppController {
 
             $new_template = $this->FormTemplates->newEntity();
             $new_template->name = $data['name'];
-            $new_template->type = $old_template->type;
+            $new_template->form_id = $old_template->form_id;
+            $new_template->public_name = $old_template->public_name;
+
             $new_template = $this->FormTemplates->save($new_template);
 
-            $sections_id_map = $this->FormTemplateSections->clone($data['id'], $new_template->id);
-            $this->FormTemplates->FormTemplateFields->clone($data['id'], $new_template->id, $sections_id_map);
+            $this->FormTemplates->FormTemplateFields->clone($data['id'], $new_template->id);
             
             $this->Flash->success(__('Template created.'));
+            return $this->redirect(['action'=>'detail', $new_template->id]);
         }
         return $this->redirect($this->referer());
     }

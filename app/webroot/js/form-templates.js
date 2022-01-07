@@ -15,7 +15,7 @@ $(document).ready(function() {
         fieldModal.find('*[name=form_section_id]').trigger("change");
     });
 
-    $('.modal-clone-button').click(function(e) {
+    $('.modal-clone-template-button').click(function(e) {
         e.preventDefault();
         openModalToEdit(cloneModal, $(this), 'data-template-', ['id', 'name']);
         cloneModal.find('*[name=name_old]').prop('placeholder', $(this).attr('data-template-name'));

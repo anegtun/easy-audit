@@ -9,6 +9,7 @@ $this->set('headerBreadcrumbs', [
     ['label'=>$title]
 ]);
 $this->Html->script('form-templates', ['block' => 'script']);
+$this->Html->script('form-templates-clone', ['block' => 'script']);
 
 $has_audits = !empty($template->audits);
 $is_disabled = !empty($template->disabled);
@@ -23,7 +24,7 @@ $is_editable = !$has_audits && !$is_disabled;
                 <button type="button" id="modal-field-button" class="btn btn-primary" data-target="#modal-field"><?= __('Add field') ?></button>
             <?php endif ?>
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-rename"><?= __('Rename') ?></button>
-            <button type="button" class="btn btn-default modal-clone-button" data-template-id="<?=$template->id?>" data-template-name="<?=$template->name?>"><?= __('Clone') ?></button>
+            <button type="button" class="btn btn-default modal-clone-template-button" data-template-id="<?=$template->id?>" data-template-name="<?=$template->name?>"><?= __('Clone') ?></button>
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
             <?php if($has_audits) : ?>
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-audits"><?= __('See audits') ?></button>
@@ -112,7 +113,7 @@ $is_editable = !$has_audits && !$is_disabled;
 
 <?= $this->element('Forms/modals/rename', ['modal_id' => 'modal-rename']) ?>
 
-<?= $this->element('Forms/modals/clone', ['modal_id' => 'modal-clone-template']) ?>
+<?= $this->element('FormTemplates/modals/clone', ['modal_id' => 'modal-clone-template']) ?>
 
 <div id='all-field-options'>
     <?php foreach($template->fields as $f) : ?>

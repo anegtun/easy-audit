@@ -2,6 +2,7 @@ $(document).ready(function() {
 
     const cloneModal = $('#modal-clone-template');
     const sectionModal = $('#modal-section');
+    const cloneTemplateModal = $('#modal-clone-template');
     
     $('#modal-section-button').click(function() {
         openModalToCreate(sectionModal, ['id']);
@@ -17,5 +18,11 @@ $(document).ready(function() {
     $('a[data-section-id]').click(function() {
         openModalToEdit(sectionModal, $(this), 'data-section-', ['id', 'name', 'weigth']);
         sectionModal.find('*[name=position]').val(Number($(this).attr('data-section-position')) + 1).prop('disabled', true);
+    });
+
+    $('.modal-clone-template-button').click(function(e) {
+        e.preventDefault();
+        openModalToEdit(cloneModal, $(this), 'data-template-', ['id', 'name']);
+        cloneTemplateModal.find('*[name=name_old]').prop('placeholder', $(this).attr('data-template-name'));
     });
 });
