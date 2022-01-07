@@ -218,8 +218,9 @@ class AuditsController extends AppController {
         } else {
             $data = $this->request->getData();
             $observations = !empty($data) ? $data['observations'] : '';
+            $bcc = !empty($data) ? $data['bcc'] : '';
             $content = $this->generateReport($audit);
-            $this->AuditEmail->sendReport($audit, $content, $observations);
+            $this->AuditEmail->sendReport($audit, $content, $observations, $bcc);
             $this->Flash->success(__('Email sent correctly.'));
         }
         return $this->redirect($this->referer());

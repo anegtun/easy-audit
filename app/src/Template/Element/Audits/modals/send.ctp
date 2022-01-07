@@ -13,7 +13,14 @@
                     <p><strong><?= __('Customer') ?>:</strong> <?= $audit->customer->name ?></p>
                     <p><strong><?= __('Email addresses') ?>:</strong> <?= $audit->customer->emails ?></p>
 
-                    <?= $this->Form->textarea('observations', ['label'=>__('Observations')]) ?>
+                    <div class="form-group">
+                        <label><?= __('BCC') ?></label>
+                        <?= $this->Form->textarea('bcc') ?>
+                    </div>
+                    <div class="form-group">
+                        <label><?= __('Observations') ?></label>
+                        <?= $this->Form->textarea('observations') ?>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <?= $this->EasyAuditForm->saveButton(__('Send')) ?>

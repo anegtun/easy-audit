@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-01-07 10:09+0000\n"
+"POT-Creation-Date: 2022-01-07 10:46+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -58,7 +58,7 @@ msgstr ""
 msgid "There are no emails configured for this customer."
 msgstr ""
 
-#: Controller/AuditsController.php:223
+#: Controller/AuditsController.php:224
 msgid "Email sent correctly."
 msgstr ""
 
@@ -166,7 +166,7 @@ msgstr ""
 msgid "Invalid username or password, try again"
 msgstr ""
 
-#: Controller/Component/AuditEmailComponent.php:20
+#: Controller/Component/AuditEmailComponent.php:30
 msgid "Audit report"
 msgstr ""
 
@@ -293,7 +293,7 @@ msgstr ""
 #: Template/Audits/index.ctp:40
 #: Template/Customers/detail.ctp:89
 #: Template/Element/Audits/modals/list.ctp:14
-#: Template/Element/Audits/modals/send.ctp:20
+#: Template/Element/Audits/modals/send.ctp:27
 #: Template/Element/Customers/modals/list.ctp:29
 #: Template/Element/FormTemplates/modals/clone.ctp:24
 #: Template/Element/FormTemplates/modals/field.ctp:27
@@ -464,11 +464,15 @@ msgstr ""
 msgid "Email addresses"
 msgstr ""
 
-#: Template/Element/Audits/modals/send.ctp:16
+#: Template/Element/Audits/modals/send.ctp:17
+msgid "BCC"
+msgstr ""
+
+#: Template/Element/Audits/modals/send.ctp:21
 msgid "Observations"
 msgstr ""
 
-#: Template/Element/Audits/modals/send.ctp:19
+#: Template/Element/Audits/modals/send.ctp:26
 msgid "Send"
 msgstr ""
 
