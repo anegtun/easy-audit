@@ -185,14 +185,15 @@ class AuditPDF extends FPDF {
     }
 
     private function SelectReportSummaryGraph($template) {
+        $history_to_show = count($this->history) > 12 ? array_slice($this->history, -12) : $this->history;
         $maxHeight = 40;
         $maxWidth = 175;
         $marginLeft = 20;
-        $colWidth = min([20, $maxWidth / count($this->history) / 2]);
-        $gap = ($maxWidth - $colWidth * count($this->history)) / (2 * count($this->history));
+        $colWidth = min([20, $maxWidth / count($history_to_show) / 2]);
+        $gap = ($maxWidth - $colWidth * count($history_to_show)) / (2 * count($history_to_show));
         $y = $this->GetY();
         $this->SetFillColor($this->graph_color[0], $this->graph_color[1], $this->graph_color[2]);
-        foreach($this->history as $i => $h) {
+        foreach($history_to_show as $i => $h) {
             $x = $marginLeft + $gap + $i * ($colWidth + 2 * $gap);
             $score = $h->score_templates[$template->id];
             $height = $maxHeight * $score / 100;
@@ -211,9 +212,11 @@ class AuditPDF extends FPDF {
         $this->Cell($maxWidth, 5, '', 'T');
         $this->Ln();
         $this->SetX($marginLeft);
-        foreach($this->history as $i => $h) {
+        $this->SetFont('Arial', 'B', count($history_to_show) > 6 ? 8 : 10);
+        foreach($history_to_show as $i => $h) {
             $this->Cell($colWidth + 2 * $gap, 3, strtoupper($h->date->i18nFormat('MMM yy')), 0, 0, 'C');
         }
+        $this->SetFont('Arial', '', 12);
     }
 
     private function SelectReportSummaryResult($template) {
