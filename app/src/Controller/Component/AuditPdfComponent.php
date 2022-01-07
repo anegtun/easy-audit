@@ -75,7 +75,7 @@ class AuditPDF extends FPDF {
                 'values' => ['Equipo a verificar', 'Dato', 'M. equipo', 'M. verificada', 'Diferencia', 'Resultado']
             ]
         ];
-        foreach($this->audit->audit_field_measure_values as $m) {
+        foreach($this->audit->measure_values as $m) {
             $img = WWW_ROOT . DS . 'images' . DS . 'components' . DS . ($m->isInThreshold() ? 'ok.png' : 'nok.png');
             $rows[] = ['values' => [$m->item, $m->unit, $m->expected, $m->actual, $m->calculateDifference(), ['type'=>'img', 'path'=>$img, 'width'=>5]]];
         }

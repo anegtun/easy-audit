@@ -1,15 +1,11 @@
 <?php
 namespace App\Controller;
 
-require_once(ROOT . DS . 'vendor' . DS  . 'fpdf' . DS . 'fpdf.php');
-
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
-use FPDF;
-
 
 class AuditsController extends AppController {
     
