@@ -89,41 +89,41 @@ $is_editable = !$has_audits;
             </div>
         </fieldset>
 
-        <fieldset>
-            <legend><?= __('Templates') ?></legend>
-            <?php if(!empty($form->templates)) : ?>
-                <div>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th class="cell-small"></th>
-                                    <th class="cell-small"></th>
-                                    <th class="cell-small"></th>
-                                    <th class="celda-titulo"><?= __('Name') ?></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach($form->templates as $t) : ?>
-                                    <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
-                                        <td><?= $this->EasyAuditHtml->deleteLink(['controller'=>'FormTemplates', 'action'=>'delete', $t->id]) ?></td>
-                                        <td><?= $this->Html->link('', '', ['class'=>'glyphicon glyphicon-duplicate modal-clone-button', 'data-template-id'=>$t->id, 'data-form-id'=>$t->form_id, 'data-template-name'=>$t->name]) ?></td>
-                                        <td><?= $this->Html->link('', ['controller'=>'FormTemplates', 'action'=>'toggleEnabled', $t->id], ['class'=>'glyphicon glyphicon-'.($t->disabled?'thumbs-up':'thumbs-down')]) ?></td>
-                                        <td><?= $this->Html->link($t->name, ['controller'=>'FormTemplates', 'action'=>'detail', $t->id]) ?></td>
-                                    </tr>
-                                <?php endforeach ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            <?php endif ?>
-
-            <div class="button-group">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-new-template"><?= __('Add template') ?></button>
-            </div>
-        </fieldset>
-
     <?php endif ?>
+
+    <fieldset>
+        <legend><?= __('Templates') ?></legend>
+        <?php if(!empty($form->templates)) : ?>
+            <div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th class="cell-small"></th>
+                                <th class="cell-small"></th>
+                                <th class="cell-small"></th>
+                                <th class="celda-titulo"><?= __('Name') ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach($form->templates as $t) : ?>
+                                <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
+                                    <td><?= $this->EasyAuditHtml->deleteLink(['controller'=>'FormTemplates', 'action'=>'delete', $t->id]) ?></td>
+                                    <td><?= $this->Html->link('', '', ['class'=>'glyphicon glyphicon-duplicate modal-clone-button', 'data-template-id'=>$t->id, 'data-form-id'=>$t->form_id, 'data-template-name'=>$t->name]) ?></td>
+                                    <td><?= $this->Html->link('', ['controller'=>'FormTemplates', 'action'=>'toggleEnabled', $t->id], ['class'=>'glyphicon glyphicon-'.($t->disabled?'thumbs-up':'thumbs-down')]) ?></td>
+                                    <td><?= $this->Html->link($t->name, ['controller'=>'FormTemplates', 'action'=>'detail', $t->id]) ?></td>
+                                </tr>
+                            <?php endforeach ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <?php endif ?>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-new-template"><?= __('Add template') ?></button>
+        </div>
+    </fieldset>
 
 </div>
 

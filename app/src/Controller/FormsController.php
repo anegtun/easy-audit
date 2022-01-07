@@ -29,9 +29,7 @@ class FormsController extends AppController {
 
     public function detail($id) {
         $form = $this->getForm($id);
-        $templates = $this->Forms->FormTemplates->find('all')
-            ->contain(['Audits', 'Customers'])
-            ->where(['id IN' => $form->getTemplateIds()]);
+        $templates = $this->getTemplates($form);
         $audits = $this->getRelatedAudits($templates);
         $customers = $this->getRelatedCustomers($templates);
         $this->set(compact('form', 'audits', 'customers'));
@@ -53,9 +51,7 @@ class FormsController extends AppController {
 
     public function delete($id) {
         $form = $this->getForm($id);
-        $templates = $this->Forms->FormTemplates->find('all')
-            ->contain(['Audits'])
-            ->where(['id IN' => $form->getTemplateIds()]);
+        $templates = $this->getTemplates($form);
         $audits = $this->getRelatedAudits($templates);
         if(!empty($audits)) {
             $this->Flash->error(__('This form is used in at least one audit, so it can\'t be deleted. You can instead disable it.'));
@@ -148,12 +144,25 @@ class FormsController extends AppController {
         ]]);
     }
 
+    private function getTemplates($form) {
+        $templateIds = $form->getTemplateIds();
+        if(empty($templateIds)) {
+            return [];
+        }
+        return $this->Forms->FormTemplates->find('all')
+            ->contain(['Audits', 'Customers'])
+            ->where(['id IN' => $form->getTemplateIds()]);
+    }
+
     private function getRelatedAudits($templates) {
         $auditIds = [];
         foreach($templates as $t) {
             foreach($t->audits as $a) {
                 $auditIds[] = $a->id;
             }
+        }
+        if(empty($auditIds)) {
+            return [];
         }
         return $audits = $this->Audits->find('all')
             ->contain(['Customers', 'Users'])
@@ -166,6 +175,9 @@ class FormsController extends AppController {
             foreach($t->customers as $c) {
                 $customerIds[] = $c->id;
             }
+        }
+        if(empty($customerIds)) {
+            return [];
         }
         return $this->Customers->find('all')
             ->order('name')
