@@ -44,24 +44,44 @@ $is_editable = !$has_audits;
         <fieldset>
             <legend><?= __('Sections') ?></legend>
             <?php if(!empty($form->sections)) : ?>
-                <?php foreach($form->sections as $s) : ?>
-                    <div class="form-section">
-                        <div>
-                            <?= $this->EasyAuditForm->editModalLink($s, 'data-section', ['id', 'position', 'name', 'weigth']) ?>
-                            <?php if($is_editable) : ?>
-                                <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $form->id, $s->id]) ?>
-                                <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $form->id, $s->id]) ?>
-                                <?php if(empty($s->form_template_fields)) : ?>
-                                    <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteSection', $s->id]) ?>
-                                <?php endif ?>
-                            <?php endif ?>
-                        </div>
-                        <div>
-                            <?= $this->EasyAuditTemplate->section($s) ?>
-                            (<?= $s->weigth ?>)
-                        </div>
-                    </div>
-                <?php endforeach ?>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th class="cell-small"></th>
+                                <th class="cell-small"></th>
+                                <th class="cell-small"></th>
+                                <th class="cell-small"></th>
+                                <th class="celda-titulo"><?= __('Name') ?></th>
+                                <th class="celda-titulo"><?= __('Weigth') ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach($form->sections as $s) : ?>
+                                <tr>
+                                    <td><?= $this->EasyAuditForm->editModalLink($s, 'data-section', ['id', 'position', 'name', 'weigth']) ?></td>
+                                    <td>
+                                        <?php if($is_editable) : ?>
+                                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $form->id, $s->id]) ?>
+                                        <?php endif ?>
+                                    </td>
+                                    <td>
+                                        <?php if($is_editable) : ?>
+                                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $form->id, $s->id]) ?>
+                                        <?php endif ?>
+                                    </td>
+                                    <td>
+                                        <?php if($is_editable) : ?>
+                                            <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteSection', $s->id]) ?>
+                                        <?php endif ?>
+                                    </td>
+                                    <td><?= $this->EasyAuditTemplate->section($s) ?></td>
+                                    <td><?= $s->weigth ?></td>
+                                </tr>
+                            <?php endforeach ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php endif ?>
 
             <div class="button-group">
