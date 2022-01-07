@@ -164,7 +164,7 @@ class AuditsController extends AppController {
             $data = $this->request->getData();
             if(!empty($data['field_values'])) {
                 foreach($data['field_values'] as $templateId => $field_values) {
-                    $field_observations = $data['field_observations'][$templateId];
+                    $field_observations = empty($data['field_observations'][$templateId]) ? '' : $data['field_observations'][$templateId];
                     $this->AuditFieldValues->upsertAll($data['id'], $templateId, $field_values, $field_observations);
                 }
             }
