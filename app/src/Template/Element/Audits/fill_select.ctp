@@ -45,7 +45,7 @@ foreach($audit->field_values as $fv) {
                 <?php if($f->form_section_id === $s->id) : ?>
 
                     <?php
-                        $value = $audit->getFieldOptionsetValue($f);
+                        $value = $audit->getFieldValue($f);
                         $hasObservations = !empty($value) && !empty($value->observations);
                         $imgs = empty($field_images[$template->id][$f->id]) ? [] : $field_images[$template->id][$f->id];
                         $hasImgs = !empty($imgs);

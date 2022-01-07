@@ -16,7 +16,7 @@ class Audit extends Entity {
             $this->templates);
     }
 
-    public function getFieldOptionsetValue($field) {
+    public function getFieldValue($field) {
         foreach($this->field_values as $fv) {
             if($fv->form_template_id === $field->form_template_id && $fv->form_template_field_id === $field->id) {
                 return $fv;

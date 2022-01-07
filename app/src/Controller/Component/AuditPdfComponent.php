@@ -149,7 +149,7 @@ class AuditPDF extends FPDF {
             $headerRow['values'][] = strtoupper($h->date->i18nFormat('MMM yy'));
         }
         $rows[] = $headerRow;
-        foreach($template->form_template_sections as $s) {
+        foreach($template->form->sections as $s) {
             $sectionName = $s->name;
             if(strlen($sectionName) > $sectionNameMaxLength) {
                 $sectionName = substr($s->name, 0, 110 - count($history_to_show) * 10).'...';
@@ -231,19 +231,21 @@ class AuditPDF extends FPDF {
 
     private function SelectReportDetail($template) {
         $data = [];
-        foreach($template->form_template_sections as $s) {
+        foreach($template->form->sections as $s) {
             $section = ['title' => $s->name, 'fields' => []];
-            foreach($s->form_template_fields_optionset as $f) {
-                $value = $this->audit->getFieldOptionsetValue($f);
-                $photos = empty($this->photos[$template->id][$f->id]) ? [] : $this->photos[$template->id][$f->id];
-                if($value && (empty($value->form_template_optionset_value->is_default) || !empty($value->observations) || !empty($photos))) {
-                    $section['fields'][] = [
-                        'warn' => $value->form_template_optionset_value->color === 'danger',
-                        'text' => $f->text,
-                        'result' => empty($value->form_template_optionset_value->label) ? '' : $value->form_template_optionset_value->label,
-                        'observations' => empty($value->observations) ? '-' : $value->observations,
-                        'photos' => $photos
-                    ];
+            foreach($template->fields as $f) {
+                if($f->form_section_id === $s->id) {
+                    $value = $this->audit->getFieldValue($f);
+                    $photos = empty($this->photos[$template->id][$f->id]) ? [] : $this->photos[$template->id][$f->id];
+                    if($value && (empty($value->optionset_value->is_default) || !empty($value->observations) || !empty($photos))) {
+                        $section['fields'][] = [
+                            'warn' => $value->optionset_value->color === 'danger',
+                            'text' => $f->text,
+                            'result' => empty($value->optionset_value->label) ? '' : $value->optionset_value->label,
+                            'observations' => empty($value->observations) ? '-' : $value->observations,
+                            'photos' => $photos
+                        ];
+                    }
                 }
             }
             $data[] = $section;
@@ -417,9 +419,9 @@ class AuditPdfComponent extends Component {
         $pdf->Cover();
 
         foreach($audit->templates as $t) {
-            if($t->type === 'select') {
+            if($t->form->type === 'select') {
                 $pdf->SelectReport($t);
-            } elseif($t->type === 'measure') {
+            } elseif($t->form->type === 'measure') {
                 $pdf->MeasureReport($t);
             }
         }
