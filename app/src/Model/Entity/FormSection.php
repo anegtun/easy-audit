@@ -9,7 +9,7 @@ class FormSection extends Entity {
         $count = 0;
         $score = 0;
         foreach($field_values as $f) {
-            if($f->field->form_section_id === $this->id) {
+            if($f->field->form_section_id === $this->id && !empty($f->optionset_value)) {
                 $count++;
                 $score += $f->optionset_value->value_numeric;
             }

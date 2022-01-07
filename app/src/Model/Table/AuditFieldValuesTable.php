@@ -38,12 +38,17 @@ class AuditFieldValuesTable extends Table {
         $this->deleteAll(['form_template_id' => $template_id, 'audit_id' => $audit_id]);
         foreach($values as $k=>$v) {
             if(!empty($v)) {
+                $field = $this->FormTemplateFields->get($k);
                 $field_value = $this->newEntity();
                 $field_value->audit_id = $audit_id;
                 $field_value->form_template_id = $template_id;
                 $field_value->form_template_field_id = $k;
-                $field_value->optionset_value_id = $v;
                 $field_value->observations = empty($observations[$k]) ? null : $observations[$k];
+                if($field->type === 'select') {
+                    $field_value->optionset_value_id = $v;
+                } else {
+                    $field_value->value = $v;
+                }
                 $this->save($field_value);
             }
         }
