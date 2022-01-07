@@ -47,18 +47,20 @@ $this->set('headerBreadcrumbs', [
     <fieldset>
         <legend><?= __('Associated templates') ?></legend>
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover table-templates">
                 <thead>
                     <tr>
                         <th class="cell-small"></th>
-                        <th class="celda-titulo"><?= __('Name') ?></th>
+                        <th class="celda-titulo"><?= __('Form') ?></th>
+                        <th class="celda-titulo"><?= __('Template') ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach($audit->templates as $t) : ?>
                         <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
                             <td><?= $this->EasyAuditHtml->deleteLink(['action'=>'deleteTemplate', $audit->id, $t->id], 'remove') ?></td>
-                            <td><?= $this->Html->link($t->name, ['controller' => 'FormTemplates', 'action' => 'detail', $t->id]) ?></td>
+                            <td><?= $this->Html->link($t->form->name, ['controller'=>'Forms', 'action'=>'detail', $t->form->id]) ?></td>
+                            <td><?= $this->Html->link($t->name, ['controller'=>'FormTemplates', 'action'=>'detail', $t->id]) ?></td>
                         </tr>
                     <?php endforeach ?>
                 </tbody>

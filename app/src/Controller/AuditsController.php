@@ -37,8 +37,16 @@ class AuditsController extends AppController {
 
     public function data($id) {
         $audit = $this->Audits->get($id, ['contain' => [
-            'Customers' => [ 'FormTemplates' => ['sort' => 'name'] ],
-            'FormTemplates',
+            'Customers' => [
+                'FormTemplates' => [
+                    'sort' => ['Forms.name', 'FormTemplates.name'],
+                    'Forms',
+                ]
+            ],
+            'FormTemplates' => [
+                'Forms',
+                'sort' => ['Forms.name', 'FormTemplates.name'],
+            ],
             'Users'
         ]]);
         $auditTemplateIds = $audit->getTemplateIds();
