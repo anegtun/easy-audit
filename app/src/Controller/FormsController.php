@@ -29,27 +29,11 @@ class FormsController extends AppController {
 
     public function detail($id) {
         $form = $this->getForm($id);
-        $templateIds = $form->getTemplateIds();
         $templates = $this->Forms->FormTemplates->find('all')
             ->contain(['Audits', 'Customers'])
-            ->where(['id IN ' => $templateIds]);
-        $auditIds = [];
-        $customerIds = [];
-        foreach($templates as $t) {
-            foreach($t->audits as $a) {
-                $auditIds[] = $a->id;
-            }
-            foreach($t->customers as $c) {
-                $customerIds[] = $c->id;
-            }
-        }
-        $audits = $this->Audits->find('all')
-            ->contain(['Customers', 'Users'])
-            ->order('date')
-            ->where(['Audits.id IN' => $auditIds]);
-        $customers = $this->Customers->find('all')
-            ->order('name')
-            ->where(['id IN' => $customerIds]);
+            ->where(['id IN' => $form->getTemplateIds()]);
+        $audits = $this->getRelatedAudits($templates);
+        $customers = $this->getRelatedCustomers($templates);
         $this->set(compact('form', 'audits', 'customers'));
     }
 
@@ -68,8 +52,12 @@ class FormsController extends AppController {
     }
 
     public function delete($id) {
-        $form = $this->Forms->get($id/*, [ 'contain' => ['Audits'] ]*/);
-        if(!empty($form->audits)) {
+        $form = $this->getForm($id);
+        $templates = $this->Forms->FormTemplates->find('all')
+            ->contain(['Audits'])
+            ->where(['id IN' => $form->getTemplateIds()]);
+        $audits = $this->getRelatedAudits($templates);
+        if(!empty($audits)) {
             $this->Flash->error(__('This form is used in at least one audit, so it can\'t be deleted. You can instead disable it.'));
             return $this->redirect($this->referer());
         }
@@ -158,6 +146,30 @@ class FormsController extends AppController {
             'FormSections' => ['sort' => 'position'],
             'FormTemplates' => ['sort' => 'name']
         ]]);
+    }
+
+    private function getRelatedAudits($templates) {
+        $auditIds = [];
+        foreach($templates as $t) {
+            foreach($t->audits as $a) {
+                $auditIds[] = $a->id;
+            }
+        }
+        return $audits = $this->Audits->find('all')
+            ->contain(['Customers', 'Users'])
+            ->order('date')
+            ->where(['Audits.id IN' => $auditIds]);
+    }
+
+    private function getRelatedCustomers($templates) {
+        foreach($templates as $t) {
+            foreach($t->customers as $c) {
+                $customerIds[] = $c->id;
+            }
+        }
+        return $this->Customers->find('all')
+            ->order('name')
+            ->where(['id IN' => $customerIds]);
     }
 
 }
