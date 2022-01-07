@@ -1,10 +1,10 @@
 <?php
-$title = __('Audit') . " ". $audit->customer->name;
+$title = $audit->customer->name." ({$audit->date})";
 $this->extend('template');
 $this->set('headerTitle', $title);
 $this->set('headerBreadcrumbs', [
     ['label'=>__('Audits'), 'url'=>['action'=>'index']],
-    ['label'=>$title],
+    ['label'=>$audit->customer->name],
     ['label'=>__('Fill')]
 ]);
 $this->Html->script('audit-fill', ['block' => 'script']);
