@@ -95,7 +95,6 @@ class FormTemplatesController extends AppController {
             $new_template = $this->FormTemplates->newEntity();
             $new_template->name = $data['name'];
             $new_template->form_id = $old_template->form_id;
-            $new_template->public_name = $old_template->public_name;
 
             $new_template = $this->FormTemplates->save($new_template);
 

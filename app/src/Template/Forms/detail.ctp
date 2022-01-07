@@ -8,7 +8,7 @@ $this->set('headerBreadcrumbs', [
     ['label'=>$title]
 ]);
 $this->Html->script('form', ['block' => 'script']);
-$this->Html->script('form-templates-clone', ['block' => 'script']);
+$this->Html->script('form-clone', ['block' => 'script']);
 
 $has_audits = !empty($audits);
 $is_editable = !$has_audits;
@@ -19,7 +19,7 @@ $is_editable = !$has_audits;
     <div class="button-group">
         <div>
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-rename"><?= __('Rename') ?></button>
-            <button type="button" class="btn btn-default modal-clone-button" data-form-id="<?=$form->id?>" data-form-name="<?=$form->name?>" data-form-public_name="<?=$form->public_name?>"><?= __('Clone') ?></button>
+            <button type="button" class="btn btn-default modal-clone-form-button" data-form-id="<?=$form->id?>" data-form-name="<?=$form->name?>" data-form-public_name="<?=$form->public_name?>"><?= __('Clone') ?></button>
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-customers"><?= __('See customers') ?></button>
             <?php if($has_audits) : ?>
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-audits"><?= __('See audits') ?></button>
@@ -110,7 +110,7 @@ $is_editable = !$has_audits;
                             <?php foreach($form->templates as $t) : ?>
                                 <tr class="<?= $t->disabled ? 'disabled' : '' ?>">
                                     <td><?= $this->EasyAuditHtml->deleteLink(['controller'=>'FormTemplates', 'action'=>'delete', $t->id]) ?></td>
-                                    <td><?= $this->Html->link('', '#', ['class'=>'glyphicon glyphicon-duplicate modal-clone-template-button', 'data-template-id'=>$t->id, 'data-form-id'=>$t->form_id, 'data-template-name'=>$t->name]) ?></td>
+                                    <td><?= $this->Html->link('', '#', ['class'=>'glyphicon glyphicon-duplicate modal-clone-template-button', 'data-template-id'=>$t->id, 'data-template-name'=>$t->name]) ?></td>
                                     <td><?= $this->Html->link('', ['controller'=>'FormTemplates', 'action'=>'toggleEnabled', $t->id], ['class'=>'glyphicon glyphicon-'.($t->disabled?'thumbs-up':'thumbs-down')]) ?></td>
                                     <td><?= $this->Html->link($t->name, ['controller'=>'FormTemplates', 'action'=>'detail', $t->id]) ?></td>
                                 </tr>
@@ -132,8 +132,9 @@ $is_editable = !$has_audits;
 
 <?= $this->element('Forms/modals/section', ['modal_id' => 'modal-section']) ?>
 <?= $this->element('Forms/modals/rename', ['modal_id' => 'modal-rename', 'form' => $form]) ?>
-<?= $this->element('Forms/modals/new_template', ['modal_id' => 'modal-new-template']) ?>
+<?= $this->element('Forms/modals/clone', ['modal_id' => 'modal-clone-form']) ?>
 
+<?= $this->element('FormTemplates/modals/new_template', ['modal_id' => 'modal-new-template']) ?>
 <?= $this->element('FormTemplates/modals/clone', ['modal_id' => 'modal-clone-template']) ?>
 
 <?= $this->element('Audits/modals/list', ['modal_id' => 'modal-audits', 'audits' => $audits]) ?>

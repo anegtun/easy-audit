@@ -9,7 +9,7 @@ $this->set('headerBreadcrumbs', [
     ['label'=>$title]
 ]);
 $this->Html->script('form-templates', ['block' => 'script']);
-$this->Html->script('form-templates-clone', ['block' => 'script']);
+$this->Html->script('form-clone', ['block' => 'script']);
 
 $has_audits = !empty($template->audits);
 $is_disabled = !empty($template->disabled);

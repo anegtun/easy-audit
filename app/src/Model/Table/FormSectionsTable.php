@@ -14,12 +14,12 @@ class FormSectionsTable extends Table {
             ->setProperty('form');
     }
 
-    public function clone($source_template_id, $target_template_id) {
-        $sections = $this->find()->where(['form_template_id' => $source_template_id]);
+    public function clone($source_form_id, $target_form_id) {
+        $sections = $this->find()->where(['form_id' => $source_form_id]);
         $sections_id_map = [];
         foreach($sections as $s) {
             $new_section = $this->newEntity();
-            $new_section->form_template_id = $target_template_id;
+            $new_section->form_id = $target_form_id;
             $new_section->position = $s->position;
             $new_section->name = $s->name;
             $new_section->weigth = $s->weigth;

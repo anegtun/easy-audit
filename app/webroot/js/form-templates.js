@@ -6,19 +6,12 @@ $(document).ready(function() {
         .then(newEditor => editor = newEditor)
         .catch(error => console.error(error));
 
-    const cloneModal = $('#modal-clone-template');
     const fieldModal = $('#modal-field');
 
     $('#modal-field-button').click(function() {
         openModalToCreate(fieldModal, ['id']);
         fieldModal.find('*[name=position]').prop('disabled', false);
         fieldModal.find('*[name=form_section_id]').trigger("change");
-    });
-
-    $('.modal-clone-template-button').click(function(e) {
-        e.preventDefault();
-        openModalToEdit(cloneModal, $(this), 'data-template-', ['id', 'name']);
-        cloneModal.find('*[name=name_old]').prop('placeholder', $(this).attr('data-template-name'));
     });
 
     $('a[data-field-id]').click(function() {

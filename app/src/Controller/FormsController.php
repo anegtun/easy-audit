@@ -137,6 +137,45 @@ class FormsController extends AppController {
         return $this->redirect(['action'=>'index']);
     }
 
+    public function clone() {
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $data = $this->request->getData();
+
+            $old_form = $this->Forms->get($data['id']);
+            if(!empty($data['name_old'])) {
+                $old_form->name = $data['name_old'];
+            }
+            if(!empty($data['public_name_old'])) {
+                $old_form->public_name = $data['public_name_old'];
+            }
+            $this->Forms->save($old_form);
+
+            $new_form = $this->Forms->newEntity();
+            $new_form->name = $data['name'];
+            $new_form->public_name = $data['public_name'];
+            $new_form->type = $old_form->type;
+            $new_form = $this->Forms->save($new_form);
+
+            $sections_id_map = $this->Forms->FormSections->clone($data['id'], $new_form->id);
+
+            if(!empty($data['templates'])) {
+                foreach($data['templates'] as $oldTemplateId) {
+                    $old_template = $this->Forms->FormTemplates->get($oldTemplateId);
+                    $new_template = $this->Forms->FormTemplates->newEntity();
+                    $new_template->form_id = $new_form->id;
+                    $new_template->name = $old_template->name;
+                    $new_template->disabled = $old_template->disabled;
+                    $new_template = $this->Forms->FormTemplates->save($new_template);
+                    $this->Forms->FormTemplates->FormTemplateFields->clone($old_template->id, $new_template->id, $sections_id_map);
+                }
+            }
+            
+            $this->Flash->success(__('Form created.'));
+            return $this->redirect(['action'=>'detail', $new_form->id]);
+        }
+        return $this->redirect($this->referer());
+    }
+
     private function getForm($id) {
         return $this->Forms->get($id, ['contain' => [
             'FormSections' => ['sort' => 'position'],
