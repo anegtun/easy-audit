@@ -55,4 +55,4 @@ $this->Html->script('audit-fill', ['block' => 'script']);
     </div>
 <?php endforeach ?>
 
-<?= $this->element('Audits/modal_send', ['audit' => $audit]) ?>
+<?= $this->element('Audits/modals/send', ['audit' => $audit]) ?>

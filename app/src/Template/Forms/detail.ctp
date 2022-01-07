@@ -130,11 +130,11 @@ $is_editable = !$has_audits;
 
 
 
-<?= $this->element('Forms/modals/audits', ['modal_id' => 'modal-audits', 'audits' => $audits]) ?>
-<?= $this->element('Forms/modals/customers', ['modal_id' => 'modal-customers', 'customers' => $customers]) ?>
-
 <?= $this->element('Forms/modals/section', ['modal_id' => 'modal-section']) ?>
 <?= $this->element('Forms/modals/rename', ['modal_id' => 'modal-rename', 'form' => $form]) ?>
 <?= $this->element('Forms/modals/new_template', ['modal_id' => 'modal-new-template']) ?>
 
 <?= $this->element('FormTemplates/modals/clone', ['modal_id' => 'modal-clone-template']) ?>
+
+<?= $this->element('Audits/modals/list', ['modal_id' => 'modal-audits', 'audits' => $audits]) ?>
+<?= $this->element('Customers/modals/list', ['modal_id' => 'modal-customers', 'customers' => $customers]) ?>

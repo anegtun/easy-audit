@@ -1,6 +1,6 @@
 <div id="<?= $modal_id ?>" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <?= $this->Form->create(null, ['id'=>'field-form', 'url'=>['controller'=>'Forms', 'action'=>'rename']]) ?>
-        <?= $this->Form->hidden('id', ['value' => $form->id]) ?>
+    <?= $this->Form->create(null, ['id'=>'field-form', 'url'=>['controller'=>'FormTemplates', 'action'=>'rename']]) ?>
+        <?= $this->Form->hidden('id', ['value' => $template->id]) ?>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -11,8 +11,7 @@
                 </div>
                 <div class="modal-body">
                     <fieldset>
-                        <?= $this->Form->control('name', ['label'=>__('Name'), 'value'=>$form->name]) ?>
-                        <?= $this->Form->control('public_name', ['label'=>__('Public name'), 'value'=>$form->public_name]) ?>
+                        <?= $this->Form->control('name', ['label'=>__('Name'), 'value'=>$template->name]) ?>
                     </fieldset>
                 </div>
                 <div class="modal-footer">
