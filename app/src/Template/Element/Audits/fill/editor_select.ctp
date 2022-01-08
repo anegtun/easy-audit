@@ -59,29 +59,7 @@ foreach($audit->field_values as $fv) {
                             <?= $f->text ?>
                         </label>
 
-                        <div class="audit-field-select" data-optionset-id="<?= $f->optionset_id ?>">
-                            <?php foreach($optionset_values[$f->optionset_id] as $option) : ?>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="<?= "field_values[{$template->id}][{$f->id}]" ?>"
-                                        value="<?= $option->id ?>"
-                                        <?= !empty($value) && $value->optionset_value_id === $option->id ? 'checked="checked"' : '' ?>
-                                        <?= empty($option->is_default) ? 'data-open-observations="true"' : '' ?>
-                                    />
-                                    <span><?= $option->label ?></span>
-                                </label>
-                            <?php endforeach ?>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="<?= "field_values[{$template->id}][{$f->id}]" ?>"
-                                    value=""
-                                    <?= empty($value) ? 'checked="checked"' : '' ?>
-                                />
-                                <span>N/A</span>
-                            </label>
-                        </div>
+                        <?= $this->element("Audits/field/type_{$f->type}", ['template'=>$template, 'field'=>$f, 'value'=>$value]) ?>
 
                         <div class="audit-observations" data-has-observations="<?= $hasImgsOrObs ? true : false ?>">
                             <a class="audit-observations-open" href="#"><?= __('+ add observations') ?></a>

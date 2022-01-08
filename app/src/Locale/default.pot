@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-01-07 10:46+0000\n"
+"POT-Creation-Date: 2022-01-07 17:36+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -171,11 +171,23 @@ msgid "Audit report"
 msgstr ""
 
 #: Model/FormTemplateFieldTypes.php:8
-msgid "Select"
+#: Template/Audits/data.ctp:20
+#: Template/Audits/index.ctp:34
+#: Template/Element/Audits/list.ctp:13
+msgid "Date"
 msgstr ""
 
 #: Model/FormTemplateFieldTypes.php:9
-#: Template/Element/FormTemplates/modals/field.ctp:19
+#: Template/Element/Audits/fill/editor_select.ctp:75
+msgid "Photos"
+msgstr ""
+
+#: Model/FormTemplateFieldTypes.php:10
+msgid "Select"
+msgstr ""
+
+#: Model/FormTemplateFieldTypes.php:11
+#: Template/Element/FormTemplates/modals/field.ctp:28
 msgid "Text"
 msgstr ""
 
@@ -222,17 +234,11 @@ msgstr ""
 msgid "Audit data"
 msgstr ""
 
-#: Template/Audits/data.ctp:20
-#: Template/Audits/index.ctp:34
-#: Template/Element/Audits/list.ctp:13
-msgid "Date"
-msgstr ""
-
 #: Template/Audits/data.ctp:31;91
 #: Template/Audits/fill.ctp:38
 #: Template/Customers/detail.ctp:31;88
 #: Template/Element/FormTemplates/modals/clone.ctp:23
-#: Template/Element/FormTemplates/modals/field.ctp:26
+#: Template/Element/FormTemplates/modals/field.ctp:35
 #: Template/Element/FormTemplates/modals/new_template.ctp:19
 #: Template/Element/FormTemplates/modals/rename.ctp:18
 #: Template/Element/Forms/modals/clone.ctp:30
@@ -296,7 +302,7 @@ msgstr ""
 #: Template/Element/Audits/modals/send.ctp:27
 #: Template/Element/Customers/modals/list.ctp:29
 #: Template/Element/FormTemplates/modals/clone.ctp:24
-#: Template/Element/FormTemplates/modals/field.ctp:27
+#: Template/Element/FormTemplates/modals/field.ctp:36
 #: Template/Element/FormTemplates/modals/new_template.ctp:20
 #: Template/Element/FormTemplates/modals/rename.ctp:19
 #: Template/Element/Forms/modals/clone.ctp:31
@@ -323,7 +329,7 @@ msgid "History"
 msgstr ""
 
 #: Template/Audits/history.ctp:34
-#: Template/Element/FormTemplates/modals/field.ctp:18
+#: Template/Element/FormTemplates/modals/field.ctp:27
 #: Template/Element/Forms/modals/section.ctp:8
 msgid "Section"
 msgstr ""
@@ -396,60 +402,57 @@ msgstr ""
 msgid "Emails"
 msgstr ""
 
-#: Template/Element/Audits/fill_measure.ctp:14;41
+#: Template/Element/Audits/field/type_photos.ctp:23
+#: Template/Element/Audits/fill/editor_select.ctp:92
+msgid "Take photo"
+msgstr ""
+
+#: Template/Element/Audits/fill/editor_measure.ctp:14;41
 msgid "Item"
 msgstr ""
 
-#: Template/Element/Audits/fill_measure.ctp:15;42
+#: Template/Element/Audits/fill/editor_measure.ctp:15;42
 msgid "Unit"
 msgstr ""
 
-#: Template/Element/Audits/fill_measure.ctp:18;45
+#: Template/Element/Audits/fill/editor_measure.ctp:18;45
 msgid "Expected"
 msgstr ""
 
-#: Template/Element/Audits/fill_measure.ctp:19;46
+#: Template/Element/Audits/fill/editor_measure.ctp:19;46
 msgid "Actual"
 msgstr ""
 
-#: Template/Element/Audits/fill_measure.ctp:23;50
+#: Template/Element/Audits/fill/editor_measure.ctp:23;50
 msgid "Thredshold"
 msgstr ""
 
-#: Template/Element/Audits/fill_measure.ctp:60
+#: Template/Element/Audits/fill/editor_measure.ctp:60
 msgid "+ add measure"
 msgstr ""
 
-#: Template/Element/Audits/fill_select.ctp:13
+#: Template/Element/Audits/fill/editor_select.ctp:13
 msgid "Warning!"
 msgstr ""
 
-#: Template/Element/Audits/fill_select.ctp:13
+#: Template/Element/Audits/fill/editor_select.ctp:13
 msgid "Observations for the following items are the same as the last audit: "
 msgstr ""
 
-#: Template/Element/Audits/fill_select.ctp:25
+#: Template/Element/Audits/fill/editor_select.ctp:25
 msgid "Open all"
 msgstr ""
 
-#: Template/Element/Audits/fill_select.ctp:26
+#: Template/Element/Audits/fill/editor_select.ctp:26
 msgid "Close all"
 msgstr ""
 
-#: Template/Element/Audits/fill_select.ctp:87
+#: Template/Element/Audits/fill/editor_select.ctp:65
 msgid "+ add observations"
 msgstr ""
 
-#: Template/Element/Audits/fill_select.ctp:88
+#: Template/Element/Audits/fill/editor_select.ctp:66
 msgid "- close observations"
-msgstr ""
-
-#: Template/Element/Audits/fill_select.ctp:97
-msgid "Photos"
-msgstr ""
-
-#: Template/Element/Audits/fill_select.ctp:114
-msgid "Take photo"
 msgstr ""
 
 #: Template/Element/Audits/modals/send.ctp:6
@@ -492,7 +495,7 @@ msgstr ""
 msgid "Regards."
 msgstr ""
 
-#: Template/Element/FormTemplates/detail/field_editor.ctp:16
+#: Template/Element/FormTemplates/detail/field_editor.ctp:12
 msgid "Are you sure you want to remove this field? This can't be undone"
 msgstr ""
 
@@ -512,21 +515,21 @@ msgstr ""
 msgid "Disable old template?"
 msgstr ""
 
-#: Template/Element/FormTemplates/modals/field.ctp:11
+#: Template/Element/FormTemplates/modals/field.ctp:20
 msgid "Field"
 msgstr ""
 
-#: Template/Element/FormTemplates/modals/field.ctp:20
+#: Template/Element/FormTemplates/modals/field.ctp:29
 #: Template/Element/Forms/modals/new_form.ctp:15
 #: Template/Forms/index.ctp:20
 msgid "Type"
 msgstr ""
 
-#: Template/Element/FormTemplates/modals/field.ctp:21
+#: Template/Element/FormTemplates/modals/field.ctp:30
 msgid "Option Set"
 msgstr ""
 
-#: Template/Element/FormTemplates/modals/field.ctp:22
+#: Template/Element/FormTemplates/modals/field.ctp:31
 #: Template/Element/Forms/modals/section.ctp:17
 msgid "Place before..."
 msgstr ""

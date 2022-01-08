@@ -35,6 +35,11 @@
     color: #a94442;
 }
 
+.audit-field-simple {
+    padding-left: 1em;
+    margin-bottom: 0;
+}
+
 .audit-field > label > * {
     display: inline;
 }

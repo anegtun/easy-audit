@@ -1,7 +1,3 @@
-<?php
-$optionsetOptions = iterator_to_array($optionsets);
-?>
-
 <?php foreach($template->form->sections as $s) : ?>
     <fieldset>
         <legend><?= $this->EasyAuditTemplate->section($s) ?></legend>
@@ -19,7 +15,7 @@ $optionsetOptions = iterator_to_array($optionsets);
                     <div class="col-sm-1">
                         <strong>
                             <?= $field_types[$f->type] ?>
-                            <?= empty($f->optionset_id) ? '' : "<br/>({$f->optionset->name})" ?>
+                            <?= empty($f->optionset) ? '' : "<br/>({$f->optionset->name})" ?>
                         </strong>
                     </div>
                     <div class="col-sm-10 form-group">
@@ -33,4 +29,6 @@ $optionsetOptions = iterator_to_array($optionsets);
 
 
 
-<?= $this->element("FormTemplates/modals/field") ?>
+<?= $this->element("FormTemplates/modals/field", [
+    'allowed_field_types' => empty($allowed_field_types) ? null : $allowed_field_types
+]) ?>

@@ -115,7 +115,6 @@ $(document).ready(function() {
             const imgContainer = inputConainer.siblings('.audit-img-display').show();
             const loadingBox = inputConainer.siblings('.audit-img-aux-container').find('.audit-img-loader').clone().appendTo(imgContainer);
             const errorPhoto = inputConainer.siblings('.audit-img-aux-container').find('.audit-img-photo-error img');
-            $('.audit-retry-photos').show();
             $.ajax({
                 url: url,
                 processData: false,
@@ -134,6 +133,7 @@ $(document).ready(function() {
                         .attr('data-photo-uri', imageUri)
                         .click((e) => onPhotoRetryUpload(e.currentTarget, url, imageUri, inputConainer).catch(() => {}));
                     loadingBox.remove();
+                    $('.audit-retry-photos').show();
                     reject(placeholder);
                 }
             });
@@ -167,7 +167,6 @@ $(document).ready(function() {
                 .catch(() => nok++);
         });
         waitFor(() => (ok+nok) >= toRetry.length).then(() => {
-            console.log('Finished! ', ok, '/', nok);
             button.prop('disabled', false);
             if(!nok) {
                 button.hide();
