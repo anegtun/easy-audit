@@ -25,16 +25,16 @@ trait AuditFPDFCommonTraits {
     public function H1($str) {
         $this->SetFont('Arial', 'B', 20);
         $this->SetTextColor(29, 113, 184);
-        $this->Cell(0, 20, utf8_decode($str), 0, 0, 'C');
+        $this->MultiCell(0, 10, utf8_decode($str), 0, 'C');
         $this->SetDefaultFont();
-        $this->Ln(20);
+        $this->Ln(10);
     }
 
     public function H2($str) {
         $this->SetFont('Arial', 'B', 18);
-        $this->Cell(0, 15, utf8_decode($str), 0, 0, 'C');
+        $this->MultiCell(0, 15, utf8_decode($str), 0, 'C');
         $this->SetDefaultFont();
-        $this->Ln(20);
+        $this->Ln(10);
     }
 
     public function H3($str) {
