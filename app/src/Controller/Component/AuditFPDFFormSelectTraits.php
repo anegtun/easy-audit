@@ -157,29 +157,7 @@ trait AuditFPDFFormSelectTraits {
                     $this->SetFont('Arial', '', 12);
                     $this->SetTextColor(0, 0, 0);
                     $this->MultiCell(0, 5, utf8_decode(print_r($f['observations'], true)));
-                    if(!empty($f['photos'])) {
-                        $this->Ln(5);
-                        $y = $this->GetY();
-                        $rowMaxH = 0;
-                        foreach($f['photos'] as $i => $photo) {
-                            $path = WWW_ROOT . DS . $photo;
-                            $sizes = $this->CalculateImageSize($path);
-                            $newX = $this->GetX() + $sizes->trgW + 10;
-                            if($newX > 210) {
-                                $this->Ln($rowMaxH + 10);
-                                $rowMaxH = 0;
-                                $newX = $this->GetX() + $sizes->trgW + 10;
-                            }
-                            $newY = $this->GetY() + $sizes->trgH + 10;
-                            if($newY > 290) {
-                                $this->AddPage();
-                            }
-                            $this->Image(WWW_ROOT . DS . $photo, $this->GetX(), $this->GetY(), $sizes->trgW, $sizes->trgH);
-                            $this->SetX($newX);
-                            $rowMaxH = max($rowMaxH, $sizes->trgH);
-                        }
-                        $this->Ln($rowMaxH + 10);
-                    }
+                    $this->Photos($f['photos']);
                     $this->Ln(10);
                 }
             }
