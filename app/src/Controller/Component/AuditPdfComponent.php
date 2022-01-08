@@ -23,11 +23,11 @@ class AuditPdfComponent extends Component {
 
         foreach($audit->templates as $t) {
             switch($t->form->type) {
+                case 'checklist':
+                    $pdf->ChecklistReport($t);
+                    break;
                 case 'measure':
                     $pdf->MeasureReport($t);
-                    break;
-                case 'select':
-                    $pdf->SelectReport($t);
                     break;
                 case 'simple':
                     $pdf->SimpleReport($t);

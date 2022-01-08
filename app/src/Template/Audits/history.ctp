@@ -12,7 +12,7 @@ $this->Html->script('audit-history', ['block' => 'script']);
 
 <?php foreach($audit->templates as $t) : ?>
 
-    <?php if($t->form->type === 'select') : ?>
+    <?php if($t->form->type === 'checklist') : ?>
 
         <?php
         $form_audits = [];
