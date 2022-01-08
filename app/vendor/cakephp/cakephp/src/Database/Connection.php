@@ -29,13 +29,13 @@ use Cake\Database\Schema\Collection as SchemaCollection;
 use Cake\Datasource\ConnectionInterface;
 use Cake\Log\Log;
 use Exception;
+use Throwable;
 
 /**
  * Represents a connection with a database server.
  */
 class Connection implements ConnectionInterface
 {
-
     use TypeConverterTrait;
 
     /**
@@ -107,7 +107,15 @@ class Connection implements ConnectionInterface
     /**
      * Constructor.
      *
-     * @param array $config configuration for connecting to database
+     * ### Available options:
+     * - `driver` Sort name or FCQN for driver.
+     * - `log` Boolean indicating whether to use query logging.
+     * - `name` Connection name.
+     * - `cacheMetaData` Boolean indicating whether metadata (datasource schemas) should be cached.
+     *    If set to a string it will be used as the name of cache config to use.
+     * - `cacheKeyPrefix` Custom prefix to use when generation cache keys. Defaults to connection name.
+     *
+     * @param array $config Configuration array.
      */
     public function __construct($config)
     {
@@ -576,13 +584,8 @@ class Connection implements ConnectionInterface
     /**
      * Enables/disables the usage of savepoints, enables only if driver the allows it.
      *
-     * If you are trying to enable this feature, make sure you check the return value of this
-     * function to verify it was enabled successfully.
-     *
-     * ### Example:
-     *
-     * `$connection->enableSavePoints(true)` Returns true if drivers supports save points, false otherwise
-     * `$connection->enableSavePoints(false)` Disables usage of savepoints and returns false
+     * If you are trying to enable this feature, make sure you check
+     * `isSavePointsEnabled()` to verify that savepoints were enabled successfully.
      *
      * @param bool $enable Whether or not save points should be used.
      * @return $this
@@ -654,7 +657,7 @@ class Connection implements ConnectionInterface
     /**
      * Creates a new save point for nested transactions.
      *
-     * @param string $name The save point name.
+     * @param string|int $name The save point name.
      * @return void
      */
     public function createSavePoint($name)
@@ -665,7 +668,7 @@ class Connection implements ConnectionInterface
     /**
      * Releases a save point by its name.
      *
-     * @param string $name The save point name.
+     * @param string|int $name The save point name.
      * @return void
      */
     public function releaseSavePoint($name)
@@ -676,7 +679,7 @@ class Connection implements ConnectionInterface
     /**
      * Rollback a save point by its name.
      *
-     * @param string $name The save point name.
+     * @param string|int $name The save point name.
      * @return void
      */
     public function rollbackSavepoint($name)
@@ -730,12 +733,15 @@ class Connection implements ConnectionInterface
      * });
      * ```
      */
-    public function transactional(callable $callback)
+    public function transactional(callable $transaction)
     {
         $this->begin();
 
         try {
-            $result = $callback($this);
+            $result = $transaction($this);
+        } catch (Throwable $e) {
+            $this->rollback(false);
+            throw $e;
         } catch (Exception $e) {
             $this->rollback(false);
             throw $e;
@@ -778,13 +784,13 @@ class Connection implements ConnectionInterface
      * });
      * ```
      */
-    public function disableConstraints(callable $callback)
+    public function disableConstraints(callable $operation)
     {
-        return $this->getDisconnectRetry()->run(function () use ($callback) {
+        return $this->getDisconnectRetry()->run(function () use ($operation) {
             $this->disableForeignKeys();
 
             try {
-                $result = $callback($this);
+                $result = $operation($this);
             } catch (Exception $e) {
                 $this->enableForeignKeys();
                 throw $e;
@@ -995,7 +1001,7 @@ class Connection implements ConnectionInterface
             'username' => '*****',
             'host' => '*****',
             'database' => '*****',
-            'port' => '*****'
+            'port' => '*****',
         ];
         $replace = array_intersect_key($secrets, $this->_config);
         $config = $replace + $this->_config;
@@ -1007,7 +1013,7 @@ class Connection implements ConnectionInterface
             'transactionStarted' => $this->_transactionStarted,
             'useSavePoints' => $this->_useSavePoints,
             'logQueries' => $this->_logQueries,
-            'logger' => $this->_logger
+            'logger' => $this->_logger,
         ];
     }
 }

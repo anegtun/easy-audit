@@ -30,7 +30,6 @@ use RuntimeException;
  */
 class Oauth
 {
-
     /**
      * Add headers for Oauth authorization.
      *
@@ -139,9 +138,13 @@ class Oauth
             'oauth_timestamp' => $timestamp,
             'oauth_signature_method' => 'HMAC-SHA1',
             'oauth_token' => $credentials['token'],
-            'oauth_consumer_key' => $credentials['consumerKey'],
+            'oauth_consumer_key' => $this->_encode($credentials['consumerKey']),
         ];
         $baseString = $this->baseString($request, $values);
+
+        // Consumer key should only be encoded for base string calculation as
+        // auth header generation already encodes independently
+        $values['oauth_consumer_key'] = $credentials['consumerKey'];
 
         if (isset($credentials['realm'])) {
             $values['oauth_realm'] = $credentials['realm'];
@@ -165,7 +168,6 @@ class Oauth
      * @param \Cake\Http\Client\Request $request The request object.
      * @param array $credentials Authentication credentials.
      * @return string
-     *
      * @throws \RuntimeException
      */
     protected function _rsaSha1($request, $credentials)

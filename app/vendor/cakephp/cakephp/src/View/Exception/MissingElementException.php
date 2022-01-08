@@ -19,11 +19,8 @@ use Cake\Core\Exception\Exception;
  */
 class MissingElementException extends Exception
 {
-
     /**
-     * Message template
-     *
-     * @var string
+     * @inheritDoc
      */
     protected $_messageTemplate = 'Element file "%s" is missing.';
 }

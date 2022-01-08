@@ -24,11 +24,10 @@ use RecursiveIteratorIterator;
  * Folder structure browser, lists folders and files.
  * Provides an Object interface for Common directory related tasks.
  *
- * @link https://book.cakephp.org/3.0/en/core-libraries/file-folder.html#folder-api
+ * @link https://book.cakephp.org/3/en/core-libraries/file-folder.html#folder-api
  */
 class Folder
 {
-
     /**
      * Default scheme for Folder::copy
      * Recursively merges subfolders with the same name
@@ -86,16 +85,18 @@ class Folder
      * Mode to be used on create. Does nothing on windows platforms.
      *
      * @var int
-     * https://book.cakephp.org/3.0/en/core-libraries/file-folder.html#Cake\Filesystem\Folder::$mode
+     * https://book.cakephp.org/3/en/core-libraries/file-folder.html#Cake\Filesystem\Folder::$mode
      */
     public $mode = 0755;
 
     /**
      * Functions array to be called depending on the sort type chosen.
+     *
+     * @var string[]
      */
     protected $_fsorts = [
         self::SORT_NAME => 'getPathname',
-        self::SORT_TIME => 'getCTime'
+        self::SORT_TIME => 'getCTime',
     ];
 
     /**
@@ -167,7 +168,7 @@ class Folder
      * Change directory to $path.
      *
      * @param string $path Path to the directory to change to
-     * @return string|bool The new path. Returns false on failure
+     * @return string|false The new path. Returns false on failure
      */
     public function cd($path)
     {
@@ -354,7 +355,6 @@ class Folder
      *
      * @param string $path Path to check
      * @return string Set of slashes ("\\" or "/")
-     *
      * @deprecated 3.7.0 This method will be removed in 4.0.0. Use correctSlashFor() instead.
      */
     public static function normalizePath($path)
@@ -582,6 +582,8 @@ class Folder
             $directory = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::KEY_AS_PATHNAME | RecursiveDirectoryIterator::CURRENT_AS_SELF);
             $iterator = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::SELF_FIRST);
         } catch (Exception $e) {
+            unset($directory, $iterator);
+
             if ($type === null) {
                 return [[], []];
             }
@@ -597,12 +599,14 @@ class Folder
             if ($skipHidden) {
                 $subPathName = $fsIterator->getSubPathname();
                 if ($subPathName[0] === '.' || strpos($subPathName, DIRECTORY_SEPARATOR . '.') !== false) {
+                    unset($fsIterator);
                     continue;
                 }
             }
             /** @var \FilesystemIterator $item */
             $item = $fsIterator->current();
             if (!empty($exceptions) && isset($exceptions[$item->getFilename()])) {
+                unset($fsIterator, $item);
                 continue;
             }
 
@@ -611,7 +615,15 @@ class Folder
             } elseif ($item->isDir() && !$item->isDot()) {
                 $directories[] = $itemPath;
             }
+
+            // inner iterators need to be unset too in order for locks on parents to be released
+            unset($fsIterator, $item);
         }
+
+        // unsetting iterators helps releasing possible locks in certain environments,
+        // which could otherwise make `rmdir()` fail
+        unset($directory, $iterator);
+
         if ($type === null) {
             return [$directories, $files];
         }
@@ -731,6 +743,8 @@ class Folder
                 $directory = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::CURRENT_AS_SELF);
                 $iterator = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::CHILD_FIRST);
             } catch (Exception $e) {
+                unset($directory, $iterator);
+
                 return false;
             }
 
@@ -752,10 +766,19 @@ class Folder
                     } else {
                         $this->_errors[] = sprintf('%s NOT removed', $filePath);
 
+                        unset($directory, $iterator, $item);
+
                         return false;
                     }
                 }
+
+                // inner iterators need to be unset too in order for locks on parents to be released
+                unset($item);
             }
+
+            // unsetting iterators helps releasing possible locks in certain environments,
+            // which could otherwise make `rmdir()` fail
+            unset($directory, $iterator);
 
             $path = rtrim($path, DIRECTORY_SEPARATOR);
             //@codingStandardsIgnoreStart
@@ -803,7 +826,7 @@ class Folder
             'mode' => $this->mode,
             'skip' => [],
             'scheme' => Folder::MERGE,
-            'recursive' => true
+            'recursive' => true,
         ];
 
         $fromDir = $options['from'];

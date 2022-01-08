@@ -14,32 +14,32 @@
  */
 namespace Cake\TestSuite;
 
-use Cake\Mailer\AbstractTransport;
 use Cake\Mailer\Email;
 use Cake\Mailer\TransportFactory;
+use Cake\Mailer\Transport\DebugTransport;
 
 /**
  * TestEmailTransport
  *
  * Set this as the email transport to capture emails for later assertions
  *
- * @see Cake\TestSuite\EmailTrait
+ * @see \Cake\TestSuite\EmailTrait
  */
-class TestEmailTransport extends AbstractTransport
+class TestEmailTransport extends DebugTransport
 {
     private static $emails = [];
 
     /**
      * Stores email for later assertions
      *
-     * @param Email $email Email
-     * @return bool
+     * @param \Cake\Mailer\Email $email Email
+     * @return array
      */
     public function send(Email $email)
     {
         static::$emails[] = $email;
 
-        return true;
+        return parent::send($email);
     }
 
     /**

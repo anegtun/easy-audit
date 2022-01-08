@@ -72,10 +72,10 @@ class Curl implements AdapterInterface
 
         $out = [
             CURLOPT_URL => (string)$request->getUri(),
-            CURLOPT_HTTP_VERSION => $request->getProtocolVersion(),
+            CURLOPT_HTTP_VERSION => $this->getProtocolVersion($request),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HEADER => true,
-            CURLOPT_HTTPHEADER => $headers
+            CURLOPT_HTTPHEADER => $headers,
         ];
         switch ($request->getMethod()) {
             case Request::METHOD_GET:
@@ -84,6 +84,10 @@ class Curl implements AdapterInterface
 
             case Request::METHOD_POST:
                 $out[CURLOPT_POST] = true;
+                break;
+
+            case Request::METHOD_HEAD:
+                $out[CURLOPT_NOBODY] = true;
                 break;
 
             default:
@@ -96,6 +100,10 @@ class Curl implements AdapterInterface
         if ($body) {
             $body->rewind();
             $out[CURLOPT_POSTFIELDS] = $body->getContents();
+            // GET requests with bodies require custom request to be used.
+            if (isset($out[CURLOPT_HTTPGET])) {
+                $out[CURLOPT_CUSTOMREQUEST] = 'get';
+            }
         }
 
         if (empty($options['ssl_cafile'])) {
@@ -133,6 +141,33 @@ class Curl implements AdapterInterface
         }
 
         return $out;
+    }
+
+    /**
+     * Convert HTTP version number into curl value.
+     *
+     * @param \Cake\Http\Client\Request $request The request to get a protocol version for.
+     * @return int
+     */
+    protected function getProtocolVersion(Request $request)
+    {
+        switch ($request->getProtocolVersion()) {
+            case '1.0':
+                return CURL_HTTP_VERSION_1_0;
+            case '1.1':
+                return CURL_HTTP_VERSION_1_1;
+            case '2':
+            case '2.0':
+                if (defined('CURL_HTTP_VERSION_2TLS')) {
+                    return CURL_HTTP_VERSION_2TLS;
+                }
+                if (defined('CURL_HTTP_VERSION_2_0')) {
+                    return CURL_HTTP_VERSION_2_0;
+                }
+                throw new HttpException('libcurl 7.33 or greater required for HTTP/2 support');
+        }
+
+        return CURL_HTTP_VERSION_NONE;
     }
 
     /**

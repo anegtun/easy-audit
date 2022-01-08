@@ -14,7 +14,7 @@
  */
 namespace Cake\Cache\Engine;
 
-use APCuIterator;
+use APCUIterator;
 use Cake\Cache\CacheEngine;
 
 /**
@@ -22,7 +22,6 @@ use Cake\Cache\CacheEngine;
  */
 class ApcuEngine extends CacheEngine
 {
-
     /**
      * Contains the compiled group names
      * (prefixed with the global configuration prefix)
@@ -84,7 +83,7 @@ class ApcuEngine extends CacheEngine
      *
      * @param string $key Identifier for the data
      * @param int $offset How much to increment
-     * @return bool|int New incremented value, false otherwise
+     * @return int|false New incremented value, false otherwise
      * @link https://secure.php.net/manual/en/function.apcu-inc.php
      */
     public function increment($key, $offset = 1)
@@ -99,7 +98,7 @@ class ApcuEngine extends CacheEngine
      *
      * @param string $key Identifier for the data
      * @param int $offset How much to subtract
-     * @return bool|int New decremented value, false otherwise
+     * @return int|false New decremented value, false otherwise
      * @link https://secure.php.net/manual/en/function.apcu-dec.php
      */
     public function decrement($key, $offset = 1)
@@ -137,8 +136,8 @@ class ApcuEngine extends CacheEngine
         if ($check) {
             return true;
         }
-        if (class_exists('APCuIterator', false)) {
-            $iterator = new APCuIterator(
+        if (class_exists(APCUIterator::class, false)) {
+            $iterator = new APCUIterator(
                 '/^' . preg_quote($this->_config['prefix'], '/') . '/',
                 APC_ITER_NONE
             );
@@ -179,7 +178,7 @@ class ApcuEngine extends CacheEngine
      * If the group initial value was not found, then it initializes
      * the group accordingly.
      *
-     * @return array
+     * @return string[]
      * @link https://secure.php.net/manual/en/function.apcu-fetch.php
      * @link https://secure.php.net/manual/en/function.apcu-store.php
      */

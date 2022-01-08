@@ -39,7 +39,7 @@ $object = new FileEngine($config);
 Cache::config('other', $object);
 ```
 
-You can now read a write from the cache:
+You can now read and write from the cache:
 
 ```php
 $data = Cache::remember('my_cache_key', function () {
@@ -52,6 +52,6 @@ the callback will be executed and the returned data will be cached for future ca
 
 ## Documentation
 
-Please make sure you check the [official documentation](https://book.cakephp.org/3.0/en/core-libraries/caching.html)
+Please make sure you check the [official documentation](https://book.cakephp.org/3/en/core-libraries/caching.html)
 
 

@@ -27,10 +27,11 @@ use LogicException;
  * and constructing behavior objects.
  *
  * This class also provides method for checking and dispatching behavior methods.
+ *
+ * @extends \Cake\Core\ObjectRegistry<\Cake\ORM\Behavior>
  */
 class BehaviorRegistry extends ObjectRegistry implements EventDispatcherInterface
 {
-
     use EventDispatcherTrait;
 
     /**
@@ -118,7 +119,7 @@ class BehaviorRegistry extends ObjectRegistry implements EventDispatcherInterfac
      * and Cake\Core\ObjectRegistry::unload()
      *
      * @param string $class The classname that is missing.
-     * @param string $plugin The plugin the behavior is missing in.
+     * @param string|null $plugin The plugin the behavior is missing in.
      * @return void
      * @throws \Cake\ORM\Exception\MissingBehaviorException
      */
@@ -126,7 +127,7 @@ class BehaviorRegistry extends ObjectRegistry implements EventDispatcherInterfac
     {
         throw new MissingBehaviorException([
             'class' => $class . 'Behavior',
-            'plugin' => $plugin
+            'plugin' => $plugin,
         ]);
     }
 

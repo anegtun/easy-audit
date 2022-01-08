@@ -18,7 +18,6 @@ namespace Cake\Core;
  */
 class ClassLoader
 {
-
     /**
      * An associative array where the key is a namespace prefix and the value
      * is an array of base directories for classes in that namespace.
@@ -97,7 +96,7 @@ class ClassLoader
      *
      * @param string $prefix The namespace prefix.
      * @param string $relativeClass The relative class name.
-     * @return mixed Boolean false if no mapped file can be loaded, or the
+     * @return string|false Boolean false if no mapped file can be loaded, or the
      * name of the mapped file that was loaded.
      */
     protected function _loadMappedFile($prefix, $relativeClass)

@@ -21,9 +21,9 @@ use Cake\Http\MiddlewareQueue;
 use Cake\Http\Runner;
 use Cake\Routing\Exception\RedirectException;
 use Cake\Routing\Router;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response\RedirectResponse;
 
 /**
  * Applies routing rules to the request and creates the controller
@@ -33,6 +33,8 @@ class RoutingMiddleware
 {
     /**
      * Key used to store the route collection in the cache engine
+     *
+     * @var string
      */
     const ROUTE_COLLECTION_CACHE_KEY = 'routeCollection';
 
@@ -153,7 +155,7 @@ class RoutingMiddleware
         } catch (RedirectException $e) {
             return new RedirectResponse(
                 $e->getMessage(),
-                $e->getCode(),
+                (int)$e->getCode(),
                 $response->getHeaders()
             );
         }

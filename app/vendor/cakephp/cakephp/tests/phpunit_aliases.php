@@ -17,3 +17,7 @@ if (class_exists('PHPUnit_Runner_Version')) {
         class_alias('PHPUnit_Framework_ExpectationFailedException', 'PHPUnit\Framework\ExpectationFailedException');
     }
 }
+
+if (!class_exists('PHPUnit\Framework\MockObject\MockBuilder')) {
+    class_alias('PHPUnit_Framework_MockObject_MockBuilder', 'PHPUnit\Framework\MockObject\MockBuilder');
+}

@@ -59,7 +59,7 @@ use Cake\ORM\Locator\LocatorAwareTrait;
 $articles = $this->getTableLocator()->get('Articles');
 ```
 
-By default classes using `LocatorAwareTrait` will share a global locator instance.
+By default, classes using `LocatorAwareTrait` will share a global locator instance.
 You can inject your own locator instance into the object:
 
 ```php
@@ -78,12 +78,12 @@ In your table classes you can define the relations between your tables. CakePHP'
 supports 4 association types out of the box:
 
 * belongsTo - E.g. Many articles belong to a user.
-* hasOne - E.g. A user has one profile
-* hasMany - E.g. A user has many articles
+* hasOne - E.g. A user has one profile.
+* hasMany - E.g. A user has many articles.
 * belongsToMany - E.g. An article belongsToMany tags.
 
 You define associations in your table's `initialize()` method. See the
-[documentation](https://book.cakephp.org/3.0/en/orm/associations.html) for
+[documentation](https://book.cakephp.org/3/en/orm/associations.html) for
 complete examples.
 
 ## Reading Data
@@ -99,8 +99,8 @@ foreach ($articles->find() as $article) {
 }
 ```
 
-You can use the [query builder](https://book.cakephp.org/3.0/en/orm/query-builder.html) to create
-complex queries, and a [variety of methods](https://book.cakephp.org/3.0/en/orm/retrieving-data-and-resultsets.html)
+You can use the [query builder](https://book.cakephp.org/3/en/orm/query-builder.html) to create
+complex queries, and a [variety of methods](https://book.cakephp.org/3/en/orm/retrieving-data-and-resultsets.html)
 to access your data.
 
 ## Saving Data
@@ -134,7 +134,7 @@ $articles->save($article, [
 ```
 
 The above shows how you can easily marshal and save an entity and its
-associations in a simple & powerful way. Consult the [ORM documentation](https://book.cakephp.org/3.0/en/orm/saving-data.html)
+associations in a simple & powerful way. Consult the [ORM documentation](https://book.cakephp.org/3/en/orm/saving-data.html)
 for more in-depth examples.
 
 ## Deleting Data
@@ -149,7 +149,7 @@ $articles->delete($article);
 
 ## Meta Data Cache
 
-It is recommended to enable meta data cache for production systems to avoid performance issues.
+It is recommended to enable metadata cache for production systems to avoid performance issues.
 For e.g. file system strategy your bootstrap file could look like this:
 ```php
 use Cake\Cache\Engine\FileEngine;
@@ -234,5 +234,5 @@ Configure::write('App.namespace', 'My\Log\SubNamespace');
 
 ## Additional Documentation
 
-Consult [the CakePHP ORM documentation](https://book.cakephp.org/3.0/en/orm.html)
+Consult [the CakePHP ORM documentation](https://book.cakephp.org/3/en/orm.html)
 for more in-depth documentation.

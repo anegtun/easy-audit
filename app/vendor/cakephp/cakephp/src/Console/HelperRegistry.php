@@ -21,10 +21,11 @@ use Cake\Core\ObjectRegistry;
 /**
  * Registry for Helpers. Provides features
  * for lazily loading helpers.
+ *
+ * @extends \Cake\Core\ObjectRegistry<\Cake\Console\Helper>
  */
 class HelperRegistry extends ObjectRegistry
 {
-
     /**
      * Shell to use to set params to tasks.
      *
@@ -71,7 +72,7 @@ class HelperRegistry extends ObjectRegistry
      * and Cake\Core\ObjectRegistry::unload()
      *
      * @param string $class The classname that is missing.
-     * @param string $plugin The plugin the helper is missing in.
+     * @param string|null $plugin The plugin the helper is missing in.
      * @return void
      * @throws \Cake\Console\Exception\MissingHelperException
      */
@@ -79,7 +80,7 @@ class HelperRegistry extends ObjectRegistry
     {
         throw new MissingHelperException([
             'class' => $class,
-            'plugin' => $plugin
+            'plugin' => $plugin,
         ]);
     }
 

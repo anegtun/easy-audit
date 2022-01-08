@@ -19,6 +19,7 @@ use Cake\Chronos\MutableDateTime;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
+use Cake\Utility\Security;
 
 if (is_file('vendor/autoload.php')) {
     require_once 'vendor/autoload.php';
@@ -79,20 +80,20 @@ Configure::write('App', [
         'plugins' => [TEST_APP . 'Plugin' . DS],
         'templates' => [APP . 'Template' . DS],
         'locales' => [APP . 'Locale' . DS],
-    ]
+    ],
 ]);
 
 Cache::setConfig([
     '_cake_core_' => [
         'engine' => 'File',
         'prefix' => 'cake_core_',
-        'serialize' => true
+        'serialize' => true,
     ],
     '_cake_model_' => [
         'engine' => 'File',
         'prefix' => 'cake_model_',
-        'serialize' => true
-    ]
+        'serialize' => true,
+    ],
 ]);
 
 // Ensure default test connection is defined
@@ -104,7 +105,7 @@ ConnectionManager::setConfig('test', ['url' => getenv('db_dsn')]);
 ConnectionManager::setConfig('test_custom_i18n_datasource', ['url' => getenv('db_dsn')]);
 
 Configure::write('Session', [
-    'defaults' => 'php'
+    'defaults' => 'php',
 ]);
 
 Log::setConfig([
@@ -124,13 +125,15 @@ Log::setConfig([
         'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
         'file' => 'error',
         'path' => LOGS,
-    ]
+    ],
 ]);
 
 Chronos::setTestNow(Chronos::now());
 
 ini_set('intl.default_locale', 'en_US');
 ini_set('session.gc_divisor', '1');
+
+Security::setSalt('a-long-but-not-random-value');
 
 loadPHPUnitAliases();
 

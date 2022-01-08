@@ -27,7 +27,6 @@ use Cake\Http\Exception\HttpException;
  */
 class Stream implements AdapterInterface
 {
-
     /**
      * Context resource used by the stream API.
      *
@@ -213,6 +212,7 @@ class Stream implements AdapterInterface
             'ssl_allow_self_signed',
             'ssl_cafile',
             'ssl_local_cert',
+            'ssl_local_pk',
             'ssl_passphrase',
         ];
         if (empty($options['ssl_cafile'])) {
@@ -283,7 +283,6 @@ class Stream implements AdapterInterface
      *
      * @param array $headers Unparsed headers.
      * @param string $body The response body.
-     *
      * @return \Cake\Http\Client\Response
      */
     protected function _buildResponse($headers, $body)

@@ -19,6 +19,7 @@ use Cake\Console\Exception\StopException;
 use Cake\Datasource\ModelAwareTrait;
 use Cake\Log\LogTrait;
 use Cake\ORM\Locator\LocatorAwareTrait;
+use Cake\Utility\Inflector;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -63,6 +64,10 @@ class Command
         $this->modelFactory('Table', function ($alias) {
             return $this->getTableLocator()->get($alias);
         });
+
+        if (isset($this->modelClass)) {
+            $this->loadModel();
+        }
     }
 
     /**
@@ -96,6 +101,25 @@ class Command
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Get the command name.
+     *
+     * Returns the command name based on class name.
+     * For e.g. for a command with class name `UpdateTableCommand` the default
+     * name returned would be `'update_table'`.
+     *
+     * @return string
+     */
+    public static function defaultName()
+    {
+        $pos = strrpos(static::class, '\\');
+        /** @psalm-suppress PossiblyFalseOperand */
+        $name = substr(static::class, $pos + 1, -7);
+        $name = Inflector::underscore($name);
+
+        return $name;
     }
 
     /**
@@ -227,7 +251,7 @@ class Command
      *
      * @param \Cake\Console\Arguments $args The command arguments.
      * @param \Cake\Console\ConsoleIo $io The console io
-     * @return null|int The exit code or null for success
+     * @return int|null The exit code or null for success
      */
     public function execute(Arguments $args, ConsoleIo $io)
     {
@@ -244,5 +268,36 @@ class Command
     public function abort($code = self::CODE_ERROR)
     {
         throw new StopException('Command aborted', $code);
+    }
+
+    /**
+     * Execute another command with the provided set of arguments.
+     *
+     * @param string|\Cake\Console\Command $command The command class name or command instance.
+     * @param array $args The arguments to invoke the command with.
+     * @param \Cake\Console\ConsoleIo $io The ConsoleIo instance to use for the executed command.
+     * @return int|null The exit code or null for success of the command.
+     */
+    public function executeCommand($command, array $args = [], ConsoleIo $io = null)
+    {
+        if (is_string($command)) {
+            if (!class_exists($command)) {
+                throw new InvalidArgumentException("Command class '{$command}' does not exist.");
+            }
+            $command = new $command();
+        }
+        if (!$command instanceof Command) {
+            $commandType = getTypeName($command);
+            throw new InvalidArgumentException(
+                "Command '{$commandType}' is not a subclass of Cake\Console\Command."
+            );
+        }
+        $io = $io ?: new ConsoleIo();
+
+        try {
+            return $command->run($args, $io);
+        } catch (StopException $e) {
+            return $e->getCode();
+        }
     }
 }

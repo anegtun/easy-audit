@@ -21,10 +21,11 @@ use Cake\Core\ObjectRegistry;
 /**
  * Registry for Tasks. Provides features
  * for lazily loading tasks.
+ *
+ * @extends \Cake\Core\ObjectRegistry<\Cake\Console\Shell>
  */
 class TaskRegistry extends ObjectRegistry
 {
-
     /**
      * Shell to use to set params to tasks.
      *
@@ -62,7 +63,7 @@ class TaskRegistry extends ObjectRegistry
      * and Cake\Core\ObjectRegistry::unload()
      *
      * @param string $class The classname that is missing.
-     * @param string $plugin The plugin the task is missing in.
+     * @param string|null $plugin The plugin the task is missing in.
      * @return void
      * @throws \Cake\Console\Exception\MissingTaskException
      */
@@ -70,7 +71,7 @@ class TaskRegistry extends ObjectRegistry
     {
         throw new MissingTaskException([
             'class' => $class,
-            'plugin' => $plugin
+            'plugin' => $plugin,
         ]);
     }
 

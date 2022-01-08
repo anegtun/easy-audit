@@ -12,13 +12,13 @@
  */
 namespace Cake\Console\Exception;
 
-use Cake\Core\Exception\Exception;
-
 /**
  * Used when a Helper cannot be found.
  */
-class MissingHelperException extends Exception
+class MissingHelperException extends ConsoleException
 {
-
+    /**
+     * @inheritDoc
+     */
     protected $_messageTemplate = 'Helper class %s could not be found.';
 }

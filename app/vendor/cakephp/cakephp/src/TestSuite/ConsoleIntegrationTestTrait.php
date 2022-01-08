@@ -13,8 +13,8 @@
  */
 namespace Cake\TestSuite;
 
+use Cake\Console\Command;
 use Cake\Console\CommandRunner;
-use Cake\Console\ConsoleInput;
 use Cake\Console\ConsoleIo;
 use Cake\Console\Exception\StopException;
 use Cake\Core\Configure;
@@ -24,7 +24,9 @@ use Cake\TestSuite\Constraint\Console\ContentsEmpty;
 use Cake\TestSuite\Constraint\Console\ContentsNotContain;
 use Cake\TestSuite\Constraint\Console\ContentsRegExp;
 use Cake\TestSuite\Constraint\Console\ExitCode;
+use Cake\TestSuite\Stub\ConsoleInput;
 use Cake\TestSuite\Stub\ConsoleOutput;
+use Cake\TestSuite\Stub\MissingConsoleInputException;
 
 /**
  * A test case class intended to make integration tests of cake console commands
@@ -80,24 +82,19 @@ trait ConsoleIntegrationTestTrait
 
         $this->_out = new ConsoleOutput();
         $this->_err = new ConsoleOutput();
-        $this->_in = $this->getMockBuilder(ConsoleInput::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['read'])
-            ->getMock();
-
-        $i = 0;
-        foreach ($input as $in) {
-            $this->_in
-                ->expects($this->at($i++))
-                ->method('read')
-                ->will($this->returnValue($in));
-        }
+        $this->_in = new ConsoleInput($input);
 
         $args = $this->commandStringToArgs("cake $command");
         $io = new ConsoleIo($this->_out, $this->_err, $this->_in);
 
         try {
             $this->_exitCode = $runner->run($args, $io);
+        } catch (MissingConsoleInputException $e) {
+            $messages = $this->_out->messages();
+            if (count($messages)) {
+                $e->setQuestion($messages[count($messages) - 1]);
+            }
+            throw $e;
         } catch (StopException $exception) {
             $this->_exitCode = $exception->getCode();
         }
@@ -142,6 +139,28 @@ trait ConsoleIntegrationTestTrait
     }
 
     /**
+     * Asserts shell exited with the Command::CODE_SUCCESS
+     *
+     * @param string $message Failure message
+     * @return void
+     */
+    public function assertExitSuccess($message = '')
+    {
+        $this->assertThat(Command::CODE_SUCCESS, new ExitCode($this->_exitCode), $message);
+    }
+
+    /**
+     * Asserts shell exited with Command::CODE_ERROR
+     *
+     * @param string $message Failure message
+     * @return void
+     */
+    public function assertExitError($message = '')
+    {
+        $this->assertThat(Command::CODE_ERROR, new ExitCode($this->_exitCode), $message);
+    }
+
+    /**
      * Asserts that `stdout` is empty
      *
      * @param string $message The message to output when the assertion fails.
@@ -163,6 +182,7 @@ trait ConsoleIntegrationTestTrait
     {
         $this->assertThat($expected, new ContentsContain($this->_out->messages(), 'output'), $message);
     }
+
     /**
      * Asserts `stdout` does not contain expected output
      *

@@ -33,7 +33,6 @@ use SplFileObject;
  */
 class FileEngine extends CacheEngine
 {
-
     /**
      * Instance of SplFileObject class
      *
@@ -68,7 +67,7 @@ class FileEngine extends CacheEngine
         'path' => null,
         'prefix' => 'cake_',
         'probability' => 100,
-        'serialize' => true
+        'serialize' => true,
     ];
 
     /**
@@ -278,17 +277,32 @@ class FileEngine extends CacheEngine
             RecursiveIteratorIterator::SELF_FIRST
         );
         $cleared = [];
-        foreach ($contents as $path) {
-            if ($path->isFile()) {
+        /** @var \SplFileInfo $fileInfo */
+        foreach ($contents as $fileInfo) {
+            if ($fileInfo->isFile()) {
+                unset($fileInfo);
                 continue;
             }
 
-            $path = $path->getRealPath() . DIRECTORY_SEPARATOR;
-            if (!in_array($path, $cleared)) {
+            $realPath = $fileInfo->getRealPath();
+            if (!$realPath) {
+                unset($fileInfo);
+                continue;
+            }
+
+            $path = $realPath . DIRECTORY_SEPARATOR;
+            if (!in_array($path, $cleared, true)) {
                 $this->_clearDirectory($path, $now, $threshold);
                 $cleared[] = $path;
             }
+
+            // possible inner iterators need to be unset too in order for locks on parents to be released
+            unset($fileInfo);
         }
+
+        // unsetting iterators helps releasing possible locks in certain environments,
+        // which could otherwise make `rmdir()` fail
+        unset($directory, $contents);
 
         return true;
     }
@@ -395,7 +409,8 @@ class FileEngine extends CacheEngine
         if (!$createKey && !$path->isFile()) {
             return false;
         }
-        if (empty($this->_File) ||
+        if (
+            empty($this->_File) ||
             $this->_File->getBasename() !== $key ||
             $this->_File->valid() === false
         ) {
@@ -514,6 +529,10 @@ class FileEngine extends CacheEngine
             // @codingStandardsIgnoreLine
             @unlink($path);
         }
+
+        // unsetting iterators helps releasing possible locks in certain environments,
+        // which could otherwise make `rmdir()` fail
+        unset($directoryIterator, $contents, $filtered);
 
         return true;
     }

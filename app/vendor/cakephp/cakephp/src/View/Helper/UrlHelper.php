@@ -25,7 +25,6 @@ use Cake\View\Helper;
  */
 class UrlHelper extends Helper
 {
-
     /**
      * Returns a URL based on provided parameters.
      *
@@ -175,10 +174,11 @@ class UrlHelper extends Helper
         if (!array_key_exists('plugin', $options) || $options['plugin'] !== false) {
             list($plugin, $path) = $this->_View->pluginSplit($path, false);
         }
-        if (!empty($options['pathPrefix']) && $path[0] !== '/') {
+        if (!empty($options['pathPrefix']) && (substr((string)$path, 0, 1) !== '/')) {
             $path = $options['pathPrefix'] . $path;
         }
-        if (!empty($options['ext']) &&
+        if (
+            !empty($options['ext']) &&
             strpos($path, '?') === false &&
             substr($path, -strlen($options['ext'])) !== $options['ext']
         ) {
@@ -237,11 +237,15 @@ class UrlHelper extends Helper
      */
     public function assetTimestamp($path, $timestamp = null)
     {
+        if (strpos($path, '?') !== false) {
+            return $path;
+        }
+
         if ($timestamp === null) {
             $timestamp = Configure::read('Asset.timestamp');
         }
         $timestampEnabled = $timestamp === 'force' || ($timestamp === true && Configure::read('debug'));
-        if ($timestampEnabled && strpos($path, '?') === false) {
+        if ($timestampEnabled) {
             $filepath = preg_replace(
                 '/^' . preg_quote($this->_View->getRequest()->getAttribute('webroot'), '/') . '/',
                 '',

@@ -25,7 +25,6 @@ use LogicException;
  */
 class BreadcrumbsHelper extends Helper
 {
-
     use StringTemplateTrait;
 
     /**
@@ -45,8 +44,8 @@ class BreadcrumbsHelper extends Helper
             'wrapper' => '<ul{{attrs}}>{{content}}</ul>',
             'item' => '<li{{attrs}}><a href="{{url}}"{{innerAttrs}}>{{title}}</a></li>{{separator}}',
             'itemWithoutLink' => '<li{{attrs}}><span{{innerAttrs}}>{{title}}</span></li>{{separator}}',
-            'separator' => '<li{{attrs}}><span{{innerAttrs}}>{{separator}}</span></li>'
-        ]
+            'separator' => '<li{{attrs}}><span{{innerAttrs}}>{{separator}}</span></li>',
+        ],
     ];
 
     /**
@@ -92,7 +91,7 @@ class BreadcrumbsHelper extends Helper
     /**
      * Prepend a crumb to the start of the queue.
      *
-     * @param string $title If provided as a string, it represents the title of the crumb.
+     * @param string|array $title If provided as a string, it represents the title of the crumb.
      * Alternatively, if you want to add multiple crumbs at once, you can provide an array, with each values being a
      * single crumb. Arrays are expected to be of this form:
      * - *title* The title of the crumb
@@ -129,8 +128,10 @@ class BreadcrumbsHelper extends Helper
      * Insert a crumb at a specific index.
      *
      * If the index already exists, the new crumb will be inserted,
-     * and the existing element will be shifted one index greater.
-     * If the index is out of bounds, it will throw an exception.
+     * before the existing element, shifting the existing element one index
+     * greater than before.
+     *
+     * If the index is out of bounds, an exception will be thrown.
      *
      * @param int $index The index to insert at.
      * @param string $title Title of the crumb.
@@ -146,7 +147,7 @@ class BreadcrumbsHelper extends Helper
      */
     public function insertAt($index, $title, $url = null, array $options = [])
     {
-        if (!isset($this->crumbs[$index])) {
+        if (!isset($this->crumbs[$index]) && $index !== count($this->crumbs)) {
             throw new LogicException(sprintf("No crumb could be found at index '%s'", $index));
         }
 
@@ -292,7 +293,7 @@ class BreadcrumbsHelper extends Helper
                 'title' => $title,
                 'url' => $url,
                 'separator' => '',
-                'templateVars' => isset($options['templateVars']) ? $options['templateVars'] : []
+                'templateVars' => isset($options['templateVars']) ? $options['templateVars'] : [],
             ];
 
             if (!$url) {
@@ -309,7 +310,7 @@ class BreadcrumbsHelper extends Helper
         $crumbTrail = $this->formatTemplate('wrapper', [
             'content' => $crumbTrail,
             'attrs' => $templater->formatAttributes($attributes, ['templateVars']),
-            'templateVars' => isset($attributes['templateVars']) ? $attributes['templateVars'] : []
+            'templateVars' => isset($attributes['templateVars']) ? $attributes['templateVars'] : [],
         ]);
 
         return $crumbTrail;

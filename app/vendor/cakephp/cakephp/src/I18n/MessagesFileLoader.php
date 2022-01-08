@@ -29,7 +29,6 @@ use RuntimeException;
  */
 class MessagesFileLoader
 {
-
     /**
      * The package (domain) name.
      *
@@ -135,7 +134,7 @@ class MessagesFileLoader
             throw new RuntimeException(sprintf('Could not find class %s', "{$name}FileParser"));
         }
 
-        $messages = (new $class)->parse($file);
+        $messages = (new $class())->parse($file);
         $package = new Package('default');
         $package->setMessages($messages);
 
@@ -146,7 +145,7 @@ class MessagesFileLoader
      * Returns the folders where the file should be looked for according to the locale
      * and package name.
      *
-     * @return array The list of folders where the translation file should be looked for
+     * @return string[] The list of folders where the translation file should be looked for
      */
     public function translationsFolders()
     {
@@ -154,7 +153,7 @@ class MessagesFileLoader
 
         $folders = [
             implode('_', [$locale['language'], $locale['region']]),
-            $locale['language']
+            $locale['language'],
         ];
 
         $searchPaths = [];

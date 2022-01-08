@@ -33,7 +33,7 @@ if (!function_exists('h')) {
      * @param string|null $charset Character set to use when escaping. Defaults to config value in `mb_internal_encoding()`
      * or 'UTF-8'.
      * @return mixed Wrapped text.
-     * @link https://book.cakephp.org/3.0/en/core-libraries/global-constants-and-functions.html#h
+     * @link https://book.cakephp.org/3/en/core-libraries/global-constants-and-functions.html#h
      */
     function h($text, $double = true, $charset = null)
     {
@@ -91,7 +91,7 @@ if (!function_exists('pluginSplit')) {
      * @param bool $dotAppend Set to true if you want the plugin to have a '.' appended to it.
      * @param string|null $plugin Optional default plugin to use if no plugin is found. Defaults to null.
      * @return array Array with 2 indexes. 0 => plugin name, 1 => class name.
-     * @link https://book.cakephp.org/3.0/en/core-libraries/global-constants-and-functions.html#pluginSplit
+     * @link https://book.cakephp.org/3/en/core-libraries/global-constants-and-functions.html#pluginSplit
      */
     function pluginSplit($name, $dotAppend = false, $plugin = null)
     {
@@ -135,13 +135,13 @@ if (!function_exists('pr')) {
      * print_r() convenience function.
      *
      * In terminals this will act similar to using print_r() directly, when not run on cli
-     * print_r() will also wrap <pre> tags around the output of given variable. Similar to debug().
+     * print_r() will also wrap `<pre>` tags around the output of given variable. Similar to debug().
      *
      * This function returns the same variable that was passed.
      *
      * @param mixed $var Variable to print out.
      * @return mixed the same $var that was passed to this function
-     * @link https://book.cakephp.org/3.0/en/core-libraries/global-constants-and-functions.html#pr
+     * @link https://book.cakephp.org/3/en/core-libraries/global-constants-and-functions.html#pr
      * @see debug()
      */
     function pr($var)
@@ -163,14 +163,14 @@ if (!function_exists('pj')) {
      * json pretty print convenience function.
      *
      * In terminals this will act similar to using json_encode() with JSON_PRETTY_PRINT directly, when not run on cli
-     * will also wrap <pre> tags around the output of given variable. Similar to pr().
+     * will also wrap `<pre>` tags around the output of given variable. Similar to pr().
      *
      * This function returns the same variable that was passed.
      *
      * @param mixed $var Variable to print out.
      * @return mixed the same $var that was passed to this function
      * @see pr()
-     * @link https://book.cakephp.org/3.0/en/core-libraries/global-constants-and-functions.html#pj
+     * @link https://book.cakephp.org/3/en/core-libraries/global-constants-and-functions.html#pj
      */
     function pj($var)
     {
@@ -179,7 +179,7 @@ if (!function_exists('pj')) {
         }
 
         $template = (PHP_SAPI !== 'cli' && PHP_SAPI !== 'phpdbg') ? '<pre class="pj">%s</pre>' : "\n%s\n\n";
-        printf($template, trim(json_encode($var, JSON_PRETTY_PRINT)));
+        printf($template, trim(json_encode($var, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)));
 
         return $var;
     }
@@ -194,9 +194,9 @@ if (!function_exists('env')) {
      * environment information.
      *
      * @param string $key Environment variable name.
-     * @param string|null $default Specify a default value in case the environment variable is not defined.
+     * @param string|bool|null $default Specify a default value in case the environment variable is not defined.
      * @return string|bool|null Environment variable setting.
-     * @link https://book.cakephp.org/3.0/en/core-libraries/global-constants-and-functions.html#env
+     * @link https://book.cakephp.org/3/en/core-libraries/global-constants-and-functions.html#env
      */
     function env($key, $default = null)
     {
