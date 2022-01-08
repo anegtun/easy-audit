@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-01-07 17:36+0000\n"
-"PO-Revision-Date: 2022-01-07 18:37+0100\n"
+"POT-Creation-Date: 2022-01-08 15:40+0000\n"
+"PO-Revision-Date: 2022-01-08 16:40+0100\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -81,7 +81,8 @@ msgstr "Cliente eliminado correctamente."
 msgid "Error deleting customer."
 msgstr "Error eliminando cliente."
 
-#: Controller/FormTemplatesController.php:48;103
+#: Controller/FormTemplatesController.php:48
+#: Controller/FormTemplatesController.php:103
 msgid "Template created."
 msgstr "Plantilla creada."
 
@@ -113,11 +114,12 @@ msgstr "Plantilla renombrada correctamente."
 msgid "Template enabled or disabled successfully."
 msgstr "Plantilla habilitada/deshabilitada correctamente."
 
-#: Controller/FormTemplatesController.php:162;174
+#: Controller/FormTemplatesController.php:162
+#: Controller/FormTemplatesController.php:174
 msgid "Error moving field."
 msgstr "Error moviendo el campo."
 
-#: Controller/FormsController.php:44;173
+#: Controller/FormsController.php:44 Controller/FormsController.php:173
 msgid "Form created."
 msgstr "Formulario creado correctament."
 
@@ -141,7 +143,7 @@ msgstr "Error eliminando el formulario."
 msgid "Form deleted successfully."
 msgstr "Formulario eliminado correctamente."
 
-#: Controller/FormsController.php:110;122
+#: Controller/FormsController.php:110 Controller/FormsController.php:122
 msgid "Error moving section."
 msgstr "Error moviendo sección."
 
@@ -185,7 +187,7 @@ msgid "Date"
 msgstr "Fecha"
 
 #: Model/FormTemplateFieldTypes.php:9
-#: Template/Element/Audits/fill/editor_select.ctp:75
+#: Template/Element/Audits/fill/editor_checklist.ctp:75
 msgid "Photos"
 msgstr "Fotos"
 
@@ -199,16 +201,16 @@ msgid "Text"
 msgstr "Texto"
 
 #: Model/FormTypes.php:8
+msgid "Checklist"
+msgstr "Checklist"
+
+#: Model/FormTypes.php:9
 msgid "Measure"
 msgstr "Medición"
 
-#: Model/FormTypes.php:9
+#: Model/FormTypes.php:10
 msgid "Simple"
 msgstr "Simple"
-
-#: Model/FormTypes.php:10
-msgid "Checklist"
-msgstr "Checklist"
 
 #: Model/Roles.php:8
 msgid "Admin"
@@ -219,24 +221,26 @@ msgstr "Administrador"
 msgid "Auditor"
 msgstr "Auditor"
 
-#: Model/Entity/Audit.php:48
+#: Model/Entity/Audit.php:59
 msgid "Audit"
 msgstr "Auditoría"
 
 #: Template/Audits/data.ctp:6 Template/Audits/fill.ctp:6
-#: Template/Audits/history.ctp:6 Template/Audits/index.ctp:3;5
-#: Template/Customers/detail.ctp:100 Template/Element/Audits/modals/list.ctp:5
+#: Template/Audits/history.ctp:6 Template/Audits/index.ctp:3
+#: Template/Audits/index.ctp:5 Template/Customers/detail.ctp:100
+#: Template/Element/Audits/modals/list.ctp:5
 #: Template/Element/Layout/menu.ctp:13 Template/Users/detail.ctp:47
 msgid "Audits"
 msgstr "Auditorías"
 
-#: Template/Audits/data.ctp:8;16 Template/Audits/fill.ctp:41
-#: Template/Audits/history.ctp:78
+#: Template/Audits/data.ctp:8 Template/Audits/data.ctp:16
+#: Template/Audits/fill.ctp:41 Template/Audits/history.ctp:78
 msgid "Audit data"
 msgstr "Datos de la auditoría"
 
-#: Template/Audits/data.ctp:31;91 Template/Audits/fill.ctp:38
-#: Template/Customers/detail.ctp:31;88
+#: Template/Audits/data.ctp:31 Template/Audits/data.ctp:91
+#: Template/Audits/fill.ctp:38 Template/Customers/detail.ctp:31
+#: Template/Customers/detail.ctp:88
 #: Template/Element/FormTemplates/modals/clone.ctp:23
 #: Template/Element/FormTemplates/modals/field.ctp:35
 #: Template/Element/FormTemplates/modals/new_template.ctp:19
@@ -274,13 +278,15 @@ msgstr "Plantillas asociadas"
 msgid "Form"
 msgstr "Formulario"
 
-#: Template/Audits/data.ctp:55;87 Template/Audits/index.ctp:31
-#: Template/Customers/detail.ctp:53;84 Template/FormTemplates/detail.ctp:2
+#: Template/Audits/data.ctp:55 Template/Audits/data.ctp:87
+#: Template/Audits/index.ctp:31 Template/Customers/detail.ctp:53
+#: Template/Customers/detail.ctp:84 Template/FormTemplates/detail.ctp:2
 #: Template/Forms/detail.ctp:2
 msgid "Template"
 msgstr "Plantilla"
 
-#: Template/Audits/data.ctp:69;80 Template/Customers/detail.ctp:67;77
+#: Template/Audits/data.ctp:69 Template/Audits/data.ctp:80
+#: Template/Customers/detail.ctp:67 Template/Customers/detail.ctp:77
 #: Template/Forms/detail.ctp:125
 msgid "Add template"
 msgstr "Añadir plantilla"
@@ -326,7 +332,7 @@ msgstr "Sección"
 msgid "TOTAL"
 msgstr "TOTAL"
 
-#: Template/Audits/index.ctp:13;22
+#: Template/Audits/index.ctp:13 Template/Audits/index.ctp:22
 msgid "New audit"
 msgstr "Nueva auditoría"
 
@@ -351,8 +357,8 @@ msgstr "Crear"
 msgid "Config"
 msgstr "Configuración"
 
-#: Template/Customers/detail.ctp:7 Template/Customers/index.ctp:3;6
-#: Template/Element/Customers/modals/list.ctp:5
+#: Template/Customers/detail.ctp:7 Template/Customers/index.ctp:3
+#: Template/Customers/index.ctp:6 Template/Element/Customers/modals/list.ctp:5
 #: Template/Element/Layout/menu.ctp:17
 msgid "Customers"
 msgstr "Clientes"
@@ -369,8 +375,8 @@ msgstr "Detalles del cliente"
 #: Template/Element/Forms/modals/clone.ctp:24
 #: Template/Element/Forms/modals/new_form.ctp:13
 #: Template/Element/Forms/modals/rename.ctp:14
-#: Template/Element/Forms/modals/section.ctp:15
-#: Template/Forms/detail.ctp:56;106 Template/Forms/index.ctp:18
+#: Template/Element/Forms/modals/section.ctp:15 Template/Forms/detail.ctp:56
+#: Template/Forms/detail.ctp:106 Template/Forms/index.ctp:18
 #: Template/Users/detail.ctp:25 Template/Users/index.ctp:17
 msgid "Name"
 msgstr "Nombre"
@@ -380,59 +386,64 @@ msgid "Emails"
 msgstr "Correos electrónicos"
 
 #: Template/Element/Audits/field/type_photos.ctp:23
-#: Template/Element/Audits/fill/editor_select.ctp:92
+#: Template/Element/Audits/fill/editor_checklist.ctp:92
 msgid "Take photo"
 msgstr "Sacar foto"
 
-#: Template/Element/Audits/fill/editor_measure.ctp:14;41
+#: Template/Element/Audits/fill/editor_checklist.ctp:13
+msgid "Warning!"
+msgstr "¡Ojo!"
+
+#: Template/Element/Audits/fill/editor_checklist.ctp:13
+msgid "Observations for the following items are the same as the last audit: "
+msgstr ""
+"Los siguientes puntos contienen observaciones idénticas a las de la última "
+"auditoría: "
+
+#: Template/Element/Audits/fill/editor_checklist.ctp:25
+msgid "Open all"
+msgstr "Abrir todos"
+
+#: Template/Element/Audits/fill/editor_checklist.ctp:26
+msgid "Close all"
+msgstr "Cerrar todos"
+
+#: Template/Element/Audits/fill/editor_checklist.ctp:65
+msgid "+ add observations"
+msgstr "+ añadir observaciones"
+
+#: Template/Element/Audits/fill/editor_checklist.ctp:66
+msgid "- close observations"
+msgstr "- cerrar observaciones"
+
+#: Template/Element/Audits/fill/editor_measure.ctp:14
+#: Template/Element/Audits/fill/editor_measure.ctp:41
 msgid "Item"
 msgstr "Elemento"
 
-#: Template/Element/Audits/fill/editor_measure.ctp:15;42
+#: Template/Element/Audits/fill/editor_measure.ctp:15
+#: Template/Element/Audits/fill/editor_measure.ctp:42
 msgid "Unit"
 msgstr "Unidad"
 
-#: Template/Element/Audits/fill/editor_measure.ctp:18;45
+#: Template/Element/Audits/fill/editor_measure.ctp:18
+#: Template/Element/Audits/fill/editor_measure.ctp:45
 msgid "Expected"
 msgstr "Medida"
 
-#: Template/Element/Audits/fill/editor_measure.ctp:19;46
+#: Template/Element/Audits/fill/editor_measure.ctp:19
+#: Template/Element/Audits/fill/editor_measure.ctp:46
 msgid "Actual"
 msgstr "Medida verificada"
 
-#: Template/Element/Audits/fill/editor_measure.ctp:23;50
+#: Template/Element/Audits/fill/editor_measure.ctp:23
+#: Template/Element/Audits/fill/editor_measure.ctp:50
 msgid "Thredshold"
 msgstr "Umbral"
 
 #: Template/Element/Audits/fill/editor_measure.ctp:60
 msgid "+ add measure"
 msgstr "+ añadir medida"
-
-#: Template/Element/Audits/fill/editor_select.ctp:13
-msgid "Warning!"
-msgstr "¡Ojo!"
-
-#: Template/Element/Audits/fill/editor_select.ctp:13
-msgid "Observations for the following items are the same as the last audit: "
-msgstr ""
-"Los siguientes puntos contienen observaciones idénticas a las de la última "
-"auditoría: "
-
-#: Template/Element/Audits/fill/editor_select.ctp:25
-msgid "Open all"
-msgstr "Abrir todos"
-
-#: Template/Element/Audits/fill/editor_select.ctp:26
-msgid "Close all"
-msgstr "Cerrar todos"
-
-#: Template/Element/Audits/fill/editor_select.ctp:65
-msgid "+ add observations"
-msgstr "+ añadir observaciones"
-
-#: Template/Element/Audits/fill/editor_select.ctp:66
-msgid "- close observations"
-msgstr "- cerrar observaciones"
 
 #: Template/Element/Audits/modals/send.ctp:6
 msgid "Send audit"
@@ -618,7 +629,7 @@ msgid "Forms"
 msgstr "Formularios"
 
 #: Template/Element/Layout/menu.ctp:31 Template/Users/detail.ctp:7
-#: Template/Users/index.ctp:3;6
+#: Template/Users/index.ctp:3 Template/Users/index.ctp:6
 msgid "Users"
 msgstr "Usuarios"
 
@@ -678,7 +689,7 @@ msgstr "Plantillas"
 msgid "Form templates"
 msgstr "Plantillas"
 
-#: Template/Layout/default.ctp:82;91
+#: Template/Layout/default.ctp:82 Template/Layout/default.ctp:91
 msgid "Logout"
 msgstr "Desconectar"
 
@@ -699,7 +710,7 @@ msgstr "Atrás"
 msgid "Easy Audit system"
 msgstr "Easy Audit system"
 
-#: Template/Main/index.ctp:2;7
+#: Template/Main/index.ctp:2 Template/Main/index.ctp:7
 msgid "Dashboard"
 msgstr "Panel"
 
@@ -739,7 +750,8 @@ msgstr "Rol"
 msgid "Login"
 msgstr "Entrar"
 
-#: View/Helper/EasyAuditHtmlHelper.php:11;15
+#: View/Helper/EasyAuditHtmlHelper.php:11
+#: View/Helper/EasyAuditHtmlHelper.php:15
 msgid "This operation can't be undone, are you sure?"
 msgstr "Esta opetación no se puede deshacer, ¿estás seguro?"
 
