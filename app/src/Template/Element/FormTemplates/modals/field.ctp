@@ -24,7 +24,7 @@ if(!empty($allowed_field_types)) {
                 </div>
                 <div class="modal-body">
                     <fieldset>
-                        <?= $this->Form->control('form_section_id', ['options' => $this->EasyAuditForm->objectToKeyValue($template->form->sections, 'id', '{$e->position}. {$e->name}'), 'label'=>__('Section')]) ?>
+                        <?= $this->Form->control('form_section_id', ['options' => $this->EasyAuditForm->objectToKeyValue($template->form->sections, 'id', '{$e->getPositionNumber()}. {$e->name}'), 'label'=>__('Section')]) ?>
                         <?= $this->Form->control('text', ['id'=>'field-text', 'type'=>'textarea', 'label'=>__('Text')]) ?>
                         <?= $this->Form->control('type', ['options'=>$field_types_to_select, 'label'=>__('Type')]) ?>
                         <?= $this->Form->control('optionset_id', ['options'=>$optionsets, 'label'=>__('Option Set')]) ?>

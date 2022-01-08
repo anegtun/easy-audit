@@ -5,6 +5,10 @@ use Cake\ORM\Entity;
 
 class FormSection extends Entity {
 
+    public function getPositionNumber() {
+        return $this->position - 1;
+    }
+
     public function calculateSectionScore($field_values) {
         $count = 0;
         $score = 0;

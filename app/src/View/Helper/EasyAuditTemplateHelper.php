@@ -6,7 +6,7 @@ use Cake\View\Helper;
 class EasyAuditTemplateHelper extends Helper {
 
     public function section($section) {
-        return ($section->position-1) . ". ". $section->name;
+        return $section->getPositionNumber() . ". ". $section->name;
     }
 
     public function fieldLabel($section, $field, $showText = true) {
