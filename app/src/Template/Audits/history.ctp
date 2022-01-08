@@ -15,10 +15,10 @@ $this->Html->script('audit-history', ['block' => 'script']);
     <?php if($t->form->type === 'select') : ?>
 
         <?php
-        $template_audits = [];
+        $form_audits = [];
         foreach($audits as $a)  {
-            if(in_array($t->id, $a->getTemplateIds())) {
-                $template_audits[] = $a;
+            if(in_array($t->form->id, $a->getFormIds())) {
+                $form_audits[] = $a;
             }
         }
         ?>
@@ -32,7 +32,7 @@ $this->Html->script('audit-history', ['block' => 'script']);
                         <thead>
                             <tr>
                                 <th class="celda-titulo"><?= __('Section') ?></th>
-                                <?php foreach($template_audits as $a) : ?>
+                                <?php foreach($form_audits as $a) : ?>
                                     <th class="celda-titulo"><?= strtoupper($a->date->i18nFormat('MMM yy')) ?></th>
                                 <?php endforeach ?>
                             </tr>
@@ -44,16 +44,16 @@ $this->Html->script('audit-history', ['block' => 'script']);
                                         <?= $this->EasyAuditTemplate->section($s) ?>
                                         (<?= $s->weigth ?>)
                                     </td>
-                                    <?php foreach($template_audits as $a) : ?>
+                                    <?php foreach($form_audits as $a) : ?>
                                         <td><?= $a->score_section[$s->id] ?></td>
                                     <?php endforeach ?>
                                 </tr>
                             <?php endforeach ?>
                                 <tr>
                                     <td><strong><?= __('TOTAL') ?></strong></td>
-                                    <?php foreach($template_audits as $a) : ?>
+                                    <?php foreach($form_audits as $a) : ?>
                                         <td class="audit-history-total" data-audit-date="<?= strtoupper($a->date->i18nFormat('MMM yy')) ?>">
-                                            <strong><?= $a->score_templates[$t->id] ?></strong>
+                                            <strong><?= $a->score_form[$t->form->id] ?></strong>
                                         </td>
                                     <?php endforeach ?>
                                 </tr>

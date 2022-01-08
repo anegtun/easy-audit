@@ -5,6 +5,17 @@ use Cake\ORM\Entity;
 
 class Audit extends Entity {
 
+    public function getFormIds() {
+        if(empty($this->templates)) {
+            return [];
+        }
+        return array_map(
+            function ($e) {
+                return $e->form->id;
+            },
+            $this->templates);
+    }
+
     public function getTemplateIds() {
         if(empty($this->templates)) {
             return [];
@@ -27,7 +38,7 @@ class Audit extends Entity {
 
     public function calculateScores() {
         $this->score_section = [];
-        $this->score_templates = [];
+        $this->score_form = [];
         foreach($this->templates as $t) {
             $score = 0;
             $weigth = 0;
@@ -39,7 +50,7 @@ class Audit extends Entity {
                     $weigth += $s->weigth;
                 }
             }
-            $this->score_templates[$t->id] = $weigth === 0 ? 0 : round($score / $weigth, 0);
+            $this->score_form[$t->form->id] = $weigth === 0 ? 0 : round($score / $weigth, 0);
         }
     }
 

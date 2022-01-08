@@ -45,7 +45,7 @@ trait AuditFPDFFormSelectTraits {
         }
         $totalRow = ['values' => ['Total'], 'font' => ['Arial','B',10]];
         foreach($history_to_show as $h) {
-            $totalRow['values'][] = $h->score_templates[$template->id];
+            $totalRow['values'][] = $h->score_form[$template->form->id];
         }
         $rows[] = $totalRow;
 
@@ -74,7 +74,7 @@ trait AuditFPDFFormSelectTraits {
         $this->SetFillColor($this->graph_color[0], $this->graph_color[1], $this->graph_color[2]);
         foreach($history_to_show as $i => $h) {
             $x = $marginLeft + $gap + $i * ($colWidth + 2 * $gap);
-            $score = $h->score_templates[$template->id];
+            $score = $h->score_form[$template->form->id];
             $height = $maxHeight * $score / 100;
             $this->SetXY($x, $y);
             $this->Cell($colWidth, 10, $score, 0, 0, 'C');
@@ -100,14 +100,14 @@ trait AuditFPDFFormSelectTraits {
 
     private function SelectReportSummaryResult($template) {
         $letter = 'A';
-        if($this->audit->score_templates[$template->id] < 65) {
+        if($this->audit->score_form[$template->form->id] < 65) {
             $letter = 'C';
-        } elseif($this->audit->score_templates[$template->id] < 85) {
+        } elseif($this->audit->score_form[$template->form->id] < 85) {
             $letter = 'B';
         }
         $this->Table(
             [
-                ['values' => ['Total', "{$this->audit->score_templates[$template->id]}%"]],
+                ['values' => ['Total', "{$this->audit->score_form[$template->form->id]}%"]],
                 ['values' => ['Puntuación', $letter]]
             ],
             ['font' => ['Arial','B',12], 'height' => 8, 'marginLeft' => 90, 'width' => [55,40]]
