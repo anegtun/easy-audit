@@ -40,7 +40,7 @@ class AuditsTable extends Table {
             ],
             'Customers',
             'FormTemplates' => [
-                'sort' => 'FormTemplates.name',
+                'sort' => ['Forms.type', 'FormTemplates.name'],
                 'Forms' => [
                     'FormSections' => [ 'sort' => 'FormSections.position' ]
                 ],
