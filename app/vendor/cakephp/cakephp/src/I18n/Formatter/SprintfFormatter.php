@@ -22,7 +22,6 @@ use Aura\Intl\FormatterInterface;
  */
 class SprintfFormatter implements FormatterInterface
 {
-
     /**
      * Returns a string with all passed variables interpolated into the original
      * message. Variables are interpolated using the sprintf format.
@@ -34,8 +33,6 @@ class SprintfFormatter implements FormatterInterface
      */
     public function format($locale, $message, array $vars)
     {
-        unset($vars['_singular']);
-
         return vsprintf($message, $vars);
     }
 }

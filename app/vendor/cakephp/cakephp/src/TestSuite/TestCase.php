@@ -34,7 +34,6 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
  */
 abstract class TestCase extends BaseTestCase
 {
-
     use LocatorAwareTrait;
 
     /**
@@ -43,6 +42,13 @@ abstract class TestCase extends BaseTestCase
      * @var \Cake\TestSuite\Fixture\FixtureManager|null
      */
     public $fixtureManager;
+
+    /**
+     * Fixtures used by this test case.
+     *
+     * @var string[]|string|null
+     */
+    public $fixtures;
 
     /**
      * By default, all fixtures attached to this class will be truncated and reloaded after each test.
@@ -68,13 +74,6 @@ abstract class TestCase extends BaseTestCase
      * @var array
      */
     protected $_configure = [];
-
-    /**
-     * Path settings to restore at the end of the test.
-     *
-     * @var array
-     */
-    protected $_pathRestore = [];
 
     /**
      * Overrides SimpleTestCase::skipIf to provide a boolean return value
@@ -161,6 +160,9 @@ abstract class TestCase extends BaseTestCase
             Configure::write($this->_configure);
         }
         $this->getTableLocator()->clear();
+        $this->_configure = [];
+        $this->_tableLocator = null;
+        $this->fixtureManager = null;
     }
 
     /**
@@ -227,14 +229,14 @@ abstract class TestCase extends BaseTestCase
      *
      * Useful in test case teardown methods.
      *
-     * @param array $plugins A list of plugins you want to remove.
+     * @param string[] $names A list of plugins you want to remove.
      * @return void
      */
-    public function removePlugins(array $plugins = [])
+    public function removePlugins(array $names = [])
     {
         $collection = Plugin::getCollection();
-        foreach ($plugins as $plugin) {
-            $collection->remove($plugin);
+        foreach ($names as $name) {
+            $collection->remove($name);
         }
     }
 
@@ -492,7 +494,7 @@ abstract class TestCase extends BaseTestCase
                 $tags = (string)$tags;
             }
             $i++;
-            if (is_string($tags) && $tags{0} === '<') {
+            if (is_string($tags) && $tags[0] === '<') {
                 $tags = [substr($tags, 1) => []];
             } elseif (is_string($tags)) {
                 $tagsTrimmed = preg_replace('/\s+/m', '', $tags);
@@ -731,10 +733,111 @@ abstract class TestCase extends BaseTestCase
 // @codingStandardsIgnoreEnd
 
     /**
+     * @inheritDoc
+     */
+    public function getMockBuilder($className)
+    {
+        return new MockBuilder($this, $className);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getMockClass(
+        $originalClassName,
+        $methods = [],
+        array $arguments = [],
+        $mockClassName = '',
+        $callOriginalConstructor = false,
+        $callOriginalClone = true,
+        $callAutoload = true,
+        $cloneArguments = false
+    ) {
+        MockBuilder::setSupressedErrorHandler();
+
+        try {
+            return parent::getMockClass(
+                $originalClassName,
+                $methods,
+                $arguments,
+                $mockClassName,
+                $callOriginalConstructor,
+                $callOriginalClone,
+                $callAutoload,
+                $cloneArguments
+            );
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getMockForTrait(
+        $traitName,
+        array $arguments = [],
+        $mockClassName = '',
+        $callOriginalConstructor = true,
+        $callOriginalClone = true,
+        $callAutoload = true,
+        $mockedMethods = [],
+        $cloneArguments = false
+    ) {
+        MockBuilder::setSupressedErrorHandler();
+
+        try {
+            return parent::getMockForTrait(
+                $traitName,
+                $arguments,
+                $mockClassName,
+                $callOriginalConstructor,
+                $callOriginalClone,
+                $callAutoload,
+                $mockedMethods,
+                $cloneArguments
+            );
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getMockForAbstractClass(
+        $originalClassName,
+        array $arguments = [],
+        $mockClassName = '',
+        $callOriginalConstructor = true,
+        $callOriginalClone = true,
+        $callAutoload = true,
+        $mockedMethods = [],
+        $cloneArguments = false
+    ) {
+        MockBuilder::setSupressedErrorHandler();
+
+        try {
+            return parent::getMockForAbstractClass(
+                $originalClassName,
+                $arguments,
+                $mockClassName,
+                $callOriginalConstructor,
+                $callOriginalClone,
+                $callAutoload,
+                $mockedMethods,
+                $cloneArguments
+            );
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    /**
      * Mock a model, maintain fixtures and table association
      *
      * @param string $alias The model to get a mock for.
-     * @param array|null $methods The list of methods to mock
+     * @param string[]|null $methods The list of methods to mock
      * @param array $options The config data for the mock's constructor.
      * @throws \Cake\ORM\Exception\MissingTableClassException
      * @return \Cake\ORM\Table|\PHPUnit_Framework_MockObject_MockObject
@@ -808,5 +911,58 @@ abstract class TestCase extends BaseTestCase
     public static function setAppNamespace($appNamespace = 'TestApp')
     {
         Configure::write('App.namespace', $appNamespace);
+    }
+
+    /**
+     * Adds a fixture to this test case.
+     *
+     * Examples:
+     * - core.Tags
+     * - app.MyRecords
+     * - plugin.MyPluginName.MyModelName
+     *
+     * Use this method inside your test cases' {@link getFixtures()} method
+     * to build up the fixture list.
+     *
+     * @param string $fixture Fixture
+     * @return $this
+     */
+    protected function addFixture($fixture)
+    {
+        if (!isset($this->fixtures)) {
+            $this->fixtures = [];
+        } elseif (is_string($this->fixtures)) {
+            deprecationWarning(
+                'Setting fixtures as string is deprecated and will be removed in 4.0.' .
+                ' Set TestCase::$fixtures as array instead.'
+            );
+            $this->fixtures = array_map('trim', explode(',', $this->fixtures));
+        }
+
+        $this->fixtures[] = $fixture;
+
+        return $this;
+    }
+
+    /**
+     * Gets fixtures.
+     *
+     * @return array
+     */
+    public function getFixtures()
+    {
+        if (!isset($this->fixtures)) {
+            return [];
+        }
+        if (is_string($this->fixtures)) {
+            deprecationWarning(
+                'Setting fixtures as string is deprecated and will be removed in 4.0.' .
+                ' Set TestCase::$fixtures as array instead.'
+            );
+
+            return array_map('trim', explode(',', $this->fixtures));
+        }
+
+        return $this->fixtures;
     }
 }

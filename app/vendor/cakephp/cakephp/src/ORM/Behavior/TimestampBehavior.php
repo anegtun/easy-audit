@@ -27,7 +27,6 @@ use UnexpectedValueException;
  */
 class TimestampBehavior extends Behavior
 {
-
     /**
      * Default config
      *
@@ -47,15 +46,15 @@ class TimestampBehavior extends Behavior
         'implementedFinders' => [],
         'implementedMethods' => [
             'timestamp' => 'timestamp',
-            'touch' => 'touch'
+            'touch' => 'touch',
         ],
         'events' => [
             'Model.beforeSave' => [
                 'created' => 'new',
-                'modified' => 'always'
-            ]
+                'modified' => 'always',
+            ],
         ],
-        'refreshTimestamp' => true
+        'refreshTimestamp' => true,
     ];
 
     /**
@@ -87,7 +86,7 @@ class TimestampBehavior extends Behavior
      * @param \Cake\Event\Event $event Event instance.
      * @param \Cake\Datasource\EntityInterface $entity Entity instance.
      * @throws \UnexpectedValueException if a field's when value is misdefined
-     * @return bool Returns true irrespective of the behavior logic, the save will not be prevented.
+     * @return true Returns true irrespective of the behavior logic, the save will not be prevented.
      * @throws \UnexpectedValueException When the value for an event is not 'always', 'new' or 'existing'
      */
     public function handleEvent(Event $event, EntityInterface $entity)
@@ -104,7 +103,8 @@ class TimestampBehavior extends Behavior
                     sprintf('When should be one of "always", "new" or "existing". The passed value "%s" is invalid', $when)
                 );
             }
-            if ($when === 'always' ||
+            if (
+                $when === 'always' ||
                 ($when === 'new' && $new) ||
                 ($when === 'existing' && !$new)
             ) {
@@ -174,7 +174,7 @@ class TimestampBehavior extends Behavior
         $refresh = $this->_config['refreshTimestamp'];
 
         foreach ($events[$eventName] as $field => $when) {
-            if (in_array($when, ['always', 'existing'])) {
+            if (in_array($when, ['always', 'existing'], true)) {
                 $return = true;
                 $entity->setDirty($field, false);
                 $this->_updateField($entity, $field, $refresh);

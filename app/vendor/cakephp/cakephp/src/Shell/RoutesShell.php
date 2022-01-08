@@ -17,6 +17,7 @@ namespace Cake\Shell;
 use Cake\Console\Shell;
 use Cake\Http\ServerRequest;
 use Cake\Routing\Exception\MissingRouteException;
+use Cake\Routing\Exception\RedirectException;
 use Cake\Routing\Router;
 
 /**
@@ -24,7 +25,6 @@ use Cake\Routing\Router;
  */
 class RoutesShell extends Shell
 {
-
     /**
      * Override main() to handle action
      * Displays all routes in an application.
@@ -34,7 +34,7 @@ class RoutesShell extends Shell
     public function main()
     {
         $output = [
-            ['Route name', 'URI template', 'Defaults']
+            ['Route name', 'URI template', 'Defaults'],
         ];
         foreach (Router::routes() as $route) {
             $name = isset($route->options['_name']) ? $route->options['_name'] : $route->getName();
@@ -69,7 +69,14 @@ class RoutesShell extends Shell
 
             $output = [
                 ['Route name', 'URI template', 'Defaults'],
-                [$name, $url, json_encode($route)]
+                [$name, $url, json_encode($route)],
+            ];
+            $this->helper('table')->output($output);
+            $this->out();
+        } catch (RedirectException $e) {
+            $output = [
+                ['URI template', 'Redirect'],
+                [$url, $e->getMessage()],
             ];
             $this->helper('table')->output($output);
             $this->out();
@@ -87,6 +94,7 @@ class RoutesShell extends Shell
      * Generate a URL based on a set of parameters
      *
      * Takes variadic arguments of key/value pairs.
+     *
      * @return bool Success
      */
     public function generate()
@@ -119,12 +127,12 @@ class RoutesShell extends Shell
             'This tool also lets you test URL generation and URL parsing.'
         )->addSubcommand('check', [
             'help' => 'Check a URL string against the routes. ' .
-                'Will output the routing parameters the route resolves to.'
+                'Will output the routing parameters the route resolves to.',
         ])->addSubcommand('generate', [
             'help' => 'Check a routing array against the routes. ' .
                 "Will output the URL if there is a match.\n\n" .
                 'Routing parameters should be supplied in a key:value format. ' .
-                'For example `controller:Articles action:view 2`'
+                'For example `controller:Articles action:view 2`',
         ]);
 
         return $parser;

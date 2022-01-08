@@ -17,12 +17,12 @@ namespace Cake\Database\Dialect;
 use Cake\Database\ExpressionInterface;
 use Cake\Database\Expression\FunctionExpression;
 use Cake\Database\Expression\OrderByExpression;
+use Cake\Database\Expression\OrderClauseExpression;
 use Cake\Database\Expression\UnaryExpression;
 use Cake\Database\Query;
 use Cake\Database\Schema\SqlserverSchema;
 use Cake\Database\SqlDialectTrait;
 use Cake\Database\SqlserverCompiler;
-use Cake\Database\ValueBinder;
 use PDO;
 
 /**
@@ -33,7 +33,6 @@ use PDO;
  */
 trait SqlserverDialectTrait
 {
-
     use SqlDialectTrait;
     use TupleComparisonTranslatorTrait;
 
@@ -116,12 +115,14 @@ trait SqlserverDialectTrait
                 ->clause('order')
                 ->iterateParts(function ($direction, $orderBy) use ($select, $order) {
                     $key = $orderBy;
-                    if (isset($select[$orderBy]) &&
+                    if (
+                        isset($select[$orderBy]) &&
                         $select[$orderBy] instanceof ExpressionInterface
                     ) {
-                        $key = $select[$orderBy]->sql(new ValueBinder());
+                        $order->add(new OrderClauseExpression($select[$orderBy], $direction));
+                    } else {
+                        $order->add([$key => $direction]);
                     }
-                    $order->add([$key => $direction]);
 
                     // Leave original order clause unchanged.
                     return $orderBy;
@@ -132,7 +133,7 @@ trait SqlserverDialectTrait
 
         $query = clone $original;
         $query->select([
-                '_cake_page_rownum_' => new UnaryExpression('ROW_NUMBER() OVER', $order)
+                '_cake_page_rownum_' => new UnaryExpression('ROW_NUMBER() OVER', $order),
             ])->limit(null)
             ->offset(null)
             ->order([], true);
@@ -190,7 +191,7 @@ trait SqlserverDialectTrait
                     ->setConjunction(' ');
 
                 return [
-                    '_cake_distinct_pivot_' => $over
+                    '_cake_distinct_pivot_' => $over,
                 ];
             })
             ->limit(null)
@@ -227,7 +228,7 @@ trait SqlserverDialectTrait
 
         return [
             $namespace . '\FunctionExpression' => '_transformFunctionExpression',
-            $namespace . '\TupleComparison' => '_transformTupleComparison'
+            $namespace . '\TupleComparison' => '_transformTupleComparison',
         ];
     }
 
@@ -380,7 +381,7 @@ trait SqlserverDialectTrait
      */
     public function disableForeignKeySQL()
     {
-        return 'EXEC sp_msforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT all"';
+        return 'EXEC sp_MSforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT all"';
     }
 
     /**
@@ -388,6 +389,6 @@ trait SqlserverDialectTrait
      */
     public function enableForeignKeySQL()
     {
-        return 'EXEC sp_msforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all"';
+        return 'EXEC sp_MSforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all"';
     }
 }

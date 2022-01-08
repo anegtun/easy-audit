@@ -27,7 +27,6 @@ use Cake\Utility\Inflector;
  */
 class AssetFilter extends DispatcherFilter
 {
-
     /**
      * Default priority for all methods in this filter
      * This filter should run before the request gets parsed by router
@@ -44,7 +43,6 @@ class AssetFilter extends DispatcherFilter
     protected $_cacheTime = '+1 day';
 
     /**
-     *
      * Constructor.
      *
      * @param array $config Array of config.
@@ -66,7 +64,7 @@ class AssetFilter extends DispatcherFilter
      */
     public function beforeDispatch(Event $event)
     {
-        /* @var \Cake\Http\ServerRequest $request */
+        /** @var \Cake\Http\ServerRequest $request */
         $request = $event->getData('request');
 
         $url = urldecode($request->getUri()->getPath());
@@ -78,7 +76,7 @@ class AssetFilter extends DispatcherFilter
         if ($assetFile === null || !file_exists($assetFile)) {
             return null;
         }
-        /* @var \Cake\Http\Response $response */
+        /** @var \Cake\Http\Response $response */
         $response = $event->getData('response');
         $event->stopPropagation();
 

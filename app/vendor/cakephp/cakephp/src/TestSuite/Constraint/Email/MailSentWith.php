@@ -21,6 +21,9 @@ namespace Cake\TestSuite\Constraint\Email;
  */
 class MailSentWith extends MailConstraintBase
 {
+    /**
+     * @var string
+     */
     protected $method;
 
     /**
@@ -48,16 +51,36 @@ class MailSentWith extends MailConstraintBase
     {
         $emails = $this->getEmails();
         foreach ($emails as $email) {
-            $value = $email->{'get' . ucfirst($this->method)}();
-            if (in_array($this->method, ['to', 'cc', 'bcc', 'from']) && isset($value[$other])) {
+            $value = $this->getValue($email);
+            if ($value === $other) {
                 return true;
             }
-            if ($value === $other) {
+            if (
+                !is_array($other)
+                && in_array($this->method, ['to', 'cc', 'bcc', 'from'])
+                && array_key_exists($other, $value)
+            ) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Read a value from the email
+     *
+     * @param \Cake\Mailer\Email $email The email to read properties from.
+     * @return mixed
+     */
+    protected function getValue($email)
+    {
+        $viewBuilderMethods = ['template', 'layout', 'helpers', 'theme'];
+        if (in_array($this->method, $viewBuilderMethods, true)) {
+            return $email->viewBuilder()->{'get' . ucfirst($this->method)}();
+        }
+
+        return $email->{'get' . ucfirst($this->method)}();
     }
 
     /**

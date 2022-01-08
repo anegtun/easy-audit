@@ -112,7 +112,6 @@ use ReflectionMethod;
  */
 class Behavior implements EventListenerInterface
 {
-
     use InstanceConfigTrait;
 
     /**
@@ -261,6 +260,7 @@ class Behavior implements EventListenerInterface
     {
         $eventMap = [
             'Model.beforeMarshal' => 'beforeMarshal',
+            'Model.afterMarshal' => 'afterMarshal',
             'Model.beforeFind' => 'beforeFind',
             'Model.beforeSave' => 'beforeSave',
             'Model.afterSave' => 'afterSave',
@@ -286,7 +286,7 @@ class Behavior implements EventListenerInterface
             } else {
                 $events[$event] = [
                     'callable' => $method,
-                    'priority' => $priority
+                    'priority' => $priority,
                 ];
             }
         }
@@ -306,8 +306,8 @@ class Behavior implements EventListenerInterface
      *  ]
      * ```
      *
-     * With the above example, a call to `$Table->find('this')` will call `$Behavior->findThis()`
-     * and a call to `$Table->find('alias')` will call `$Behavior->findMethodName()`
+     * With the above example, a call to `$table->find('this')` will call `$behavior->findThis()`
+     * and a call to `$table->find('alias')` will call `$behavior->findMethodName()`
      *
      * It is recommended, though not required, to define implementedFinders in the config property
      * of child classes such that it is not necessary to use reflections to derive the available
@@ -379,14 +379,14 @@ class Behavior implements EventListenerInterface
         $eventMethods = [];
         foreach ($events as $e => $binding) {
             if (is_array($binding) && isset($binding['callable'])) {
-                /* @var string $callable */
+                /** @var string $callable */
                 $callable = $binding['callable'];
                 $binding = $callable;
             }
             $eventMethods[$binding] = true;
         }
 
-        $baseClass = 'Cake\ORM\Behavior';
+        $baseClass = self::class;
         if (isset(self::$_reflectionCache[$baseClass])) {
             $baseMethods = self::$_reflectionCache[$baseClass];
         } else {
@@ -396,14 +396,15 @@ class Behavior implements EventListenerInterface
 
         $return = [
             'finders' => [],
-            'methods' => []
+            'methods' => [],
         ];
 
         $reflection = new ReflectionClass($class);
 
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             $methodName = $method->getName();
-            if (in_array($methodName, $baseMethods) ||
+            if (
+                in_array($methodName, $baseMethods, true) ||
                 isset($eventMethods[$methodName])
             ) {
                 continue;

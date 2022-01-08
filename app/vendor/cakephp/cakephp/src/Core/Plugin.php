@@ -22,11 +22,10 @@ use DirectoryIterator;
  *
  * It also can retrieve plugin paths and load their bootstrap and routes files.
  *
- * @link https://book.cakephp.org/3.0/en/plugins.html
+ * @link https://book.cakephp.org/3/en/plugins.html
  */
 class Plugin
 {
-
     /**
      * Holds a list of all loaded plugins and their configuration
      *
@@ -134,7 +133,7 @@ class Plugin
             'console' => true,
             'classBase' => 'src',
             'ignoreMissing' => false,
-            'name' => $plugin
+            'name' => $plugin,
         ];
 
         if (!isset($config['path'])) {
@@ -247,7 +246,7 @@ class Plugin
      * Returns the filesystem path for plugin's folder containing class folders.
      *
      * @param string $name name of the plugin in CamelCase format.
-     * @return string Path to the plugin folder container class folders.
+     * @return string Path to the plugin folder containing class files.
      * @throws \Cake\Core\Exception\MissingPluginException If plugin has not been loaded.
      */
     public static function classPath($name)
@@ -261,7 +260,7 @@ class Plugin
      * Returns the filesystem path for plugin's folder containing config files.
      *
      * @param string $name name of the plugin in CamelCase format.
-     * @return string Path to the plugin folder container config files.
+     * @return string Path to the plugin folder containing config files.
      * @throws \Cake\Core\Exception\MissingPluginException If plugin has not been loaded.
      */
     public static function configPath($name)
@@ -303,7 +302,7 @@ class Plugin
      * Loads the routes file for a plugin, or all plugins configured to load their respective routes file.
      *
      * If you need fine grained control over how routes are loaded for plugins, you
-     * can use {@see Cake\Routing\RouteBuilder::loadPlugin()}
+     * can use {@see \Cake\Routing\RouteBuilder::loadPlugin()}
      *
      * @param string|null $name name of the plugin, if null will operate on all
      *   plugins having enabled the loading of routes files.
@@ -315,7 +314,7 @@ class Plugin
     {
         deprecationWarning(
             'You no longer need to call `Plugin::routes()` after upgrading to use Http\Server. ' .
-            'See https://book.cakephp.org/3.0/en/development/application.html#adding-the-new-http-stack-to-an-existing-application ' .
+            'See https://book.cakephp.org/3/en/development/application.html#adding-the-new-http-stack-to-an-existing-application ' .
             'for upgrade information.'
         );
         if ($name === null) {

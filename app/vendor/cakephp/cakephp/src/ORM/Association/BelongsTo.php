@@ -30,21 +30,20 @@ use RuntimeException;
  */
 class BelongsTo extends Association
 {
-
     /**
      * Valid strategies for this type of association
      *
-     * @var array
+     * @var string[]
      */
     protected $_validStrategies = [
         self::STRATEGY_JOIN,
-        self::STRATEGY_SELECT
+        self::STRATEGY_SELECT,
     ];
 
     /**
      * Gets the name of the field representing the foreign key to the target table.
      *
-     * @return string
+     * @return string|string[]
      */
     public function getForeignKey()
     {
@@ -112,7 +111,7 @@ class BelongsTo extends Association
      *
      * @param \Cake\Datasource\EntityInterface $entity an entity from the source table
      * @param array $options options to be passed to the save method in the target table
-     * @return bool|\Cake\Datasource\EntityInterface false if $entity could not be saved, otherwise it returns
+     * @return \Cake\Datasource\EntityInterface|false False if $entity could not be saved, otherwise it returns
      * the saved entity
      * @see \Cake\ORM\Table::save()
      */
@@ -143,7 +142,7 @@ class BelongsTo extends Association
      * clause for getting the results on the target table.
      *
      * @param array $options list of options passed to attachTo method
-     * @return array
+     * @return \Cake\Database\Expression\IdentifierExpression[]
      * @throws \RuntimeException if the number of columns in the foreignKey do not
      * match the number of columns in the target table primaryKey
      */
@@ -194,7 +193,7 @@ class BelongsTo extends Association
             'bindingKey' => $this->getBindingKey(),
             'strategy' => $this->getStrategy(),
             'associationType' => $this->type(),
-            'finder' => [$this, 'find']
+            'finder' => [$this, 'find'],
         ]);
 
         return $loader->buildEagerLoader($options);

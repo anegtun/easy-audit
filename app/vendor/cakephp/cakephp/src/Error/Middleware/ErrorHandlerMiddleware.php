@@ -80,6 +80,10 @@ class ErrorHandlerMiddleware
 
         $config = $config ?: Configure::read('Error');
         $this->setConfig($config);
+
+        if (PHP_VERSION_ID >= 70400 && Configure::read('debug')) {
+            ini_set('zend.exception_ignore_args', 0);
+        }
     }
 
     /**
@@ -130,7 +134,6 @@ class ErrorHandlerMiddleware
 
     /**
      * @param \Psr\Http\Message\ResponseInterface $response The response
-     *
      * @return \Psr\Http\Message\ResponseInterface A response
      */
     protected function handleInternalError($response)
@@ -230,10 +233,12 @@ class ErrorHandlerMiddleware
     protected function getMessageForException($exception, $isPrevious = false)
     {
         $message = sprintf(
-            '%s[%s] %s',
+            '%s[%s] %s (%s:%s)',
             $isPrevious ? "\nCaused by: " : '',
             get_class($exception),
-            $exception->getMessage()
+            $exception->getMessage(),
+            $exception->getFile(),
+            $exception->getLine()
         );
         $debug = Configure::read('debug');
 

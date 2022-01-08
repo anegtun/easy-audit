@@ -16,7 +16,7 @@ namespace Cake\Http;
 
 use Cake\Core\Configure;
 use Cake\Utility\Hash;
-use Zend\Diactoros\ServerRequestFactory as BaseFactory;
+use Laminas\Diactoros\ServerRequestFactory as BaseFactory;
 
 /**
  * Factory for making ServerRequest instances.
@@ -41,7 +41,7 @@ abstract class ServerRequestFactory extends BaseFactory
         $uri = static::createUri($server);
         $sessionConfig = (array)Configure::read('Session') + [
             'defaults' => 'php',
-            'cookiePath' => $uri->webroot
+            'cookiePath' => $uri->webroot,
         ];
         $session = Session::create($sessionConfig);
         $request = new ServerRequest([
@@ -54,6 +54,7 @@ abstract class ServerRequestFactory extends BaseFactory
             'webroot' => $uri->webroot,
             'base' => $uri->base,
             'session' => $session,
+            'mergeFilesAsObjects' => Configure::read('App.uploadedFilesAsObjects', false),
         ]);
 
         return $request;
@@ -132,7 +133,8 @@ abstract class ServerRequestFactory extends BaseFactory
         }
         $endsWithIndex = '/' . (Configure::read('App.webroot') ?: 'webroot') . '/index.php';
         $endsWithLength = strlen($endsWithIndex);
-        if (strlen($path) >= $endsWithLength &&
+        if (
+            strlen($path) >= $endsWithLength &&
             substr($path, -$endsWithLength) === $endsWithIndex
         ) {
             $path = '/';
@@ -153,7 +155,7 @@ abstract class ServerRequestFactory extends BaseFactory
         $config = (array)Configure::read('App') + [
             'base' => null,
             'webroot' => null,
-            'baseUrl' => null
+            'baseUrl' => null,
         ];
         $base = $config['base'];
         $baseUrl = $config['baseUrl'];

@@ -23,7 +23,6 @@ use Cake\Http\Client\Request;
  */
 class Basic
 {
-
     /**
      * Add Authorization header to the request.
      *
@@ -36,6 +35,7 @@ class Basic
     {
         if (isset($credentials['username'], $credentials['password'])) {
             $value = $this->_generateHeader($credentials['username'], $credentials['password']);
+            /** @var \Cake\Http\Client\Request $request */
             $request = $request->withHeader('Authorization', $value);
         }
 
@@ -54,6 +54,7 @@ class Basic
     {
         if (isset($credentials['username'], $credentials['password'])) {
             $value = $this->_generateHeader($credentials['username'], $credentials['password']);
+            /** @var \Cake\Http\Client\Request $request */
             $request = $request->withHeader('Proxy-Authorization', $value);
         }
 

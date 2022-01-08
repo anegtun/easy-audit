@@ -147,7 +147,7 @@ abstract class CacheEngine
      *
      * @param string $key Identifier for the data
      * @param int $offset How much to add
-     * @return bool|int New incremented value, false otherwise
+     * @return int|false New incremented value, false otherwise
      */
     abstract public function increment($key, $offset = 1);
 
@@ -156,7 +156,7 @@ abstract class CacheEngine
      *
      * @param string $key Identifier for the data
      * @param int $offset How much to subtract
-     * @return bool|int New incremented value, false otherwise
+     * @return int|false New incremented value, false otherwise
      */
     abstract public function decrement($key, $offset = 1);
 
@@ -231,7 +231,7 @@ abstract class CacheEngine
      * and returns the `group value` for each of them, this is
      * the token representing each group in the cache key
      *
-     * @return array
+     * @return string[]
      */
     public function groups()
     {
@@ -242,7 +242,7 @@ abstract class CacheEngine
      * Generates a safe key for use with cache engine storage engines.
      *
      * @param string $key the key passed over
-     * @return bool|string string key or false
+     * @return string|false string key or false
      */
     public function key($key)
     {
@@ -264,7 +264,7 @@ abstract class CacheEngine
      * Generates a safe key, taking account of the configured key prefix
      *
      * @param string $key the key passed over
-     * @return mixed string $key or false
+     * @return string Key
      * @throws \InvalidArgumentException If key's value is empty
      */
     protected function _key($key)

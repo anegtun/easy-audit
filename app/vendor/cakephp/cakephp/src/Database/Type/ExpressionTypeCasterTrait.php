@@ -19,11 +19,9 @@ use Cake\Database\Type;
 /**
  * Offers a method to convert values to ExpressionInterface objects
  * if the type they should be converted to implements ExpressionTypeInterface
- *
  */
 trait ExpressionTypeCasterTrait
 {
-
     /**
      * Conditionally converts the passed value to an ExpressionInterface object
      * if the type class implements the ExpressionTypeInterface. Otherwise,

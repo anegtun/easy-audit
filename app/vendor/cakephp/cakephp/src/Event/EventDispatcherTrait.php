@@ -19,7 +19,6 @@ namespace Cake\Event;
  */
 trait EventDispatcherTrait
 {
-
     /**
      * Instance of the Cake\Event\EventManager this object is using
      * to dispatch inner events.
@@ -101,7 +100,6 @@ trait EventDispatcherTrait
      * it can be read by listeners.
      * @param object|null $subject The object that this event applies to
      * ($this by default).
-     *
      * @return \Cake\Event\Event
      */
     public function dispatchEvent($name, $data = null, $subject = null)

@@ -24,7 +24,6 @@ use InvalidArgumentException;
  */
 class EventManager implements EventManagerInterface
 {
-
     /**
      * The default priority queue value for new, attached listeners
      *
@@ -106,7 +105,6 @@ class EventManager implements EventManagerInterface
      * @param array $options used to set the `priority` flag to the listener. In the future more options may be added.
      * Priorities are treated as queues. Lower values are called before higher ones, and multiple attachments
      * added to the same priority queue will be treated in the order of insertion.
-     *
      * @return void
      * @throws \InvalidArgumentException When event key is missing or callable is not an
      *   instance of Cake\Event\EventListenerInterface.
@@ -141,7 +139,7 @@ class EventManager implements EventManagerInterface
         $argCount = func_num_args();
         if ($argCount === 2) {
             $this->_listeners[$eventKey][static::$defaultPriority][] = [
-                'callable' => $options
+                'callable' => $options,
             ];
 
             return $this;
@@ -149,7 +147,7 @@ class EventManager implements EventManagerInterface
         if ($argCount === 3) {
             $priority = isset($options['priority']) ? $options['priority'] : static::$defaultPriority;
             $this->_listeners[$eventKey][$priority][] = [
-                'callable' => $callable
+                'callable' => $callable,
             ];
 
             return $this;
@@ -343,10 +341,10 @@ class EventManager implements EventManagerInterface
      * Calls a listener.
      *
      * @param callable $listener The listener to trigger.
-     * @param \Cake\Event\Event $event Event instance.
+     * @param \Cake\Event\EventInterface $event Event instance.
      * @return mixed The result of the $listener function.
      */
-    protected function _callListener(callable $listener, Event $event)
+    protected function _callListener(callable $listener, EventInterface $event)
     {
         $data = $event->getData();
 

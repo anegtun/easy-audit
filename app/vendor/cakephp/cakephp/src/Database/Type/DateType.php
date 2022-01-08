@@ -15,13 +15,13 @@
 namespace Cake\Database\Type;
 
 use DateTime;
+use DateTimeImmutable;
 
 /**
  * Class DateType
  */
 class DateType extends DateTimeType
 {
-
     /**
      * The class to use for representing date objects
      *
@@ -81,8 +81,8 @@ class DateType extends DateTimeType
     public function marshal($value)
     {
         $date = parent::marshal($value);
-        if ($date instanceof DateTime) {
-            $date->setTime(0, 0, 0);
+        if ($date instanceof DateTime || $date instanceof DateTimeImmutable) {
+            $date = $date->setTime(0, 0, 0);
         }
 
         return $date;
@@ -93,7 +93,7 @@ class DateType extends DateTimeType
      */
     protected function _parseValue($value)
     {
-        /* @var \Cake\I18n\Time $class */
+        /** @var \Cake\I18n\Time $class */
         $class = $this->_className;
 
         return $class::parseDate($value, $this->_localeFormat);

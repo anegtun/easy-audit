@@ -38,7 +38,6 @@ use RuntimeException;
  */
 trait ValidatorAwareTrait
 {
-
     /**
      * Validator class.
      *
@@ -174,7 +173,7 @@ trait ValidatorAwareTrait
             throw new RuntimeException($message);
         }
 
-        $validator = new $this->_validatorClass;
+        $validator = new $this->_validatorClass();
         $validator = $this->$method($validator);
         if ($this instanceof EventDispatcherInterface) {
             $event = defined(self::class . '::BUILD_VALIDATOR_EVENT') ? self::BUILD_VALIDATOR_EVENT : 'Model.buildValidator';
@@ -208,7 +207,7 @@ trait ValidatorAwareTrait
      */
     public function setValidator($name, Validator $validator)
     {
-        $validator->setProvider(self::VALIDATOR_PROVIDER_NAME, $this);
+        $validator->setProvider(static::VALIDATOR_PROVIDER_NAME, $this);
         $this->_validators[$name] = $validator;
 
         return $this;

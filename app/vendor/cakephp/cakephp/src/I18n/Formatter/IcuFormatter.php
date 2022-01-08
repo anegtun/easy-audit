@@ -24,7 +24,6 @@ use MessageFormatter;
  */
 class IcuFormatter implements FormatterInterface
 {
-
     /**
      * Returns a string with all passed variables interpolated into the original
      * message. Variables are interpolated using the MessageFormatter class.
@@ -37,25 +36,6 @@ class IcuFormatter implements FormatterInterface
      * @throws \Aura\Intl\Exception\CannotInstantiateFormatter
      */
     public function format($locale, $message, array $vars)
-    {
-        unset($vars['_singular'], $vars['_count']);
-
-        return $this->_formatMessage($locale, $message, $vars);
-    }
-
-    /**
-     * Does the actual formatting using the MessageFormatter class
-     *
-     * @param string $locale The locale in which the message is presented.
-     * @param string|array $message The message to be translated
-     * @param array $vars The list of values to interpolate in the message
-     * @return string The formatted message
-     * @throws \Aura\Intl\Exception\CannotInstantiateFormatter if any error occurred
-     * while parsing the message
-     * @throws \Aura\Intl\Exception\CannotFormat If any error related to the passed
-     * variables is found
-     */
-    protected function _formatMessage($locale, $message, $vars)
     {
         if ($message === '') {
             return $message;
