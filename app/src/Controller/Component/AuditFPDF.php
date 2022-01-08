@@ -71,7 +71,7 @@ class AuditFPDF extends FPDF {
     function Intro() {
         $select_template = false;
         foreach($this->audit->templates as $t) {
-            if($t->form->type === 'select') {
+            if($t->form->type === 'checklist') {
                 $select_template = $t;
             }
         }

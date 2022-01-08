@@ -8,20 +8,20 @@ use FPDF;
 
 trait AuditFPDFFormSelectTraits {
 
-    function SelectReport($template) {
+    function ChecklistReport($template) {
         $this->AddPage();
         $this->H2('Resumen de puntuaciones');
-        $this->SelectReportSummaryTable($template);
+        $this->ChecklistReportSummaryTable($template);
         $this->Ln(10);
-        $this->SelectReportSummaryGraph($template);
+        $this->ChecklistReportSummaryGraph($template);
         $this->Ln(20);
-        $this->SelectReportSummaryResult($template);
+        $this->ChecklistReportSummaryResult($template);
         $this->AddPage();
         $this->H2('Detalles de auditoría');
-        $this->SelectReportDetail($template);
+        $this->ChecklistReportDetail($template);
     }
 
-    private function SelectReportSummaryTable($template) {
+    private function ChecklistReportSummaryTable($template) {
         $history_to_show = count($this->history) > 6 ? array_slice($this->history, -6) : $this->history;
         $sectionNameMaxLength = 105 - count($history_to_show) * 10;
         $sectionNameMaxWidth = 175 - count($history_to_show) * 15;
@@ -63,7 +63,7 @@ trait AuditFPDFFormSelectTraits {
         $this->Table($rows, $tableConfig);
     }
 
-    private function SelectReportSummaryGraph($template) {
+    private function ChecklistReportSummaryGraph($template) {
         $history_to_show = count($this->history) > 12 ? array_slice($this->history, -12) : $this->history;
         $maxHeight = 40;
         $maxWidth = 175;
@@ -98,7 +98,7 @@ trait AuditFPDFFormSelectTraits {
         $this->SetFont('Arial', '', 12);
     }
 
-    private function SelectReportSummaryResult($template) {
+    private function ChecklistReportSummaryResult($template) {
         $letter = 'A';
         if($this->audit->score_form[$template->form->id] < 65) {
             $letter = 'C';
@@ -114,7 +114,7 @@ trait AuditFPDFFormSelectTraits {
         );
     }
 
-    private function SelectReportDetail($template) {
+    private function ChecklistReportDetail($template) {
         $data = [];
         foreach($template->form->sections as $s) {
             $section = ['title' => $s->name, 'fields' => []];

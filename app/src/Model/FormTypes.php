@@ -5,9 +5,9 @@ class FormTypes {
     
     public function getAll() {
         $values = [
+            'checklist' => __('Checklist'),
             'measure' => __('Measure'),
             'simple' => __('Simple'),
-            'select' => __('Checklist'),
         ];
         asort($values);
         return $values;
