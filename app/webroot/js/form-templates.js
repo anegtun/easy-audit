@@ -14,7 +14,8 @@ $(document).ready(function() {
         fieldModal.find('*[name=form_section_id]').trigger("change");
     });
 
-    $('a[data-field-id]').click(function() {
+    $('a[data-field-id]').click(function(e) {
+        e.preventDefault();
         openModalToEdit(fieldModal, $(this), 'data-field-', ['id', 'form_section_id', 'text', 'type']);
         editor.setData($(this).attr('data-field-text'));
         fieldModal.find('*[name=type]').trigger("change");
