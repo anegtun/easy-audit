@@ -105,7 +105,7 @@ $(document).ready(function() {
             $('form').find('input[name="field_img_removed['+templateId+']['+fieldId+'][]"][value="'+filename+'"]').remove();
         } else {
             img.addClass('to-remove');
-            $('form').append($('<input type="hidden" name="field_img_removed['+templateId+']['+fieldId+'][]" value="'+filename+'">'));
+            $('form').append($('<input type="hidden" name="field_img_removed['+templateId+']['+fieldId+'][]" value="'+filename+'" data-img-remove>'));
         }
         auditDirty = true;
     }
@@ -211,5 +211,26 @@ $(document).ready(function() {
     $('#auditForm').submit(function() {
         auditDirty = false;
     });
+
+    setInterval(function() {
+        const form = $('#auditForm');
+        $('input[data-img-remove]').prop('disabled', true);
+
+        $.ajax({
+            type: "POST",
+            url: form.attr('action'),
+            data: form.serialize(),
+            complete: function() {
+                $('input[data-img-remove]').prop('disabled','');
+            },
+            success: function() {
+                console.log("Audit auto-saved");
+                auditDirty = false;
+            },
+            error: function(err) {
+                console.log("Error submitting form", err);
+            }
+        });
+    }, 60000);
 
 });
