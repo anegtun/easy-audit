@@ -10,7 +10,7 @@ class EasyAuditTemplateHelper extends Helper {
     }
 
     public function fieldLabel($section, $field, $showText = true) {
-        $result = ($section->position-1) . ".". $field->position;
+        $result = $section->getPositionNumber() . ".". $field->position;
         if($showText) {
             $result .= ". {$field->text}";
         }
