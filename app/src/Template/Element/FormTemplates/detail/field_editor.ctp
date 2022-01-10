@@ -4,14 +4,16 @@
         <?php foreach($template->fields as $f) : ?>
             <?php if($f->form_section_id === $s->id) : ?>
                 <div class="row form-template-field">
-                    <?php if($is_editable) : ?>
                         <div class="col-sm-1">
-                            <?= $this->EasyAuditForm->editModalLink($f, 'data-field', ['id', 'form_section_id', 'position', 'text', 'type']) ?>
+                            <?php if($is_editable) : ?>
+                                <?= $this->EasyAuditForm->editModalLink($f, 'data-field', ['id', 'form_section_id', 'position', 'text', 'type']) ?>
+                            <?php endif ?>
                             <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveFieldUp', $f->form_template_id, $f->id]) ?>
                             <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveFieldDown', $f->form_template_id, $f->id]) ?>
-                            <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteField', $f->id], ['confirm' => __('Are you sure you want to remove this field? This can\'t be undone')]) ?>
+                            <?php if($is_editable) : ?>
+                                <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteField', $f->id], ['confirm' => __('Are you sure you want to remove this field? This can\'t be undone')]) ?>
+                            <?php endif ?>
                         </div>
-                    <?php endif ?>
                     <div class="col-sm-1">
                         <strong>
                             <?= $field_types[$f->type] ?>
