@@ -24,18 +24,12 @@ class FormTemplate extends Entity {
     }
 
     public function reindexFields() {
-        usort($this->fields, function ($a,$b) {
-            return strcmp($a->form_section_id, $b->form_section_id);
-        });
-
-        $count = 1;
-        $currentSection = '';
+        $count = [];
         foreach($this->fields as $f) {
-            if($currentSection !== $f->form_section_id) {
-                $currentSection = $f->form_section_id;
-                $count = 1;
+            if(empty($count[$f->form_section_id])) {
+                $count[$f->form_section_id] = 1;
             }
-            $f->position = $count++;
+            $f->position = $count[$f->form_section_id]++;
         }
         $this->setDirty('fields', true);
     }
