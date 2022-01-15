@@ -19,8 +19,15 @@ $(document).ready(function() {
 
     const onChangeMeasures = function(e) {
         const parent = $(e.currentTarget).parents('.audit-measure');
-        const expected = parent.find('.audit-measure-expected input').val() || 0;
-        const actual = parent.find('.audit-measure-actual input').val() || 0;
+        const expected = parent.find('.audit-measure-expected input').val() || null;
+        const actual = parent.find('.audit-measure-actual input').val() || null;
+        if(expected == null || actual == null) {
+            parent.find('.audit-measure-result .glyphicon-question-sign').show();
+            parent.find('.audit-measure-result .glyphicon-ok-sign').hide();
+            parent.find('.audit-measure-result .glyphicon-remove-sign').hide();
+            parent.find('.audit-measure-difference input').val('N/A');
+            return;
+        }
         const thredshold = parent.find('.audit-measure-thredshold input').val() || 0;
         const difference = Math.round((expected - actual) * 100) / 100;
         const isOk = Math.abs(difference) <= thredshold;
@@ -32,6 +39,7 @@ $(document).ready(function() {
             parent.find('.audit-measure-result .glyphicon-remove-sign').show();
             parent.find('.audit-measure-result .glyphicon-ok-sign').hide();
         }
+        parent.find('.audit-measure-result .glyphicon-question-sign').hide();
     };
 
     $('.add-measure').click(function(e) {
