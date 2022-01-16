@@ -23,7 +23,9 @@ class FormsController extends AppController {
 
     public function index() {
         $form_types = $this->FormTypes->getAll();
-        $forms = $this->Forms->find()->order('name');
+        $forms = $this->Forms->find()
+            ->order('name')
+            ->contain(['FormSections', 'FormTemplates']);
         $this->set(compact('forms', 'form_types'));
     }
 

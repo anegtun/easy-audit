@@ -17,13 +17,14 @@
                         <div class="audit-measure-numbers">
                             <div class="audit-measure-expected"><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][<?= $index ?>][expected]" value="<?= $v['expected'] ?>" placeholder="<?= __('Expected') ?>" /></div>
                             <div class="audit-measure-actual"><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][<?= $index ?>][actual]" value="<?= $v['actual'] ?>" placeholder="<?= __('Actual') ?>" /></div>
-                            <div class="audit-measure-difference"><input type="number" class="form-control" step="any" disabled="disabled" /></div>
+                            <div class="audit-measure-difference"><input type="text" class="form-control" disabled="disabled" /></div>
                         </div>
                         <div class="audit-measure-thredshold">
                             <div><input type="number" class="form-control" step="any" name="audit_measure[<?= $template->id ?>][<?= $index ?>][threshold]" value="<?= $v['threshold'] ?>" placeholder="<?= __('Thredshold') ?>" /></div>
                             <div class="audit-measure-result">
                                 <span class='glyphicon glyphicon-ok-sign'></span>
                                 <span class='glyphicon glyphicon-remove-sign'></span>
+                                <span class='glyphicon glyphicon-question-sign'></span>
                             </div>
                         </div>
                     </div>
@@ -51,6 +52,7 @@
                     <div class="audit-measure-result">
                         <span class='glyphicon glyphicon-ok-sign'></span>
                         <span class='glyphicon glyphicon-remove-sign'></span>
+                        <span class='glyphicon glyphicon-question-sign'></span>
                     </div>
                 </div>
             </div>
