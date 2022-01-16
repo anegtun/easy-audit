@@ -33,7 +33,7 @@ class AuditsTable extends Table {
 
     public function getComplete($id) {
         $audit = $this->get($id, [ 'contain' => [
-            'AuditMeasureValues' => [ 'sort' => 'item' ],
+            'AuditMeasureValues',
             'AuditFieldValues' => [
                 'FormTemplateFields' => [ 'FormSections' ],
                 'FormOptionsetValues'
@@ -49,6 +49,7 @@ class AuditsTable extends Table {
             'Users'
         ]]);
         $audit->calculateScores();
+        $audit->sortMeasureValues();
         return $audit;
     }
 
@@ -60,7 +61,7 @@ class AuditsTable extends Table {
             ])
             ->order('date')
             ->contain([
-                'AuditMeasureValues' => [ 'sort' => 'item' ],
+                'AuditMeasureValues',
                 'AuditFieldValues' => [
                     'FormTemplateFields' => [ 'FormSections' ],
                     'FormOptionsetValues'
@@ -75,6 +76,7 @@ class AuditsTable extends Table {
             ]);
         foreach($audits as $a) {
             $a->calculateScores();
+            $a->sortMeasureValues();
         }
         return $audits;
     }
