@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-01-16 12:30+0000\n"
+"POT-Creation-Date: 2022-01-16 12:33+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -58,7 +58,7 @@ msgstr ""
 msgid "There are no emails configured for this customer."
 msgstr ""
 
-#: Controller/AuditsController.php:224
+#: Controller/AuditsController.php:225
 msgid "Email sent correctly."
 msgstr ""
 
@@ -111,43 +111,43 @@ msgstr ""
 msgid "Template enabled or disabled successfully."
 msgstr ""
 
-#: Controller/FormTemplatesController.php:162
-#: Controller/FormTemplatesController.php:174
+#: Controller/FormTemplatesController.php:157
+#: Controller/FormTemplatesController.php:169
 msgid "Error moving field."
 msgstr ""
 
-#: Controller/FormsController.php:44
-#: Controller/FormsController.php:187
+#: Controller/FormsController.php:46
+#: Controller/FormsController.php:189
 msgid "Form created."
 msgstr ""
 
-#: Controller/FormsController.php:47
-#: Controller/FormsController.php:60
+#: Controller/FormsController.php:49
+#: Controller/FormsController.php:62
 msgid "Error saving form."
 msgstr ""
 
-#: Controller/FormsController.php:58
+#: Controller/FormsController.php:60
 msgid "Form updated."
 msgstr ""
 
-#: Controller/FormsController.php:71
+#: Controller/FormsController.php:73
 msgid "This form is used in at least one audit, so it can't be deleted. You can instead disable it."
 msgstr ""
 
-#: Controller/FormsController.php:75
+#: Controller/FormsController.php:77
 msgid "Error deleting form."
 msgstr ""
 
-#: Controller/FormsController.php:78
+#: Controller/FormsController.php:80
 msgid "Form deleted successfully."
 msgstr ""
 
-#: Controller/FormsController.php:124
-#: Controller/FormsController.php:136
+#: Controller/FormsController.php:126
+#: Controller/FormsController.php:138
 msgid "Error moving section."
 msgstr ""
 
-#: Controller/FormsController.php:148
+#: Controller/FormsController.php:150
 msgid "Form renamed."
 msgstr ""
 
@@ -175,7 +175,7 @@ msgstr ""
 msgid "Invalid username or password, try again"
 msgstr ""
 
-#: Controller/Component/AuditEmailComponent.php:30
+#: Controller/Component/AuditEmailComponent.php:33
 msgid "Audit report"
 msgstr ""
 
@@ -222,7 +222,7 @@ msgstr ""
 msgid "Auditor"
 msgstr ""
 
-#: Model/Entity/Audit.php:59
+#: Model/Entity/Audit.php:76
 msgid "Audit"
 msgstr ""
 
@@ -309,7 +309,7 @@ msgstr ""
 #: Template/Audits/data.ctp:80
 #: Template/Customers/detail.ctp:67
 #: Template/Customers/detail.ctp:77
-#: Template/Forms/detail.ctp:142
+#: Template/Forms/detail.ctp:134
 msgid "Add template"
 msgstr ""
 
@@ -317,7 +317,7 @@ msgstr ""
 #: Template/Audits/index.ctp:40
 #: Template/Customers/detail.ctp:89
 #: Template/Element/Audits/modals/list.ctp:14
-#: Template/Element/Audits/modals/send.ctp:27
+#: Template/Element/Audits/modals/send.ctp:29
 #: Template/Element/Customers/modals/list.ctp:29
 #: Template/Element/FormTemplates/modals/clone.ctp:24
 #: Template/Element/FormTemplates/modals/field.ctp:36
@@ -377,7 +377,7 @@ msgstr ""
 
 #: Template/Audits/index.ctp:39
 #: Template/Customers/index.ctp:38
-#: Template/Forms/index.ctp:37
+#: Template/Forms/index.ctp:41
 #: Template/Users/index.ctp:39
 msgid "Create"
 msgstr ""
@@ -416,7 +416,7 @@ msgstr ""
 #: Template/Element/Forms/modals/rename.ctp:14
 #: Template/Element/Forms/modals/section.ctp:15
 #: Template/Forms/detail.ctp:73
-#: Template/Forms/detail.ctp:123
+#: Template/Forms/detail.ctp:115
 #: Template/Forms/index.ctp:18
 #: Template/Users/detail.ctp:25
 #: Template/Users/index.ctp:17
@@ -457,31 +457,31 @@ msgid "- close observations"
 msgstr ""
 
 #: Template/Element/Audits/fill/editor_measure.ctp:14
-#: Template/Element/Audits/fill/editor_measure.ctp:41
+#: Template/Element/Audits/fill/editor_measure.ctp:42
 msgid "Item"
 msgstr ""
 
 #: Template/Element/Audits/fill/editor_measure.ctp:15
-#: Template/Element/Audits/fill/editor_measure.ctp:42
+#: Template/Element/Audits/fill/editor_measure.ctp:43
 msgid "Unit"
 msgstr ""
 
 #: Template/Element/Audits/fill/editor_measure.ctp:18
-#: Template/Element/Audits/fill/editor_measure.ctp:45
+#: Template/Element/Audits/fill/editor_measure.ctp:46
 msgid "Expected"
 msgstr ""
 
 #: Template/Element/Audits/fill/editor_measure.ctp:19
-#: Template/Element/Audits/fill/editor_measure.ctp:46
+#: Template/Element/Audits/fill/editor_measure.ctp:47
 msgid "Actual"
 msgstr ""
 
 #: Template/Element/Audits/fill/editor_measure.ctp:23
-#: Template/Element/Audits/fill/editor_measure.ctp:50
+#: Template/Element/Audits/fill/editor_measure.ctp:51
 msgid "Thredshold"
 msgstr ""
 
-#: Template/Element/Audits/fill/editor_measure.ctp:60
+#: Template/Element/Audits/fill/editor_measure.ctp:62
 msgid "+ add measure"
 msgstr ""
 
@@ -497,15 +497,19 @@ msgstr ""
 msgid "Email addresses"
 msgstr ""
 
-#: Template/Element/Audits/modals/send.ctp:17
+#: Template/Element/Audits/modals/send.ctp:16
+msgid "Send copy to auditor?"
+msgstr ""
+
+#: Template/Element/Audits/modals/send.ctp:19
 msgid "BCC"
 msgstr ""
 
-#: Template/Element/Audits/modals/send.ctp:21
+#: Template/Element/Audits/modals/send.ctp:23
 msgid "Observations"
 msgstr ""
 
-#: Template/Element/Audits/modals/send.ctp:26
+#: Template/Element/Audits/modals/send.ctp:28
 msgid "Send"
 msgstr ""
 
@@ -525,7 +529,7 @@ msgstr ""
 msgid "Regards."
 msgstr ""
 
-#: Template/Element/FormTemplates/detail/field_editor.ctp:12
+#: Template/Element/FormTemplates/detail/field_editor.ctp:14
 msgid "Are you sure you want to remove this field? This can't be undone"
 msgstr ""
 
@@ -689,14 +693,16 @@ msgid "Calculate scores?"
 msgstr ""
 
 #: Template/Forms/detail.ctp:63
+#: Template/Forms/index.ctp:21
 msgid "Sections"
 msgstr ""
 
-#: Template/Forms/detail.ctp:106
+#: Template/Forms/detail.ctp:98
 msgid "Add section"
 msgstr ""
 
-#: Template/Forms/detail.ctp:113
+#: Template/Forms/detail.ctp:105
+#: Template/Forms/index.ctp:22
 msgid "Templates"
 msgstr ""
 
