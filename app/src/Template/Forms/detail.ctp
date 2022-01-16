@@ -40,6 +40,23 @@ $is_editable = !$has_audits;
     <?php endif ?>
 
 
+    <?php if($form->type === 'checklist') : ?>
+        <?= $this->Form->create(null, ['url'=>['action'=>'save']]) ?>
+            <?= $this->Form->hidden('id', ['value' => $form->id]) ?>
+            <fieldset>
+                <legend><?= __('Form config') ?></legend>
+
+                <div class="form-row">
+                    <?= $this->EasyAuditForm->checkbox('scores', ['label'=>__('Calculate scores?'), 'checked'=>!empty($form->scores)]) ?>
+                </div>
+                <div class="button-group">
+                    <div><?= $this->EasyAuditForm->saveButton(__('Save')) ?></div>
+                </div>
+            </fieldset>
+        <?= $this->Form->end() ?>
+    <?php endif ?>
+
+
     <?php if($form->type !== 'measure') : ?>
 
         <fieldset>
@@ -61,16 +78,8 @@ $is_editable = !$has_audits;
                             <?php foreach($form->sections as $s) : ?>
                                 <tr>
                                     <td><?= $this->EasyAuditForm->editModalLink($s, 'data-section', ['id', 'position', 'name', 'weigth']) ?></td>
-                                    <td>
-                                        <?php if($is_editable) : ?>
-                                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $form->id, $s->id]) ?>
-                                        <?php endif ?>
-                                    </td>
-                                    <td>
-                                        <?php if($is_editable) : ?>
-                                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $form->id, $s->id]) ?>
-                                        <?php endif ?>
-                                    </td>
+                                    <td><?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $form->id, $s->id]) ?></td>
+                                    <td><?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $form->id, $s->id]) ?></td>
                                     <td>
                                         <?php if($is_editable) : ?>
                                             <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteSection', $s->id]) ?>

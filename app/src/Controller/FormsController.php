@@ -23,7 +23,9 @@ class FormsController extends AppController {
 
     public function index() {
         $form_types = $this->FormTypes->getAll();
-        $forms = $this->Forms->find()->order('name');
+        $forms = $this->Forms->find()
+            ->order('name')
+            ->contain(['FormSections', 'FormTemplates']);
         $this->set(compact('forms', 'form_types'));
     }
 
@@ -47,6 +49,20 @@ class FormsController extends AppController {
             $this->Flash->error(__('Error saving form.'));
         }
         return $this->redirect(['action'=>'index']);
+    }
+
+    public function save() {
+        $data = $this->request->getData();
+        $form = $this->Forms->get($data['id']);
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $form->scores = empty($data['scores']) ? 0 : 1;
+            if ($this->Forms->save($form)) {
+                $this->Flash->success(__('Form updated.'));
+            } else {
+                $this->Flash->error(__('Error saving form.'));
+            }
+        }
+        return $this->redirect(['action'=>'detail', $form->id]);
     }
 
     public function delete($id) {

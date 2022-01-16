@@ -23,19 +23,30 @@ class FormTemplate extends Entity {
         $this->reindexFields();
     }
 
-    public function reindexFields() {
-        usort($this->fields, function ($a,$b) {
-            return strcmp($a->form_section_id, $b->form_section_id);
-        });
-
-        $count = 1;
-        $currentSection = '';
-        foreach($this->fields as $f) {
-            if($currentSection !== $f->form_section_id) {
-                $currentSection = $f->form_section_id;
-                $count = 1;
+    public function addField($field, $sectionId, $position) {
+        if(empty($position)) {
+            echo "<pre>"; print_r($field); echo "</pre>";
+            $this->fields[] = $field;
+        } else {
+            $tmp = [];
+            foreach($this->fields as $i => $f) {
+                if($f->form_section_id == $sectionId && $f->position == $position) {
+                    $tmp[] = $field;
+                }
+                $tmp[] = $f;
             }
-            $f->position = $count++;
+            $this->fields = $tmp;
+        }
+        $this->reindexFields();
+    }
+
+    public function reindexFields() {
+        $count = [];
+        foreach($this->fields as $f) {
+            if(empty($count[$f->form_section_id])) {
+                $count[$f->form_section_id] = 1;
+            }
+            $f->position = $count[$f->form_section_id]++;
         }
         $this->setDirty('fields', true);
     }

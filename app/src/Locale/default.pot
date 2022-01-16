@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-01-08 15:40+0000\n"
+"POT-Creation-Date: 2022-01-16 12:30+0000\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -117,32 +117,37 @@ msgid "Error moving field."
 msgstr ""
 
 #: Controller/FormsController.php:44
-#: Controller/FormsController.php:173
+#: Controller/FormsController.php:187
 msgid "Form created."
 msgstr ""
 
 #: Controller/FormsController.php:47
+#: Controller/FormsController.php:60
 msgid "Error saving form."
 msgstr ""
 
-#: Controller/FormsController.php:57
+#: Controller/FormsController.php:58
+msgid "Form updated."
+msgstr ""
+
+#: Controller/FormsController.php:71
 msgid "This form is used in at least one audit, so it can't be deleted. You can instead disable it."
 msgstr ""
 
-#: Controller/FormsController.php:61
+#: Controller/FormsController.php:75
 msgid "Error deleting form."
 msgstr ""
 
-#: Controller/FormsController.php:64
+#: Controller/FormsController.php:78
 msgid "Form deleted successfully."
 msgstr ""
 
-#: Controller/FormsController.php:110
-#: Controller/FormsController.php:122
+#: Controller/FormsController.php:124
+#: Controller/FormsController.php:136
 msgid "Error moving section."
 msgstr ""
 
-#: Controller/FormsController.php:134
+#: Controller/FormsController.php:148
 msgid "Form renamed."
 msgstr ""
 
@@ -182,7 +187,7 @@ msgid "Date"
 msgstr ""
 
 #: Model/FormTemplateFieldTypes.php:9
-#: Template/Element/Audits/fill/editor_checklist.ctp:75
+#: Template/Element/Audits/fill/editor_checklist.ctp:78
 msgid "Photos"
 msgstr ""
 
@@ -236,7 +241,7 @@ msgstr ""
 #: Template/Audits/data.ctp:8
 #: Template/Audits/data.ctp:16
 #: Template/Audits/fill.ctp:41
-#: Template/Audits/history.ctp:78
+#: Template/Audits/history.ctp:92
 msgid "Audit data"
 msgstr ""
 
@@ -253,12 +258,13 @@ msgstr ""
 #: Template/Element/Forms/modals/new_form.ctp:19
 #: Template/Element/Forms/modals/rename.ctp:19
 #: Template/Element/Forms/modals/section.ctp:21
+#: Template/Forms/detail.ctp:53
 #: Template/Users/detail.ctp:31
 msgid "Save"
 msgstr ""
 
 #: Template/Audits/data.ctp:35
-#: Template/Audits/history.ctp:77
+#: Template/Audits/history.ctp:91
 msgid "Fill audit"
 msgstr ""
 
@@ -269,13 +275,13 @@ msgstr ""
 
 #: Template/Audits/data.ctp:37
 #: Template/Audits/fill.ctp:43
-#: Template/Audits/history.ctp:79
+#: Template/Audits/history.ctp:93
 msgid "View report"
 msgstr ""
 
 #: Template/Audits/data.ctp:38
 #: Template/Audits/fill.ctp:44
-#: Template/Audits/history.ctp:80
+#: Template/Audits/history.ctp:94
 msgid "Send report"
 msgstr ""
 
@@ -303,7 +309,7 @@ msgstr ""
 #: Template/Audits/data.ctp:80
 #: Template/Customers/detail.ctp:67
 #: Template/Customers/detail.ctp:77
-#: Template/Forms/detail.ctp:125
+#: Template/Forms/detail.ctp:142
 msgid "Add template"
 msgstr ""
 
@@ -340,13 +346,17 @@ msgstr ""
 msgid "History"
 msgstr ""
 
-#: Template/Audits/history.ctp:34
+#: Template/Audits/history.ctp:23
+msgid "The forms of this audit do not allow history scores    ."
+msgstr ""
+
+#: Template/Audits/history.ctp:48
 #: Template/Element/FormTemplates/modals/field.ctp:27
 #: Template/Element/Forms/modals/section.ctp:8
 msgid "Section"
 msgstr ""
 
-#: Template/Audits/history.ctp:53
+#: Template/Audits/history.ctp:67
 msgid "TOTAL"
 msgstr ""
 
@@ -405,8 +415,8 @@ msgstr ""
 #: Template/Element/Forms/modals/new_form.ctp:13
 #: Template/Element/Forms/modals/rename.ctp:14
 #: Template/Element/Forms/modals/section.ctp:15
-#: Template/Forms/detail.ctp:56
-#: Template/Forms/detail.ctp:106
+#: Template/Forms/detail.ctp:73
+#: Template/Forms/detail.ctp:123
 #: Template/Forms/index.ctp:18
 #: Template/Users/detail.ctp:25
 #: Template/Users/index.ctp:17
@@ -418,7 +428,7 @@ msgid "Emails"
 msgstr ""
 
 #: Template/Element/Audits/field/type_photos.ctp:23
-#: Template/Element/Audits/fill/editor_checklist.ctp:92
+#: Template/Element/Audits/fill/editor_checklist.ctp:95
 msgid "Take photo"
 msgstr ""
 
@@ -438,11 +448,11 @@ msgstr ""
 msgid "Close all"
 msgstr ""
 
-#: Template/Element/Audits/fill/editor_checklist.ctp:65
+#: Template/Element/Audits/fill/editor_checklist.ctp:68
 msgid "+ add observations"
 msgstr ""
 
-#: Template/Element/Audits/fill/editor_checklist.ctp:66
+#: Template/Element/Audits/fill/editor_checklist.ctp:69
 msgid "- close observations"
 msgstr ""
 
@@ -597,7 +607,7 @@ msgid "New form"
 msgstr ""
 
 #: Template/Element/Forms/modals/section.ctp:16
-#: Template/Forms/detail.ctp:57
+#: Template/Forms/detail.ctp:74
 msgid "Weigth"
 msgstr ""
 
@@ -670,15 +680,23 @@ msgstr ""
 msgid "This form is associated with at least one audit, so the editing options are limited."
 msgstr ""
 
-#: Template/Forms/detail.ctp:46
+#: Template/Forms/detail.ctp:47
+msgid "Form config"
+msgstr ""
+
+#: Template/Forms/detail.ctp:50
+msgid "Calculate scores?"
+msgstr ""
+
+#: Template/Forms/detail.ctp:63
 msgid "Sections"
 msgstr ""
 
-#: Template/Forms/detail.ctp:89
+#: Template/Forms/detail.ctp:106
 msgid "Add section"
 msgstr ""
 
-#: Template/Forms/detail.ctp:96
+#: Template/Forms/detail.ctp:113
 msgid "Templates"
 msgstr ""
 

@@ -54,6 +54,23 @@ class Audit extends Entity {
         }
     }
 
+    public function sortMeasureValues() {
+        usort($this->measure_values, function($a, $b) {
+            preg_match_all('/^(\d+)/', $a->item, $match_a);
+            preg_match_all('/^(\d+)/', $b->item, $match_b);
+            if(empty($match_a[0]) && !empty($match_b[0])) {
+                return 1;
+            }
+            if(!empty($match_a[0]) && empty($match_b[0])) {
+                return -1;
+            }
+            if(!empty($match_a[0]) && !empty($match_b[0])) {
+                return $match_a[0][0] - $match_b[0][0];
+            }
+            return strcmp($a->item, $b->item);
+        });
+    }
+
     public function getReportName() {
         $date = $this->date->i18nFormat('yyyy-MM');
         return __('Audit')." {$this->customer->name} - $date";
