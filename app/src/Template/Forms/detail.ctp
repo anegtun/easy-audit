@@ -40,6 +40,23 @@ $is_editable = !$has_audits;
     <?php endif ?>
 
 
+    <?php if($form->type === 'checklist') : ?>
+        <?= $this->Form->create(null, ['url'=>['action'=>'save']]) ?>
+            <?= $this->Form->hidden('id', ['value' => $form->id]) ?>
+            <fieldset>
+                <legend><?= __('Form data') ?></legend>
+
+                <div class="form-row">
+                    <?= $this->EasyAuditForm->checkbox('scores', ['label'=>__('Calculate scores?'), 'value'=>1, 'checked'=>!empty($form->scores)]) ?>
+                </div>
+                <div class="button-group">
+                    <div><?= $this->EasyAuditForm->saveButton(__('Save')) ?></div>
+                </div>
+            </fieldset>
+        <?= $this->Form->end() ?>
+    <?php endif ?>
+
+
     <?php if($form->type !== 'measure') : ?>
 
         <fieldset>

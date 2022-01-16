@@ -54,6 +54,7 @@ CREATE TABLE easy_audit_forms (
   id int unsigned NOT NULL AUTO_INCREMENT,
   name varchar(200) DEFAULT NULL,
   pubic_name varchar(200) DEFAULT NULL,
+  scores int unsigned NOT NULL DEFAULT 0,
   type varchar(20) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;

@@ -49,6 +49,20 @@ class FormsController extends AppController {
         return $this->redirect(['action'=>'index']);
     }
 
+    public function save() {
+        $data = $this->request->getData();
+        $form = $this->Forms->get($data['id']);
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $form = $this->Forms->patchEntity($form, $this->request->getData());
+            if ($this->Forms->save($form)) {
+                $this->Flash->success(__('Form updated.'));
+            } else {
+                $this->Flash->error(__('Error saving form.'));
+            }
+        }
+        return $this->redirect(['action'=>'detail', $form->id]);
+    }
+
     public function delete($id) {
         $form = $this->getForm($id);
         $templates = $this->getTemplates($form);
