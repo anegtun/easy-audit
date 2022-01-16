@@ -6,7 +6,7 @@ use Cake\ORM\Entity;
 class AuditMeasureValue extends Entity {
 
     public function hasDifference() {
-        return (empty($this->expected) && $this->expected !== 0) - (empty($this->actual) && $this->actual !== 0);
+        return $this->expected !== null && $this->actual !== null;
     }
 
     public function calculateDifference() {

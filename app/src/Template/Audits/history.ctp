@@ -8,11 +8,25 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('History')]
 ]);
 $this->Html->script('audit-history', ['block' => 'script']);
+
+$has_history = false;
+foreach($audit->templates as $t) {
+    if(!empty($t->form->scores)) {
+        $has_history = true;
+    }
+}
 ?>
+
+<?php if(!$has_history) : ?>
+    <div class="alert alert-info">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <?= $this->EasyAuditHtml->gliphiconText('info-sign', __('The forms of this audit do not allow history scores    .')) ?>
+    </div>
+<?php endif ?>
 
 <?php foreach($audit->templates as $t) : ?>
 
-    <?php if($t->form->type === 'checklist') : ?>
+    <?php if(!empty($t->form->scores)) : ?>
 
         <?php
         $form_audits = [];
