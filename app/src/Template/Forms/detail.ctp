@@ -44,7 +44,7 @@ $is_editable = !$has_audits;
         <?= $this->Form->create(null, ['url'=>['action'=>'save']]) ?>
             <?= $this->Form->hidden('id', ['value' => $form->id]) ?>
             <fieldset>
-                <legend><?= __('Form data') ?></legend>
+                <legend><?= __('Form config') ?></legend>
 
                 <div class="form-row">
                     <?= $this->EasyAuditForm->checkbox('scores', ['label'=>__('Calculate scores?'), 'checked'=>!empty($form->scores)]) ?>

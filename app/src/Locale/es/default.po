@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-01-08 15:40+0000\n"
-"PO-Revision-Date: 2022-01-08 16:40+0100\n"
+"POT-Creation-Date: 2022-01-16 12:30+0000\n"
+"PO-Revision-Date: 2022-01-16 13:31+0100\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -119,15 +119,19 @@ msgstr "Plantilla habilitada/deshabilitada correctamente."
 msgid "Error moving field."
 msgstr "Error moviendo el campo."
 
-#: Controller/FormsController.php:44 Controller/FormsController.php:173
+#: Controller/FormsController.php:44 Controller/FormsController.php:187
 msgid "Form created."
-msgstr "Formulario creado correctament."
+msgstr "Formulario creado correctamente."
 
-#: Controller/FormsController.php:47
+#: Controller/FormsController.php:47 Controller/FormsController.php:60
 msgid "Error saving form."
 msgstr "Error guardando el formulario."
 
-#: Controller/FormsController.php:57
+#: Controller/FormsController.php:58
+msgid "Form updated."
+msgstr "Formulario actualizado correctamente."
+
+#: Controller/FormsController.php:71
 msgid ""
 "This form is used in at least one audit, so it can't be deleted. You can "
 "instead disable it."
@@ -135,19 +139,19 @@ msgstr ""
 "Este formulario está asignado por lo menos a una auditoría, por lo que no se "
 "puede eliminar."
 
-#: Controller/FormsController.php:61
+#: Controller/FormsController.php:75
 msgid "Error deleting form."
 msgstr "Error eliminando el formulario."
 
-#: Controller/FormsController.php:64
+#: Controller/FormsController.php:78
 msgid "Form deleted successfully."
 msgstr "Formulario eliminado correctamente."
 
-#: Controller/FormsController.php:110 Controller/FormsController.php:122
+#: Controller/FormsController.php:124 Controller/FormsController.php:136
 msgid "Error moving section."
 msgstr "Error moviendo sección."
 
-#: Controller/FormsController.php:134
+#: Controller/FormsController.php:148
 msgid "Form renamed."
 msgstr "Formulario renombrado correctamente."
 
@@ -187,7 +191,7 @@ msgid "Date"
 msgstr "Fecha"
 
 #: Model/FormTemplateFieldTypes.php:9
-#: Template/Element/Audits/fill/editor_checklist.ctp:75
+#: Template/Element/Audits/fill/editor_checklist.ctp:78
 msgid "Photos"
 msgstr "Fotos"
 
@@ -234,7 +238,7 @@ msgid "Audits"
 msgstr "Auditorías"
 
 #: Template/Audits/data.ctp:8 Template/Audits/data.ctp:16
-#: Template/Audits/fill.ctp:41 Template/Audits/history.ctp:78
+#: Template/Audits/fill.ctp:41 Template/Audits/history.ctp:92
 msgid "Audit data"
 msgstr "Datos de la auditoría"
 
@@ -248,11 +252,12 @@ msgstr "Datos de la auditoría"
 #: Template/Element/Forms/modals/clone.ctp:30
 #: Template/Element/Forms/modals/new_form.ctp:19
 #: Template/Element/Forms/modals/rename.ctp:19
-#: Template/Element/Forms/modals/section.ctp:21 Template/Users/detail.ctp:31
+#: Template/Element/Forms/modals/section.ctp:21 Template/Forms/detail.ctp:53
+#: Template/Users/detail.ctp:31
 msgid "Save"
 msgstr "Guardar"
 
-#: Template/Audits/data.ctp:35 Template/Audits/history.ctp:77
+#: Template/Audits/data.ctp:35 Template/Audits/history.ctp:91
 msgid "Fill audit"
 msgstr "Rellenar auditoría"
 
@@ -261,12 +266,12 @@ msgid "Audit history"
 msgstr "Historial auditoría"
 
 #: Template/Audits/data.ctp:37 Template/Audits/fill.ctp:43
-#: Template/Audits/history.ctp:79
+#: Template/Audits/history.ctp:93
 msgid "View report"
 msgstr "Ver informe"
 
 #: Template/Audits/data.ctp:38 Template/Audits/fill.ctp:44
-#: Template/Audits/history.ctp:80
+#: Template/Audits/history.ctp:94
 msgid "Send report"
 msgstr "Enviar informe"
 
@@ -287,7 +292,7 @@ msgstr "Plantilla"
 
 #: Template/Audits/data.ctp:69 Template/Audits/data.ctp:80
 #: Template/Customers/detail.ctp:67 Template/Customers/detail.ctp:77
-#: Template/Forms/detail.ctp:125
+#: Template/Forms/detail.ctp:142
 msgid "Add template"
 msgstr "Añadir plantilla"
 
@@ -322,13 +327,17 @@ msgstr "Reintentar subir fotos"
 msgid "History"
 msgstr "Historial"
 
-#: Template/Audits/history.ctp:34
+#: Template/Audits/history.ctp:23
+msgid "The forms of this audit do not allow history scores    ."
+msgstr ""
+
+#: Template/Audits/history.ctp:48
 #: Template/Element/FormTemplates/modals/field.ctp:27
 #: Template/Element/Forms/modals/section.ctp:8
 msgid "Section"
 msgstr "Sección"
 
-#: Template/Audits/history.ctp:53
+#: Template/Audits/history.ctp:67
 msgid "TOTAL"
 msgstr "TOTAL"
 
@@ -375,8 +384,8 @@ msgstr "Detalles del cliente"
 #: Template/Element/Forms/modals/clone.ctp:24
 #: Template/Element/Forms/modals/new_form.ctp:13
 #: Template/Element/Forms/modals/rename.ctp:14
-#: Template/Element/Forms/modals/section.ctp:15 Template/Forms/detail.ctp:56
-#: Template/Forms/detail.ctp:106 Template/Forms/index.ctp:18
+#: Template/Element/Forms/modals/section.ctp:15 Template/Forms/detail.ctp:73
+#: Template/Forms/detail.ctp:123 Template/Forms/index.ctp:18
 #: Template/Users/detail.ctp:25 Template/Users/index.ctp:17
 msgid "Name"
 msgstr "Nombre"
@@ -386,7 +395,7 @@ msgid "Emails"
 msgstr "Correos electrónicos"
 
 #: Template/Element/Audits/field/type_photos.ctp:23
-#: Template/Element/Audits/fill/editor_checklist.ctp:92
+#: Template/Element/Audits/fill/editor_checklist.ctp:95
 msgid "Take photo"
 msgstr "Sacar foto"
 
@@ -408,11 +417,11 @@ msgstr "Abrir todos"
 msgid "Close all"
 msgstr "Cerrar todos"
 
-#: Template/Element/Audits/fill/editor_checklist.ctp:65
+#: Template/Element/Audits/fill/editor_checklist.ctp:68
 msgid "+ add observations"
 msgstr "+ añadir observaciones"
 
-#: Template/Element/Audits/fill/editor_checklist.ctp:66
+#: Template/Element/Audits/fill/editor_checklist.ctp:69
 msgid "- close observations"
 msgstr "- cerrar observaciones"
 
@@ -569,7 +578,7 @@ msgstr "Nombre público"
 msgid "New form"
 msgstr "Formulario nuevo"
 
-#: Template/Element/Forms/modals/section.ctp:16 Template/Forms/detail.ctp:57
+#: Template/Element/Forms/modals/section.ctp:16 Template/Forms/detail.ctp:74
 msgid "Weigth"
 msgstr "Peso"
 
@@ -673,15 +682,23 @@ msgstr ""
 "Este formulario está asociado con al menos una auditoría, por lo que las "
 "opciones de edición son limitadas."
 
-#: Template/Forms/detail.ctp:46
+#: Template/Forms/detail.ctp:47
+msgid "Form config"
+msgstr "Configuración de formulario"
+
+#: Template/Forms/detail.ctp:50
+msgid "Calculate scores?"
+msgstr "¿Calcular puntuaciones?"
+
+#: Template/Forms/detail.ctp:63
 msgid "Sections"
 msgstr "Secciones"
 
-#: Template/Forms/detail.ctp:89
+#: Template/Forms/detail.ctp:106
 msgid "Add section"
 msgstr "Añadir sección"
 
-#: Template/Forms/detail.ctp:96
+#: Template/Forms/detail.ctp:113
 msgid "Templates"
 msgstr "Plantillas"
 
