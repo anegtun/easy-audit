@@ -53,7 +53,7 @@ class FormsController extends AppController {
         $data = $this->request->getData();
         $form = $this->Forms->get($data['id']);
         if ($this->request->is('post') || $this->request->is('put')) {
-            $form = $this->Forms->patchEntity($form, $this->request->getData());
+            $form->scores = empty($data['scores']) ? 0 : 1;
             if ($this->Forms->save($form)) {
                 $this->Flash->success(__('Form updated.'));
             } else {

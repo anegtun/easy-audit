@@ -34,7 +34,10 @@ foreach($audit->field_values as $fv) {
 
         <legend>
             <a href="#<?= $collapseId ?>" data-toggle="collapse-unique">
-                <?= $this->EasyAuditTemplate->section($s) . " ({$audit->score_section[$s->id]})" ?> 
+                <?= $this->EasyAuditTemplate->section($s) ?>
+                <?php if(!empty($template->form->scores)) : ?>
+                    <?= "({$audit->score_section[$s->id]})" ?>
+                <?php endif ?>
             </a>
         </legend>
 
