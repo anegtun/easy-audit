@@ -31,7 +31,9 @@ trait AuditFPDFFormMeasureTraits {
                 } else {
                     $img = WWW_ROOT . DS . 'images' . DS . 'components' . DS . ($m->isInThreshold() ? 'ok.png' : 'nok.png');
                 }
-                $rows[] = ['values' => [$m->item, $m->unit, $m->expected, $m->actual, $diff, ['type'=>'img', 'path'=>$img, 'width'=>5]]];
+                $expected = $m->expected === null ? '-' : $m->expected;
+                $actual = $m->actual === null ? '-' : $m->actual;
+                $rows[] = ['values' => [$m->item, $m->unit, $expected, $actual, $diff, ['type'=>'img', 'path'=>$img, 'width'=>5]]];
             }
             $this->Table(
                 $rows,
