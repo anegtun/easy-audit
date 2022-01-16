@@ -13,6 +13,8 @@
                     <p><strong><?= __('Customer') ?>:</strong> <?= $audit->customer->name ?></p>
                     <p><strong><?= __('Email addresses') ?>:</strong> <?= $audit->customer->emails ?></p>
 
+                    <?= $this->EasyAuditForm->checkbox('send_auditor', ['label'=>__('Send copy to auditor?'), 'checked'=>true]) ?>
+
                     <div class="form-group">
                         <label><?= __('BCC') ?></label>
                         <?= $this->Form->textarea('bcc') ?>
