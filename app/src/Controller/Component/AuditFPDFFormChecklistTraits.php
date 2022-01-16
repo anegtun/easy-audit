@@ -6,16 +6,18 @@ require_once(ROOT . DS . 'vendor' . DS  . 'fpdf' . DS . 'fpdf.php');
 use Cake\Core\Configure;
 use FPDF;
 
-trait AuditFPDFFormSelectTraits {
+trait AuditFPDFFormChecklistTraits {
 
     function ChecklistReport($template) {
-        $this->AddPage();
-        $this->H2('Resumen de puntuaciones');
-        $this->ChecklistReportSummaryTable($template);
-        $this->Ln(10);
-        $this->ChecklistReportSummaryGraph($template);
-        $this->Ln(20);
-        $this->ChecklistReportSummaryResult($template);
+        if(!empty($template->form->scores)) {
+            $this->AddPage();
+            $this->H2('Resumen de puntuaciones');
+            $this->ChecklistReportSummaryTable($template);
+            $this->Ln(10);
+            $this->ChecklistReportSummaryGraph($template);
+            $this->Ln(20);
+            $this->ChecklistReportSummaryResult($template);
+        }
         $this->AddPage();
         $this->H2('Detalles de auditoría');
         $this->ChecklistReportDetail($template);
