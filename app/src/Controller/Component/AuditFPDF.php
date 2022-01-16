@@ -24,7 +24,7 @@ class AuditFPDF extends FPDF {
 
     use AuditFPDFFormMeasureTraits;
 
-    use AuditFPDFFormSelectTraits;
+    use AuditFPDFFormChecklistTraits;
 
     use AuditFPDFFormSimpleTraits;
 
