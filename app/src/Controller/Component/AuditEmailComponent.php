@@ -6,7 +6,7 @@ use Cake\Mailer\Email;
 
 class AuditEmailComponent extends Component {
 
-    public function sendReport($audit, $content, $observations, $bcc = null) {
+    public function sendReport($audit, $content, $send_to_auditor = true, $bcc = null, $observations = null) {
         $filename = $audit->getReportFilename();
         $to = explode(',', $audit->customer->emails);
         array_walk($to, function (&$e) { $e = trim($e); });
@@ -20,6 +20,9 @@ class AuditEmailComponent extends Component {
 
         $email = new Email('default');
         $email->viewBuilder()->setTemplate('audit_report', 'default');
+        if(!empty($send_to_auditor)) {
+            $email->setCc($audit->auditor->email);
+        }
         if(!empty($bccEmails)) {
             $email->setBcc($bccEmails);
         }

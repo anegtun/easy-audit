@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2022-01-16 12:30+0000\n"
-"PO-Revision-Date: 2022-01-16 13:31+0100\n"
+"POT-Creation-Date: 2022-01-16 12:33+0000\n"
+"PO-Revision-Date: 2022-01-16 13:33+0100\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -55,7 +55,7 @@ msgstr "Error borrando la auditoría."
 msgid "There are no emails configured for this customer."
 msgstr "No hay correos electrónicos configurados para este cliente."
 
-#: Controller/AuditsController.php:224
+#: Controller/AuditsController.php:225
 msgid "Email sent correctly."
 msgstr "Correo enviado correctamente."
 
@@ -114,24 +114,24 @@ msgstr "Plantilla renombrada correctamente."
 msgid "Template enabled or disabled successfully."
 msgstr "Plantilla habilitada/deshabilitada correctamente."
 
-#: Controller/FormTemplatesController.php:162
-#: Controller/FormTemplatesController.php:174
+#: Controller/FormTemplatesController.php:157
+#: Controller/FormTemplatesController.php:169
 msgid "Error moving field."
 msgstr "Error moviendo el campo."
 
-#: Controller/FormsController.php:44 Controller/FormsController.php:187
+#: Controller/FormsController.php:46 Controller/FormsController.php:189
 msgid "Form created."
 msgstr "Formulario creado correctamente."
 
-#: Controller/FormsController.php:47 Controller/FormsController.php:60
+#: Controller/FormsController.php:49 Controller/FormsController.php:62
 msgid "Error saving form."
 msgstr "Error guardando el formulario."
 
-#: Controller/FormsController.php:58
+#: Controller/FormsController.php:60
 msgid "Form updated."
 msgstr "Formulario actualizado correctamente."
 
-#: Controller/FormsController.php:71
+#: Controller/FormsController.php:73
 msgid ""
 "This form is used in at least one audit, so it can't be deleted. You can "
 "instead disable it."
@@ -139,19 +139,19 @@ msgstr ""
 "Este formulario está asignado por lo menos a una auditoría, por lo que no se "
 "puede eliminar."
 
-#: Controller/FormsController.php:75
+#: Controller/FormsController.php:77
 msgid "Error deleting form."
 msgstr "Error eliminando el formulario."
 
-#: Controller/FormsController.php:78
+#: Controller/FormsController.php:80
 msgid "Form deleted successfully."
 msgstr "Formulario eliminado correctamente."
 
-#: Controller/FormsController.php:124 Controller/FormsController.php:136
+#: Controller/FormsController.php:126 Controller/FormsController.php:138
 msgid "Error moving section."
 msgstr "Error moviendo sección."
 
-#: Controller/FormsController.php:148
+#: Controller/FormsController.php:150
 msgid "Form renamed."
 msgstr "Formulario renombrado correctamente."
 
@@ -181,7 +181,7 @@ msgstr "Error eliminando el usuario."
 msgid "Invalid username or password, try again"
 msgstr "Usuario o contraseña incorrectos, por favor inténtalo de nuevo"
 
-#: Controller/Component/AuditEmailComponent.php:30
+#: Controller/Component/AuditEmailComponent.php:33
 msgid "Audit report"
 msgstr "Informe"
 
@@ -225,7 +225,7 @@ msgstr "Administrador"
 msgid "Auditor"
 msgstr "Auditor"
 
-#: Model/Entity/Audit.php:59
+#: Model/Entity/Audit.php:76
 msgid "Audit"
 msgstr "Auditoría"
 
@@ -292,13 +292,13 @@ msgstr "Plantilla"
 
 #: Template/Audits/data.ctp:69 Template/Audits/data.ctp:80
 #: Template/Customers/detail.ctp:67 Template/Customers/detail.ctp:77
-#: Template/Forms/detail.ctp:142
+#: Template/Forms/detail.ctp:134
 msgid "Add template"
 msgstr "Añadir plantilla"
 
 #: Template/Audits/data.ctp:92 Template/Audits/index.ctp:40
 #: Template/Customers/detail.ctp:89 Template/Element/Audits/modals/list.ctp:14
-#: Template/Element/Audits/modals/send.ctp:27
+#: Template/Element/Audits/modals/send.ctp:29
 #: Template/Element/Customers/modals/list.ctp:29
 #: Template/Element/FormTemplates/modals/clone.ctp:24
 #: Template/Element/FormTemplates/modals/field.ctp:36
@@ -355,7 +355,7 @@ msgid "Copy last audit values & observations (no photos)?"
 msgstr "¿Copiar los valores de la última auditoría (excepto fotos)?"
 
 #: Template/Audits/index.ctp:39 Template/Customers/index.ctp:38
-#: Template/Forms/index.ctp:37 Template/Users/index.ctp:39
+#: Template/Forms/index.ctp:41 Template/Users/index.ctp:39
 msgid "Create"
 msgstr "Crear"
 
@@ -385,7 +385,7 @@ msgstr "Detalles del cliente"
 #: Template/Element/Forms/modals/new_form.ctp:13
 #: Template/Element/Forms/modals/rename.ctp:14
 #: Template/Element/Forms/modals/section.ctp:15 Template/Forms/detail.ctp:73
-#: Template/Forms/detail.ctp:123 Template/Forms/index.ctp:18
+#: Template/Forms/detail.ctp:115 Template/Forms/index.ctp:18
 #: Template/Users/detail.ctp:25 Template/Users/index.ctp:17
 msgid "Name"
 msgstr "Nombre"
@@ -426,31 +426,31 @@ msgid "- close observations"
 msgstr "- cerrar observaciones"
 
 #: Template/Element/Audits/fill/editor_measure.ctp:14
-#: Template/Element/Audits/fill/editor_measure.ctp:41
+#: Template/Element/Audits/fill/editor_measure.ctp:42
 msgid "Item"
 msgstr "Elemento"
 
 #: Template/Element/Audits/fill/editor_measure.ctp:15
-#: Template/Element/Audits/fill/editor_measure.ctp:42
+#: Template/Element/Audits/fill/editor_measure.ctp:43
 msgid "Unit"
 msgstr "Unidad"
 
 #: Template/Element/Audits/fill/editor_measure.ctp:18
-#: Template/Element/Audits/fill/editor_measure.ctp:45
+#: Template/Element/Audits/fill/editor_measure.ctp:46
 msgid "Expected"
 msgstr "Medida"
 
 #: Template/Element/Audits/fill/editor_measure.ctp:19
-#: Template/Element/Audits/fill/editor_measure.ctp:46
+#: Template/Element/Audits/fill/editor_measure.ctp:47
 msgid "Actual"
 msgstr "Medida verificada"
 
 #: Template/Element/Audits/fill/editor_measure.ctp:23
-#: Template/Element/Audits/fill/editor_measure.ctp:50
+#: Template/Element/Audits/fill/editor_measure.ctp:51
 msgid "Thredshold"
 msgstr "Umbral"
 
-#: Template/Element/Audits/fill/editor_measure.ctp:60
+#: Template/Element/Audits/fill/editor_measure.ctp:62
 msgid "+ add measure"
 msgstr "+ añadir medida"
 
@@ -466,15 +466,19 @@ msgstr "¿Estás seguro de querer enviar el informe de la auditoría al cliente?
 msgid "Email addresses"
 msgstr "Direcciones de correo"
 
-#: Template/Element/Audits/modals/send.ctp:17
+#: Template/Element/Audits/modals/send.ctp:16
+msgid "Send copy to auditor?"
+msgstr "¿Enviar copia al auditor?"
+
+#: Template/Element/Audits/modals/send.ctp:19
 msgid "BCC"
 msgstr "CCO"
 
-#: Template/Element/Audits/modals/send.ctp:21
+#: Template/Element/Audits/modals/send.ctp:23
 msgid "Observations"
 msgstr "Observaciones"
 
-#: Template/Element/Audits/modals/send.ctp:26
+#: Template/Element/Audits/modals/send.ctp:28
 msgid "Send"
 msgstr "Enviar"
 
@@ -498,7 +502,7 @@ msgstr "Si tiene alguna cuestión no dude en ponerse en contacto con nosotros."
 msgid "Regards."
 msgstr "Un saludo."
 
-#: Template/Element/FormTemplates/detail/field_editor.ctp:12
+#: Template/Element/FormTemplates/detail/field_editor.ctp:14
 msgid "Are you sure you want to remove this field? This can't be undone"
 msgstr ""
 "¿Estás seguro de querer eliminar este campo? Esta operación no se puede "
@@ -690,15 +694,15 @@ msgstr "Configuración de formulario"
 msgid "Calculate scores?"
 msgstr "¿Calcular puntuaciones?"
 
-#: Template/Forms/detail.ctp:63
+#: Template/Forms/detail.ctp:63 Template/Forms/index.ctp:21
 msgid "Sections"
 msgstr "Secciones"
 
-#: Template/Forms/detail.ctp:106
+#: Template/Forms/detail.ctp:98
 msgid "Add section"
 msgstr "Añadir sección"
 
-#: Template/Forms/detail.ctp:113
+#: Template/Forms/detail.ctp:105 Template/Forms/index.ctp:22
 msgid "Templates"
 msgstr "Plantillas"
 
