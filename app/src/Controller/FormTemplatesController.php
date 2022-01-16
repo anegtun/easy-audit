@@ -130,12 +130,7 @@ class FormTemplatesController extends AppController {
                 $field->optionset_id = null;
             }
             $template = $this->getTemplateWithFields($templateId);
-            if(!empty($formData['position'])) {
-                array_splice($template->fields, $formData['position'] - 1, 0, [$field]);
-            } else {
-                $template->fields[] = $field;
-            }
-            $template->reindexFields();
+            $template->addField($field, $formData['form_section_id'], $formData['position']);
             $this->FormTemplates->save($template);
         }
         return $this->redirect($this->referer());
