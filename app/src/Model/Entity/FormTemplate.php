@@ -23,6 +23,23 @@ class FormTemplate extends Entity {
         $this->reindexFields();
     }
 
+    public function addField($field, $sectionId, $position) {
+        if(empty($position)) {
+            echo "<pre>"; print_r($field); echo "</pre>";
+            $this->fields[] = $field;
+        } else {
+            $tmp = [];
+            foreach($this->fields as $i => $f) {
+                if($f->form_section_id == $sectionId && $f->position == $position) {
+                    $tmp[] = $field;
+                }
+                $tmp[] = $f;
+            }
+            $this->fields = $tmp;
+        }
+        $this->reindexFields();
+    }
+
     public function reindexFields() {
         $count = [];
         foreach($this->fields as $f) {
