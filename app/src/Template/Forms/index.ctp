@@ -18,6 +18,8 @@ $this->Html->script('form-clone', ['block' => 'script']);
                     <th class="celda-titulo"><?= __('Name') ?></th>
                     <th class="celda-titulo"><?= __('Public name') ?></th>
                     <th class="celda-titulo"><?= __('Type') ?></th>
+                    <th class="celda-titulo"><?= __('Sections') ?></th>
+                    <th class="celda-titulo"><?= __('Templates') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -27,6 +29,8 @@ $this->Html->script('form-clone', ['block' => 'script']);
                         <td><?= $this->Html->link($f->name, ['action'=>'detail', $f->id]) ?></td>
                         <td><?= $f->public_name ?></td>
                         <td><?= $form_types[$f->type] ?></td>
+                        <td><?= count($f->sections) ?></td>
+                        <td><?= count($f->templates) ?></td>
                     </tr>
                 <?php endforeach ?>
             </tbody>

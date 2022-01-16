@@ -24,8 +24,14 @@ trait AuditFPDFFormMeasureTraits {
                 ]
             ];
             foreach($this->audit->measure_values as $m) {
-                $img = WWW_ROOT . DS . 'images' . DS . 'components' . DS . ($m->isInThreshold() ? 'ok.png' : 'nok.png');
-                $rows[] = ['values' => [$m->item, $m->unit, $m->expected, $m->actual, $m->calculateDifference(), ['type'=>'img', 'path'=>$img, 'width'=>5]]];
+                $diff = $m->calculateDifference();
+                if($diff === null) {
+                    $img = WWW_ROOT . DS . 'images' . DS . 'components' . DS . 'na.png';
+                    $diff = 'N/A';
+                } else {
+                    $img = WWW_ROOT . DS . 'images' . DS . 'components' . DS . ($m->isInThreshold() ? 'ok.png' : 'nok.png');
+                }
+                $rows[] = ['values' => [$m->item, $m->unit, $m->expected, $m->actual, $diff, ['type'=>'img', 'path'=>$img, 'width'=>5]]];
             }
             $this->Table(
                 $rows,

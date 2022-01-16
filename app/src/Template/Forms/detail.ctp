@@ -61,16 +61,8 @@ $is_editable = !$has_audits;
                             <?php foreach($form->sections as $s) : ?>
                                 <tr>
                                     <td><?= $this->EasyAuditForm->editModalLink($s, 'data-section', ['id', 'position', 'name', 'weigth']) ?></td>
-                                    <td>
-                                        <?php if($is_editable) : ?>
-                                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $form->id, $s->id]) ?>
-                                        <?php endif ?>
-                                    </td>
-                                    <td>
-                                        <?php if($is_editable) : ?>
-                                            <?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $form->id, $s->id]) ?>
-                                        <?php endif ?>
-                                    </td>
+                                    <td><?= $this->EasyAuditHtml->gliphiconLink('arrow-up', '', ['action'=>'moveSectionUp', $form->id, $s->id]) ?></td>
+                                    <td><?= $this->EasyAuditHtml->gliphiconLink('arrow-down', '', ['action'=>'moveSectionDown', $form->id, $s->id]) ?></td>
                                     <td>
                                         <?php if($is_editable) : ?>
                                             <?= $this->EasyAuditHtml->gliphiconLink('remove', '', ['action'=>'deleteSection', $s->id]) ?>
