@@ -10,6 +10,7 @@ class CustomersController extends AppController {
     public function initialize() {
         parent::initialize();
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
+        $this->loadComponent('EmailParser');
     }
 
     public function isAuthorized($user) {
@@ -44,11 +45,11 @@ class CustomersController extends AppController {
         $customer = $this->Customers->newEntity();
         if ($this->request->is('post') || $this->request->is('put')) {
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
-            $customer->emails = preg_replace("/\r\n|\r|\n/", ',', $customer->emails);
-            $customer->emails = preg_replace("/[,]+/", ',', $customer->emails);
-            $customer->emails = preg_replace("/[,]([^\s])/", ', $1', $customer->emails);
-            if ($this->Customers->save($customer)) {
+            $customer->emails = implode(', ', $this->EmailParser->parse($customer->emails));
+            $customer = $this->Customers->save($customer);
+            if ($customer) {
                 $this->Flash->success(__('Customer saved correctly.'));
+                return $this->redirect(['action'=>'detail', $customer->id]);
             } else {
                 $this->Flash->error(__('Error saving customer.'));
             }
