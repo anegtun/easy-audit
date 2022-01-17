@@ -158,7 +158,7 @@ trait AuditFPDFFormChecklistTraits {
                     $this->Cell(35, 5, utf8_decode($f['result']));
                     $this->SetFont('Arial', '', 12);
                     $this->SetTextColor(0, 0, 0);
-                    $this->MultiCell(0, 5, utf8_decode(print_r($f['observations'], true)));
+                    $this->MultiCell(0, 5, utf8_decode($f['observations']));
                     $this->Photos($f['photos']);
                     $this->Ln(10);
                 }

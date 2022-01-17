@@ -25,7 +25,6 @@ class FormTemplate extends Entity {
 
     public function addField($field, $sectionId, $position) {
         if(empty($position)) {
-            echo "<pre>"; print_r($field); echo "</pre>";
             $this->fields[] = $field;
         } else {
             $tmp = [];
