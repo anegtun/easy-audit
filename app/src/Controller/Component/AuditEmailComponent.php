@@ -6,17 +6,13 @@ use Cake\Mailer\Email;
 
 class AuditEmailComponent extends Component {
 
+    public $components = ['EmailParser'];
+
     public function sendReport($audit, $content, $send_to_auditor = true, $bcc = null, $observations = null) {
         $filename = $audit->getReportFilename();
         $to = explode(',', $audit->customer->emails);
         array_walk($to, function (&$e) { $e = trim($e); });
-
-        if(!empty($bcc)) {
-            $bccEmails = preg_replace("/\r\n|\r|\n/", ',', $bcc);
-            $bccEmails = preg_replace("/[,]+/", ',', $bccEmails);
-            $bccEmails = preg_replace("/[,]([^\s])/", ',$1', $bccEmails);
-            $bccEmails = explode(',', $bccEmails);
-        }
+        $bccEmails = $this->EmailParser->parse($bcc);
 
         $email = new Email('default');
         $email->viewBuilder()->setTemplate('audit_report', 'default');
