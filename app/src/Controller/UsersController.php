@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use App\Model\Roles;
+use Cake\Auth\DefaultPasswordHasher;
 use Cake\Event\Event;
 
 class UsersController extends AppController {
@@ -12,8 +13,12 @@ class UsersController extends AppController {
         $this->Roles = new Roles();
     }
 
+    public function beforeFilter(Event $event) {
+        $this->Auth->allow(['hash']);
+    }
+
     public function isAuthorized($user) {
-        if (in_array($this->request->getParam('action'), ['login','logout'])) {
+        if (in_array($this->request->getParam('action'), ['login','logout','hash'])) {
             return true;
         }
         return $user['role'] === 'admin';
@@ -78,6 +83,12 @@ class UsersController extends AppController {
 
     public function logout() {
         return $this->redirect($this->Auth->logout());
+    }
+
+    public function hash() {
+        $password = $this->request->getQuery('password');
+        $hash = (new DefaultPasswordHasher)->hash($password);
+        return $this->response->withStringBody("$password => $hash");
     }
 
 }

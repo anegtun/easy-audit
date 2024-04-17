@@ -26,7 +26,7 @@ class AuditEmailComponent extends Component {
             ->setEmailFormat('both')
             ->setFrom($audit->auditor->email, $audit->auditor->name)
             ->setTo($to)
-            ->setSubject(__('Audit report'))
+            ->setSubject(__('Audit report').' '.$audit->customer->name)
             ->setViewVars(compact('audit', 'observations'))
             ->setAttachments([
                 $filename => [
