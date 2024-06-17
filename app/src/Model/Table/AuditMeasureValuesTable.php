@@ -5,7 +5,7 @@ use Cake\ORM\Table;
 
 class AuditMeasureValuesTable extends Table {
 
-    public function initialize(array $config) {
+    public function initialize(array $config): void {
         $this->setTable('easy_audit_audit_measure_values');
 
         $this->belongsTo('Audits')

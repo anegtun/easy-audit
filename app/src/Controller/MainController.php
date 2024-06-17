@@ -6,7 +6,7 @@ use Cake\Event\Event;
 
 class MainController extends AppController {
 
-    public function beforeFilter(Event $event) {
+    public function beforeFilter(\Cake\Event\EventInterface $event) {
         $this->Auth->allow(['index']);
     }
 

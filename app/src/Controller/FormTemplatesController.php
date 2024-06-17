@@ -9,7 +9,7 @@ use Cake\ORM\TableRegistry;
 
 class FormTemplatesController extends AppController {
     
-    public function initialize() {
+    public function initialize(): void {
         parent::initialize();
         $this->FormTemplateFieldTypes = new FormTemplateFieldTypes();
         $this->FormTypes = new FormTypes();

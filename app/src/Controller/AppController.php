@@ -39,7 +39,7 @@ class AppController extends Controller
      *
      * @return void
      */
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
 
@@ -67,7 +67,7 @@ class AppController extends Controller
 
 
 
-    public function beforeFilter(Event $event) {
+    public function beforeFilter(\Cake\Event\EventInterface $event) {
         // $this->Auth->allow(['index', 'view', 'display']);
     }
     
@@ -81,7 +81,7 @@ class AppController extends Controller
      * @param \Cake\Event\Event $event The beforeRender event.
      * @return \Cake\Network\Response|null|void
      */
-    public function beforeRender(Event $event) {
+    public function beforeRender(\Cake\Event\EventInterface $event) {
         if (!array_key_exists('_serialize', $this->viewVars) &&
             in_array($this->response->getType(), array('application/json', 'application/xml'))
         ) {

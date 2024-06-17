@@ -9,7 +9,7 @@ use Cake\Routing\Router;
 
 class AuditsController extends AppController {
     
-    public function initialize() {
+    public function initialize(): void {
         parent::initialize();
         $this->AuditFieldValues = TableRegistry::getTableLocator()->get('AuditFieldValues');
         $this->AuditMeasureValues = TableRegistry::getTableLocator()->get('AuditMeasureValues');

@@ -7,7 +7,7 @@ use Cake\ORM\TableRegistry;
 
 class CustomersController extends AppController {
     
-    public function initialize() {
+    public function initialize(): void {
         parent::initialize();
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
         $this->loadComponent('EmailParser');
