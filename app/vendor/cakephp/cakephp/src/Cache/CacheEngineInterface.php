@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -33,7 +35,7 @@ interface CacheEngineInterface
      * @return bool True if the data was successfully cached, false on failure.
      *   Or if the key existed already.
      */
-    public function add($key, $value);
+    public function add(string $key, $value): bool;
 
     /**
      * Increment a number under the key and return incremented value
@@ -42,7 +44,7 @@ interface CacheEngineInterface
      * @param int $offset How much to add
      * @return int|false New incremented value, false otherwise
      */
-    public function increment($key, $offset = 1);
+    public function increment(string $key, int $offset = 1);
 
     /**
      * Decrement a number under the key and return decremented value
@@ -51,7 +53,7 @@ interface CacheEngineInterface
      * @param int $offset How much to subtract
      * @return int|false New incremented value, false otherwise
      */
-    public function decrement($key, $offset = 1);
+    public function decrement(string $key, int $offset = 1);
 
     /**
      * Clear all values belonging to the named group.
@@ -63,5 +65,5 @@ interface CacheEngineInterface
      * @param string $group name of the group to be cleared
      * @return bool
      */
-    public function clearGroup($group);
+    public function clearGroup(string $group): bool;
 }

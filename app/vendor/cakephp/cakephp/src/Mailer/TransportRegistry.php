@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -21,6 +23,8 @@ use RuntimeException;
 
 /**
  * An object registry for mailer transports.
+ *
+ * @extends \Cake\Core\ObjectRegistry<\Cake\Mailer\AbstractTransport>
  */
 class TransportRegistry extends ObjectRegistry
 {
@@ -29,27 +33,13 @@ class TransportRegistry extends ObjectRegistry
      *
      * Part of the template method for Cake\Core\ObjectRegistry::load()
      *
-     * @param string|\Cake\Mailer\AbstractTransport $class Partial classname to resolve or transport instance.
-     * @return string|false Either the correct classname or false.
+     * @param string $class Partial classname to resolve or transport instance.
+     * @return string|null Either the correct classname or null.
+     * @psalm-return class-string|null
      */
-    protected function _resolveClassName($class)
+    protected function _resolveClassName(string $class): ?string
     {
-        if (is_object($class)) {
-            return $class;
-        }
-
-        $className = App::className($class, 'Mailer/Transport', 'Transport');
-
-        if (!$className) {
-            $className = App::className($class, 'Network/Email', 'Transport');
-            if ($className) {
-                deprecationWarning(
-                    'Transports in "Network/Email" are deprecated, use "Mailer/Transport" instead.'
-                );
-            }
-        }
-
-        return $className;
+        return App::className($class, 'Mailer/Transport', 'Transport');
     }
 
     /**
@@ -62,7 +52,7 @@ class TransportRegistry extends ObjectRegistry
      * @return void
      * @throws \BadMethodCallException
      */
-    protected function _throwMissingClassError($class, $plugin)
+    protected function _throwMissingClassError(string $class, ?string $plugin): void
     {
         throw new BadMethodCallException(sprintf('Mailer transport %s is not available.', $class));
     }
@@ -72,21 +62,17 @@ class TransportRegistry extends ObjectRegistry
      *
      * Part of the template method for Cake\Core\ObjectRegistry::load()
      *
-     * @param string|\Cake\Mailer\AbstractTransport $class The classname or object to make.
+     * @param \Cake\Mailer\AbstractTransport|string $class The classname or object to make.
      * @param string $alias The alias of the object.
-     * @param array $config An array of settings to use for the cache engine.
+     * @param array<string, mixed> $config An array of settings to use for the cache engine.
      * @return \Cake\Mailer\AbstractTransport The constructed transport class.
      * @throws \RuntimeException when an object doesn't implement the correct interface.
      */
-    protected function _create($class, $alias, $config)
+    protected function _create($class, string $alias, array $config): AbstractTransport
     {
-        $instance = null;
-
         if (is_object($class)) {
             $instance = $class;
-        }
-
-        if (!$instance) {
+        } else {
             $instance = new $class($config);
         }
 
@@ -105,7 +91,7 @@ class TransportRegistry extends ObjectRegistry
      * @param string $name The adapter name.
      * @return $this
      */
-    public function unload($name)
+    public function unload(string $name)
     {
         unset($this->_loaded[$name]);
 

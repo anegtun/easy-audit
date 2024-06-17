@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -29,15 +31,16 @@ class MailSentWith extends MailConstraintBase
     /**
      * Constructor
      *
-     * @param int $at At
-     * @param string $method Method
+     * @param int|null $at At
+     * @param string|null $method Method
      * @return void
      */
-    public function __construct($at = null, $method = null)
+    public function __construct(?int $at = null, ?string $method = null)
     {
-        if ($method) {
+        if ($method !== null) {
             $this->method = $method;
         }
+
         parent::__construct($at);
     }
 
@@ -47,17 +50,17 @@ class MailSentWith extends MailConstraintBase
      * @param mixed $other Constraint check
      * @return bool
      */
-    public function matches($other)
+    public function matches($other): bool
     {
-        $emails = $this->getEmails();
+        $emails = $this->getMessages();
         foreach ($emails as $email) {
-            $value = $this->getValue($email);
+            $value = $email->{'get' . ucfirst($this->method)}();
             if ($value === $other) {
                 return true;
             }
             if (
                 !is_array($other)
-                && in_array($this->method, ['to', 'cc', 'bcc', 'from'])
+                && in_array($this->method, ['to', 'cc', 'bcc', 'from', 'replyTo', 'sender'])
                 && array_key_exists($other, $value)
             ) {
                 return true;
@@ -68,27 +71,11 @@ class MailSentWith extends MailConstraintBase
     }
 
     /**
-     * Read a value from the email
-     *
-     * @param \Cake\Mailer\Email $email The email to read properties from.
-     * @return mixed
-     */
-    protected function getValue($email)
-    {
-        $viewBuilderMethods = ['template', 'layout', 'helpers', 'theme'];
-        if (in_array($this->method, $viewBuilderMethods, true)) {
-            return $email->viewBuilder()->{'get' . ucfirst($this->method)}();
-        }
-
-        return $email->{'get' . ucfirst($this->method)}();
-    }
-
-    /**
      * Assertion message string
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         if ($this->at) {
             return sprintf('is in email #%d `%s`', $this->at, $this->method);

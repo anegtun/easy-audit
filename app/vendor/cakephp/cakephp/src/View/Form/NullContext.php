@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,126 +16,130 @@
  */
 namespace Cake\View\Form;
 
-use Cake\Http\ServerRequest;
+use function Cake\Core\deprecationWarning;
 
 /**
  * Provides a context provider that does nothing.
  *
  * This context provider simply fulfils the interface requirements
- * that FormHelper has and allows access to the request data.
+ * that FormHelper has.
  */
 class NullContext implements ContextInterface
 {
     /**
-     * The request object.
-     *
-     * @var \Cake\Http\ServerRequest
-     */
-    protected $_request;
-
-    /**
      * Constructor.
      *
-     * @param \Cake\Http\ServerRequest $request The request object.
      * @param array $context Context info.
      */
-    public function __construct(ServerRequest $request, array $context)
+    public function __construct(array $context)
     {
-        $this->_request = $request;
     }
 
     /**
-     * {@inheritDoc}
+     * Get the fields used in the context as a primary key.
+     *
+     * @return array<string>
+     * @deprecated 4.0.0 Renamed to {@link getPrimaryKey()}.
      */
-    public function primaryKey()
+    public function primaryKey(): array
+    {
+        deprecationWarning('`NullContext::primaryKey()` is deprecated. Use `NullContext::getPrimaryKey()`.');
+
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPrimaryKey(): array
     {
         return [];
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function isPrimaryKey($field)
+    public function isPrimaryKey(string $field): bool
     {
         return false;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function isCreate()
+    public function isCreate(): bool
     {
         return true;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function val($field)
-    {
-        return $this->_request->getData($field);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isRequired($field)
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getRequiredMessage($field)
+    public function val(string $field, array $options = [])
     {
         return null;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function getMaxLength($field)
+    public function isRequired(string $field): ?bool
     {
         return null;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function fieldNames()
+    public function getRequiredMessage(string $field): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMaxLength(string $field): ?int
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function fieldNames(): array
     {
         return [];
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function type($field)
+    public function type(string $field): ?string
     {
         return null;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function attributes($field)
+    public function attributes(string $field): array
     {
         return [];
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function hasError($field)
+    public function hasError(string $field): bool
     {
         return false;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function error($field)
+    public function error(string $field): array
     {
         return [];
     }

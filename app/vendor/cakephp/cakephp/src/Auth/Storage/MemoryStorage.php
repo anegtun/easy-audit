@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -29,12 +31,12 @@ class MemoryStorage implements StorageInterface
     /**
      * Redirect URL.
      *
-     * @var string|array|null
+     * @var array|string|null
      */
     protected $_redirectUrl;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function read()
     {
@@ -42,23 +44,23 @@ class MemoryStorage implements StorageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function write($user)
+    public function write($user): void
     {
         $this->_user = $user;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function delete()
+    public function delete(): void
     {
         $this->_user = null;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function redirectUrl($url = null)
     {
@@ -73,5 +75,7 @@ class MemoryStorage implements StorageInterface
         }
 
         $this->_redirectUrl = $url;
+
+        return null;
     }
 }

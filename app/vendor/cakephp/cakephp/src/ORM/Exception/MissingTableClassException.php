@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * MissingTableClassException class
  *
@@ -14,15 +16,15 @@
  */
 namespace Cake\ORM\Exception;
 
-use Cake\Core\Exception\Exception;
+use Cake\Core\Exception\CakeException;
 
 /**
  * Exception raised when a Table could not be found.
  */
-class MissingTableClassException extends Exception
+class MissingTableClassException extends CakeException
 {
     /**
-     * @inheritDoc
+     * @var string
      */
     protected $_messageTemplate = 'Table class %s could not be found.';
 }

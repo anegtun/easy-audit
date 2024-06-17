@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -17,6 +19,7 @@ namespace Cake\Collection\Iterator;
 use ArrayIterator;
 use Cake\Collection\Collection;
 use Cake\Collection\CollectionInterface;
+use Traversable;
 
 /**
  * Creates an iterator from another iterator that will modify each of the values
@@ -34,7 +37,7 @@ class ReplaceIterator extends Collection
     /**
      * A reference to the internal iterator this object is wrapping.
      *
-     * @var \Iterator
+     * @var \Traversable
      */
     protected $_innerIterator;
 
@@ -46,10 +49,10 @@ class ReplaceIterator extends Collection
      * in the current iteration, the key of the element and the passed $items iterator
      * as arguments, in that order.
      *
-     * @param array|\Traversable $items The items to be filtered.
+     * @param iterable $items The items to be filtered.
      * @param callable $callback Callback.
      */
-    public function __construct($items, callable $callback)
+    public function __construct(iterable $items, callable $callback)
     {
         $this->_callback = $callback;
         parent::__construct($items);
@@ -62,6 +65,7 @@ class ReplaceIterator extends Collection
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $callback = $this->_callback;
@@ -70,14 +74,9 @@ class ReplaceIterator extends Collection
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * We perform here some strictness analysis so that the
-     * iterator logic is bypassed entirely.
-     *
-     * @return \Iterator
+     * @inheritDoc
      */
-    public function unwrap()
+    public function unwrap(): Traversable
     {
         $iterator = $this->_innerIterator;
 

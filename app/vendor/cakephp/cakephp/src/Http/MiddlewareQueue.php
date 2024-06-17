@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -15,90 +17,103 @@
 namespace Cake\Http;
 
 use Cake\Core\App;
+use Cake\Core\ContainerInterface;
+use Cake\Http\Middleware\ClosureDecoratorMiddleware;
+use Cake\Http\Middleware\DoublePassDecoratorMiddleware;
+use Closure;
 use Countable;
 use LogicException;
+use OutOfBoundsException;
+use Psr\Http\Server\MiddlewareInterface;
+use ReflectionFunction;
 use RuntimeException;
+use SeekableIterator;
 
 /**
- * Provides methods for creating and manipulating a "queue" of middleware callables.
- * This queue is used to process a request and response via \Cake\Http\Runner.
+ * Provides methods for creating and manipulating a "queue" of middlewares.
+ * This queue is used to process a request and generate response via \Cake\Http\Runner.
+ *
+ * @template-implements \SeekableIterator<int, \Psr\Http\Server\MiddlewareInterface>
  */
-class MiddlewareQueue implements Countable
+class MiddlewareQueue implements Countable, SeekableIterator
 {
+    /**
+     * Internal position for iterator.
+     *
+     * @var int
+     */
+    protected $position = 0;
+
     /**
      * The queue of middlewares.
      *
-     * @var array
+     * @var array<int, mixed>
      */
     protected $queue = [];
 
     /**
-     * The queue of middleware callables.
-     *
-     * @var callable[]
+     * @var \Cake\Core\ContainerInterface|null
      */
-    protected $callables = [];
+    protected $container;
 
     /**
      * Constructor
      *
      * @param array $middleware The list of middleware to append.
+     * @param \Cake\Core\ContainerInterface $container Container instance.
      */
-    public function __construct(array $middleware = [])
+    public function __construct(array $middleware = [], ?ContainerInterface $container = null)
     {
+        $this->container = $container;
         $this->queue = $middleware;
     }
 
     /**
-     * Get the middleware at the provided index.
+     * Resolve middleware name to a PSR 15 compliant middleware instance.
      *
-     * @param int $index The index to fetch.
-     * @return callable|null Either the callable middleware or null
-     *   if the index is undefined.
+     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware The middleware to resolve.
+     * @return \Psr\Http\Server\MiddlewareInterface
+     * @throws \RuntimeException If Middleware not found.
      */
-    public function get($index)
+    protected function resolve($middleware): MiddlewareInterface
     {
-        if (isset($this->callables[$index])) {
-            return $this->callables[$index];
-        }
-
-        return $this->resolve($index);
-    }
-
-    /**
-     * Resolve middleware name to callable.
-     *
-     * @param int $index The index to fetch.
-     * @return callable|null Either the callable middleware or null
-     *   if the index is undefined.
-     */
-    protected function resolve($index)
-    {
-        if (!isset($this->queue[$index])) {
-            return null;
-        }
-
-        if (is_string($this->queue[$index])) {
-            $class = $this->queue[$index];
-            $className = App::className($class, 'Middleware', 'Middleware');
-            if (!$className || !class_exists($className)) {
-                throw new RuntimeException(sprintf(
-                    'Middleware "%s" was not found.',
-                    $class
-                ));
+        if (is_string($middleware)) {
+            if ($this->container && $this->container->has($middleware)) {
+                $middleware = $this->container->get($middleware);
+            } else {
+                $className = App::className($middleware, 'Middleware', 'Middleware');
+                if ($className === null) {
+                    throw new RuntimeException(
+                        sprintf(
+                            'Middleware "%s" was not found.',
+                            $middleware
+                        )
+                    );
+                }
+                $middleware = new $className();
             }
-            $callable = new $className();
-        } else {
-            $callable = $this->queue[$index];
         }
 
-        return $this->callables[$index] = $callable;
+        if ($middleware instanceof MiddlewareInterface) {
+            return $middleware;
+        }
+
+        if (!$middleware instanceof Closure) {
+            return new DoublePassDecoratorMiddleware($middleware);
+        }
+
+        $info = new ReflectionFunction($middleware);
+        if ($info->getNumberOfParameters() > 2) {
+            return new DoublePassDecoratorMiddleware($middleware);
+        }
+
+        return new ClosureDecoratorMiddleware($middleware);
     }
 
     /**
-     * Append a middleware callable to the end of the queue.
+     * Append a middleware to the end of the queue.
      *
-     * @param callable|string|array $middleware The middleware(s) to append.
+     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|array|string $middleware The middleware(s) to append.
      * @return $this
      */
     public function add($middleware)
@@ -116,7 +131,7 @@ class MiddlewareQueue implements Countable
     /**
      * Alias for MiddlewareQueue::add().
      *
-     * @param callable|string|array $middleware The middleware(s) to append.
+     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|array|string $middleware The middleware(s) to append.
      * @return $this
      * @see MiddlewareQueue::add()
      */
@@ -128,7 +143,7 @@ class MiddlewareQueue implements Countable
     /**
      * Prepend a middleware to the start of the queue.
      *
-     * @param callable|string|array $middleware The middleware(s) to prepend.
+     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|array|string $middleware The middleware(s) to prepend.
      * @return $this
      */
     public function prepend($middleware)
@@ -144,16 +159,16 @@ class MiddlewareQueue implements Countable
     }
 
     /**
-     * Insert a middleware callable at a specific index.
+     * Insert a middleware at a specific index.
      *
-     * If the index already exists, the new callable will be inserted,
+     * If the index already exists, the new middleware will be inserted,
      * and the existing element will be shifted one index greater.
      *
      * @param int $index The index to insert at.
-     * @param callable|string $middleware The middleware to insert.
+     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware The middleware to insert.
      * @return $this
      */
-    public function insertAt($index, $middleware)
+    public function insertAt(int $index, $middleware)
     {
         array_splice($this->queue, $index, 0, [$middleware]);
 
@@ -161,23 +176,27 @@ class MiddlewareQueue implements Countable
     }
 
     /**
-     * Insert a middleware object before the first matching class.
+     * Insert a middleware before the first matching class.
      *
      * Finds the index of the first middleware that matches the provided class,
-     * and inserts the supplied callable before it.
+     * and inserts the supplied middleware before it.
      *
      * @param string $class The classname to insert the middleware before.
-     * @param callable|string $middleware The middleware to insert.
+     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware The middleware to insert.
      * @return $this
      * @throws \LogicException If middleware to insert before is not found.
      */
-    public function insertBefore($class, $middleware)
+    public function insertBefore(string $class, $middleware)
     {
         $found = false;
         $i = 0;
         foreach ($this->queue as $i => $object) {
+            /** @psalm-suppress ArgumentTypeCoercion */
             if (
-                (is_string($object) && $object === $class)
+                (
+                    is_string($object)
+                    && $object === $class
+                )
                 || is_a($object, $class)
             ) {
                 $found = true;
@@ -194,20 +213,24 @@ class MiddlewareQueue implements Countable
      * Insert a middleware object after the first matching class.
      *
      * Finds the index of the first middleware that matches the provided class,
-     * and inserts the supplied callable after it. If the class is not found,
+     * and inserts the supplied middleware after it. If the class is not found,
      * this method will behave like add().
      *
      * @param string $class The classname to insert the middleware before.
-     * @param callable|string $middleware The middleware to insert.
+     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware The middleware to insert.
      * @return $this
      */
-    public function insertAfter($class, $middleware)
+    public function insertAfter(string $class, $middleware)
     {
         $found = false;
         $i = 0;
         foreach ($this->queue as $i => $object) {
+            /** @psalm-suppress ArgumentTypeCoercion */
             if (
-                (is_string($object) && $object === $class)
+                (
+                    is_string($object)
+                    && $object === $class
+                )
                 || is_a($object, $class)
             ) {
                 $found = true;
@@ -228,8 +251,87 @@ class MiddlewareQueue implements Countable
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->queue);
+    }
+
+    /**
+     * Seeks to a given position in the queue.
+     *
+     * @param int $position The position to seek to.
+     * @return void
+     * @see \SeekableIterator::seek()
+     */
+    public function seek($position): void
+    {
+        if (!isset($this->queue[$position])) {
+            throw new OutOfBoundsException("Invalid seek position ($position)");
+        }
+
+        $this->position = $position;
+    }
+
+    /**
+     * Rewinds back to the first element of the queue.
+     *
+     * @return void
+     * @see \Iterator::rewind()
+     */
+    public function rewind(): void
+    {
+        $this->position = 0;
+    }
+
+    /**
+     *  Returns the current middleware.
+     *
+     * @return \Psr\Http\Server\MiddlewareInterface
+     * @see \Iterator::current()
+     */
+    public function current(): MiddlewareInterface
+    {
+        if (!isset($this->queue[$this->position])) {
+            throw new OutOfBoundsException("Invalid current position ($this->position)");
+        }
+
+        if ($this->queue[$this->position] instanceof MiddlewareInterface) {
+            return $this->queue[$this->position];
+        }
+
+        return $this->queue[$this->position] = $this->resolve($this->queue[$this->position]);
+    }
+
+    /**
+     * Return the key of the middleware.
+     *
+     * @return int
+     * @see \Iterator::key()
+     */
+    public function key(): int
+    {
+        return $this->position;
+    }
+
+    /**
+     * Moves the current position to the next middleware.
+     *
+     * @return void
+     * @see \Iterator::next()
+     */
+    public function next(): void
+    {
+        ++$this->position;
+    }
+
+    /**
+     * Checks if current position is valid.
+     *
+     * @return bool
+     * @see \Iterator::valid()
+     */
+    public function valid(): bool
+    {
+        return isset($this->queue[$this->position]);
     }
 }

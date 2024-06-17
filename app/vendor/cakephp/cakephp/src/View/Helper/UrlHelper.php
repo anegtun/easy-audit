@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,17 +16,55 @@
  */
 namespace Cake\View\Helper;
 
-use Cake\Core\Configure;
-use Cake\Core\Plugin;
+use Cake\Core\App;
+use Cake\Core\Exception\CakeException;
+use Cake\Routing\Asset;
 use Cake\Routing\Router;
-use Cake\Utility\Inflector;
 use Cake\View\Helper;
+use function Cake\Core\h;
 
 /**
  * UrlHelper class for generating URLs.
  */
 class UrlHelper extends Helper
 {
+    /**
+     * Default config for this class
+     *
+     * @var array<string, mixed>
+     */
+    protected $_defaultConfig = [
+        'assetUrlClassName' => Asset::class,
+    ];
+
+    /**
+     * Asset URL engine class name
+     *
+     * @var string
+     * @psalm-var class-string<\Cake\Routing\Asset>
+     */
+    protected $_assetUrlClassName;
+
+    /**
+     * Check proper configuration
+     *
+     * @param array<string, mixed> $config The configuration settings provided to this helper.
+     * @return void
+     */
+    public function initialize(array $config): void
+    {
+        parent::initialize($config);
+        $engineClassConfig = $this->getConfig('assetUrlClassName');
+
+        /** @psalm-var class-string<\Cake\Routing\Asset>|null $engineClass */
+        $engineClass = App::className($engineClassConfig, 'Routing');
+        if ($engineClass === null) {
+            throw new CakeException(sprintf('Class for `%s` could not be found', $engineClassConfig));
+        }
+
+        $this->_assetUrlClassName = $engineClass;
+    }
+
     /**
      * Returns a URL based on provided parameters.
      *
@@ -34,24 +74,20 @@ class UrlHelper extends Helper
      *    escaped afterwards before being displayed.
      * - `fullBase`: If true, the full base URL will be prepended to the result
      *
-     * @param string|array|null $url Either a relative string URL like `/products/view/23` or
+     * @param array|string|null $url Either a relative string URL like `/products/view/23` or
      *    an array of URL parameters. Using an array for URLs will allow you to leverage
      *    the reverse routing features of CakePHP.
-     * @param array|bool $options Array of options; bool `full` for BC reasons.
+     * @param array<string, mixed> $options Array of options.
      * @return string Full translated URL with base path.
      */
-    public function build($url = null, $options = false)
+    public function build($url = null, array $options = []): string
     {
         $defaults = [
             'fullBase' => false,
             'escape' => true,
         ];
-        if (!is_array($options)) {
-            $options = ['fullBase' => $options];
-        }
         $options += $defaults;
 
-        /** @var string $url */
         $url = Router::url($url, $options['fullBase']);
         if ($options['escape']) {
             /** @var string $url */
@@ -62,13 +98,34 @@ class UrlHelper extends Helper
     }
 
     /**
+     * Returns a URL from a route path string.
+     *
+     * ### Options:
+     *
+     * - `escape`: If false, the URL will be returned unescaped, do only use if it is manually
+     *    escaped afterwards before being displayed.
+     * - `fullBase`: If true, the full base URL will be prepended to the result
+     *
+     * @param string $path Cake-relative route path.
+     * @param array $params An array specifying any additional parameters.
+     *   Can be also any special parameters supported by `Router::url()`.
+     * @param array<string, mixed> $options Array of options.
+     * @return string Full translated URL with base path.
+     * @see \Cake\Routing\Router::pathUrl()
+     */
+    public function buildFromPath(string $path, array $params = [], array $options = []): string
+    {
+        return $this->build(['_path' => $path] + $params, $options);
+    }
+
+    /**
      * Generates URL for given image file.
      *
      * Depending on options passed provides full URL with domain name. Also calls
      * `Helper::assetTimestamp()` to add timestamp to local files.
      *
-     * @param string|array $path Path string or URL array
-     * @param array $options Options array. Possible keys:
+     * @param string $path Path string.
+     * @param array<string, mixed> $options Options array. Possible keys:
      *   `fullBase` Return full URL with domain name
      *   `pathPrefix` Path prefix for relative URLs
      *   `plugin` False value will prevent parsing path as a plugin
@@ -78,11 +135,11 @@ class UrlHelper extends Helper
      *        enable timestamping regardless of debug value.
      * @return string Generated URL
      */
-    public function image($path, array $options = [])
+    public function image(string $path, array $options = []): string
     {
-        $pathPrefix = Configure::read('App.imageBaseUrl');
+        $options += ['theme' => $this->_View->getTheme()];
 
-        return $this->assetUrl($path, $options + compact('pathPrefix'));
+        return h($this->_assetUrlClassName::imageUrl($path, $options));
     }
 
     /**
@@ -91,8 +148,8 @@ class UrlHelper extends Helper
      * Depending on options passed provides full URL with domain name. Also calls
      * `Helper::assetTimestamp()` to add timestamp to local files.
      *
-     * @param string|array $path Path string or URL array
-     * @param array $options Options array. Possible keys:
+     * @param string $path Path string.
+     * @param array<string, mixed> $options Options array. Possible keys:
      *   `fullBase` Return full URL with domain name
      *   `pathPrefix` Path prefix for relative URLs
      *   `ext` Asset extension to append
@@ -103,12 +160,11 @@ class UrlHelper extends Helper
      *        enable timestamping regardless of debug value.
      * @return string Generated URL
      */
-    public function css($path, array $options = [])
+    public function css(string $path, array $options = []): string
     {
-        $pathPrefix = Configure::read('App.cssBaseUrl');
-        $ext = '.css';
+        $options += ['theme' => $this->_View->getTheme()];
 
-        return $this->assetUrl($path, $options + compact('pathPrefix', 'ext'));
+        return h($this->_assetUrlClassName::cssUrl($path, $options));
     }
 
     /**
@@ -117,8 +173,8 @@ class UrlHelper extends Helper
      * Depending on options passed provides full URL with domain name. Also calls
      * `Helper::assetTimestamp()` to add timestamp to local files.
      *
-     * @param string|array $path Path string or URL array
-     * @param array $options Options array. Possible keys:
+     * @param string $path Path string.
+     * @param array<string, mixed> $options Options array. Possible keys:
      *   `fullBase` Return full URL with domain name
      *   `pathPrefix` Path prefix for relative URLs
      *   `ext` Asset extension to append
@@ -129,12 +185,11 @@ class UrlHelper extends Helper
      *        enable timestamping regardless of debug value.
      * @return string Generated URL
      */
-    public function script($path, array $options = [])
+    public function script(string $path, array $options = []): string
     {
-        $pathPrefix = Configure::read('App.jsBaseUrl');
-        $ext = '.js';
+        $options += ['theme' => $this->_View->getTheme()];
 
-        return $this->assetUrl($path, $options + compact('pathPrefix', 'ext'));
+        return h($this->_assetUrlClassName::scriptUrl($path, $options));
     }
 
     /**
@@ -155,75 +210,15 @@ class UrlHelper extends Helper
      *    Set to true to apply timestamps when debug is true. Set to 'force' to always
      *    enable timestamping regardless of debug value.
      *
-     * @param string|array $path Path string or URL array
-     * @param array $options Options array.
+     * @param string $path Path string or URL array
+     * @param array<string, mixed> $options Options array.
      * @return string Generated URL
      */
-    public function assetUrl($path, array $options = [])
+    public function assetUrl(string $path, array $options = []): string
     {
-        if (is_array($path)) {
-            return $this->build($path, !empty($options['fullBase']));
-        }
-        // data URIs only require HTML escaping
-        if (preg_match('/^data:[a-z]+\/[a-z]+;/', $path)) {
-            return h($path);
-        }
-        if (strpos($path, '://') !== false || preg_match('/^[a-z]+:/i', $path)) {
-            return ltrim($this->build($path), '/');
-        }
-        if (!array_key_exists('plugin', $options) || $options['plugin'] !== false) {
-            list($plugin, $path) = $this->_View->pluginSplit($path, false);
-        }
-        if (!empty($options['pathPrefix']) && (substr((string)$path, 0, 1) !== '/')) {
-            $path = $options['pathPrefix'] . $path;
-        }
-        if (
-            !empty($options['ext']) &&
-            strpos($path, '?') === false &&
-            substr($path, -strlen($options['ext'])) !== $options['ext']
-        ) {
-            $path .= $options['ext'];
-        }
-        if (preg_match('|^([a-z0-9]+:)?//|', $path)) {
-            return $this->build($path);
-        }
-        if (isset($plugin)) {
-            $path = Inflector::underscore($plugin) . '/' . $path;
-        }
+        $options += ['theme' => $this->_View->getTheme()];
 
-        $optionTimestamp = null;
-        if (array_key_exists('timestamp', $options)) {
-            $optionTimestamp = $options['timestamp'];
-        }
-        $webPath = $this->assetTimestamp($this->webroot($path), $optionTimestamp);
-
-        $path = $this->_encodeUrl($webPath);
-
-        if (!empty($options['fullBase'])) {
-            $fullBaseUrl = is_string($options['fullBase']) ? $options['fullBase'] : Router::fullBaseUrl();
-            $path = rtrim($fullBaseUrl, '/') . '/' . ltrim($path, '/');
-        }
-
-        return $path;
-    }
-
-    /**
-     * Encodes a URL for use in HTML attributes.
-     *
-     * @param string $url The URL to encode.
-     * @return string The URL encoded for both URL & HTML contexts.
-     */
-    protected function _encodeUrl($url)
-    {
-        $path = parse_url($url, PHP_URL_PATH);
-        $parts = array_map('rawurldecode', explode('/', $path));
-        $parts = array_map('rawurlencode', $parts);
-        $encoded = implode('/', $parts);
-
-        /** @var string $url */
-        $url = h(str_replace($path, $encoded, $url));
-
-        return $url;
+        return h($this->_assetUrlClassName::url($path, $options));
     }
 
     /**
@@ -231,42 +226,13 @@ class UrlHelper extends Helper
      * Configure. If Asset.timestamp is true and debug is true, or Asset.timestamp === 'force'
      * a timestamp will be added.
      *
-     * @param string $path The file path to timestamp, the path must be inside WWW_ROOT
-     * @param bool|string $timestamp If set will overrule the value of `Asset.timestamp` in Configure.
+     * @param string $path The file path to timestamp, the path must be inside `App.wwwRoot` in Configure.
+     * @param string|bool $timestamp If set will overrule the value of `Asset.timestamp` in Configure.
      * @return string Path with a timestamp added, or not.
      */
-    public function assetTimestamp($path, $timestamp = null)
+    public function assetTimestamp(string $path, $timestamp = null): string
     {
-        if (strpos($path, '?') !== false) {
-            return $path;
-        }
-
-        if ($timestamp === null) {
-            $timestamp = Configure::read('Asset.timestamp');
-        }
-        $timestampEnabled = $timestamp === 'force' || ($timestamp === true && Configure::read('debug'));
-        if ($timestampEnabled) {
-            $filepath = preg_replace(
-                '/^' . preg_quote($this->_View->getRequest()->getAttribute('webroot'), '/') . '/',
-                '',
-                urldecode($path)
-            );
-            $webrootPath = WWW_ROOT . str_replace('/', DIRECTORY_SEPARATOR, $filepath);
-            if (file_exists($webrootPath)) {
-                return $path . '?' . filemtime($webrootPath);
-            }
-            $segments = explode('/', ltrim($filepath, '/'));
-            $plugin = Inflector::camelize($segments[0]);
-            if (Plugin::isLoaded($plugin)) {
-                unset($segments[0]);
-                $pluginPath = Plugin::path($plugin) . 'webroot' . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $segments);
-                if (file_exists($pluginPath)) {
-                    return $path . '?' . filemtime($pluginPath);
-                }
-            }
-        }
-
-        return $path;
+        return h($this->_assetUrlClassName::assetTimestamp($path, $timestamp));
     }
 
     /**
@@ -275,57 +241,19 @@ class UrlHelper extends Helper
      * @param string $file The file to create a webroot path to.
      * @return string Web accessible path to file.
      */
-    public function webroot($file)
+    public function webroot(string $file): string
     {
-        $request = $this->_View->getRequest();
+        $options = ['theme' => $this->_View->getTheme()];
 
-        $asset = explode('?', $file);
-        $asset[1] = isset($asset[1]) ? '?' . $asset[1] : null;
-        $webPath = $request->getAttribute('webroot') . $asset[0];
-        $file = $asset[0];
-
-        if (!empty($this->_View->getTheme())) {
-            $file = trim($file, '/');
-            $theme = $this->_inflectThemeName($this->_View->getTheme()) . '/';
-
-            if (DIRECTORY_SEPARATOR === '\\') {
-                $file = str_replace('/', '\\', $file);
-            }
-
-            if (file_exists(Configure::read('App.wwwRoot') . $theme . $file)) {
-                $webPath = $request->getAttribute('webroot') . $theme . $asset[0];
-            } else {
-                $themePath = Plugin::path($this->_View->getTheme());
-                $path = $themePath . 'webroot/' . $file;
-                if (file_exists($path)) {
-                    $webPath = $request->getAttribute('webroot') . $theme . $asset[0];
-                }
-            }
-        }
-        if (strpos($webPath, '//') !== false) {
-            return str_replace('//', '/', $webPath . $asset[1]);
-        }
-
-        return $webPath . $asset[1];
-    }
-
-    /**
-     * Inflect the theme name to its underscored version.
-     *
-     * @param string $name Name of the theme which should be inflected.
-     * @return string Inflected name of the theme
-     */
-    protected function _inflectThemeName($name)
-    {
-        return Inflector::underscore($name);
+        return h($this->_assetUrlClassName::webroot($file, $options));
     }
 
     /**
      * Event listeners.
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function implementedEvents()
+    public function implementedEvents(): array
     {
         return [];
     }

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -13,17 +15,15 @@
  */
 namespace Cake\TestSuite;
 
-use Cake\Core\Configure;
 use Cake\Core\HttpApplicationInterface;
 use Cake\Core\PluginApplicationInterface;
-use Cake\Event\EventManager;
+use Cake\Http\FlashMessage;
 use Cake\Http\Server;
+use Cake\Http\ServerRequest;
 use Cake\Http\ServerRequestFactory;
 use Cake\Routing\Router;
-use Laminas\Diactoros\Stream;
-use LogicException;
-use ReflectionClass;
-use ReflectionException;
+use Cake\Routing\RoutingApplicationInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Dispatches a request capturing the response for integration
@@ -34,59 +34,20 @@ use ReflectionException;
 class MiddlewareDispatcher
 {
     /**
-     * The test case being run.
-     *
-     * @var \Cake\TestSuite\IntegrationTestCase
-     */
-    protected $_test;
-
-    /**
-     * The application class name
-     *
-     * @var string
-     */
-    protected $_class;
-
-    /**
-     * Constructor arguments for your application class.
-     *
-     * @var array
-     */
-    protected $_constructorArgs;
-
-    /**
      * The application that is being dispatched.
      *
-     * @var \Cake\Core\HttpApplicationInterface|\Cake\Core\ConsoleApplicationInterface
+     * @var \Cake\Core\HttpApplicationInterface
      */
     protected $app;
 
     /**
      * Constructor
      *
-     * @param \Cake\TestSuite\IntegrationTestCase $test The test case to run.
-     * @param string|null $class The application class name. Defaults to App\Application.
-     * @param array|null $constructorArgs The constructor arguments for your application class.
-     *   Defaults to `['./config']`
-     * @param bool $disableRouterReload Disable Router::reload() call when resolving URLs. This
-     *   flag may be necessary if you are using Router methods in your test case setup, and using array URLs
-     *   when doing requests in your tests.
-     * @throws \LogicException If it cannot load class for use in integration testing.
+     * @param \Cake\Core\HttpApplicationInterface $app The test case to run.
      */
-    public function __construct($test, $class = null, $constructorArgs = null, $disableRouterReload = false)
+    public function __construct(HttpApplicationInterface $app)
     {
-        $this->_test = $test;
-        $this->_class = $class ?: Configure::read('App.namespace') . '\Application';
-        $this->_constructorArgs = $constructorArgs ?: [CONFIG];
-
-        try {
-            $reflect = new ReflectionClass($this->_class);
-            /** @var \Cake\Core\HttpApplicationInterface $app */
-            $app = $reflect->newInstanceArgs($this->_constructorArgs);
-            $this->app = $app;
-        } catch (ReflectionException $e) {
-            throw new LogicException(sprintf('Cannot load `%s` for use in integration testing.', $this->_class));
-        }
+        $this->app = $app;
     }
 
     /**
@@ -95,7 +56,7 @@ class MiddlewareDispatcher
      * @param array|string $url The URL array/string to resolve.
      * @return string
      */
-    public function resolveUrl($url)
+    public function resolveUrl($url): string
     {
         // If we need to resolve a Route URL but there are no routes, load routes.
         if (is_array($url) && count(Router::getRouteCollection()->routes()) === 0) {
@@ -111,7 +72,7 @@ class MiddlewareDispatcher
      * @param array $url The url to resolve
      * @return string
      */
-    protected function resolveRoute(array $url)
+    protected function resolveRoute(array $url): string
     {
         // Simulate application bootstrap and route loading.
         // We need both to ensure plugins are loaded.
@@ -121,7 +82,7 @@ class MiddlewareDispatcher
         }
         $builder = Router::createRouteBuilder('/');
 
-        if ($this->app instanceof HttpApplicationInterface) {
+        if ($this->app instanceof RoutingApplicationInterface) {
             $this->app->routes($builder);
         }
         if ($this->app instanceof PluginApplicationInterface) {
@@ -137,13 +98,14 @@ class MiddlewareDispatcher
     /**
      * Create a PSR7 request from the request spec.
      *
-     * @param array $spec The request spec.
-     * @return \Psr\Http\Message\ServerRequestInterface
+     * @param array<string, mixed> $spec The request spec.
+     * @return \Cake\Http\ServerRequest
      */
-    protected function _createRequest($spec)
+    protected function _createRequest(array $spec): ServerRequest
     {
         if (isset($spec['input'])) {
             $spec['post'] = [];
+            $spec['environment']['CAKEPHP_INPUT'] = $spec['input'];
         }
         $environment = array_merge(
             array_merge($_SERVER, ['REQUEST_URI' => $spec['url']]),
@@ -159,44 +121,22 @@ class MiddlewareDispatcher
             $spec['cookies'],
             $spec['files']
         );
-        $request = $request->withAttribute('session', $spec['session']);
 
-        if (isset($spec['input'])) {
-            $stream = new Stream('php://memory', 'rw');
-            $stream->write($spec['input']);
-            $stream->rewind();
-            $request = $request->withBody($stream);
-        }
-
-        return $request;
+        return $request
+            ->withAttribute('session', $spec['session'])
+            ->withAttribute('flash', new FlashMessage($spec['session']));
     }
 
     /**
      * Run a request and get the response.
      *
-     * @param array $requestSpec The request spec to execute.
+     * @param array<string, mixed> $requestSpec The request spec to execute.
      * @return \Psr\Http\Message\ResponseInterface The generated response.
+     * @throws \LogicException
      */
-    public function execute($requestSpec)
+    public function execute(array $requestSpec): ResponseInterface
     {
-        try {
-            $reflect = new ReflectionClass($this->_class);
-            $app = $reflect->newInstanceArgs($this->_constructorArgs);
-        } catch (ReflectionException $e) {
-            throw new LogicException(sprintf(
-                'Cannot load "%s" for use in integration testing.',
-                $this->_class
-            ));
-        }
-
-        // Spy on the controller using the initialize hook instead
-        // of the dispatcher hooks as those will be going away one day.
-        EventManager::instance()->on(
-            'Controller.initialize',
-            [$this->_test, 'controllerSpy']
-        );
-
-        $server = new Server($app);
+        $server = new Server($this->app);
 
         return $server->run($this->_createRequest($requestSpec));
     }

@@ -1,30 +1,28 @@
 <?php
+declare(strict_types=1);
+
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://cakephp.org CakePHP(tm) Project
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace DebugKit;
 
 use Cake\Core\Plugin as CorePlugin;
-use Cake\Event\Event;
-use Cake\Utility\Hash;
 use Composer\Json\JsonFile;
-use DebugKit\DebugPanel;
+use InvalidArgumentException;
 
 /**
  * Contains methods for Providing list of files.
- *
  */
 class DebugInclude
 {
-
     /**
      * The list of plugins within the application
      *
@@ -48,7 +46,7 @@ class DebugInclude
         'Auth', 'Cache', 'Collection', 'Config', 'Configure', 'Console', 'Component', 'Controller',
         'Behavior', 'Database', 'Datasource', 'Model', 'Template', 'View', 'Utility',
         'Network', 'Routing', 'I18n', 'Log', 'Error', 'Event', 'Form', 'Filesystem',
-        'ORM', 'Filter', 'Validation'
+        'ORM', 'Filter', 'Validation',
     ];
 
     /**
@@ -68,7 +66,9 @@ class DebugInclude
             $packages = array_merge($lockContent['packages'], $lockContent['packages-dev']);
 
             foreach ($packages as $package) {
-                $this->_composerPaths[$package['name']] = $vendorDir . str_replace('/', DIRECTORY_SEPARATOR, $package['name']) . DIRECTORY_SEPARATOR;
+                $this->_composerPaths[$package['name']] = $vendorDir
+                    . str_replace('/', DIRECTORY_SEPARATOR, $package['name'])
+                    . DIRECTORY_SEPARATOR;
             }
         }
     }
@@ -174,6 +174,8 @@ class DebugInclude
             case 'vendor':
                 return str_replace($this->_composerPaths[$name], '', $file);
         }
+
+        throw new InvalidArgumentException("Type `{$type}` is not supported.");
     }
 
     /**

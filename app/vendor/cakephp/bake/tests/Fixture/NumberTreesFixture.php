@@ -26,7 +26,7 @@ class NumberTreesFixture extends TestFixture
     /**
      * fields property
      *
-     * @var array
+     * @var array<string, mixed>
      */
     public $fields = [
         'id' => ['type' => 'integer'],
@@ -35,7 +35,7 @@ class NumberTreesFixture extends TestFixture
         'lft' => ['type' => 'integer', 'unsigned' => true],
         'rght' => ['type' => 'integer', 'unsigned' => true],
         'depth' => ['type' => 'integer', 'unsigned' => true],
-        '_constraints' => ['primary' => ['type' => 'primary', 'columns' => ['id']]]
+        '_constraints' => ['primary' => ['type' => 'primary', 'columns' => ['id']]],
     ];
 
     /**

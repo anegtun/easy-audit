@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -24,89 +26,90 @@ use Cake\Cache\CacheEngine;
 class NullEngine extends CacheEngine
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function init(array $config = [])
+    public function init(array $config = []): bool
     {
         return true;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function gc($expires = null)
-    {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function write($key, $value)
+    public function set($key, $value, $ttl = null): bool
     {
         return true;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function read($key)
+    public function setMultiple($values, $ttl = null): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function readMany($keys)
+    public function get($key, $default = null)
+    {
+        return $default;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMultiple($keys, $default = null): iterable
     {
         return [];
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function increment($key, $offset = 1)
+    public function increment(string $key, int $offset = 1)
+    {
+        return 1;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function decrement(string $key, int $offset = 1)
+    {
+        return 0;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function delete($key): bool
     {
         return true;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function decrement($key, $offset = 1)
+    public function deleteMultiple($keys): bool
     {
         return true;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function delete($key)
+    public function clear(): bool
     {
         return true;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function deleteMany($keys)
+    public function clearGroup(string $group): bool
     {
-        return [];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function clear($check)
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function clearGroup($group)
-    {
-        return false;
+        return true;
     }
 }

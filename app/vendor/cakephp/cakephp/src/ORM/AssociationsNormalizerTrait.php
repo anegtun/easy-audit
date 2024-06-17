@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -27,11 +29,11 @@ trait AssociationsNormalizerTrait
      * @param array|string $associations The array of included associations.
      * @return array An array having dot notation transformed into nested arrays
      */
-    protected function _normalizeAssociations($associations)
+    protected function _normalizeAssociations($associations): array
     {
         $result = [];
         foreach ((array)$associations as $table => $options) {
-            $pointer =& $result;
+            $pointer = &$result;
 
             if (is_int($table)) {
                 $table = $options;
@@ -45,22 +47,23 @@ trait AssociationsNormalizerTrait
 
             $path = explode('.', $table);
             $table = array_pop($path);
+            /** @var string $first */
             $first = array_shift($path);
             $pointer += [$first => []];
-            $pointer =& $pointer[$first];
+            $pointer = &$pointer[$first];
             $pointer += ['associated' => []];
 
             foreach ($path as $t) {
                 $pointer += ['associated' => []];
                 $pointer['associated'] += [$t => []];
                 $pointer['associated'][$t] += ['associated' => []];
-                $pointer =& $pointer['associated'][$t];
+                $pointer = &$pointer['associated'][$t];
             }
 
             $pointer['associated'] += [$table => []];
             $pointer['associated'][$table] = $options + $pointer['associated'][$table];
         }
 
-        return isset($result['associated']) ? $result['associated'] : $result;
+        return $result['associated'] ?? $result;
     }
 }

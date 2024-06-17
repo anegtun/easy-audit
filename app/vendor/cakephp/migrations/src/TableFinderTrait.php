@@ -1,31 +1,33 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://cakephp.org CakePHP(tm) Project
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace Migrations;
 
 use Cake\Core\App;
 use Cake\Core\Plugin as CorePlugin;
-use Cake\Database\Schema\Collection;
+use Cake\Database\Schema\CollectionInterface;
 use Cake\Datasource\ConnectionManager;
-use Cake\Filesystem\Folder;
+use Cake\Filesystem\Filesystem;
 use Cake\ORM\TableRegistry;
+use FilesystemIterator;
 use ReflectionClass;
 
 trait TableFinderTrait
 {
-
     /**
      * Tables to skip
      *
-     * @var array
+     * @var string[]
      */
     public $skipTables = ['phinxlog'];
 
@@ -45,9 +47,12 @@ trait TableFinderTrait
      * @param array $options Array of options passed to a shell call.
      * @return array
      */
-    protected function getTablesToBake(Collection $collection, $options = [])
+    protected function getTablesToBake(CollectionInterface $collection, array $options = [])
     {
-        $options = array_merge(['require-table' => false, 'plugin' => null], $options);
+        $options += [
+            'require-table' => false,
+            'plugin' => null,
+        ];
         $tables = $collection->listTables();
 
         if (empty($tables)) {
@@ -63,23 +68,23 @@ trait TableFinderTrait
 
             foreach ($tableNamesInModel as $num => $table) {
                 if (strpos($table, '.') !== false) {
-                    $splitted = array_reverse(explode('.', $table, 2));
+                    $split = array_reverse(explode('.', $table, 2));
 
-                    $config = ConnectionManager::getConfig($this->connection);
+                    $config = (array)ConnectionManager::getConfig($this->connection);
                     $key = isset($config['schema']) ? 'schema' : 'database';
-                    if ($config[$key] === $splitted[1]) {
-                        $table = $splitted[0];
+                    if ($config[$key] === $split[1]) {
+                        $table = $split[0];
                     }
                 }
 
-                if (!in_array($table, $tables)) {
+                if (!in_array($table, $tables, true)) {
                     unset($tableNamesInModel[$num]);
                 }
             }
             $tables = $tableNamesInModel;
         } else {
             foreach ($tables as $num => $table) {
-                if ((in_array($table, $this->skipTables)) || (strpos($table, $this->skipTablesRegex) !== false)) {
+                if (in_array($table, $this->skipTables, true) || (strpos($table, $this->skipTablesRegex) !== false)) {
                     unset($tables[$num]);
                     continue;
                 }
@@ -93,7 +98,7 @@ trait TableFinderTrait
      * Gets list Tables Names
      *
      * @param string|null $pluginName Plugin name if exists.
-     * @return array
+     * @return string[]
      */
     protected function getTableNames($pluginName = null)
     {
@@ -126,6 +131,7 @@ trait TableFinderTrait
         if ($pluginName) {
             $path = CorePlugin::path($pluginName) . 'src' . DS . $path;
         } else {
+            /** @psalm-suppress UndefinedConstant */
             $path = APP . $path;
         }
 
@@ -133,10 +139,10 @@ trait TableFinderTrait
             return [];
         }
 
-        $tableDir = new Folder($path);
-        $tableDir = $tableDir->find('.*\.php');
+        $files = (new Filesystem())->find($path, '/\.php$/i', FilesystemIterator::KEY_AS_FILENAME
+            | FilesystemIterator::UNIX_PATHS);
 
-        return $tableDir;
+        return array_keys(iterator_to_array($files));
     }
 
     /**
@@ -144,19 +150,23 @@ trait TableFinderTrait
      *
      * @param string $className Name of Table Class.
      * @param string|null $pluginName Plugin name if exists.
-     * @return array
+     * @return string[]
      */
     protected function fetchTableName($className, $pluginName = null)
     {
         $tables = [];
         $className = str_replace('Table.php', '', $className);
+        if (!$className) {
+            return $tables;
+        }
+
         if ($pluginName !== null) {
             $className = $pluginName . '.' . $className;
         }
 
         $namespacedClassName = App::className($className, 'Model/Table', 'Table');
 
-        if (!class_exists($namespacedClassName)) {
+        if ($namespacedClassName === null || !class_exists($namespacedClassName)) {
             return $tables;
         }
 
@@ -165,19 +175,24 @@ trait TableFinderTrait
             return $tables;
         }
 
-        $table = TableRegistry::get($className);
+        $table = TableRegistry::getTableLocator()->get($className);
         foreach ($table->associations()->keys() as $key) {
+            /** @psalm-suppress PossiblyNullReference */
             if ($table->associations()->get($key)->type() === 'belongsToMany') {
-                $tables[] = $table->associations()->get($key)->junction()->getTable();
+                /** @var \Cake\ORM\Association\BelongsToMany $belongsToMany */
+                $belongsToMany = $table->associations()->get($key);
+                $tables[] = $belongsToMany->junction()->getTable();
             }
         }
         $tableName = $table->getTable();
         $splitted = array_reverse(explode('.', $tableName, 2));
         if (isset($splitted[1])) {
             $config = ConnectionManager::getConfig($this->connection);
-            $key = isset($config['schema']) ? 'schema' : 'database';
-            if ($config[$key] === $splitted[1]) {
-                $tableName = $splitted[0];
+            if ($config) {
+                $key = isset($config['schema']) ? 'schema' : 'database';
+                if ($config[$key] === $splitted[1]) {
+                    $tableName = $splitted[0];
+                }
             }
         }
         $tables[] = $tableName;

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -30,7 +32,7 @@ abstract class Helper
     /**
      * Default config for this helper.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_defaultConfig = [];
 
@@ -45,7 +47,7 @@ abstract class Helper
      * Constructor.
      *
      * @param \Cake\Console\ConsoleIo $io The ConsoleIo instance to use.
-     * @param array $config The settings for this helper.
+     * @param array<string, mixed> $config The settings for this helper.
      */
     public function __construct(ConsoleIo $io, array $config = [])
     {
@@ -59,5 +61,5 @@ abstract class Helper
      * @param array $args The arguments for the helper.
      * @return void
      */
-    abstract public function output($args);
+    abstract public function output(array $args): void;
 }

@@ -1,14 +1,16 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  * @copyright     Copyright (c) Brian Nesbitt <brian@nesbot.com>
- * @link          http://cakephp.org CakePHP(tm) Project
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @link          https://cakephp.org CakePHP(tm) Project
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace Cake\Chronos;
 
@@ -22,17 +24,18 @@ use InvalidArgumentException;
  * This object can be mutated in place using any setter method,
  * or __set().
  *
- * @property int $year
- * @property int $yearIso
- * @property int $month
- * @property int $day
- * @property int $hour
- * @property int $minute
- * @property int $second
- * @property int $timestamp seconds since the Unix Epoch
- * @property DateTimeZone|string $timezone the current timezone
- * @property DateTimeZone|string $tz alias of timezone
- * @property int $micro
+ * @property-read int $year
+ * @property-read int $yearIso
+ * @property-read int $month
+ * @property-read int $day
+ * @property-read int $hour
+ * @property-read int $minute
+ * @property-read int $second
+ * @property-read int $micro
+ * @property-read int $microsecond
+ * @property-read int $timestamp seconds since the Unix Epoch
+ * @property-read \DateTimeZone|string $timezone the current timezone
+ * @property-read \DateTimeZone|string $tz alias of timezone
  * @property-read int $dayOfWeek 1 (for Monday) through 7 (for Sunday)
  * @property-read int $dayOfYear 0 through 365
  * @property-read int $weekOfMonth 1 through 5
@@ -47,6 +50,7 @@ use InvalidArgumentException;
  * @property-read bool $utc checks if the timezone is UTC, true if UTC, false otherwise
  * @property-read string $timezoneName
  * @property-read string $tzName
+ * @deprecated 2.4.0 Use immutable \Cake\Chronos\Chronos instead
  */
 class MutableDateTime extends DateTime implements ChronosInterface
 {
@@ -73,18 +77,28 @@ class MutableDateTime extends DateTime implements ChronosInterface
      * Please see the testing aids section (specifically static::setTestNow())
      * for more on the possibility of this constructor returning a test instance.
      *
-     * @param string|null $time Fixed or relative time
+     * @param \DateTimeInterface|string|int|null $time Fixed or relative time
      * @param \DateTimeZone|string|null $tz The timezone for the instance
      */
     public function __construct($time = 'now', $tz = null)
     {
+        if (is_int($time)) {
+            parent::__construct('@' . $time);
+
+            return;
+        }
+
         if ($tz !== null) {
             $tz = $tz instanceof DateTimeZone ? $tz : new DateTimeZone($tz);
         }
 
+        if ($time instanceof \DateTimeInterface) {
+            $time = $time->format('Y-m-d H:i:s.u');
+        }
+
         $testNow = Chronos::getTestNow();
         if ($testNow === null) {
-            parent::__construct($time === null ? 'now' : $time, $tz);
+            parent::__construct($time ?? 'now', $tz);
 
             return;
         }
@@ -97,14 +111,15 @@ class MutableDateTime extends DateTime implements ChronosInterface
         }
 
         $testNow = clone $testNow;
+        $relativetime = static::isTimeExpression($time);
+        if (!$relativetime && $tz !== $testNow->getTimezone()) {
+            $testNow = $testNow->setTimezone($tz ?? date_default_timezone_get());
+        }
+
         if ($relative) {
             $testNow = $testNow->modify($time);
         }
 
-        $relativetime = static::isTimeExpression($time);
-        if (!$relativetime && $tz !== $testNow->getTimezone()) {
-            $testNow = $testNow->setTimezone($tz === null ? date_default_timezone_get() : $tz);
-        }
         $time = $testNow->format('Y-m-d H:i:s.u');
         parent::__construct($time, $tz);
     }
@@ -112,9 +127,9 @@ class MutableDateTime extends DateTime implements ChronosInterface
     /**
      * Create a new immutable instance from current mutable instance.
      *
-     * @return Chronos
+     * @return \Cake\Chronos\Chronos
      */
-    public function toImmutable()
+    public function toImmutable(): Chronos
     {
         return Chronos::instance($this);
     }
@@ -127,7 +142,7 @@ class MutableDateTime extends DateTime implements ChronosInterface
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value): void
     {
         switch ($name) {
             case 'year':
@@ -173,7 +188,7 @@ class MutableDateTime extends DateTime implements ChronosInterface
      *
      * @return array
      */
-    public function __debugInfo()
+    public function __debugInfo(): array
     {
         $properties = [
             'hasFixedNow' => static::hasTestNow(),

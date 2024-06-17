@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -37,7 +39,7 @@ abstract class BaseAuthorize
     /**
      * Default config for authorize objects.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_defaultConfig = [];
 
@@ -45,7 +47,7 @@ abstract class BaseAuthorize
      * Constructor
      *
      * @param \Cake\Controller\ComponentRegistry $registry The controller for this request.
-     * @param array $config An array of config. This class does not use any config.
+     * @param array<string, mixed> $config An array of config. This class does not use any config.
      */
     public function __construct(ComponentRegistry $registry, array $config = [])
     {
@@ -56,9 +58,9 @@ abstract class BaseAuthorize
     /**
      * Checks user authorization.
      *
-     * @param array|\ArrayAccess $user Active user data
+     * @param \ArrayAccess|array $user Active user data
      * @param \Cake\Http\ServerRequest $request Request instance.
      * @return bool
      */
-    abstract public function authorize($user, ServerRequest $request);
+    abstract public function authorize($user, ServerRequest $request): bool;
 }

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -17,6 +19,7 @@ namespace Cake\Collection\Iterator;
 use ArrayIterator;
 use Cake\Collection\Collection;
 use Cake\Collection\CollectionInterface;
+use Traversable;
 
 /**
  * Creates an iterator from another iterator that will verify a condition on each
@@ -38,7 +41,7 @@ class StoppableIterator extends Collection
     /**
      * A reference to the internal iterator this object is wrapping.
      *
-     * @var \Iterator
+     * @var \Traversable
      */
     protected $_innerIterator;
 
@@ -49,12 +52,12 @@ class StoppableIterator extends Collection
      * in the current iteration, the key of the element and the passed $items iterator
      * as arguments, in that order.
      *
-     * @param array|\Traversable $items The list of values to iterate
+     * @param iterable $items The list of values to iterate
      * @param callable $condition A function that will be called for each item in
      * the collection, if the result evaluates to false, no more items will be
      * yielded from this iterator.
      */
-    public function __construct($items, callable $condition)
+    public function __construct(iterable $items, callable $condition)
     {
         $this->_condition = $condition;
         parent::__construct($items);
@@ -63,11 +66,11 @@ class StoppableIterator extends Collection
 
     /**
      * Evaluates the condition and returns its result, this controls
-     * whether or not more results will be yielded.
+     * whether more results will be yielded.
      *
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         if (!parent::valid()) {
             return false;
@@ -81,14 +84,9 @@ class StoppableIterator extends Collection
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * We perform here some strictness analysis so that the
-     * iterator logic is bypassed entirely.
-     *
-     * @return \Iterator
+     * @inheritDoc
      */
-    public function unwrap()
+    public function unwrap(): Traversable
     {
         $iterator = $this->_innerIterator;
 

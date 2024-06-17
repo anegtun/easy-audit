@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -12,13 +14,15 @@
  */
 namespace Cake\Http\Exception;
 
+use Throwable;
+
 /**
  * Represents an HTTP 403 error.
  */
 class ForbiddenException extends HttpException
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected $_defaultCode = 403;
 
@@ -26,10 +30,10 @@ class ForbiddenException extends HttpException
      * Constructor
      *
      * @param string|null $message If no message is given 'Forbidden' will be the message
-     * @param int $code Status code, defaults to 403
-     * @param \Exception|null $previous The previous exception.
+     * @param int|null $code Status code, defaults to 403
+     * @param \Throwable|null $previous The previous exception.
      */
-    public function __construct($message = null, $code = null, $previous = null)
+    public function __construct(?string $message = null, ?int $code = null, ?Throwable $previous = null)
     {
         if (empty($message)) {
             $message = 'Forbidden';

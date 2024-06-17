@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -42,8 +44,8 @@ class Entity implements EntityInterface, InvalidPropertyInterface
      *  $entity = new Entity(['id' => 1, 'name' => 'Andrew'])
      * ```
      *
-     * @param array $properties hash of properties to set in this entity
-     * @param array $options list of options to use when creating this entity
+     * @param array<string, mixed> $properties hash of properties to set in this entity
+     * @param array<string, mixed> $options list of options to use when creating this entity
      */
     public function __construct(array $properties = [], array $options = [])
     {
@@ -64,7 +66,7 @@ class Entity implements EntityInterface, InvalidPropertyInterface
         }
 
         if (!empty($properties) && $options['markClean'] && !$options['useSetters']) {
-            $this->_properties = $properties;
+            $this->_fields = $properties;
 
             return;
         }

@@ -1,19 +1,21 @@
 <?php
+declare(strict_types=1);
+
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
- *
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://cakephp.org CakePHP(tm) Project
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace DebugKit\Panel;
 
 use Cake\Cache\Cache;
+use Cake\Log\Engine\ArrayLog;
 use DebugKit\Cache\Engine\DebugEngine;
 use DebugKit\DebugPanel;
 
@@ -22,13 +24,23 @@ use DebugKit\DebugPanel;
  */
 class CachePanel extends DebugPanel
 {
+    /**
+     * @var \Cake\Log\Engine\ArrayLog
+     */
+    protected $logger;
 
     /**
-     * The cache spy instances used.
-     *
-     * @var DebugEngine[]
+     * @var \DebugKit\Cache\Engine\DebugEngine[]
      */
-    protected $_instances = [];
+    protected $instances = [];
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->logger = new ArrayLog();
+    }
 
     /**
      * Initialize - install cache spies.
@@ -38,16 +50,26 @@ class CachePanel extends DebugPanel
     public function initialize()
     {
         foreach (Cache::configured() as $name) {
+            /** @var array $config */
             $config = Cache::getConfig($name);
             if (isset($config['className']) && $config['className'] instanceof DebugEngine) {
                 $instance = $config['className'];
             } elseif (isset($config['className'])) {
+                /** @var \Cake\Cache\CacheEngine $engine */
+                $engine = Cache::pool($name);
+                // Unload from the cache registry so that subsequence calls to
+                // Cache::pool($name) use the new config with DebugEngine instance set below.
+                Cache::getRegistry()->unload($name);
+
+                $instance = new DebugEngine($engine, $name, $this->logger);
+                $instance->init();
+                $config['className'] = $instance;
+
                 Cache::drop($name);
-                $instance = new DebugEngine($config);
-                Cache::setConfig($name, $instance);
+                Cache::setConfig($name, $config);
             }
             if (isset($instance)) {
-                $this->_instances[$name] = $instance;
+                $this->instances[$name] = $instance;
             }
         }
     }
@@ -60,12 +82,15 @@ class CachePanel extends DebugPanel
     public function data()
     {
         $metrics = [];
-        foreach ($this->_instances as $name => $instance) {
+        foreach ($this->instances as $name => $instance) {
             $metrics[$name] = $instance->metrics();
         }
+        $logs = $this->logger->read();
+        $this->logger->clear();
 
         return [
-            'metrics' => $metrics
+            'metrics' => $metrics,
+            'logs' => $logs,
         ];
     }
 }

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -12,12 +14,12 @@
  */
 namespace Cake\View\Exception;
 
-use Cake\Core\Exception\Exception;
+use Cake\Core\Exception\CakeException;
 
 /**
  * Used when a helper cannot be found.
  */
-class MissingHelperException extends Exception
+class MissingHelperException extends CakeException
 {
     /**
      * @inheritDoc

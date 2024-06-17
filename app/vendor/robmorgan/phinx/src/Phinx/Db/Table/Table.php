@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * MIT License
+ * For full license information, please view the LICENSE file that was distributed with this source code.
+ */
+
 namespace Phinx\Db\Table;
 
 use InvalidArgumentException;
@@ -11,13 +17,14 @@ class Table
     protected $name;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected $options;
 
     /**
      * @param string $name The table name
-     * @param array $options The creation options for this table
+     * @param array<string, mixed> $options The creation options for this table
+     * @throws \InvalidArgumentException
      */
     public function __construct($name, array $options = [])
     {
@@ -33,9 +40,9 @@ class Table
      * Sets the table name.
      *
      * @param string $name The name of the table
-     * @return \Phinx\Db\Table\Table
+     * @return $this
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
 
@@ -47,7 +54,7 @@ class Table
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -55,9 +62,9 @@ class Table
     /**
      * Gets the table options
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }
@@ -65,11 +72,13 @@ class Table
     /**
      * Sets the table options
      *
-     * @param array $options The options for the table creation
-     * @return void
+     * @param array<string, mixed> $options The options for the table creation
+     * @return $this
      */
     public function setOptions(array $options)
     {
         $this->options = $options;
+
+        return $this;
     }
 }

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -24,7 +26,7 @@ class MailContains extends MailConstraintBase
     /**
      * Mail type to check contents of
      *
-     * @var string
+     * @var string|null
      */
     protected $type;
 
@@ -34,13 +36,14 @@ class MailContains extends MailConstraintBase
      * @param mixed $other Constraint check
      * @return bool
      */
-    public function matches($other)
+    public function matches($other): bool
     {
-        $emails = $this->getEmails();
-        foreach ($emails as $email) {
-            $message = implode("\r\n", (array)$email->message($this->type));
+        $other = preg_quote($other, '/');
+        $messages = $this->getMessages();
+        foreach ($messages as $message) {
+            $method = $this->getTypeMethod();
+            $message = $message->$method();
 
-            $other = preg_quote($other, '/');
             if (preg_match("/$other/", $message) > 0) {
                 return true;
             }
@@ -50,16 +53,46 @@ class MailContains extends MailConstraintBase
     }
 
     /**
+     * @return string
+     */
+    protected function getTypeMethod(): string
+    {
+        return 'getBody' . ($this->type ? ucfirst($this->type) : 'String');
+    }
+
+    /**
+     * Returns the type-dependent strings of all messages
+     * respects $this->at
+     *
+     * @return string
+     */
+    protected function getAssertedMessages(): string
+    {
+        $messageMembers = [];
+        $messages = $this->getMessages();
+        foreach ($messages as $message) {
+            $method = $this->getTypeMethod();
+            $messageMembers[] = $message->$method();
+        }
+        if ($this->at && isset($messageMembers[$this->at - 1])) {
+            $messageMembers = [$messageMembers[$this->at - 1]];
+        }
+        $result = implode(PHP_EOL, $messageMembers);
+
+        return PHP_EOL . 'was: ' . mb_substr($result, 0, 1000);
+    }
+
+    /**
      * Assertion message string
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         if ($this->at) {
-            return sprintf('is in email #%d', $this->at);
+            return sprintf('is in email #%d', $this->at) . $this->getAssertedMessages();
         }
 
-        return 'is in an email';
+        return 'is in an email' . $this->getAssertedMessages();
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of Composer.
@@ -12,13 +12,10 @@
 
 namespace Composer;
 
-use Composer\Package\RootPackageInterface;
 use Composer\Package\Locker;
-use Composer\Repository\RepositoryManager;
-use Composer\Installer\InstallationManager;
+use Composer\Pcre\Preg;
 use Composer\Plugin\PluginManager;
 use Composer\Downloader\DownloadManager;
-use Composer\EventDispatcher\EventDispatcher;
 use Composer\Autoload\AutoloadGenerator;
 use Composer\Package\Archiver\ArchiveManager;
 
@@ -27,10 +24,12 @@ use Composer\Package\Archiver\ArchiveManager;
  * @author Konstantin Kudryashiv <ever.zet@gmail.com>
  * @author Nils Adermann <naderman@naderman.de>
  */
-class Composer
+class Composer extends PartialComposer
 {
     /*
      * Examples of the following constants in the various configurations they can be in
+     *
+     * You are probably better off using Composer::getVersion() though as that will always return something usable
      *
      * releases (phar):
      * const VERSION = '1.8.2';
@@ -45,17 +44,30 @@ class Composer
      * const SOURCE_VERSION = '';
      *
      * source (git clone):
-     * const VERSION = '1.8.5';
-     * const BRANCH_ALIAS_VERSION = '';
-     * const RELEASE_DATE = '2019-04-09 17:46:47';
+     * const VERSION = '@package_version@';
+     * const BRANCH_ALIAS_VERSION = '@package_branch_alias_version@';
+     * const RELEASE_DATE = '@release_date@';
      * const SOURCE_VERSION = '1.8-dev+source';
+     *
+     * @see getVersion()
      */
-    const VERSION = '1.8.5';
-    const BRANCH_ALIAS_VERSION = '';
-    const RELEASE_DATE = '2019-04-09 17:46:47';
-    const SOURCE_VERSION = '1.8-dev+source';
+    public const VERSION = '2.7.7';
+    public const BRANCH_ALIAS_VERSION = '';
+    public const RELEASE_DATE = '2024-06-10 22:11:12';
+    public const SOURCE_VERSION = '';
 
-    public static function getVersion()
+    /**
+     * Version number of the internal composer-runtime-api package
+     *
+     * This is used to version features available to projects at runtime
+     * like the platform-check file, the Composer\InstalledVersions class
+     * and possibly others in the future.
+     *
+     * @var string
+     */
+    public const RUNTIME_API_VERSION = '2.2.2';
+
+    public static function getVersion(): string
     {
         // no replacement done, this must be a source checkout
         if (self::VERSION === '@package_version'.'@') {
@@ -63,7 +75,7 @@ class Composer
         }
 
         // we have a branch alias and version is a commit id, this must be a snapshot build
-        if (self::BRANCH_ALIAS_VERSION !== '' && preg_match('{^[a-f0-9]{40}$}', self::VERSION)) {
+        if (self::BRANCH_ALIAS_VERSION !== '' && Preg::isMatch('{^[a-f0-9]{40}$}', self::VERSION)) {
             return self::BRANCH_ALIAS_VERSION.'+'.self::VERSION;
         }
 
@@ -71,19 +83,9 @@ class Composer
     }
 
     /**
-     * @var Package\RootPackageInterface
-     */
-    private $package;
-
-    /**
      * @var Locker
      */
     private $locker;
-
-    /**
-     * @var Repository\RepositoryManager
-     */
-    private $repositoryManager;
 
     /**
      * @var Downloader\DownloadManager
@@ -91,24 +93,9 @@ class Composer
     private $downloadManager;
 
     /**
-     * @var Installer\InstallationManager
-     */
-    private $installationManager;
-
-    /**
      * @var Plugin\PluginManager
      */
     private $pluginManager;
-
-    /**
-     * @var Config
-     */
-    private $config;
-
-    /**
-     * @var EventDispatcher
-     */
-    private $eventDispatcher;
 
     /**
      * @var Autoload\AutoloadGenerator
@@ -120,163 +107,52 @@ class Composer
      */
     private $archiveManager;
 
-    /**
-     * @param  Package\RootPackageInterface $package
-     * @return void
-     */
-    public function setPackage(RootPackageInterface $package)
-    {
-        $this->package = $package;
-    }
-
-    /**
-     * @return Package\RootPackageInterface
-     */
-    public function getPackage()
-    {
-        return $this->package;
-    }
-
-    /**
-     * @param Config $config
-     */
-    public function setConfig(Config $config)
-    {
-        $this->config = $config;
-    }
-
-    /**
-     * @return Config
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
-    /**
-     * @param Package\Locker $locker
-     */
-    public function setLocker(Locker $locker)
+    public function setLocker(Locker $locker): void
     {
         $this->locker = $locker;
     }
 
-    /**
-     * @return Package\Locker
-     */
-    public function getLocker()
+    public function getLocker(): Locker
     {
         return $this->locker;
     }
 
-    /**
-     * @param Repository\RepositoryManager $manager
-     */
-    public function setRepositoryManager(RepositoryManager $manager)
-    {
-        $this->repositoryManager = $manager;
-    }
-
-    /**
-     * @return Repository\RepositoryManager
-     */
-    public function getRepositoryManager()
-    {
-        return $this->repositoryManager;
-    }
-
-    /**
-     * @param Downloader\DownloadManager $manager
-     */
-    public function setDownloadManager(DownloadManager $manager)
+    public function setDownloadManager(DownloadManager $manager): void
     {
         $this->downloadManager = $manager;
     }
 
-    /**
-     * @return Downloader\DownloadManager
-     */
-    public function getDownloadManager()
+    public function getDownloadManager(): DownloadManager
     {
         return $this->downloadManager;
     }
 
-    /**
-     * @param ArchiveManager $manager
-     */
-    public function setArchiveManager(ArchiveManager $manager)
+    public function setArchiveManager(ArchiveManager $manager): void
     {
         $this->archiveManager = $manager;
     }
 
-    /**
-     * @return ArchiveManager
-     */
-    public function getArchiveManager()
+    public function getArchiveManager(): ArchiveManager
     {
         return $this->archiveManager;
     }
 
-    /**
-     * @param Installer\InstallationManager $manager
-     */
-    public function setInstallationManager(InstallationManager $manager)
-    {
-        $this->installationManager = $manager;
-    }
-
-    /**
-     * @return Installer\InstallationManager
-     */
-    public function getInstallationManager()
-    {
-        return $this->installationManager;
-    }
-
-    /**
-     * @param Plugin\PluginManager $manager
-     */
-    public function setPluginManager(PluginManager $manager)
+    public function setPluginManager(PluginManager $manager): void
     {
         $this->pluginManager = $manager;
     }
 
-    /**
-     * @return Plugin\PluginManager
-     */
-    public function getPluginManager()
+    public function getPluginManager(): PluginManager
     {
         return $this->pluginManager;
     }
 
-    /**
-     * @param EventDispatcher $eventDispatcher
-     */
-    public function setEventDispatcher(EventDispatcher $eventDispatcher)
-    {
-        $this->eventDispatcher = $eventDispatcher;
-    }
-
-    /**
-     * @return EventDispatcher
-     */
-    public function getEventDispatcher()
-    {
-        return $this->eventDispatcher;
-    }
-
-    /**
-     * @param Autoload\AutoloadGenerator $autoloadGenerator
-     */
-    public function setAutoloadGenerator(AutoloadGenerator $autoloadGenerator)
+    public function setAutoloadGenerator(AutoloadGenerator $autoloadGenerator): void
     {
         $this->autoloadGenerator = $autoloadGenerator;
     }
 
-    /**
-     * @return Autoload\AutoloadGenerator
-     */
-    public function getAutoloadGenerator()
+    public function getAutoloadGenerator(): AutoloadGenerator
     {
         return $this->autoloadGenerator;
     }

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,10 +16,9 @@
  */
 namespace Cake\View;
 
-use Cake\Event\EventManager;
-use Cake\Http\Response;
-use Cake\Http\ServerRequest;
-use RuntimeException;
+use Cake\View\Exception\SerializationFailureException;
+use Exception;
+use TypeError;
 
 /**
  * Parent class for view classes generating serialized outputs like JsonView and XmlView.
@@ -28,27 +29,36 @@ abstract class SerializedView extends View
      * Response type.
      *
      * @var string
+     * @deprecated 4.4.0 Implement ``public static contentType(): string`` instead.
      */
     protected $_responseType;
 
     /**
-     * Constructor
+     * Default config options.
      *
-     * @param \Cake\Http\ServerRequest|null $request Request instance.
-     * @param \Cake\Http\Response|null $response Response instance.
-     * @param \Cake\Event\EventManager|null $eventManager EventManager instance.
-     * @param array $viewOptions An array of view options
+     * Use ViewBuilder::setOption()/setOptions() in your controlle to set these options.
+     *
+     * - `serialize`: Option to convert a set of view variables into a serialized response.
+     *   Its value can be a string for single variable name or array for multiple
+     *   names. If true all view variables will be serialized. If null or false
+     *   normal view template will be rendered.
+     *
+     * @var array<string, mixed>
      */
-    public function __construct(
-        ServerRequest $request = null,
-        Response $response = null,
-        EventManager $eventManager = null,
-        array $viewOptions = []
-    ) {
-        if ($response && $response instanceof Response) {
-            $response = $response->withType($this->_responseType);
+    protected $_defaultConfig = [
+        'serialize' => null,
+    ];
+
+    /**
+     * @inheritDoc
+     */
+    public function initialize(): void
+    {
+        parent::initialize();
+        if ($this->_responseType) {
+            $response = $this->getResponse()->withType($this->_responseType);
+            $this->setResponse($response);
         }
-        parent::__construct($request, $response, $eventManager, $viewOptions);
     }
 
     /**
@@ -58,7 +68,7 @@ abstract class SerializedView extends View
      */
     public function loadHelpers()
     {
-        if (empty($this->viewVars['_serialize'])) {
+        if (!$this->getConfig('serialize')) {
             parent::loadHelpers();
         }
 
@@ -70,40 +80,47 @@ abstract class SerializedView extends View
      *
      * @param array|string $serialize The name(s) of the view variable(s) that
      *   need(s) to be serialized
-     * @return string The serialized data
+     * @return string The serialized data.
      */
-    abstract protected function _serialize($serialize);
+    abstract protected function _serialize($serialize): string;
 
     /**
      * Render view template or return serialized data.
      *
-     * ### Special parameters
-     * `_serialize` To convert a set of view variables into a serialized form.
-     *   Its value can be a string for single variable name or array for multiple
-     *   names. If true all view variables will be serialized. If unset normal
-     *   view template will be rendered.
-     *
-     * @param string|false|null $view The view being rendered.
-     * @param string|null $layout The layout being rendered.
-     * @return string|null The rendered view.
+     * @param string|null $template The template being rendered.
+     * @param string|false|null $layout The layout being rendered.
+     * @return string The rendered view.
+     * @throws \Cake\View\Exception\SerializationFailureException When serialization fails.
      */
-    public function render($view = null, $layout = null)
+    public function render(?string $template = null, $layout = null): string
     {
-        $serialize = false;
-        if (isset($this->viewVars['_serialize'])) {
-            $serialize = $this->viewVars['_serialize'];
-        }
+        $serialize = $this->getConfig('serialize', false);
 
+        if ($serialize === true) {
+            $options = array_map(
+                function ($v) {
+                    return '_' . $v;
+                },
+                array_keys($this->_defaultConfig)
+            );
+
+            $serialize = array_diff(
+                array_keys($this->viewVars),
+                $options
+            );
+        }
         if ($serialize !== false) {
-            $result = $this->_serialize($serialize);
-            if ($result === false) {
-                throw new RuntimeException('Serialization of View data failed.');
+            try {
+                return $this->_serialize($serialize);
+            } catch (Exception | TypeError $e) {
+                throw new SerializationFailureException(
+                    'Serialization of View data failed.',
+                    null,
+                    $e
+                );
             }
+        }
 
-            return (string)$result;
-        }
-        if ($view !== false && $this->_getViewFileName($view)) {
-            return parent::render($view, false);
-        }
+        return parent::render($template, false);
     }
 }

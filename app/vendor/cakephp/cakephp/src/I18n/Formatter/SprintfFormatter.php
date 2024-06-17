@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,7 +16,7 @@
  */
 namespace Cake\I18n\Formatter;
 
-use Aura\Intl\FormatterInterface;
+use Cake\I18n\FormatterInterface;
 
 /**
  * A formatter that will interpolate variables using sprintf and
@@ -27,12 +29,12 @@ class SprintfFormatter implements FormatterInterface
      * message. Variables are interpolated using the sprintf format.
      *
      * @param string $locale The locale in which the message is presented.
-     * @param string|array $message The message to be translated
-     * @param array $vars The list of values to interpolate in the message
+     * @param string $message The message to be translated
+     * @param array $tokenValues The list of values to interpolate in the message
      * @return string The formatted message
      */
-    public function format($locale, $message, array $vars)
+    public function format(string $locale, string $message, array $tokenValues): string
     {
-        return vsprintf($message, $vars);
+        return vsprintf($message, $tokenValues);
     }
 }

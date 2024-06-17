@@ -12,7 +12,7 @@ você o removeu e gostaria de reinstalá-lo, você pode executar o seguinte coma
 a partir do diretório raiz da aplicação
 (onde o arquivo composer.json está localizado)::
 
-    php composer.phar require --dev cakephp/debug_kit "~3.0"
+    php composer.phar require --dev cakephp/debug_kit "~4.0"
 
 Então, você precisará habilitar o plugin ao executar o seguinte comando::
 
@@ -93,7 +93,7 @@ O painel History é uma das características mais frequentemente confundidas do
 DebugKit. Ele oferece uma forma de visualizar os dados de requisições
 anteriores na barra de ferramentas, incluindo erros e redirecionamentos.
 
-.. figure:: /_static/img/history-panel.png
+.. figure:: ../_static/history-panel.png
     :alt: Screenshot do painel History no DebugKit.
 
 Como você pode ver, o painel contém uma lista de requisições. Na esquerda você
@@ -104,7 +104,7 @@ alternativos foram carregados.
 
 .. only:: html or epub
 
-    .. figure:: /_static/img/history-panel-use.gif
+    .. video:: ../_static/history-panel-use.mp4
         :alt: Video do painel History em ação.
 
 Desenvolvendo seus próprios painéis

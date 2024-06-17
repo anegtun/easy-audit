@@ -1,22 +1,27 @@
 <?php
+declare(strict_types=1);
+
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://cakephp.org CakePHP(tm) Project
  * @since         DebugKit 3.11.4
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace DebugKit;
 
 use Cake\Core\Configure;
 use Cake\Database\Query;
 use Cake\Error\Debugger;
-use SqlFormatter;
+use Doctrine\SqlFormatter\CliHighlighter;
+use Doctrine\SqlFormatter\HtmlHighlighter;
+use Doctrine\SqlFormatter\NullHighlighter;
+use Doctrine\SqlFormatter\SqlFormatter;
 
 /**
  * Contains methods for dumping well formatted SQL queries.
@@ -56,12 +61,12 @@ TEXT;
      * This function returns the same variable that was passed.
      * Only runs if debug mode is enabled.
      *
-     * @param Query $query Query to show SQL statements for.
+     * @param \Cake\Database\Query $query Query to show SQL statements for.
      * @param bool $showValues Renders the SQL statement with bound variables.
      * @param bool|null $showHtml If set to true, the method prints the debug
      *    data in a browser-friendly way.
      * @param int $stackDepth Provides a hint as to which file in the call stack to reference.
-     * @return Query
+     * @return \Cake\Database\Query
      */
     public static function sql(Query $query, $showValues = true, $showHtml = null, $stackDepth = 0)
     {
@@ -71,12 +76,11 @@ TEXT;
 
         $sql = (string)$query;
         if ($showValues) {
-            $sql = method_exists($query, 'getValueBinder')
-                ? static::interpolate($sql, $query->getValueBinder()->bindings())
-                : static::interpolate($sql, $query->valueBinder()->bindings());
+            $sql = self::interpolate($sql, $query->getValueBinder()->bindings());
         }
 
-        $trace = Debugger::trace(['start' => 1, 'depth' => $stackDepth + 2, 'format' => 'array']);
+        /** @var array $trace */
+        $trace = Debugger::trace(['start' => 0, 'depth' => $stackDepth + 2, 'format' => 'array']);
         $file = isset($trace[$stackDepth]) ? $trace[$stackDepth]['file'] : 'n/a';
         $line = isset($trace[$stackDepth]) ? $trace[$stackDepth]['line'] : 0;
         $lineInfo = '';
@@ -91,28 +95,43 @@ TEXT;
             $file = str_replace($search, '', $file);
         }
 
-        $template = static::$templateHtml;
-        $sqlHighlight = true;
-        if ((PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg') || $showHtml === false) {
-            $template = static::$templateText;
-            $sqlHighlight = false;
+        $template = self::$templateHtml;
+        if (static::isCli() || $showHtml === false) {
+            $template = self::$templateText;
             if ($file && $line) {
                 $lineInfo = sprintf('%s (line %s)', $file, $line);
             }
         }
-        if ($showHtml === null && $template !== static::$templateText) {
+        if ($showHtml === null && $template !== self::$templateText) {
             $showHtml = true;
         }
 
-        $var = $showHtml ? SqlFormatter::format($sql, $sqlHighlight) : $sql;
-        $var = str_replace(
-            '<span >:</span> <span style="color: #333;">',
-            '<span >:</span><span style="color: #333;">',
-            $var
-        );
+        if (static::isCli() && !$showHtml) {
+            $highlighter = new CliHighlighter([
+                CliHighlighter::HIGHLIGHT_QUOTE => "\x1b[33;1m",
+                CliHighlighter::HIGHLIGHT_WORD => "\x1b[36;1m",
+                CliHighlighter::HIGHLIGHT_VARIABLE => "\x1b[33;1m",
+            ]);
+        } elseif ($showHtml) {
+            $highlighter = new HtmlHighlighter(
+                [
+                    HtmlHighlighter::HIGHLIGHT_QUOTE => 'style="color: #004d40;"',
+                    HtmlHighlighter::HIGHLIGHT_BACKTICK_QUOTE => 'style="color: #26a69a;"',
+                    HtmlHighlighter::HIGHLIGHT_NUMBER => 'style="color: #ec407a;"',
+                    HtmlHighlighter::HIGHLIGHT_WORD => 'style="color: #9c27b0;"',
+                    HtmlHighlighter::HIGHLIGHT_PRE => 'style="color: #222; background-color: transparent;"',
+                ],
+                false
+            );
+        } else {
+            $highlighter = new NullHighlighter();
+        }
+
+        $var = (new SqlFormatter($highlighter))->format($sql);
+        $var = trim($var);
 
         if ($showHtml) {
-            $template = static::$templateHtml;
+            $template = self::$templateHtml;
             if ($file && $line) {
                 $lineInfo = sprintf('<span><strong>%s</strong> (line <strong>%s</strong>)</span>', $file, $line);
             }
@@ -129,7 +148,7 @@ TEXT;
      * Only runs if debug mode is enabled.
      * It will otherwise just continue code execution and ignore this function.
      *
-     * @param Query $query Query to show SQL statements for.
+     * @param \Cake\Database\Query $query Query to show SQL statements for.
      * @param bool $showValues Renders the SQL statement with bound variables.
      * @param bool|null $showHtml If set to true, the method prints the debug
      *    data in a browser-friendly way.
@@ -140,6 +159,16 @@ TEXT;
     {
         static::sql($query, $showValues, $showHtml, $stackDepth);
         die(1);
+    }
+
+    /**
+     * Checks whether the current environment is CLI based.
+     *
+     * @return bool
+     */
+    protected static function isCli()
+    {
+        return PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg';
     }
 
     /**

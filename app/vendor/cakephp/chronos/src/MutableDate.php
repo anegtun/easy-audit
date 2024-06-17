@@ -1,13 +1,15 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://cakephp.org CakePHP(tm) Project
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace Cake\Chronos;
 
@@ -28,10 +30,11 @@ use DateTimeZone;
  * @property-read int $hour
  * @property-read int $minute
  * @property-read int $second
- * @property-read int $timestamp seconds since the Unix Epoch
- * @property-read DateTimeZone $timezone the current timezone
- * @property-read DateTimeZone $tz alias of timezone
  * @property-read int $micro
+ * @property-read int $microsecond
+ * @property-read int $timestamp seconds since the Unix Epoch
+ * @property-read \DateTimeZone $timezone the current timezone
+ * @property-read \DateTimeZone $tz alias of timezone
  * @property-read int $dayOfWeek 1 (for Monday) through 7 (for Sunday)
  * @property-read int $dayOfYear 0 through 365
  * @property-read int $weekOfMonth 1 through 5
@@ -46,6 +49,7 @@ use DateTimeZone;
  * @property-read bool $utc checks if the timezone is UTC, true if UTC, false otherwise
  * @property-read string $timezoneName
  * @property-read string $tzName
+ * @deprecated 2.4.0 Use immutable \Cake\Chronos\ChronosDate instead
  */
 class MutableDate extends DateTime implements ChronosInterface
 {
@@ -68,61 +72,57 @@ class MutableDate extends DateTime implements ChronosInterface
     /**
      * Create a new mutable Date instance.
      *
+     * You can specify the timezone for the $time parameter. This timezone will
+     * not be used in any future modifications to the Date instance.
+     *
+     * The $timezone parameter is ignored if $time is a DateTimeInterface
+     * instance.
+     *
      * Please see the testing aids section (specifically static::setTestNow())
      * for more on the possibility of this constructor returning a test instance.
      *
      * Date instances lack time components, however due to limitations in PHP's
      * internal Datetime object the time will always be set to 00:00:00, and the
-     * timezone will always be UTC. Normalizing the timezone allows for
+     * timezone will always be server local timezone. Normalizing the timezone allows for
      * subtraction/addition to have deterministic results.
      *
-     * @param string|null|\DateTimeInterface $time Fixed or relative time
+     * @param \DateTimeInterface|string|int|null $time Fixed or relative time
+     * @param \DateTimeZone|string|null $tz The timezone in which the date is taken
      */
-    public function __construct($time = 'now')
+    public function __construct($time = 'now', $tz = null)
     {
-        $tz = new DateTimeZone('UTC');
-
-        $testNow = Chronos::getTestNow();
-        if ($testNow === null) {
-            $time = $this->stripTime($time);
-            parent::__construct($time, $tz);
-
-            return;
+        if ($tz !== null) {
+            $tz = $tz instanceof DateTimeZone ? $tz : new DateTimeZone($tz);
         }
 
-        $relative = static::hasRelativeKeywords($time);
-        if (!empty($time) && $time !== 'now' && !$relative) {
-            $time = $this->stripTime($time);
-
-            parent::__construct($time, $tz);
+        $testNow = Chronos::getTestNow();
+        if ($testNow === null || !static::isRelativeOnly($time)) {
+            $time = $this->stripTime($time, $tz);
+            parent::__construct($time);
 
             return;
         }
 
         $testNow = clone $testNow;
-        if ($relative) {
-            $time = $this->stripRelativeTime($time);
-            if (strlen($time) > 0) {
-                $testNow = $testNow->modify($time);
-            }
-        }
-
         if ($tz !== $testNow->getTimezone()) {
-            $testNow = $testNow->setTimezone($tz === null ? date_default_timezone_get() : $tz);
+            $testNow = $testNow->setTimezone($tz ?? date_default_timezone_get());
+        }
+        if (!empty($time)) {
+            $testNow = $testNow->modify($time);
         }
 
         $time = $testNow->format('Y-m-d 00:00:00');
-        parent::__construct($time, $tz);
+        parent::__construct($time);
     }
 
     /**
      * Create a new immutable instance from current mutable instance.
      *
-     * @return \Cake\Chronos\Date
+     * @return \Cake\Chronos\ChronosDate
      */
-    public function toImmutable()
+    public function toImmutable(): ChronosDate
     {
-        return Date::instance($this);
+        return ChronosDate::instance($this);
     }
 
     /**
@@ -130,7 +130,7 @@ class MutableDate extends DateTime implements ChronosInterface
      *
      * @return array
      */
-    public function __debugInfo()
+    public function __debugInfo(): array
     {
         $properties = [
             'hasFixedNow' => static::hasTestNow(),

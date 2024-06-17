@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -32,15 +34,13 @@ use Laminas\Diactoros\CallbackStream as BaseCallbackStream;
 class CallbackStream extends BaseCallbackStream
 {
     /**
-     * {@inheritdoc}
-     *
-     * @return string
+     * @inheritDoc
      */
-    public function getContents()
+    public function getContents(): string
     {
         $callback = $this->detach();
         $result = '';
-        if (is_callable($callback)) {
+        if ($callback !== null) {
             $result = $callback();
         }
         if (!is_string($result)) {

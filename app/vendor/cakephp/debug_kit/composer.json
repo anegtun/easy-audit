@@ -2,13 +2,13 @@
     "name": "cakephp/debug_kit",
     "description": "CakePHP Debug Kit",
     "type": "cakephp-plugin",
-    "keywords": ["cakephp", "debug", "kit"],
+    "keywords": ["cakephp", "debug", "kit", "dev"],
     "homepage": "https://github.com/cakephp/debug_kit",
     "license": "MIT",
     "authors": [
         {
             "name": "Mark Story",
-            "homepage": "http://mark-story.com",
+            "homepage": "https://mark-story.com",
             "role": "Author"
         },
         {
@@ -18,26 +18,26 @@
     ],
     "support": {
         "issues": "https://github.com/cakephp/debug_kit/issues",
-        "forum": "http://stackoverflow.com/tags/cakephp",
+        "forum": "https://stackoverflow.com/tags/cakephp",
         "irc": "irc://irc.freenode.org/cakephp",
         "source": "https://github.com/cakephp/debug_kit"
     },
     "require": {
-        "php": ">=5.6.0",
-        "cakephp/cakephp": "^3.7.0",
-        "cakephp/chronos": "^1.0.0",
-        "cakephp/plugin-installer": "^1.0.0",
-        "composer/composer": "^1.3.0",
-        "jdorn/sql-formatter": "^1.2.0"
+        "php": ">=7.4",
+        "cakephp/cakephp": "^4.5.0",
+        "cakephp/chronos": "^2.0",
+        "composer/composer": "^1.3 | ^2.0",
+        "doctrine/sql-formatter": "^1.1.3"
     },
     "require-dev": {
-        "cakephp/cakephp-codesniffer": "^3.0",
-        "phpunit/phpunit": "^5.7.14|^6.0"
+        "cakephp/cakephp-codesniffer": "^4.0",
+        "cakephp/authorization": "^2.0",
+        "phpunit/phpunit": "~8.5.0 | ^9.3"
     },
     "autoload": {
         "psr-4": {
-            "DebugKit\\": "src",
-            "DebugKit\\Test\\Fixture\\": "tests\\Fixture"
+            "DebugKit\\": "src/",
+            "DebugKit\\Test\\Fixture\\": "tests/Fixture/"
         }
     },
     "autoload-dev": {
@@ -50,5 +50,25 @@
     },
     "suggest": {
         "ext-pdo_sqlite": "DebugKit needs to store panel data in a database. SQLite is simple and easy to use."
+    },
+    "scripts": {
+        "cs-check": "phpcs --colors --parallel=16 -p src/ tests/",
+        "cs-fix": "phpcbf --colors --parallel=16 -p src/ tests/",
+        "phpstan": "phpstan.phar analyse",
+        "psalm": "psalm.phar --show-info=false",
+        "stan": [
+            "@phpstan",
+            "@psalm"
+        ],
+        "stan-baseline": "phpstan.phar --generate-baseline",
+        "psalm-baseline": "psalm.phar --set-baseline=psalm-baseline.xml",
+        "stan-setup": "cp composer.json composer.backup && composer require --dev symfony/polyfill-php81 phpstan/phpstan:~1.7.0 psalm/phar:~4.23.0 && mv composer.backup composer.json",
+        "test": "phpunit"
+    },
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * ConsoleInputSubcommand file
  *
@@ -16,6 +18,7 @@
  */
 namespace Cake\Console;
 
+use InvalidArgumentException;
 use SimpleXMLElement;
 
 /**
@@ -43,33 +46,39 @@ class ConsoleInputSubcommand
     /**
      * The ConsoleOptionParser for this subcommand.
      *
-     * @var \Cake\Console\ConsoleOptionParser
+     * @var \Cake\Console\ConsoleOptionParser|null
      */
     protected $_parser;
 
     /**
      * Make a new Subcommand
      *
-     * @param string|array $name The long name of the subcommand, or an array with all the properties.
+     * @param array<string, mixed>|string $name The long name of the subcommand, or an array with all the properties.
      * @param string $help The help text for this option.
-     * @param \Cake\Console\ConsoleOptionParser|array|null $parser A parser for this subcommand. Either a ConsoleOptionParser, or an
-     *   array that can be used with ConsoleOptionParser::buildFromArray().
+     * @param \Cake\Console\ConsoleOptionParser|array<string, mixed>|null $parser A parser for this subcommand.
+     *   Either a ConsoleOptionParser, or an array that can be used with ConsoleOptionParser::buildFromArray().
      */
     public function __construct($name, $help = '', $parser = null)
     {
-        if (is_array($name) && isset($name['name'])) {
-            foreach ($name as $key => $value) {
-                $this->{'_' . $key} = $value;
+        if (is_array($name)) {
+            $data = $name + ['name' => null, 'help' => '', 'parser' => null];
+            if (empty($data['name'])) {
+                throw new InvalidArgumentException('"name" not provided for console option parser');
             }
-        } else {
-            $this->_name = $name;
-            $this->_help = $help;
-            $this->_parser = $parser;
+
+            $name = $data['name'];
+            $help = $data['help'];
+            $parser = $data['parser'];
         }
-        if (is_array($this->_parser)) {
-            $this->_parser['command'] = $this->_name;
-            $this->_parser = ConsoleOptionParser::buildFromArray($this->_parser);
+
+        if (is_array($parser)) {
+            $parser['command'] = $name;
+            $parser = ConsoleOptionParser::buildFromArray($parser);
         }
+
+        $this->_name = $name;
+        $this->_help = $help;
+        $this->_parser = $parser;
     }
 
     /**
@@ -77,7 +86,7 @@ class ConsoleInputSubcommand
      *
      * @return string Value of this->_name.
      */
-    public function name()
+    public function name(): string
     {
         return $this->_name;
     }
@@ -87,7 +96,7 @@ class ConsoleInputSubcommand
      *
      * @return string
      */
-    public function getRawHelp()
+    public function getRawHelp(): string
     {
         return $this->_help;
     }
@@ -98,7 +107,7 @@ class ConsoleInputSubcommand
      * @param int $width The width to make the name of the subcommand.
      * @return string
      */
-    public function help($width = 0)
+    public function help(int $width = 0): string
     {
         $name = $this->_name;
         if (strlen($name) < $width) {
@@ -111,15 +120,11 @@ class ConsoleInputSubcommand
     /**
      * Get the usage value for this option
      *
-     * @return \Cake\Console\ConsoleOptionParser|false Either false or a ConsoleOptionParser
+     * @return \Cake\Console\ConsoleOptionParser|null
      */
-    public function parser()
+    public function parser(): ?ConsoleOptionParser
     {
-        if ($this->_parser instanceof ConsoleOptionParser) {
-            return $this->_parser;
-        }
-
-        return false;
+        return $this->_parser;
     }
 
     /**
@@ -128,7 +133,7 @@ class ConsoleInputSubcommand
      * @param \SimpleXMLElement $parent The parent element.
      * @return \SimpleXMLElement The parent with this subcommand appended.
      */
-    public function xml(SimpleXMLElement $parent)
+    public function xml(SimpleXMLElement $parent): SimpleXMLElement
     {
         $command = $parent->addChild('command');
         $command->addAttribute('name', $this->_name);

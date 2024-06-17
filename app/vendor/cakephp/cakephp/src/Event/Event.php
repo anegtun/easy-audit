@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,8 +16,13 @@
  */
 namespace Cake\Event;
 
+use Cake\Core\Exception\CakeException;
+
 /**
  * Class Event
+ *
+ * @template TSubject
+ * @implements \Cake\Event\EventInterface<TSubject>
  */
 class Event implements EventInterface
 {
@@ -30,6 +37,7 @@ class Event implements EventInterface
      * The object this event applies to (usually the same object that generates the event)
      *
      * @var object|null
+     * @psalm-var TSubject|null
      */
     protected $_subject;
 
@@ -43,11 +51,11 @@ class Event implements EventInterface
     /**
      * Property used to retain the result value of the event listeners
      *
-     * Note: Public access is deprecated, use setResult() and getResult() instead.
+     * Use setResult() and getResult() to set and get the result.
      *
      * @var mixed
      */
-    public $result;
+    protected $result;
 
     /**
      * Flags an event as stopped or not, default is false
@@ -63,14 +71,17 @@ class Event implements EventInterface
      *
      * ```
      *  $event = new Event('Order.afterBuy', $this, ['buyer' => $userData]);
-     *  $event = new Event('User.afterRegister', $UserModel);
+     *  $event = new Event('User.afterRegister', $userModel);
      * ```
      *
      * @param string $name Name of the event
-     * @param object|null $subject the object that this event applies to (usually the object that is generating the event)
-     * @param array|\ArrayAccess|null $data any value you wish to be transported with this event to it can be read by listeners
+     * @param object|null $subject the object that this event applies to
+     *   (usually the object that is generating the event).
+     * @param \ArrayAccess|array|null $data any value you wish to be transported
+     *   with this event to it can be read by listeners.
+     * @psalm-param TSubject|null $subject
      */
-    public function __construct($name, $subject = null, $data = null)
+    public function __construct(string $name, $subject = null, $data = null)
     {
         $this->_name = $name;
         $this->_subject = $subject;
@@ -78,76 +89,11 @@ class Event implements EventInterface
     }
 
     /**
-     * Provides read-only access for the name and subject properties.
-     *
-     * @param string $attribute Attribute name.
-     * @return mixed
-     * @deprecated 3.4.0 Public properties will be removed.
-     */
-    public function __get($attribute)
-    {
-        if (!in_array($attribute, ['name', 'subject', 'data', 'result'])) {
-            return $this->{$attribute};
-        }
-
-        $method = 'get' . ucfirst($attribute);
-        deprecationWarning(
-            "Event::\${$attribute} is deprecated. " .
-            "Use Event::{$method}() instead."
-        );
-        if ($attribute === 'name' || $attribute === 'subject') {
-            return $this->{$attribute}();
-        }
-        if ($attribute === 'data') {
-            return $this->_data;
-        }
-        if ($attribute === 'result') {
-            return $this->result;
-        }
-    }
-
-    /**
-     * Provides backward compatibility for write access to data and result properties.
-     *
-     * @param string $attribute Attribute name.
-     * @param mixed $value The value to set.
-     * @return void
-     * @deprecated 3.4.0 Public properties will be removed.
-     */
-    public function __set($attribute, $value)
-    {
-        $method = 'set' . ucfirst($attribute);
-        deprecationWarning(
-            "Event::\${$attribute} is deprecated. " .
-            "Use Event::{$method}() instead."
-        );
-        if ($attribute === 'data') {
-            $this->_data = (array)$value;
-        }
-        if ($attribute === 'result') {
-            $this->result = $value;
-        }
-    }
-
-    /**
-     * Returns the name of this event. This is usually used as the event identifier
-     *
-     * @return string
-     * @deprecated 3.4.0 use getName() instead.
-     */
-    public function name()
-    {
-        deprecationWarning('Event::name() is deprecated. Use Event::getName() instead.');
-
-        return $this->_name;
-    }
-
-    /**
      * Returns the name of this event. This is usually used as the event identifier
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->_name;
     }
@@ -155,23 +101,18 @@ class Event implements EventInterface
     /**
      * Returns the subject of this event
      *
-     * @return object
-     * @deprecated 3.4.0 use getSubject() instead.
-     */
-    public function subject()
-    {
-        deprecationWarning('Event::subject() is deprecated. Use Event::getSubject() instead.');
-
-        return $this->_subject;
-    }
-
-    /**
-     * Returns the subject of this event
+     * If the event has no subject an exception will be raised.
      *
      * @return object
+     * @throws \Cake\Core\Exception\CakeException
+     * @psalm-return TSubject
      */
     public function getSubject()
     {
+        if ($this->_subject === null) {
+            throw new CakeException('No subject set for this event');
+        }
+
         return $this->_subject;
     }
 
@@ -180,7 +121,7 @@ class Event implements EventInterface
      *
      * @return void
      */
-    public function stopPropagation()
+    public function stopPropagation(): void
     {
         $this->_stopped = true;
     }
@@ -190,22 +131,9 @@ class Event implements EventInterface
      *
      * @return bool True if the event is stopped
      */
-    public function isStopped()
+    public function isStopped(): bool
     {
         return $this->_stopped;
-    }
-
-    /**
-     * The result value of the event listeners
-     *
-     * @return mixed
-     * @deprecated 3.4.0 use getResult() instead.
-     */
-    public function result()
-    {
-        deprecationWarning('Event::result() is deprecated. Use Event::getResult() instead.');
-
-        return $this->result;
     }
 
     /**
@@ -235,31 +163,16 @@ class Event implements EventInterface
      * Access the event data/payload.
      *
      * @param string|null $key The data payload element to return, or null to return all data.
-     * @return array|mixed|null The data payload if $key is null, or the data value for the given $key. If the $key does not
-     * exist a null value is returned.
-     * @deprecated 3.4.0 use getData() instead.
+     * @return mixed|array|null The data payload if $key is null, or the data value for the given $key.
+     *   If the $key does not exist a null value is returned.
      */
-    public function data($key = null)
-    {
-        deprecationWarning('Event::data() is deprecated. Use Event::getData() instead.');
-
-        return $this->getData($key);
-    }
-
-    /**
-     * Access the event data/payload.
-     *
-     * @param string|null $key The data payload element to return, or null to return all data.
-     * @return array|mixed|null The data payload if $key is null, or the data value for the given $key. If the $key does not
-     * exist a null value is returned.
-     */
-    public function getData($key = null)
+    public function getData(?string $key = null)
     {
         if ($key !== null) {
-            return isset($this->_data[$key]) ? $this->_data[$key] : null;
+            return $this->_data[$key] ?? null;
         }
 
-        return (array)$this->_data;
+        return $this->_data;
     }
 
     /**

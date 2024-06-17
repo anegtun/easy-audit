@@ -20,7 +20,7 @@ you've removed it and want to re-install it, you can do so by running the
 following from your application's ROOT directory (where composer.json file is
 located)::
 
-    php composer.phar require --dev cakephp/debug_kit "~3.0"
+    php composer.phar require --dev cakephp/debug_kit "~4.0"
 
 Then, you need to enable the plugin by executing the following line::
 
@@ -44,11 +44,31 @@ Configuration
     // Allow e.g. http://foo.bar.dev or http://my-shop.local domains locally
     Configure::write('DebugKit.safeTld', ['dev', 'local', 'example']);
 
-* ``DebugKit.forceEnable`` - Force DebugKit to display. Careful with this, it is usually 
+* ``DebugKit.forceEnable`` - Force DebugKit to display. Careful with this, it is usually
   safer to simply whitelist your local TLDs. Example usage::
 
     // Before loading DebugKit
     Configure::write('DebugKit.forceEnable', true);
+
+  You can also provide a callable::
+
+    Configure::write('DebugKit.forceEnable', function() {
+        return $_SERVER['REMOTE_ADDR'] === '192.168.2.182';
+    });
+
+* ``DebugKit.ignorePathsPattern`` - Regex pattern (including delimiter) to ignore paths.
+  DebugKit won't save data for request URLs that match this regex. Defaults to ``null``::
+
+    // Ignore image paths
+    Configure::write('DebugKit.ignorePathsPattern', '/\.(jpg|png|gif)$/');
+
+* ``DebugKit.ignoreAuthorization`` - Set to true to ignore Cake Authorization plugin for DebugKit requests. Disabled by default.
+
+* ``DebugKit.variablesPanelMaxDepth`` - Defines how many levels of nested data should be shown in the variables tab. Default is 5.
+  WARNING: Increasing the max depth level can lead to an out of memory error.::
+
+    // Show more levels
+    Configure::write('DebugKit.variablesPanelMaxDepth', 8);
 
 Database Configuration
 ----------------------
@@ -56,7 +76,7 @@ Database Configuration
 By default DebugKit will store panel data into a SQLite database in your
 application's ``tmp`` directory. If you cannot install pdo_sqlite, you can
 configure DebugKit to use a different database by defining a ``debug_kit``
-connection in your **config/app.php** file. For example::
+connection in the ``Datasources`` variable in your **config/app.php** file. For example::
 
     /**
      * The debug_kit connection stores DebugKit meta-data.
@@ -77,7 +97,7 @@ connection in your **config/app.php** file. For example::
         //'init' => ['SET GLOBAL innodb_stats_on_metadata = 0'],
     ],
 
-You can safely remove the **tmp/debug_kit.sqlite** file at any point. 
+You can safely remove the **tmp/debug_kit.sqlite** file at any point.
 DebugKit will regenerate it when necessary.
 
 Toolbar Usage
@@ -157,7 +177,7 @@ In order to preview emails before sending them, you need to create a preview
 class that defines the receipient and required template variables for your
 mailer methods::
 
-    // in src/Mailer/MailPreview/WelcomePreview.php
+    // in src/Mailer/Preview/WelcomePreview.php
     namespace App\Mailer\Preview;
 
     use DebugKit\Mailer\MailPreview;
@@ -276,6 +296,20 @@ to include the panel::
 
 The above would load all the default panels as well as the ``AppPanel``, and
 ``MyCustomPanel`` panel from ``MyPlugin``.
+
+Accessing Toolbar without a frontend
+====================================
+
+If you have an application which only provides an API (and therefore no frontend)
+the usual way of accessing the toolbar can't be used.
+
+Instead you have to call http://localhost/debug-kit/toolbar/``<debugkit-id>``
+
+The ``<debugkit-id>`` can be found inside the HTTP headers of your API response. It should look something like that::
+
+    X-DEBUGKIT-ID: 5ef39604-ad5d-4ca4-85d8-8595e52373bb
+
+So you would have to call http://localhost/debug-kit/toolbar/5ef39604-ad5d-4ca4-85d8-8595e52373bb
 
 Helper Functions
 ================

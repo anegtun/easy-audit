@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -17,6 +19,8 @@ use Cake\Core\App;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Datasource\ConnectionManager;
+use Cake\Error\Debugger;
+use Cake\Error\PhpError;
 use Cake\Event\EventManager;
 use Cake\Http\BaseApplication;
 use Cake\ORM\Entity;
@@ -25,9 +29,21 @@ use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\Routing\Router;
 use Cake\TestSuite\Constraint\EventFired;
 use Cake\TestSuite\Constraint\EventFiredWith;
+use Cake\TestSuite\Fixture\FixtureStrategyInterface;
+use Cake\TestSuite\Fixture\TruncateStrategy;
 use Cake\Utility\Inflector;
-use Exception;
+use Closure;
+use LogicException;
+use PHPUnit\Framework\Constraint\DirectoryExists;
+use PHPUnit\Framework\Constraint\FileExists;
+use PHPUnit\Framework\Constraint\LogicalNot;
+use PHPUnit\Framework\Constraint\RegularExpression;
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use ReflectionClass;
+use ReflectionException;
+use RuntimeException;
+use function Cake\Core\deprecationWarning;
+use function Cake\Core\pluginSplit;
 
 /**
  * Cake TestCase class
@@ -41,20 +57,22 @@ abstract class TestCase extends BaseTestCase
      *
      * @var \Cake\TestSuite\Fixture\FixtureManager|null
      */
-    public $fixtureManager;
+    public static $fixtureManager;
 
     /**
      * Fixtures used by this test case.
      *
-     * @var string[]|string|null
+     * @var array<string>
      */
-    public $fixtures;
+    protected $fixtures = [];
 
     /**
      * By default, all fixtures attached to this class will be truncated and reloaded after each test.
      * Set this to false to handle manually
      *
      * @var bool
+     * @deprecated 4.3.0 autoFixtures is only used by deprecated fixture features.
+     *   This property will be removed in 5.0
      */
     public $autoFixtures = true;
 
@@ -65,8 +83,15 @@ abstract class TestCase extends BaseTestCase
      * end of each test runner execution.
      *
      * @var bool
+     * @deprecated 4.3.0 dropTables is only used by deprecated fixture features.
+     *   This property will be removed in 5.0
      */
     public $dropTables = false;
+
+    /**
+     * @var \Cake\TestSuite\Fixture\FixtureStrategyInterface|null
+     */
+    protected $fixtureStrategy = null;
 
     /**
      * Configure values to restore at end of test.
@@ -76,13 +101,84 @@ abstract class TestCase extends BaseTestCase
     protected $_configure = [];
 
     /**
+     * @var \Cake\Error\PhpError|null
+     */
+    private $_capturedError;
+
+    /**
+     * Asserts that a string matches a given regular expression.
+     *
+     * @param string $pattern Regex pattern
+     * @param string $string String to test
+     * @param string $message Message
+     * @return void
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @codeCoverageIgnore
+     */
+    public static function assertMatchesRegularExpression(string $pattern, string $string, string $message = ''): void
+    {
+        static::assertThat($string, new RegularExpression($pattern), $message);
+    }
+
+    /**
+     * Asserts that a string does not match a given regular expression.
+     *
+     * @param string $pattern Regex pattern
+     * @param string $string String to test
+     * @param string $message Message
+     * @return void
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     */
+    public static function assertDoesNotMatchRegularExpression(
+        string $pattern,
+        string $string,
+        string $message = ''
+    ): void {
+        static::assertThat(
+            $string,
+            new LogicalNot(
+                new RegularExpression($pattern)
+            ),
+            $message
+        );
+    }
+
+    /**
+     * Asserts that a file does not exist.
+     *
+     * @param string $filename Filename
+     * @param string $message Message
+     * @return void
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @codeCoverageIgnore
+     */
+    public static function assertFileDoesNotExist(string $filename, string $message = ''): void
+    {
+        static::assertThat($filename, new LogicalNot(new FileExists()), $message);
+    }
+
+    /**
+     * Asserts that a directory does not exist.
+     *
+     * @param string $directory Directory
+     * @param string $message Message
+     * @return void
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @codeCoverageIgnore
+     */
+    public static function assertDirectoryDoesNotExist(string $directory, string $message = ''): void
+    {
+        static::assertThat($directory, new LogicalNot(new DirectoryExists()), $message);
+    }
+
+    /**
      * Overrides SimpleTestCase::skipIf to provide a boolean return value
      *
-     * @param bool $shouldSkip Whether or not the test should be skipped.
+     * @param bool $shouldSkip Whether the test should be skipped.
      * @param string $message The message to display.
      * @return bool
      */
-    public function skipIf($shouldSkip, $message = '')
+    public function skipIf(bool $shouldSkip, string $message = ''): bool
     {
         if ($shouldSkip) {
             $this->markTestSkipped($message);
@@ -98,7 +194,7 @@ abstract class TestCase extends BaseTestCase
      * @param callable $callable callable function that will receive asserts
      * @return void
      */
-    public function withErrorReporting($errorLevel, $callable)
+    public function withErrorReporting(int $errorLevel, callable $callable): void
     {
         $default = error_reporting();
         error_reporting($errorLevel);
@@ -110,20 +206,79 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * Capture errors from $callable so that you can do assertions on the error.
+     *
+     * If no error is captured an assertion will fail.
+     *
+     * @param int $errorLevel The value of error_reporting() to use.
+     * @param \Closure $callable A closure to capture errors from.
+     * @return \Cake\Error\PhpError The captured error.
+     */
+    public function captureError(int $errorLevel, Closure $callable): PhpError
+    {
+        $default = error_reporting();
+        error_reporting($errorLevel);
+
+        $this->_capturedError = null;
+        set_error_handler(
+            function (int $code, string $description, string $file, int $line) {
+                $trace = Debugger::trace(['start' => 1, 'format' => 'points']);
+                $this->_capturedError = new PhpError($code, $description, $file, $line, $trace);
+
+                return true;
+            },
+            $errorLevel
+        );
+
+        try {
+            $callable();
+        } finally {
+            restore_error_handler();
+            error_reporting($default);
+        }
+        if ($this->_capturedError === null) {
+            $this->fail('No error was captured');
+        }
+        /** @var \Cake\Error\PhpError $this->_capturedError */
+        return $this->_capturedError;
+    }
+
+    /**
      * Helper method for check deprecation methods
      *
      * @param callable $callable callable function that will receive asserts
      * @return void
      */
-    public function deprecated($callable)
+    public function deprecated(callable $callable): void
     {
-        $errorLevel = error_reporting();
-        error_reporting(E_ALL ^ E_USER_DEPRECATED);
+        $duplicate = Configure::read('Error.allowDuplicateDeprecations');
+        Configure::write('Error.allowDuplicateDeprecations', true);
+        /** @var bool $deprecation */
+        $deprecation = false;
+
+        $previousHandler = set_error_handler(
+            function ($code, $message, $file, $line, $context = null) use (&$previousHandler, &$deprecation): bool {
+                if ($code == E_USER_DEPRECATED) {
+                    $deprecation = true;
+
+                    return true;
+                }
+                if ($previousHandler) {
+                    return $previousHandler($code, $message, $file, $line, $context);
+                }
+
+                return false;
+            }
+        );
         try {
             $callable();
         } finally {
-            error_reporting($errorLevel);
+            restore_error_handler();
+            if ($duplicate !== Configure::read('Error.allowDuplicateDeprecations')) {
+                Configure::write('Error.allowDuplicateDeprecations', $duplicate);
+            }
         }
+        $this->assertTrue($deprecation, 'Should have at least one deprecation warning');
     }
 
     /**
@@ -133,14 +288,15 @@ abstract class TestCase extends BaseTestCase
      *
      * @return void
      */
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
+        $this->setupFixtures();
 
         if (!$this->_configure) {
             $this->_configure = Configure::read();
         }
-        if (class_exists('Cake\Routing\Router', false)) {
+        if (class_exists(Router::class, false)) {
             Router::reload();
         }
 
@@ -152,9 +308,11 @@ abstract class TestCase extends BaseTestCase
      *
      * @return void
      */
-    public function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
+        $this->teardownFixtures();
+
         if ($this->_configure) {
             Configure::clear();
             Configure::write($this->_configure);
@@ -162,7 +320,53 @@ abstract class TestCase extends BaseTestCase
         $this->getTableLocator()->clear();
         $this->_configure = [];
         $this->_tableLocator = null;
-        $this->fixtureManager = null;
+    }
+
+    /**
+     * Initialized and loads any use fixtures.
+     *
+     * @return void
+     */
+    protected function setupFixtures(): void
+    {
+        $fixtureNames = $this->getFixtures();
+
+        if (!empty($fixtureNames) && static::$fixtureManager) {
+            if (!$this->autoFixtures) {
+                deprecationWarning('`$autoFixtures` is deprecated and will be removed in 5.0.', 0);
+            }
+            if ($this->dropTables) {
+                deprecationWarning('`$dropTables` is deprecated and will be removed in 5.0.', 0);
+            }
+            // legacy fixtures are managed by FixtureInjector
+            return;
+        }
+
+        $this->fixtureStrategy = $this->getFixtureStrategy();
+        $this->fixtureStrategy->setupTest($fixtureNames);
+    }
+
+    /**
+     * Unloads any use fixtures.
+     *
+     * @return void
+     */
+    protected function teardownFixtures(): void
+    {
+        if ($this->fixtureStrategy) {
+            $this->fixtureStrategy->teardownTest();
+            $this->fixtureStrategy = null;
+        }
+    }
+
+    /**
+     * Returns fixture strategy used by these tests.
+     *
+     * @return \Cake\TestSuite\Fixture\FixtureStrategyInterface
+     */
+    protected function getFixtureStrategy(): FixtureStrategyInterface
+    {
+        return new TruncateStrategy();
     }
 
     /**
@@ -173,24 +377,57 @@ abstract class TestCase extends BaseTestCase
      *
      * @return void
      * @see \Cake\TestSuite\TestCase::$autoFixtures
-     * @throws \Exception when no fixture manager is available.
+     * @throws \RuntimeException when no fixture manager is available.
+     * @deprecated 4.3.0 Disabling auto-fixtures is deprecated and only available using FixtureInjector fixture system.
      */
-    public function loadFixtures()
+    public function loadFixtures(): void
     {
-        if ($this->fixtureManager === null) {
-            throw new Exception('No fixture manager to load the test fixture');
+        if ($this->autoFixtures) {
+            throw new RuntimeException('Cannot use `loadFixtures()` with `$autoFixtures` enabled.');
         }
+        if (static::$fixtureManager === null) {
+            throw new RuntimeException('No fixture manager to load the test fixture');
+        }
+
         $args = func_get_args();
         foreach ($args as $class) {
-            $this->fixtureManager->loadSingle($class, null, $this->dropTables);
+            static::$fixtureManager->loadSingle($class, null, $this->dropTables);
         }
 
         if (empty($args)) {
             $autoFixtures = $this->autoFixtures;
             $this->autoFixtures = true;
-            $this->fixtureManager->load($this);
+            static::$fixtureManager->load($this);
             $this->autoFixtures = $autoFixtures;
         }
+    }
+
+    /**
+     * Load routes for the application.
+     *
+     * If no application class can be found an exception will be raised.
+     * Routes for plugins will *not* be loaded. Use `loadPlugins()` or use
+     * `Cake\TestSuite\IntegrationTestCaseTrait` to better simulate all routes
+     * and plugins being loaded.
+     *
+     * @param array|null $appArgs Constructor parameters for the application class.
+     * @return void
+     * @since 4.0.1
+     */
+    public function loadRoutes(?array $appArgs = null): void
+    {
+        $appArgs = $appArgs ?? [rtrim(CONFIG, DIRECTORY_SEPARATOR)];
+        /** @psalm-var class-string */
+        $className = Configure::read('App.namespace') . '\\Application';
+        try {
+            $reflect = new ReflectionClass($className);
+            /** @var \Cake\Routing\RoutingApplicationInterface $app */
+            $app = $reflect->newInstanceArgs($appArgs);
+        } catch (ReflectionException $e) {
+            throw new LogicException(sprintf('Cannot load "%s" to load routes from.', $className), 0, $e);
+        }
+        $builder = Router::createRouteBuilder('/');
+        $app->routes($builder);
     }
 
     /**
@@ -199,10 +436,10 @@ abstract class TestCase extends BaseTestCase
      * Useful to test how plugins being loaded/not loaded interact with other
      * elements in CakePHP or applications.
      *
-     * @param array $plugins List of Plugins to load.
+     * @param array<string, mixed> $plugins List of Plugins to load.
      * @return \Cake\Http\BaseApplication
      */
-    public function loadPlugins(array $plugins = [])
+    public function loadPlugins(array $plugins = []): BaseApplication
     {
         /** @var \Cake\Http\BaseApplication $app */
         $app = $this->getMockForAbstractClass(
@@ -229,10 +466,10 @@ abstract class TestCase extends BaseTestCase
      *
      * Useful in test case teardown methods.
      *
-     * @param string[] $names A list of plugins you want to remove.
+     * @param array<string> $names A list of plugins you want to remove.
      * @return void
      */
-    public function removePlugins(array $names = [])
+    public function removePlugins(array $names = []): void
     {
         $collection = Plugin::getCollection();
         foreach ($names as $name) {
@@ -247,7 +484,7 @@ abstract class TestCase extends BaseTestCase
      *
      * @return void
      */
-    public function clearPlugins()
+    public function clearPlugins(): void
     {
         Plugin::getCollection()->clear();
     }
@@ -256,11 +493,11 @@ abstract class TestCase extends BaseTestCase
      * Asserts that a global event was fired. You must track events in your event manager for this assertion to work
      *
      * @param string $name Event name
-     * @param EventManager|null $eventManager Event manager to check, defaults to global event manager
+     * @param \Cake\Event\EventManager|null $eventManager Event manager to check, defaults to global event manager
      * @param string $message Assertion failure message
      * @return void
      */
-    public function assertEventFired($name, $eventManager = null, $message = '')
+    public function assertEventFired(string $name, ?EventManager $eventManager = null, string $message = ''): void
     {
         if (!$eventManager) {
             $eventManager = EventManager::instance();
@@ -275,13 +512,18 @@ abstract class TestCase extends BaseTestCase
      *
      * @param string $name Event name
      * @param string $dataKey Data key
-     * @param string $dataValue Data value
-     * @param EventManager|null $eventManager Event manager to check, defaults to global event manager
+     * @param mixed $dataValue Data value
+     * @param \Cake\Event\EventManager|null $eventManager Event manager to check, defaults to global event manager
      * @param string $message Assertion failure message
      * @return void
      */
-    public function assertEventFiredWith($name, $dataKey, $dataValue, $eventManager = null, $message = '')
-    {
+    public function assertEventFiredWith(
+        string $name,
+        string $dataKey,
+        $dataValue,
+        ?EventManager $eventManager = null,
+        string $message = ''
+    ): void {
         if (!$eventManager) {
             $eventManager = EventManager::instance();
         }
@@ -297,7 +539,7 @@ abstract class TestCase extends BaseTestCase
      * @param string $message The message to use for failure.
      * @return void
      */
-    public function assertTextNotEquals($expected, $result, $message = '')
+    public function assertTextNotEquals(string $expected, string $result, string $message = ''): void
     {
         $expected = str_replace(["\r\n", "\r"], "\n", $expected);
         $result = str_replace(["\r\n", "\r"], "\n", $result);
@@ -313,7 +555,7 @@ abstract class TestCase extends BaseTestCase
      * @param string $message The message to use for failure.
      * @return void
      */
-    public function assertTextEquals($expected, $result, $message = '')
+    public function assertTextEquals(string $expected, string $result, string $message = ''): void
     {
         $expected = str_replace(["\r\n", "\r"], "\n", $expected);
         $result = str_replace(["\r\n", "\r"], "\n", $result);
@@ -329,7 +571,7 @@ abstract class TestCase extends BaseTestCase
      * @param string $message The message to use for failure.
      * @return void
      */
-    public function assertTextStartsWith($prefix, $string, $message = '')
+    public function assertTextStartsWith(string $prefix, string $string, string $message = ''): void
     {
         $prefix = str_replace(["\r\n", "\r"], "\n", $prefix);
         $string = str_replace(["\r\n", "\r"], "\n", $string);
@@ -345,7 +587,7 @@ abstract class TestCase extends BaseTestCase
      * @param string $message The message to use for failure.
      * @return void
      */
-    public function assertTextStartsNotWith($prefix, $string, $message = '')
+    public function assertTextStartsNotWith(string $prefix, string $string, string $message = ''): void
     {
         $prefix = str_replace(["\r\n", "\r"], "\n", $prefix);
         $string = str_replace(["\r\n", "\r"], "\n", $string);
@@ -361,7 +603,7 @@ abstract class TestCase extends BaseTestCase
      * @param string $message The message to use for failure.
      * @return void
      */
-    public function assertTextEndsWith($suffix, $string, $message = '')
+    public function assertTextEndsWith(string $suffix, string $string, string $message = ''): void
     {
         $suffix = str_replace(["\r\n", "\r"], "\n", $suffix);
         $string = str_replace(["\r\n", "\r"], "\n", $string);
@@ -377,7 +619,7 @@ abstract class TestCase extends BaseTestCase
      * @param string $message The message to use for failure.
      * @return void
      */
-    public function assertTextEndsNotWith($suffix, $string, $message = '')
+    public function assertTextEndsNotWith(string $suffix, string $string, string $message = ''): void
     {
         $suffix = str_replace(["\r\n", "\r"], "\n", $suffix);
         $string = str_replace(["\r\n", "\r"], "\n", $string);
@@ -391,14 +633,23 @@ abstract class TestCase extends BaseTestCase
      * @param string $needle The string to search for.
      * @param string $haystack The string to search through.
      * @param string $message The message to display on failure.
-     * @param bool $ignoreCase Whether or not the search should be case-sensitive.
+     * @param bool $ignoreCase Whether the search should be case-sensitive.
      * @return void
      */
-    public function assertTextContains($needle, $haystack, $message = '', $ignoreCase = false)
-    {
+    public function assertTextContains(
+        string $needle,
+        string $haystack,
+        string $message = '',
+        bool $ignoreCase = false
+    ): void {
         $needle = str_replace(["\r\n", "\r"], "\n", $needle);
         $haystack = str_replace(["\r\n", "\r"], "\n", $haystack);
-        $this->assertContains($needle, $haystack, $message, $ignoreCase);
+
+        if ($ignoreCase) {
+            $this->assertStringContainsStringIgnoringCase($needle, $haystack, $message);
+        } else {
+            $this->assertStringContainsString($needle, $haystack, $message);
+        }
     }
 
     /**
@@ -408,29 +659,58 @@ abstract class TestCase extends BaseTestCase
      * @param string $needle The string to search for.
      * @param string $haystack The string to search through.
      * @param string $message The message to display on failure.
-     * @param bool $ignoreCase Whether or not the search should be case-sensitive.
+     * @param bool $ignoreCase Whether the search should be case-sensitive.
      * @return void
      */
-    public function assertTextNotContains($needle, $haystack, $message = '', $ignoreCase = false)
-    {
+    public function assertTextNotContains(
+        string $needle,
+        string $haystack,
+        string $message = '',
+        bool $ignoreCase = false
+    ): void {
         $needle = str_replace(["\r\n", "\r"], "\n", $needle);
         $haystack = str_replace(["\r\n", "\r"], "\n", $haystack);
-        $this->assertNotContains($needle, $haystack, $message, $ignoreCase);
+
+        if ($ignoreCase) {
+            $this->assertStringNotContainsStringIgnoringCase($needle, $haystack, $message);
+        } else {
+            $this->assertStringNotContainsString($needle, $haystack, $message);
+        }
     }
 
     /**
-     * Asserts HTML tags.
+     * Assert that a string matches SQL with db-specific characters like quotes removed.
      *
-     * @param string $string An HTML/XHTML/XML string
-     * @param array $expected An array, see above
-     * @param bool $fullDebug Whether or not more verbose output should be used.
+     * @param string $expected The expected sql
+     * @param string $actual The sql to compare
+     * @param string $message The message to display on failure
      * @return void
-     * @deprecated 3.0. Use assertHtml() instead.
      */
-    public function assertTags($string, $expected, $fullDebug = false)
+    public function assertEqualsSql(
+        string $expected,
+        string $actual,
+        string $message = ''
+    ): void {
+        $this->assertEquals($expected, preg_replace('/[`"\[\]]/', '', $actual), $message);
+    }
+
+    /**
+     * Assertion for comparing a regex pattern against a query having its identifiers
+     * quoted. It accepts queries quoted with the characters `<` and `>`. If the third
+     * parameter is set to true, it will alter the pattern to both accept quoted and
+     * unquoted queries
+     *
+     * @param string $pattern The expected sql pattern
+     * @param string $actual The sql to compare
+     * @param bool $optional Whether quote characters (marked with <>) are optional
+     * @return void
+     */
+    public function assertRegExpSql(string $pattern, string $actual, bool $optional = false): void
     {
-        deprecationWarning('TestCase::assertTags() is deprecated. Use TestCase::assertHtml() instead.');
-        $this->assertHtml($expected, $string, $fullDebug);
+        $optional = $optional ? '?' : '';
+        $pattern = str_replace('<', '[`"\[]' . $optional, $pattern);
+        $pattern = str_replace('>', '[`"\]]' . $optional, $pattern);
+        $this->assertMatchesRegularExpression('#' . $pattern . '#', $actual);
     }
 
     /**
@@ -474,14 +754,14 @@ abstract class TestCase extends BaseTestCase
      *
      * @param array $expected An array, see above
      * @param string $string An HTML/XHTML/XML string
-     * @param bool $fullDebug Whether or not more verbose output should be used.
+     * @param bool $fullDebug Whether more verbose output should be used.
      * @return bool
      */
-    public function assertHtml($expected, $string, $fullDebug = false)
+    public function assertHtml(array $expected, string $string, bool $fullDebug = false): bool
     {
         $regex = [];
         $normalized = [];
-        foreach ((array)$expected as $key => $val) {
+        foreach ($expected as $key => $val) {
             if (!is_numeric($key)) {
                 $normalized[] = [$key => $val];
             } else {
@@ -495,12 +775,13 @@ abstract class TestCase extends BaseTestCase
             }
             $i++;
             if (is_string($tags) && $tags[0] === '<') {
+                /** @psalm-suppress InvalidArrayOffset */
                 $tags = [substr($tags, 1) => []];
             } elseif (is_string($tags)) {
                 $tagsTrimmed = preg_replace('/\s+/m', '', $tags);
 
                 if (preg_match('/^\*?\//', $tags, $match) && $tagsTrimmed !== '//') {
-                    $prefix = [null, null];
+                    $prefix = ['', ''];
 
                     if ($match[0] === '*/') {
                         $prefix = ['Anything, ', '.*?'];
@@ -539,11 +820,12 @@ abstract class TestCase extends BaseTestCase
                 $explanations = [];
                 $i = 1;
                 foreach ($attributes as $attr => $val) {
-                    if (is_numeric($attr) && preg_match('/^preg\:\/(.+)\/$/i', $val, $matches)) {
+                    if (is_numeric($attr) && preg_match('/^preg\:\/(.+)\/$/i', (string)$val, $matches)) {
                         $attrs[] = $matches[1];
                         $explanations[] = sprintf('Regex "%s" matches', $matches[1]);
                         continue;
                     }
+                    $val = (string)$val;
 
                     $quotes = '["\']';
                     if (is_numeric($attr)) {
@@ -579,6 +861,9 @@ abstract class TestCase extends BaseTestCase
                 ];
             }
         }
+        /**
+         * @var array<string, mixed> $assertion
+         */
         foreach ($regex as $i => $assertion) {
             $matches = false;
             if (isset($assertion['attrs'])) {
@@ -590,8 +875,9 @@ abstract class TestCase extends BaseTestCase
                 continue;
             }
 
-            list($description, $expressions, $itemNum) = $assertion;
-            $expression = null;
+            // If 'attrs' is not present then the array is just a regular int-offset one
+            [$description, $expressions, $itemNum] = $assertion;
+            $expression = '';
             foreach ((array)$expressions as $expression) {
                 $expression = sprintf('/^%s/s', $expression);
                 if (preg_match($expression, $string, $match)) {
@@ -605,7 +891,11 @@ abstract class TestCase extends BaseTestCase
                     debug($string);
                     debug($regex);
                 }
-                $this->assertRegExp($expression, $string, sprintf('Item #%d / regex #%d failed: %s', $itemNum, $i, $description));
+                $this->assertMatchesRegularExpression(
+                    $expression,
+                    $string,
+                    sprintf('Item #%d / regex #%d failed: %s', $itemNum, $i, $description)
+                );
 
                 return false;
             }
@@ -619,13 +909,13 @@ abstract class TestCase extends BaseTestCase
     /**
      * Check the attributes as part of an assertTags() check.
      *
-     * @param array $assertions Assertions to run.
+     * @param array<string, mixed> $assertions Assertions to run.
      * @param string $string The HTML string to check.
-     * @param bool $fullDebug Whether or not more verbose output should be used.
+     * @param bool $fullDebug Whether more verbose output should be used.
      * @param array|string $regex Full regexp from `assertHtml`
-     * @return string|bool
+     * @return string|false
      */
-    protected function _assertAttributes($assertions, $string, $fullDebug = false, $regex = '')
+    protected function _assertAttributes(array $assertions, string $string, bool $fullDebug = false, $regex = '')
     {
         $asserts = $assertions['attrs'];
         $explains = $assertions['explains'];
@@ -660,12 +950,12 @@ abstract class TestCase extends BaseTestCase
      * @param string $path Path separated by "/" slash.
      * @return string Normalized path separated by DIRECTORY_SEPARATOR.
      */
-    protected function _normalizePath($path)
+    protected function _normalizePath(string $path): string
     {
         return str_replace('/', DIRECTORY_SEPARATOR, $path);
     }
 
-// @codingStandardsIgnoreStart
+// phpcs:disable
 
     /**
      * Compatibility function to test if a value is between an acceptable range.
@@ -730,136 +1020,49 @@ abstract class TestCase extends BaseTestCase
         return $condition;
     }
 
-// @codingStandardsIgnoreEnd
-
-    /**
-     * @inheritDoc
-     */
-    public function getMockBuilder($className)
-    {
-        return new MockBuilder($this, $className);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getMockClass(
-        $originalClassName,
-        $methods = [],
-        array $arguments = [],
-        $mockClassName = '',
-        $callOriginalConstructor = false,
-        $callOriginalClone = true,
-        $callAutoload = true,
-        $cloneArguments = false
-    ) {
-        MockBuilder::setSupressedErrorHandler();
-
-        try {
-            return parent::getMockClass(
-                $originalClassName,
-                $methods,
-                $arguments,
-                $mockClassName,
-                $callOriginalConstructor,
-                $callOriginalClone,
-                $callAutoload,
-                $cloneArguments
-            );
-        } finally {
-            restore_error_handler();
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getMockForTrait(
-        $traitName,
-        array $arguments = [],
-        $mockClassName = '',
-        $callOriginalConstructor = true,
-        $callOriginalClone = true,
-        $callAutoload = true,
-        $mockedMethods = [],
-        $cloneArguments = false
-    ) {
-        MockBuilder::setSupressedErrorHandler();
-
-        try {
-            return parent::getMockForTrait(
-                $traitName,
-                $arguments,
-                $mockClassName,
-                $callOriginalConstructor,
-                $callOriginalClone,
-                $callAutoload,
-                $mockedMethods,
-                $cloneArguments
-            );
-        } finally {
-            restore_error_handler();
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getMockForAbstractClass(
-        $originalClassName,
-        array $arguments = [],
-        $mockClassName = '',
-        $callOriginalConstructor = true,
-        $callOriginalClone = true,
-        $callAutoload = true,
-        $mockedMethods = [],
-        $cloneArguments = false
-    ) {
-        MockBuilder::setSupressedErrorHandler();
-
-        try {
-            return parent::getMockForAbstractClass(
-                $originalClassName,
-                $arguments,
-                $mockClassName,
-                $callOriginalConstructor,
-                $callOriginalClone,
-                $callAutoload,
-                $mockedMethods,
-                $cloneArguments
-            );
-        } finally {
-            restore_error_handler();
-        }
-    }
+// phpcs:enable
 
     /**
      * Mock a model, maintain fixtures and table association
      *
      * @param string $alias The model to get a mock for.
-     * @param string[]|null $methods The list of methods to mock
-     * @param array $options The config data for the mock's constructor.
+     * @param array<string> $methods The list of methods to mock
+     * @param array<string, mixed> $options The config data for the mock's constructor.
      * @throws \Cake\ORM\Exception\MissingTableClassException
-     * @return \Cake\ORM\Table|\PHPUnit_Framework_MockObject_MockObject
+     * @return \Cake\ORM\Table|\PHPUnit\Framework\MockObject\MockObject
      */
-    public function getMockForModel($alias, $methods = [], array $options = [])
+    public function getMockForModel(string $alias, array $methods = [], array $options = [])
     {
-        /** @var \Cake\ORM\Table $className */
         $className = $this->_getTableClassName($alias, $options);
         $connectionName = $className::defaultConnectionName();
         $connection = ConnectionManager::get($connectionName);
 
         $locator = $this->getTableLocator();
 
-        list(, $baseClass) = pluginSplit($alias);
+        [, $baseClass] = pluginSplit($alias);
         $options += ['alias' => $baseClass, 'connection' => $connection];
         $options += $locator->getConfig($alias);
+        $reflection = new ReflectionClass($className);
+        $classMethods = array_map(function ($method) {
+            return $method->name;
+        }, $reflection->getMethods());
 
-        /** @var \Cake\ORM\Table|\PHPUnit_Framework_MockObject_MockObject $mock */
-        $mock = $this->getMockBuilder($className)
-            ->setMethods($methods)
-            ->setConstructorArgs([$options])
-            ->getMock();
+        $existingMethods = array_intersect($classMethods, $methods);
+        $nonExistingMethods = array_diff($methods, $existingMethods);
+
+        $builder = $this->getMockBuilder($className)
+            ->setConstructorArgs([$options]);
+
+        if ($existingMethods || !$nonExistingMethods) {
+            $builder->onlyMethods($existingMethods);
+        }
+
+        if ($nonExistingMethods) {
+            $builder->addMethods($nonExistingMethods);
+        }
+
+        /** @var \Cake\ORM\Table $mock */
+        $mock = $builder->getMock();
 
         if (empty($options['entityClass']) && $mock->getEntityClass() === Entity::class) {
             $parts = explode('\\', $className);
@@ -884,14 +1087,16 @@ abstract class TestCase extends BaseTestCase
      * Gets the class name for the table.
      *
      * @param string $alias The model to get a mock for.
-     * @param array $options The config data for the mock's constructor.
+     * @param array<string, mixed> $options The config data for the mock's constructor.
      * @return string
      * @throws \Cake\ORM\Exception\MissingTableClassException
+     * @psalm-return class-string<\Cake\ORM\Table>
      */
-    protected function _getTableClassName($alias, array $options)
+    protected function _getTableClassName(string $alias, array $options): string
     {
         if (empty($options['className'])) {
             $class = Inflector::camelize($alias);
+            /** @psalm-var class-string<\Cake\ORM\Table>|null */
             $className = App::className($class, 'Model/Table', 'Table');
             if (!$className) {
                 throw new MissingTableClassException([$alias]);
@@ -906,11 +1111,14 @@ abstract class TestCase extends BaseTestCase
      * Set the app namespace
      *
      * @param string $appNamespace The app namespace, defaults to "TestApp".
-     * @return void
+     * @return string|null The previous app namespace or null if not set.
      */
-    public static function setAppNamespace($appNamespace = 'TestApp')
+    public static function setAppNamespace(string $appNamespace = 'TestApp'): ?string
     {
+        $previous = Configure::read('App.namespace');
         Configure::write('App.namespace', $appNamespace);
+
+        return $previous;
     }
 
     /**
@@ -927,42 +1135,20 @@ abstract class TestCase extends BaseTestCase
      * @param string $fixture Fixture
      * @return $this
      */
-    protected function addFixture($fixture)
+    protected function addFixture(string $fixture)
     {
-        if (!isset($this->fixtures)) {
-            $this->fixtures = [];
-        } elseif (is_string($this->fixtures)) {
-            deprecationWarning(
-                'Setting fixtures as string is deprecated and will be removed in 4.0.' .
-                ' Set TestCase::$fixtures as array instead.'
-            );
-            $this->fixtures = array_map('trim', explode(',', $this->fixtures));
-        }
-
         $this->fixtures[] = $fixture;
 
         return $this;
     }
 
     /**
-     * Gets fixtures.
+     * Get the fixtures this test should use.
      *
-     * @return array
+     * @return array<string>
      */
-    public function getFixtures()
+    public function getFixtures(): array
     {
-        if (!isset($this->fixtures)) {
-            return [];
-        }
-        if (is_string($this->fixtures)) {
-            deprecationWarning(
-                'Setting fixtures as string is deprecated and will be removed in 4.0.' .
-                ' Set TestCase::$fixtures as array instead.'
-            );
-
-            return array_map('trim', explode(',', $this->fixtures));
-        }
-
         return $this->fixtures;
     }
 }

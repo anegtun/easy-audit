@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -13,19 +15,17 @@
  */
 namespace Cake\Http\Client;
 
-// This alias is necessary to avoid class name conflicts
-// with the deprecated class in this namespace.
-use Cake\Http\Cookie\CookieCollection as CookiesCollection;
-use Cake\Http\Cookie\CookieInterface;
+use Cake\Http\Cookie\CookieCollection;
 use Laminas\Diactoros\MessageTrait;
 use Laminas\Diactoros\Stream;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
+use SimpleXMLElement;
 
 /**
  * Implements methods for HTTP responses.
  *
- * All of the following examples assume that `$response` is an
+ * All the following examples assume that `$response` is an
  * instance of this class.
  *
  * ### Get header values
@@ -64,9 +64,9 @@ use RuntimeException;
  * as SimpleXML nodes:
  *
  * ```
- * // Get as xml
+ * // Get as XML
  * $content = $response->getXml()
- * // Get as json
+ * // Get as JSON
  * $content = $response->getJson()
  * ```
  *
@@ -115,37 +115,9 @@ class Response extends Message implements ResponseInterface
     /**
      * Cached decoded JSON data.
      *
-     * @var array
+     * @var mixed
      */
     protected $_json;
-
-    /**
-     * Map of public => property names for __get()
-     *
-     * @var array
-     */
-    protected $_exposedProperties = [
-        'cookies' => '_getCookies',
-        'body' => '_getBody',
-        'code' => 'code',
-        'json' => '_getJson',
-        'xml' => '_getXml',
-        'headers' => '_getHeaders',
-    ];
-
-    /**
-     * Map of deprecated magic properties.
-     *
-     * @var array
-     * @internal
-     */
-    protected $_deprecatedMagicProperties = [
-        'cookies' => 'getCookies()',
-        'body' => 'getStringBody()',
-        'json' => 'getJson()',
-        'xml' => 'getXml()',
-        'headers' => 'getHeaders()',
-    ];
 
     /**
      * Constructor
@@ -153,7 +125,7 @@ class Response extends Message implements ResponseInterface
      * @param array $headers Unparsed headers.
      * @param string $body The response body.
      */
-    public function __construct($headers = [], $body = '')
+    public function __construct(array $headers = [], string $body = '')
     {
         $this->_parseHeaders($headers);
         if ($this->getHeaderLine('Content-Encoding') === 'gzip') {
@@ -175,7 +147,7 @@ class Response extends Message implements ResponseInterface
      * @return string
      * @throws \RuntimeException When attempting to decode gzip content without gzinflate.
      */
-    protected function _decodeGzipBody($body)
+    protected function _decodeGzipBody(string $body): string
     {
         if (!function_exists('gzinflate')) {
             throw new RuntimeException('Cannot decompress gzip response body without gzinflate()');
@@ -189,6 +161,8 @@ class Response extends Message implements ResponseInterface
         if (substr($body, $offset, 1) === "\x08") {
             return gzinflate(substr($body, $offset + 8));
         }
+
+        throw new RuntimeException('Invalid gzip response');
     }
 
     /**
@@ -200,9 +174,9 @@ class Response extends Message implements ResponseInterface
      * @param array $headers Headers to parse.
      * @return void
      */
-    protected function _parseHeaders($headers)
+    protected function _parseHeaders(array $headers): void
     {
-        foreach ($headers as $key => $value) {
+        foreach ($headers as $value) {
             if (substr($value, 0, 5) === 'HTTP/') {
                 preg_match('/HTTP\/([\d.]+) ([0-9]+)(.*)/i', $value, $matches);
                 $this->protocol = $matches[1];
@@ -213,8 +187,9 @@ class Response extends Message implements ResponseInterface
             if (strpos($value, ':') === false) {
                 continue;
             }
-            list($name, $value) = explode(':', $value, 2);
+            [$name, $value] = explode(':', $value, 2);
             $value = trim($value);
+            /** @phpstan-var non-empty-string $name */
             $name = trim($name);
 
             $normalized = strtolower($name);
@@ -229,21 +204,13 @@ class Response extends Message implements ResponseInterface
     }
 
     /**
-     * Check if the response was OK
+     * Check if the response status code was in the 2xx/3xx range
      *
      * @return bool
      */
-    public function isOk()
+    public function isOk(): bool
     {
-        $codes = [
-            static::STATUS_OK,
-            static::STATUS_CREATED,
-            static::STATUS_ACCEPTED,
-            static::STATUS_NON_AUTHORITATIVE_INFORMATION,
-            static::STATUS_NO_CONTENT,
-        ];
-
-        return in_array($this->code, $codes);
+        return $this->code >= 200 && $this->code <= 399;
     }
 
     /**
@@ -251,7 +218,7 @@ class Response extends Message implements ResponseInterface
      *
      * @return bool
      */
-    public function isSuccess()
+    public function isSuccess(): bool
     {
         return $this->code >= 200 && $this->code <= 299;
     }
@@ -261,53 +228,36 @@ class Response extends Message implements ResponseInterface
      *
      * @return bool
      */
-    public function isRedirect()
+    public function isRedirect(): bool
     {
         $codes = [
             static::STATUS_MOVED_PERMANENTLY,
             static::STATUS_FOUND,
             static::STATUS_SEE_OTHER,
             static::STATUS_TEMPORARY_REDIRECT,
+            static::STATUS_PERMANENT_REDIRECT,
         ];
 
-        return (
-            in_array($this->code, $codes) &&
-            $this->getHeaderLine('Location')
-        );
+        return in_array($this->code, $codes, true) &&
+            $this->getHeaderLine('Location');
     }
 
     /**
-     * Get the status code from the response
-     *
-     * @return int
-     * @deprecated 3.3.0 Use getStatusCode() instead.
-     */
-    public function statusCode()
-    {
-        deprecationWarning(
-            'Response::statusCode() is deprecated. ' .
-            'Use Response::getStatusCode() instead.'
-        );
-
-        return $this->code;
-    }
-
-    /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return int The status code.
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->code;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param int $code The status code to set.
      * @param string $reasonPhrase The status reason phrase.
-     * @return $this A copy of the current object with an updated status code.
+     * @return static A copy of the current object with an updated status code.
      */
     public function withStatus($code, $reasonPhrase = '')
     {
@@ -319,11 +269,11 @@ class Response extends Message implements ResponseInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return string The current reason phrase.
      */
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
         return $this->reasonPhrase;
     }
@@ -332,24 +282,8 @@ class Response extends Message implements ResponseInterface
      * Get the encoding if it was set.
      *
      * @return string|null
-     * @deprecated 3.3.0 Use getEncoding() instead.
      */
-    public function encoding()
-    {
-        deprecationWarning(
-            'Response::encoding() is deprecated. ' .
-            'Use Response::getEncoding() instead.'
-        );
-
-        return $this->getEncoding();
-    }
-
-    /**
-     * Get the encoding if it was set.
-     *
-     * @return string|null
-     */
-    public function getEncoding()
+    public function getEncoding(): ?string
     {
         $content = $this->getHeaderLine('content-type');
         if (!$content) {
@@ -364,71 +298,11 @@ class Response extends Message implements ResponseInterface
     }
 
     /**
-     * Read single/multiple header value(s) out.
-     *
-     * @param string|null $name The name of the header you want. Leave
-     *   null to get all headers.
-     * @return mixed Null when the header doesn't exist. An array
-     *   will be returned when getting all headers or when getting
-     *   a header that had multiple values set. Otherwise a string
-     *   will be returned.
-     * @deprecated 3.3.0 Use getHeader() and getHeaderLine() instead.
-     */
-    public function header($name = null)
-    {
-        deprecationWarning(
-            'Response::header() is deprecated. ' .
-            'Use Response::getHeader() and getHeaderLine() instead.'
-        );
-
-        if ($name === null) {
-            return $this->_getHeaders();
-        }
-        $header = $this->getHeader($name);
-        if (count($header) === 1) {
-            return $header[0];
-        }
-
-        return $header;
-    }
-
-    /**
-     * Read single/multiple cookie values out.
-     *
-     * *Note* This method will only provide access to cookies that
-     * were added as part of the constructor. If cookies are added post
-     * construction they will not be accessible via this method.
-     *
-     * @param string|null $name The name of the cookie you want. Leave
-     *   null to get all cookies.
-     * @param bool $all Get all parts of the cookie. When false only
-     *   the value will be returned.
-     * @return mixed
-     * @deprecated 3.3.0 Use getCookie(), getCookieData() or getCookies() instead.
-     */
-    public function cookie($name = null, $all = false)
-    {
-        deprecationWarning(
-            'Response::cookie() is deprecated. ' .
-            'Use Response::getCookie(), getCookieData() or getCookies() instead.'
-        );
-
-        if ($name === null) {
-            return $this->getCookies();
-        }
-        if ($all) {
-            return $this->getCookieData($name);
-        }
-
-        return $this->getCookie($name);
-    }
-
-    /**
      * Get the all cookie data.
      *
      * @return array The cookie data
      */
-    public function getCookies()
+    public function getCookies(): array
     {
         return $this->_getCookies();
     }
@@ -441,7 +315,7 @@ class Response extends Message implements ResponseInterface
      *
      * @return \Cake\Http\Cookie\CookieCollection
      */
-    public function getCookieCollection()
+    public function getCookieCollection(): CookieCollection
     {
         $this->buildCookieCollection();
 
@@ -452,11 +326,12 @@ class Response extends Message implements ResponseInterface
      * Get the value of a single cookie.
      *
      * @param string $name The name of the cookie value.
-     * @return string|array|null Either the cookie's value or null when the cookie is undefined.
+     * @return array|string|null Either the cookie's value or null when the cookie is undefined.
      */
-    public function getCookie($name)
+    public function getCookie(string $name)
     {
         $this->buildCookieCollection();
+
         if (!$this->cookies->has($name)) {
             return null;
         }
@@ -470,7 +345,7 @@ class Response extends Message implements ResponseInterface
      * @param string $name The name of the cookie value.
      * @return array|null Either the cookie's data or null when the cookie is undefined.
      */
-    public function getCookieData($name)
+    public function getCookieData(string $name): ?array
     {
         $this->buildCookieCollection();
 
@@ -478,31 +353,7 @@ class Response extends Message implements ResponseInterface
             return null;
         }
 
-        $cookie = $this->cookies->get($name);
-
-        return $this->convertCookieToArray($cookie);
-    }
-
-    /**
-     * Convert the cookie into an array of its properties.
-     *
-     * This method is compatible with older client code that
-     * expects date strings instead of timestamps.
-     *
-     * @param \Cake\Http\Cookie\CookieInterface $cookie Cookie object.
-     * @return array
-     */
-    protected function convertCookieToArray(CookieInterface $cookie)
-    {
-        return [
-            'name' => $cookie->getName(),
-            'value' => $cookie->getValue(),
-            'path' => $cookie->getPath(),
-            'domain' => $cookie->getDomain(),
-            'secure' => $cookie->isSecure(),
-            'httponly' => $cookie->isHttpOnly(),
-            'expires' => $cookie->getFormattedExpires(),
-        ];
+        return $this->cookies->get($name)->toArray();
     }
 
     /**
@@ -510,12 +361,12 @@ class Response extends Message implements ResponseInterface
      *
      * @return void
      */
-    protected function buildCookieCollection()
+    protected function buildCookieCollection(): void
     {
-        if ($this->cookies) {
+        if ($this->cookies !== null) {
             return;
         }
-        $this->cookies = CookiesCollection::createFromHeader($this->getHeader('Set-Cookie'));
+        $this->cookies = CookieCollection::createFromHeader($this->getHeader('Set-Cookie'));
     }
 
     /**
@@ -523,64 +374,18 @@ class Response extends Message implements ResponseInterface
      *
      * @return array Array of Cookie data.
      */
-    protected function _getCookies()
+    protected function _getCookies(): array
     {
         $this->buildCookieCollection();
 
-        $cookies = [];
-        foreach ($this->cookies as $cookie) {
-            $cookies[$cookie->getName()] = $this->convertCookieToArray($cookie);
+        $out = [];
+        /** @var array<\Cake\Http\Cookie\Cookie> $cookies */
+        $cookies = $this->cookies;
+        foreach ($cookies as $cookie) {
+            $out[$cookie->getName()] = $cookie->toArray();
         }
 
-        return $cookies;
-    }
-
-    /**
-     * Get the HTTP version used.
-     *
-     * @return string
-     * @deprecated 3.3.0 Use getProtocolVersion()
-     */
-    public function version()
-    {
-        deprecationWarning(
-            'Response::version() is deprecated. ' .
-            'Use Response::getProtocolVersion() instead.'
-        );
-
-        return $this->protocol;
-    }
-
-    /**
-     * Get the response body.
-     *
-     * By passing in a $parser callable, you can get the decoded
-     * response content back.
-     *
-     * For example to get the json data as an object:
-     *
-     * ```
-     * $body = $response->getJson();
-     * ```
-     *
-     * @param callable|null $parser The callback to use to decode
-     *   the response body.
-     * @return mixed The response body.
-     * @deprecated 3.7.0 Use getStringBody()/getJson()/getXml() instead.
-     */
-    public function body($parser = null)
-    {
-        deprecationWarning(
-            'Response::body() is deprecated. Use getStringBody()/getJson()/getXml() instead.'
-        );
-
-        $stream = $this->stream;
-        $stream->rewind();
-        if ($parser) {
-            return $parser($stream->getContents());
-        }
-
-        return $stream->getContents();
+        return $out;
     }
 
     /**
@@ -588,7 +393,7 @@ class Response extends Message implements ResponseInterface
      *
      * @return string
      */
-    public function getStringBody()
+    public function getStringBody(): string
     {
         return $this->_getBody();
     }
@@ -596,7 +401,7 @@ class Response extends Message implements ResponseInterface
     /**
      * Get the response body as JSON decoded data.
      *
-     * @return array|null
+     * @return mixed
      */
     public function getJson()
     {
@@ -606,7 +411,7 @@ class Response extends Message implements ResponseInterface
     /**
      * Get the response body as JSON decoded data.
      *
-     * @return array|null
+     * @return mixed
      */
     protected function _getJson()
     {
@@ -622,7 +427,7 @@ class Response extends Message implements ResponseInterface
      *
      * @return \SimpleXMLElement|null
      */
-    public function getXml()
+    public function getXml(): ?SimpleXMLElement
     {
         return $this->_getXml();
     }
@@ -632,9 +437,9 @@ class Response extends Message implements ResponseInterface
      *
      * @return \SimpleXMLElement|null
      */
-    protected function _getXml()
+    protected function _getXml(): ?SimpleXMLElement
     {
-        if ($this->_xml) {
+        if ($this->_xml !== null) {
             return $this->_xml;
         }
         libxml_use_internal_errors();
@@ -651,9 +456,9 @@ class Response extends Message implements ResponseInterface
     /**
      * Provides magic __get() support.
      *
-     * @return array
+     * @return array<string>
      */
-    protected function _getHeaders()
+    protected function _getHeaders(): array
     {
         $out = [];
         foreach ($this->headers as $key => $values) {
@@ -668,79 +473,10 @@ class Response extends Message implements ResponseInterface
      *
      * @return string
      */
-    protected function _getBody()
+    protected function _getBody(): string
     {
         $this->stream->rewind();
 
         return $this->stream->getContents();
     }
-
-    /**
-     * Read values as properties.
-     *
-     * @param string $name Property name.
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        if (!isset($this->_exposedProperties[$name])) {
-            return false;
-        }
-        $key = $this->_exposedProperties[$name];
-        if (substr($key, 0, 4) === '_get') {
-            deprecationWarning(sprintf(
-                'Response::%s is deprecated. Use Response::%s instead.',
-                $name,
-                $this->_deprecatedMagicProperties[$name]
-            ));
-
-            return $this->{$key}();
-        }
-
-        if ($key === 'code') {
-            deprecationWarning(
-                'Response::code() is deprecated. ' .
-                'Use Response::getStatusCode() instead.'
-            );
-        }
-
-        return $this->{$key};
-    }
-
-    /**
-     * isset/empty test with -> syntax.
-     *
-     * @param string $name Property name.
-     * @return bool
-     */
-    public function __isset($name)
-    {
-        if (!isset($this->_exposedProperties[$name])) {
-            return false;
-        }
-        $key = $this->_exposedProperties[$name];
-        if (substr($key, 0, 4) === '_get') {
-            deprecationWarning(sprintf(
-                'Response::%s is deprecated. Use Response::%s instead.',
-                $name,
-                $this->_deprecatedMagicProperties[$name]
-            ));
-
-            $val = $this->{$key}();
-
-            return $val !== null;
-        }
-
-        if ($key === 'code') {
-            deprecationWarning(
-                'Response::code() is deprecated. ' .
-                'Use Response::getStatusCode() instead.'
-            );
-        }
-
-        return isset($this->{$key});
-    }
 }
-
-// @deprecated 3.4.0 Add backwards compat alias.
-class_alias('Cake\Http\Client\Response', 'Cake\Network\Http\Response');

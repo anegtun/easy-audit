@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -32,32 +34,31 @@ abstract class MailConstraintBase extends Constraint
     /**
      * Constructor
      *
-     * @param int $at At
+     * @param int|null $at At
      * @return void
      */
-    public function __construct($at = null)
+    public function __construct(?int $at = null)
     {
         $this->at = $at;
-        parent::__construct();
     }
 
     /**
      * Gets the email or emails to check
      *
-     * @return \Cake\Mailer\Email[]
+     * @return array<\Cake\Mailer\Message>
      */
-    public function getEmails()
+    public function getMessages()
     {
-        $emails = TestEmailTransport::getEmails();
+        $messages = TestEmailTransport::getMessages();
 
         if ($this->at !== null) {
-            if (!isset($emails[$this->at])) {
+            if (!isset($messages[$this->at])) {
                 return [];
             }
 
-            return [$emails[$this->at]];
+            return [$messages[$this->at]];
         }
 
-        return $emails;
+        return $messages;
     }
 }

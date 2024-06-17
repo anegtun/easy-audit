@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -17,13 +19,14 @@ namespace Cake\View;
 use BadMethodCallException;
 use Cake\Cache\Cache;
 use Cake\Datasource\ModelAwareTrait;
+use Cake\Event\EventDispatcherInterface;
 use Cake\Event\EventDispatcherTrait;
-use Cake\Event\EventManager;
+use Cake\Event\EventManagerInterface;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\Utility\Inflector;
-use Cake\View\Exception\MissingCellViewException;
+use Cake\View\Exception\MissingCellTemplateException;
 use Cake\View\Exception\MissingTemplateException;
 use Error;
 use Exception;
@@ -33,12 +36,20 @@ use ReflectionMethod;
 /**
  * Cell base.
  */
-abstract class Cell
+#[\AllowDynamicProperties]
+abstract class Cell implements EventDispatcherInterface
 {
     use EventDispatcherTrait;
     use LocatorAwareTrait;
     use ModelAwareTrait;
     use ViewVarsTrait;
+
+    /**
+     * Constant for folder name containing cell templates.
+     *
+     * @var string
+     */
+    public const TEMPLATE_FOLDER = 'cell';
 
     /**
      * Instance of the View created during rendering. Won't be set until after
@@ -79,22 +90,11 @@ abstract class Cell
     protected $args = [];
 
     /**
-     * These properties can be set directly on Cell and passed to the View as options.
-     *
-     * @var array
-     * @see \Cake\View\View
-     * @deprecated 3.7.0 Use ViewBuilder::setOptions() or any one of it's setter methods instead.
-     */
-    protected $_validViewOptions = [
-        'viewPath',
-    ];
-
-    /**
      * List of valid options (constructor's fourth arguments)
-     * Override this property in subclasses to whitelist
+     * Override this property in subclasses to allow
      * which options you want set as properties in your Cell.
      *
-     * @var array
+     * @var array<string>
      */
     protected $_validCellOptions = [];
 
@@ -108,15 +108,15 @@ abstract class Cell
     /**
      * Constructor.
      *
-     * @param \Cake\Http\ServerRequest|null $request The request to use in the cell.
-     * @param \Cake\Http\Response|null $response The response to use in the cell.
-     * @param \Cake\Event\EventManager|null $eventManager The eventManager to bind events to.
-     * @param array $cellOptions Cell options to apply.
+     * @param \Cake\Http\ServerRequest $request The request to use in the cell.
+     * @param \Cake\Http\Response $response The response to use in the cell.
+     * @param \Cake\Event\EventManagerInterface|null $eventManager The eventManager to bind events to.
+     * @param array<string, mixed> $cellOptions Cell options to apply.
      */
     public function __construct(
-        ServerRequest $request = null,
-        Response $response = null,
-        EventManager $eventManager = null,
+        ServerRequest $request,
+        Response $response,
+        ?EventManagerInterface $eventManager = null,
         array $cellOptions = []
     ) {
         if ($eventManager !== null) {
@@ -147,7 +147,7 @@ abstract class Cell
      *
      * @return void
      */
-    public function initialize()
+    public function initialize(): void
     {
     }
 
@@ -157,9 +157,11 @@ abstract class Cell
      * @param string|null $template Custom template name to render. If not provided (null), the last
      * value will be used. This value is automatically set by `CellTrait::cell()`.
      * @return string The rendered cell.
-     * @throws \Cake\View\Exception\MissingCellViewException When a MissingTemplateException is raised during rendering.
+     * @throws \Cake\View\Exception\MissingCellTemplateException
+     *   When a MissingTemplateException is raised during rendering.
+     * @throws \BadMethodCallException
      */
-    public function render($template = null)
+    public function render(?string $template = null): string
     {
         $cache = [];
         if ($this->_cache) {
@@ -173,34 +175,41 @@ abstract class Cell
             } catch (ReflectionException $e) {
                 throw new BadMethodCallException(sprintf(
                     'Class %s does not have a "%s" method.',
-                    get_class($this),
+                    static::class,
                     $this->action
                 ));
             }
 
-            $builder = $this->viewBuilder()->setLayout(false);
+            $builder = $this->viewBuilder();
 
             if ($template !== null) {
                 $builder->setTemplate($template);
             }
 
-            $className = get_class($this);
+            $className = static::class;
             $namePrefix = '\View\Cell\\';
+            /** @psalm-suppress PossiblyFalseOperand */
             $name = substr($className, strpos($className, $namePrefix) + strlen($namePrefix));
             $name = substr($name, 0, -4);
             if (!$builder->getTemplatePath()) {
-                $builder->setTemplatePath('Cell' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $name));
+                $builder->setTemplatePath(
+                    static::TEMPLATE_FOLDER . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $name)
+                );
             }
             $template = $builder->getTemplate();
 
-            $this->View = $this->createView();
+            $view = $this->createView();
             try {
-                return $this->View->render($template);
+                return $view->render($template, false);
             } catch (MissingTemplateException $e) {
                 $attributes = $e->getAttributes();
-                $attributes = ['file' => basename($attributes['file']), 'name' => $name];
-
-                throw new MissingCellViewException($attributes, null, $e);
+                throw new MissingCellTemplateException(
+                    $name,
+                    $attributes['file'],
+                    $attributes['paths'],
+                    null,
+                    $e
+                );
             }
         };
 
@@ -220,13 +229,13 @@ abstract class Cell
      * @param string|null $template The name of the template to be rendered.
      * @return array The cache configuration.
      */
-    protected function _cacheConfig($action, $template = null)
+    protected function _cacheConfig(string $action, ?string $template = null): array
     {
         if (empty($this->_cache)) {
             return [];
         }
         $template = $template ?: 'default';
-        $key = 'cell_' . Inflector::underscore(get_class($this)) . '_' . $action . '_' . $template;
+        $key = 'cell_' . Inflector::underscore(static::class) . '_' . $action . '_' . $template;
         $key = str_replace('\\', '_', $key);
         $default = [
             'config' => 'default',
@@ -250,109 +259,35 @@ abstract class Cell
      * @return string Rendered cell
      * @throws \Error Include error details for PHP 7 fatal errors.
      */
-    public function __toString()
+    public function __toString(): string
     {
         try {
             return $this->render();
         } catch (Exception $e) {
-            trigger_error(sprintf('Could not render cell - %s [%s, line %d]', $e->getMessage(), $e->getFile(), $e->getLine()), E_USER_WARNING);
+            trigger_error(sprintf(
+                'Could not render cell - %s [%s, line %d]',
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            ), E_USER_WARNING);
 
             return '';
         } catch (Error $e) {
-            throw new Error(sprintf('Could not render cell - %s [%s, line %d]', $e->getMessage(), $e->getFile(), $e->getLine()));
+            throw new Error(sprintf(
+                'Could not render cell - %s [%s, line %d]',
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            ), 0, $e);
         }
-    }
-
-    /**
-     * Magic accessor for removed properties.
-     *
-     * @param string $name Property name
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        $deprecated = [
-            'template' => 'getTemplate',
-            'plugin' => 'getPlugin',
-            'helpers' => 'getHelpers',
-        ];
-        if (isset($deprecated[$name])) {
-            $method = $deprecated[$name];
-            deprecationWarning(sprintf(
-                'Cell::$%s is deprecated. Use $cell->viewBuilder()->%s() instead.',
-                $name,
-                $method
-            ));
-
-            return $this->viewBuilder()->{$method}();
-        }
-
-        $protected = [
-            'action',
-            'args',
-            'request',
-            'response',
-            'View',
-        ];
-        if (in_array($name, $protected, true)) {
-            deprecationWarning(sprintf(
-                'Cell::$%s is now protected and shouldn\'t be accessed from outside a child class.',
-                $name
-            ));
-        }
-
-        return $this->{$name};
-    }
-
-    /**
-     * Magic setter for removed properties.
-     *
-     * @param string $name Property name.
-     * @param mixed $value Value to set.
-     * @return void
-     */
-    public function __set($name, $value)
-    {
-        $deprecated = [
-            'template' => 'setTemplate',
-            'plugin' => 'setPlugin',
-            'helpers' => 'setHelpers',
-        ];
-        if (isset($deprecated[$name])) {
-            $method = $deprecated[$name];
-            deprecationWarning(sprintf(
-                'Cell::$%s is deprecated. Use $cell->viewBuilder()->%s() instead.',
-                $name,
-                $method
-            ));
-            $this->viewBuilder()->{$method}($value);
-
-            return;
-        }
-
-        $protected = [
-            'action',
-            'args',
-            'request',
-            'response',
-            'View',
-        ];
-        if (in_array($name, $protected, true)) {
-            deprecationWarning(sprintf(
-                'Cell::$%s is now protected and shouldn\'t be accessed from outside a child class.',
-                $name
-            ));
-        }
-
-        $this->{$name} = $value;
     }
 
     /**
      * Debug info.
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function __debugInfo()
+    public function __debugInfo(): array
     {
         return [
             'action' => $this->action,

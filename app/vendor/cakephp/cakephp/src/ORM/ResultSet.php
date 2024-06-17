@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -16,8 +18,8 @@ namespace Cake\ORM;
 
 use Cake\Collection\Collection;
 use Cake\Collection\CollectionTrait;
-use Cake\Database\Exception;
-use Cake\Database\Type;
+use Cake\Database\Exception\DatabaseException;
+use Cake\Database\StatementInterface;
 use Cake\Datasource\EntityInterface;
 use Cake\Datasource\ResultSetInterface;
 use SplFixedArray;
@@ -27,18 +29,13 @@ use SplFixedArray;
  * This object is responsible for correctly nesting result keys reported from
  * the query, casting each field to the correct type and executing the extra
  * queries required for eager loading external associations.
+ *
+ * @template T of \Cake\Datasource\EntityInterface|array
+ * @implements \Cake\Datasource\ResultSetInterface<T>
  */
 class ResultSet implements ResultSetInterface
 {
     use CollectionTrait;
-
-    /**
-     * Original query from where results were generated
-     *
-     * @var \Cake\ORM\Query
-     * @deprecated 3.1.6 Due to a memory leak, this property cannot be used anymore
-     */
-    protected $_query;
 
     /**
      * Database statement holding the results
@@ -57,14 +54,15 @@ class ResultSet implements ResultSetInterface
     /**
      * Last record fetched from the statement
      *
-     * @var array
+     * @var \Cake\Datasource\EntityInterface|array
+     * @psalm-var T
      */
     protected $_current;
 
     /**
      * Default table instance
      *
-     * @var \Cake\ORM\Table|\Cake\Datasource\RepositoryInterface
+     * @var \Cake\ORM\Table
      */
     protected $_defaultTable;
 
@@ -79,7 +77,7 @@ class ResultSet implements ResultSetInterface
      * List of associations that should be placed under the `_matchingData`
      * result key.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_matchingMap = [];
 
@@ -94,7 +92,7 @@ class ResultSet implements ResultSetInterface
      * Map of fields that are fetched from the statement with
      * their type and the table they belong to
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_map = [];
 
@@ -102,14 +100,14 @@ class ResultSet implements ResultSetInterface
      * List of matching associations and the column keys to expect
      * from each of them.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_matchingMapColumns = [];
 
     /**
      * Results that have been fetched or hydrated into the results.
      *
-     * @var array|\ArrayAccess
+     * @var \SplFixedArray|array
      */
     protected $_results = [];
 
@@ -135,7 +133,7 @@ class ResultSet implements ResultSetInterface
     protected $_entityClass;
 
     /**
-     * Whether or not to buffer results fetched from the statement
+     * Whether to buffer results fetched from the statement
      *
      * @var bool
      */
@@ -149,21 +147,11 @@ class ResultSet implements ResultSetInterface
     protected $_count;
 
     /**
-     * Type cache for type converters.
-     *
-     * Converters are indexed by alias and column name.
-     *
-     * @var array
-     * @deprecated 3.2.0 Not used anymore. Type casting is done at the statement level
-     */
-    protected $_types = [];
-
-    /**
      * The Database driver object.
      *
      * Cached in a property to avoid multiple calls to the same function.
      *
-     * @var \Cake\Database\Driver
+     * @var \Cake\Database\DriverInterface
      */
     protected $_driver;
 
@@ -173,13 +161,12 @@ class ResultSet implements ResultSetInterface
      * @param \Cake\ORM\Query $query Query from where results come
      * @param \Cake\Database\StatementInterface $statement The statement to fetch from
      */
-    public function __construct($query, $statement)
+    public function __construct(Query $query, StatementInterface $statement)
     {
-        /** @var \Cake\ORM\Table $repository */
         $repository = $query->getRepository();
         $this->_statement = $statement;
-        $this->_driver = $query->getConnection()->getDriver();
-        $this->_defaultTable = $query->getRepository();
+        $this->_driver = $query->getConnection()->getDriver($query->getConnectionRole());
+        $this->_defaultTable = $repository;
         $this->_calculateAssociationMap($query);
         $this->_hydrate = $query->isHydrationEnabled();
         $this->_entityClass = $repository->getEntityClass();
@@ -199,8 +186,10 @@ class ResultSet implements ResultSetInterface
      *
      * Part of Iterator interface.
      *
-     * @return array|object
+     * @return \Cake\Datasource\EntityInterface|array
+     * @psalm-return T
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->_current;
@@ -213,7 +202,7 @@ class ResultSet implements ResultSetInterface
      *
      * @return int
      */
-    public function key()
+    public function key(): int
     {
         return $this->_index;
     }
@@ -225,7 +214,7 @@ class ResultSet implements ResultSetInterface
      *
      * @return void
      */
-    public function next()
+    public function next(): void
     {
         $this->_index++;
     }
@@ -235,18 +224,19 @@ class ResultSet implements ResultSetInterface
      *
      * Part of Iterator interface.
      *
-     * @throws \Cake\Database\Exception
+     * @throws \Cake\Database\Exception\DatabaseException
      * @return void
      */
-    public function rewind()
+    public function rewind(): void
     {
-        if ($this->_index == 0) {
+        if ($this->_index === 0) {
             return;
         }
 
         if (!$this->_useBuffering) {
-            $msg = 'You cannot rewind an un-buffered ResultSet. Use Query::bufferResults() to get a buffered ResultSet.';
-            throw new Exception($msg);
+            $msg = 'You cannot rewind an un-buffered ResultSet. '
+                . 'Use Query::bufferResults() to get a buffered ResultSet.';
+            throw new DatabaseException($msg);
         }
 
         $this->_index = 0;
@@ -259,7 +249,7 @@ class ResultSet implements ResultSetInterface
      *
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         if ($this->_useBuffering) {
             $valid = $this->_index < $this->_count;
@@ -291,17 +281,20 @@ class ResultSet implements ResultSetInterface
      *
      * This method will also close the underlying statement cursor.
      *
-     * @return array|object
+     * @return \Cake\Datasource\EntityInterface|array|null
+     * @psalm-return T|null
      */
     public function first()
     {
         foreach ($this as $result) {
-            if ($this->_statement && !$this->_useBuffering) {
+            if ($this->_statement !== null && !$this->_useBuffering) {
                 $this->_statement->closeCursor();
             }
 
             return $result;
         }
+
+        return null;
     }
 
     /**
@@ -311,11 +304,22 @@ class ResultSet implements ResultSetInterface
      *
      * @return string Serialized object
      */
-    public function serialize()
+    public function serialize(): string
+    {
+        return serialize($this->__serialize());
+    }
+
+    /**
+     * Serializes a resultset.
+     *
+     * @return array
+     */
+    public function __serialize(): array
     {
         if (!$this->_useBuffering) {
-            $msg = 'You cannot serialize an un-buffered ResultSet. Use Query::bufferResults() to get a buffered ResultSet.';
-            throw new Exception($msg);
+            $msg = 'You cannot serialize an un-buffered ResultSet. '
+                . 'Use Query::bufferResults() to get a buffered ResultSet.';
+            throw new DatabaseException($msg);
         }
 
         while ($this->valid()) {
@@ -323,10 +327,10 @@ class ResultSet implements ResultSetInterface
         }
 
         if ($this->_results instanceof SplFixedArray) {
-            return serialize($this->_results->toArray());
+            return $this->_results->toArray();
         }
 
-        return serialize($this->_results);
+        return $this->_results;
     }
 
     /**
@@ -339,8 +343,18 @@ class ResultSet implements ResultSetInterface
      */
     public function unserialize($serialized)
     {
-        $results = (array)(unserialize($serialized) ?: []);
-        $this->_results = SplFixedArray::fromArray($results);
+        $this->__unserialize((array)(unserialize($serialized) ?: []));
+    }
+
+    /**
+     * Unserializes a resultset.
+     *
+     * @param array $data Data array.
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->_results = SplFixedArray::fromArray($data);
         $this->_useBuffering = true;
         $this->_count = $this->_results->count();
     }
@@ -352,12 +366,12 @@ class ResultSet implements ResultSetInterface
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         if ($this->_count !== null) {
             return $this->_count;
         }
-        if ($this->_statement) {
+        if ($this->_statement !== null) {
             return $this->_count = $this->_statement->rowCount();
         }
 
@@ -377,7 +391,7 @@ class ResultSet implements ResultSetInterface
      * @param \Cake\ORM\Query $query The query from where to derive the associations
      * @return void
      */
-    protected function _calculateAssociationMap($query)
+    protected function _calculateAssociationMap(Query $query): void
     {
         $map = $query->getEagerLoader()->associationsMap($this->_defaultTable);
         $this->_matchingMap = (new Collection($map))
@@ -398,7 +412,7 @@ class ResultSet implements ResultSetInterface
      * @param \Cake\ORM\Query $query The query from where to derive the column map
      * @return void
      */
-    protected function _calculateColumnMap($query)
+    protected function _calculateColumnMap(Query $query): void
     {
         $map = [];
         foreach ($query->clause('select') as $key => $field) {
@@ -425,53 +439,6 @@ class ResultSet implements ResultSetInterface
     }
 
     /**
-     * Creates a map of Type converter classes for each of the columns that should
-     * be fetched by this object.
-     *
-     * @deprecated 3.2.0 Not used anymore. Type casting is done at the statement level
-     * @return void
-     */
-    protected function _calculateTypeMap()
-    {
-        deprecationWarning('ResultSet::_calculateTypeMap() is deprecated, and will be removed in 4.0.0.');
-    }
-
-    /**
-     * Returns the Type classes for each of the passed fields belonging to the
-     * table.
-     *
-     * @param \Cake\ORM\Table $table The table from which to get the schema
-     * @param array $fields The fields whitelist to use for fields in the schema.
-     * @return array
-     * @deprecated 3.2.0 Not used anymore. Type casting is done at the statement level
-     */
-    protected function _getTypes($table, $fields)
-    {
-        $types = [];
-        $schema = $table->getSchema();
-        $map = array_keys((array)Type::getMap() + ['string' => 1, 'text' => 1, 'boolean' => 1]);
-        $typeMap = array_combine(
-            $map,
-            array_map(['Cake\Database\Type', 'build'], $map)
-        );
-
-        foreach (['string', 'text'] as $t) {
-            if (get_class($typeMap[$t]) === 'Cake\Database\Type') {
-                unset($typeMap[$t]);
-            }
-        }
-
-        foreach (array_intersect($fields, $schema->columns()) as $col) {
-            $typeName = $schema->getColumnType($col);
-            if (isset($typeMap[$typeName])) {
-                $types[$col] = $typeMap[$typeName];
-            }
-        }
-
-        return $types;
-    }
-
-    /**
      * Helper function to fetch the next result from the statement or
      * seeded results.
      *
@@ -479,7 +446,7 @@ class ResultSet implements ResultSetInterface
      */
     protected function _fetchResult()
     {
-        if (!$this->_statement) {
+        if ($this->_statement === null) {
             return false;
         }
 
@@ -495,9 +462,9 @@ class ResultSet implements ResultSetInterface
      * Correctly nests results keys including those coming from associations
      *
      * @param array $row Array containing columns and values or false if there is no results
-     * @return array Results
+     * @return \Cake\Datasource\EntityInterface|array Results
      */
-    protected function _groupResult($row)
+    protected function _groupResult(array $row)
     {
         $defaultAlias = $this->_defaultAlias;
         $results = $presentAliases = [];
@@ -532,9 +499,7 @@ class ResultSet implements ResultSetInterface
         // If the default table is not in the results, set
         // it to an empty array so that any contained
         // associations hydrate correctly.
-        if (!isset($results[$defaultAlias])) {
-            $results[$defaultAlias] = [];
-        }
+        $results[$defaultAlias] = $results[$defaultAlias] ?? [];
 
         unset($presentAliases[$defaultAlias]);
 
@@ -606,31 +571,20 @@ class ResultSet implements ResultSetInterface
     }
 
     /**
-     * Casts all values from a row brought from a table to the correct
-     * PHP type.
-     *
-     * @param string $alias The table object alias
-     * @param array $values The values to cast
-     * @deprecated 3.2.0 Not used anymore. Type casting is done at the statement level
-     * @return array
-     */
-    protected function _castValues($alias, $values)
-    {
-        deprecationWarning('ResultSet::_castValues() is deprecated, and will be removed in 4.0.0.');
-
-        return $values;
-    }
-
-    /**
      * Returns an array that can be used to describe the internal state of this
      * object.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function __debugInfo()
     {
+        $currentIndex = $this->_index;
+        // toArray() adjusts the current index, so we have to reset it
+        $items = $this->toArray();
+        $this->_index = $currentIndex;
+
         return [
-            'items' => $this->toArray(),
+            'items' => $items,
         ];
     }
 }

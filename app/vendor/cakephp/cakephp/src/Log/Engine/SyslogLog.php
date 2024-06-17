@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) :  Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -13,6 +15,10 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 namespace Cake\Log\Engine;
+
+use Cake\Log\Formatter\DefaultFormatter;
+use Cake\Log\Formatter\LegacySyslogFormatter;
+use function Cake\Core\deprecationWarning;
 
 /**
  * Syslog stream for Logging. Writes logs to the system logger
@@ -40,26 +46,28 @@ class SyslogLog extends BaseLog
      *  Log::config('error', ]
      *      'engine' => 'Syslog',
      *      'levels' => ['emergency', 'alert', 'critical', 'error'],
-     *      'format' => "%s: My-App - %s",
      *      'prefix' => 'Web Server 01'
      *  ]);
      * ```
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_defaultConfig = [
         'levels' => [],
         'scopes' => [],
-        'format' => '%s: %s',
         'flag' => LOG_ODELAY,
         'prefix' => '',
         'facility' => LOG_USER,
+        'formatter' => [
+            'className' => DefaultFormatter::class,
+            'includeDate' => false,
+        ],
     ];
 
     /**
      * Used to map the string names back to their LOG_* constants
      *
-     * @var int[]
+     * @var array<int>
      */
     protected $_levelMap = [
         'emergency' => LOG_EMERG,
@@ -80,17 +88,38 @@ class SyslogLog extends BaseLog
     protected $_open = false;
 
     /**
+     * @inheritDoc
+     */
+    public function __construct(array $config = [])
+    {
+        if (isset($config['format'])) {
+            deprecationWarning(
+                '`format` option is now deprecated in favor of custom formatters. ' .
+                'Switching to `LegacySyslogFormatter`.',
+                0
+            );
+            /** @psalm-suppress DeprecatedClass */
+            $config['formatter'] = [
+                'className' => LegacySyslogFormatter::class,
+                'format' => $config['format'],
+            ];
+        }
+        parent::__construct($config);
+    }
+
+    /**
      * Writes a message to syslog
      *
      * Map the $level back to a LOG_ constant value, split multi-line messages into multiple
      * log messages, pass all messages through the format defined in the configuration
      *
-     * @param string $level The severity level of log you are making.
+     * @param mixed $level The severity level of log you are making.
      * @param string $message The message you want to log.
      * @param array $context Additional information about the logged message
-     * @return bool success of write.
+     * @return void
+     * @see \Cake\Log\Log::$_levels
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         if (!$this->_open) {
             $config = $this->_config;
@@ -103,13 +132,10 @@ class SyslogLog extends BaseLog
             $priority = $this->_levelMap[$level];
         }
 
-        $messages = explode("\n", $this->_format($message, $context));
-        foreach ($messages as $message) {
-            $message = sprintf($this->_config['format'], $level, $message);
-            $this->_write($priority, $message);
+        $lines = explode("\n", $this->_format($message, $context));
+        foreach ($lines as $line) {
+            $this->_write($priority, $this->formatter->format($level, $line, $context));
         }
-
-        return true;
     }
 
     /**
@@ -121,7 +147,7 @@ class SyslogLog extends BaseLog
      * @param int $facility the stream or facility to log to
      * @return void
      */
-    protected function _open($ident, $options, $facility)
+    protected function _open(string $ident, int $options, int $facility): void
     {
         openlog($ident, $options, $facility);
     }
@@ -134,7 +160,7 @@ class SyslogLog extends BaseLog
      * @param string $message Message to log.
      * @return bool
      */
-    protected function _write($priority, $message)
+    protected function _write(int $priority, string $message): bool
     {
         return syslog($priority, $message);
     }

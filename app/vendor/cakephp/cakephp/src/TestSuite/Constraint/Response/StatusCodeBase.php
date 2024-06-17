@@ -1,15 +1,17 @@
 <?php
+declare(strict_types=1);
+
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  * @since         3.7.0
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace Cake\TestSuite\Constraint\Response;
 
@@ -21,17 +23,18 @@ namespace Cake\TestSuite\Constraint\Response;
 abstract class StatusCodeBase extends ResponseBase
 {
     /**
-     * @var int|array
+     * @var array<int, int>|int
      */
     protected $code;
 
     /**
      * Check assertion
      *
-     * @param int|array $other Array of min/max status codes, or a single code
+     * @param array<int, int>|int $other Array of min/max status codes, or a single code
      * @return bool
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
-    public function matches($other)
+    public function matches($other): bool
     {
         if (!$other) {
             $other = $this->code;
@@ -51,7 +54,7 @@ abstract class StatusCodeBase extends ResponseBase
      * @param int $max Max status code (inclusive)
      * @return bool
      */
-    protected function statusCodeBetween($min, $max)
+    protected function statusCodeBetween(int $min, int $max): bool
     {
         return $this->response->getStatusCode() >= $min && $this->response->getStatusCode() <= $max;
     }
@@ -62,8 +65,9 @@ abstract class StatusCodeBase extends ResponseBase
      * @param mixed $other Value
      * @return string
      */
-    protected function failureDescription($other)
+    protected function failureDescription($other): string
     {
+        /** @psalm-suppress InternalMethod */
         return $this->toString();
     }
 }

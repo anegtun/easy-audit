@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -34,14 +36,14 @@ class EagerLoadable
     /**
      * A list of other associations to load from this level.
      *
-     * @var \Cake\ORM\EagerLoadable[]
+     * @var array<\Cake\ORM\EagerLoadable>
      */
     protected $_associations = [];
 
     /**
      * The Association class instance to use for loading the records.
      *
-     * @var \Cake\ORM\Association
+     * @var \Cake\ORM\Association|null
      */
     protected $_instance;
 
@@ -49,7 +51,7 @@ class EagerLoadable
      * A list of options to pass to the association object for loading
      * the records.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_config = [];
 
@@ -73,22 +75,22 @@ class EagerLoadable
      *
      * The property path of `country` will be `author.company`
      *
-     * @var string
+     * @var string|null
      */
     protected $_propertyPath;
 
     /**
-     * Whether or not this level can be fetched using a join.
+     * Whether this level can be fetched using a join.
      *
      * @var bool
      */
     protected $_canBeJoined = false;
 
     /**
-     * Whether or not this level was meant for a "matching" fetch
+     * Whether this level was meant for a "matching" fetch
      * operation
      *
-     * @var bool
+     * @var bool|null
      */
     protected $_forMatching;
 
@@ -104,7 +106,7 @@ class EagerLoadable
      *
      * The target property of `country` will be just `country`
      *
-     * @var string
+     * @var string|null
      */
     protected $_targetProperty;
 
@@ -124,9 +126,9 @@ class EagerLoadable
      * The keys maps to the settable properties in this class.
      *
      * @param string $name The Association name.
-     * @param array $config The list of properties to set.
+     * @param array<string, mixed> $config The list of properties to set.
      */
-    public function __construct($name, array $config = [])
+    public function __construct(string $name, array $config = [])
     {
         $this->_name = $name;
         $allowed = [
@@ -147,7 +149,7 @@ class EagerLoadable
      * @param \Cake\ORM\EagerLoadable $association The association to load.
      * @return void
      */
-    public function addAssociation($name, EagerLoadable $association)
+    public function addAssociation(string $name, EagerLoadable $association): void
     {
         $this->_associations[$name] = $association;
     }
@@ -155,9 +157,9 @@ class EagerLoadable
     /**
      * Returns the Association class instance to use for loading the records.
      *
-     * @return array
+     * @return array<\Cake\ORM\EagerLoadable>
      */
-    public function associations()
+    public function associations(): array
     {
         return $this->_associations;
     }
@@ -165,10 +167,15 @@ class EagerLoadable
     /**
      * Gets the Association class instance to use for loading the records.
      *
-     * @return \Cake\ORM\Association|null
+     * @return \Cake\ORM\Association
+     * @throws \RuntimeException
      */
-    public function instance()
+    public function instance(): Association
     {
+        if ($this->_instance === null) {
+            throw new \RuntimeException('No instance set.');
+        }
+
         return $this->_instance;
     }
 
@@ -176,9 +183,9 @@ class EagerLoadable
      * Gets a dot separated string representing the path of associations
      * that should be followed to fetch this level.
      *
-     * @return string|null
+     * @return string
      */
-    public function aliasPath()
+    public function aliasPath(): string
     {
         return $this->_aliasPath;
     }
@@ -197,43 +204,31 @@ class EagerLoadable
      *
      * @return string|null
      */
-    public function propertyPath()
+    public function propertyPath(): ?string
     {
         return $this->_propertyPath;
     }
 
     /**
-     * Sets whether or not this level can be fetched using a join.
+     * Sets whether this level can be fetched using a join.
      *
      * @param bool $possible The value to set.
      * @return $this
      */
-    public function setCanBeJoined($possible)
+    public function setCanBeJoined(bool $possible)
     {
-        $this->_canBeJoined = (bool)$possible;
+        $this->_canBeJoined = $possible;
 
         return $this;
     }
 
     /**
-     * Gets whether or not this level can be fetched using a join.
+     * Gets whether this level can be fetched using a join.
      *
-     * If called with arguments it sets the value.
-     * As of 3.4.0 the setter part is deprecated, use setCanBeJoined() instead.
-     *
-     * @param bool|null $possible The value to set.
      * @return bool
      */
-    public function canBeJoined($possible = null)
+    public function canBeJoined(): bool
     {
-        if ($possible !== null) {
-            deprecationWarning(
-                'Using EagerLoadable::canBeJoined() as a setter is deprecated. ' .
-                'Use setCanBeJoined() instead.'
-            );
-            $this->setCanBeJoined($possible);
-        }
-
         return $this->_canBeJoined;
     }
 
@@ -241,7 +236,7 @@ class EagerLoadable
      * Sets the list of options to pass to the association object for loading
      * the records.
      *
-     * @param array $config The value to set.
+     * @param array<string, mixed> $config The value to set.
      * @return $this
      */
     public function setConfig(array $config)
@@ -255,44 +250,20 @@ class EagerLoadable
      * Gets the list of options to pass to the association object for loading
      * the records.
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->_config;
     }
 
     /**
-     * Sets the list of options to pass to the association object for loading
-     * the records.
-     *
-     * If called with no arguments it returns the current
-     * value.
-     *
-     * @deprecated 3.4.0 Use setConfig()/getConfig() instead.
-     * @param array|null $config The value to set.
-     * @return array
-     */
-    public function config(array $config = null)
-    {
-        deprecationWarning(
-            'EagerLoadable::config() is deprecated. ' .
-            'Use setConfig()/getConfig() instead.'
-        );
-        if ($config !== null) {
-            $this->setConfig($config);
-        }
-
-        return $this->getConfig();
-    }
-
-    /**
-     * Gets whether or not this level was meant for a
+     * Gets whether this level was meant for a
      * "matching" fetch operation.
      *
      * @return bool|null
      */
-    public function forMatching()
+    public function forMatching(): ?bool
     {
         return $this->_forMatching;
     }
@@ -311,7 +282,7 @@ class EagerLoadable
      *
      * @return string|null
      */
-    public function targetProperty()
+    public function targetProperty(): ?string
     {
         return $this->_targetProperty;
     }
@@ -320,9 +291,9 @@ class EagerLoadable
      * Returns a representation of this object that can be passed to
      * Cake\ORM\EagerLoader::contain()
      *
-     * @return array
+     * @return array<string, array>
      */
-    public function asContainArray()
+    public function asContainArray(): array
     {
         $associations = [];
         foreach ($this->_associations as $assoc) {
@@ -339,5 +310,17 @@ class EagerLoadable
                 'config' => $config,
             ],
         ];
+    }
+
+    /**
+     * Handles cloning eager loadables.
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        foreach ($this->_associations as $i => $association) {
+            $this->_associations[$i] = clone $association;
+        }
     }
 }

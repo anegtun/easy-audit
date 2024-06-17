@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -15,6 +17,7 @@
 namespace Cake\Cache\Engine;
 
 use Cake\Cache\CacheEngine;
+use RuntimeException;
 
 /**
  * Wincache storage engine for cache
@@ -27,7 +30,7 @@ class WincacheEngine extends CacheEngine
      * Contains the compiled group names
      * (prefixed with the global configuration prefix)
      *
-     * @var array
+     * @var array<string>
      */
     protected $_compiledGroupNames = [];
 
@@ -36,13 +39,13 @@ class WincacheEngine extends CacheEngine
      *
      * Called automatically by the cache frontend
      *
-     * @param array $config array of setting for the engine
+     * @param array<string, mixed> $config array of setting for the engine
      * @return bool True if the engine has been successfully initialized, false if not
      */
-    public function init(array $config = [])
+    public function init(array $config = []): bool
     {
         if (!extension_loaded('wincache')) {
-            return false;
+            throw new RuntimeException('The `wincache` extension must be enabled to use WincacheEngine.');
         }
 
         parent::init($config);
@@ -55,12 +58,15 @@ class WincacheEngine extends CacheEngine
      *
      * @param string $key Identifier for the data
      * @param mixed $value Data to be cached
+     * @param \DateInterval|int|null $ttl Optional. The TTL value of this item. If no value is sent and
+     *   the driver supports TTL then the library may set a default value
+     *   for it or let the driver take care of that.
      * @return bool True if the data was successfully cached, false on failure
      */
-    public function write($key, $value)
+    public function set($key, $value, $ttl = null): bool
     {
         $key = $this->_key($key);
-        $duration = $this->_config['duration'];
+        $duration = $this->duration($ttl);
 
         return wincache_ucache_set($key, $value, $duration);
     }
@@ -69,14 +75,18 @@ class WincacheEngine extends CacheEngine
      * Read a key from the cache
      *
      * @param string $key Identifier for the data
-     * @return mixed The cached data, or false if the data doesn't exist,
+     * @param mixed $default Default value to return if the key does not exist.
+     * @return mixed The cached data, or default value if the data doesn't exist,
      *   has expired, or if there was an error fetching it
      */
-    public function read($key)
+    public function get($key, $default = null)
     {
-        $key = $this->_key($key);
+        $value = wincache_ucache_get($this->_key($key), $success);
+        if ($success === false) {
+            return $default;
+        }
 
-        return wincache_ucache_get($key);
+        return $value;
     }
 
     /**
@@ -86,7 +96,7 @@ class WincacheEngine extends CacheEngine
      * @param int $offset How much to increment
      * @return int|false New incremented value, false otherwise
      */
-    public function increment($key, $offset = 1)
+    public function increment(string $key, int $offset = 1)
     {
         $key = $this->_key($key);
 
@@ -100,7 +110,7 @@ class WincacheEngine extends CacheEngine
      * @param int $offset How much to subtract
      * @return int|false New decremented value, false otherwise
      */
-    public function decrement($key, $offset = 1)
+    public function decrement(string $key, int $offset = 1)
     {
         $key = $this->_key($key);
 
@@ -113,7 +123,7 @@ class WincacheEngine extends CacheEngine
      * @param string $key Identifier for the data
      * @return bool True if the value was successfully deleted, false if it didn't exist or couldn't be removed
      */
-    public function delete($key)
+    public function delete($key): bool
     {
         $key = $this->_key($key);
 
@@ -124,15 +134,10 @@ class WincacheEngine extends CacheEngine
      * Delete all keys from the cache. This will clear every
      * item in the cache matching the cache config prefix.
      *
-     * @param bool $check If true, nothing will be cleared, as entries will
-     *   naturally expire in wincache..
      * @return bool True Returns true.
      */
-    public function clear($check)
+    public function clear(): bool
     {
-        if ($check) {
-            return true;
-        }
         $info = wincache_ucache_info();
         $cacheKeys = $info['ucache_entries'];
         unset($info);
@@ -150,9 +155,9 @@ class WincacheEngine extends CacheEngine
      * If the group initial value was not found, then it initializes
      * the group accordingly.
      *
-     * @return string[]
+     * @return array<string>
      */
-    public function groups()
+    public function groups(): array
     {
         if (empty($this->_compiledGroupNames)) {
             foreach ($this->_config['groups'] as $group) {
@@ -187,7 +192,7 @@ class WincacheEngine extends CacheEngine
      * @param string $group The group to clear.
      * @return bool success
      */
-    public function clearGroup($group)
+    public function clearGroup(string $group): bool
     {
         $success = false;
         wincache_ucache_inc($this->_config['prefix'] . $group, 1, $success);

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -54,7 +56,7 @@ class BufferedIterator extends Collection implements Countable, Serializable
     protected $_key;
 
     /**
-     * Whether or not the internal iterator's rewind method was already
+     * Whether the internal iterator's rewind method was already
      * called
      *
      * @var bool
@@ -62,7 +64,7 @@ class BufferedIterator extends Collection implements Countable, Serializable
     protected $_started = false;
 
     /**
-     * Whether or not the internal iterator has reached its end.
+     * Whether the internal iterator has reached its end.
      *
      * @var bool
      */
@@ -72,9 +74,9 @@ class BufferedIterator extends Collection implements Countable, Serializable
      * Maintains an in-memory cache of the results yielded by the internal
      * iterator.
      *
-     * @param array|\Traversable $items The items to be filtered.
+     * @param iterable $items The items to be filtered.
      */
-    public function __construct($items)
+    public function __construct(iterable $items)
     {
         $this->_buffer = new SplDoublyLinkedList();
         parent::__construct($items);
@@ -85,6 +87,7 @@ class BufferedIterator extends Collection implements Countable, Serializable
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->_key;
@@ -95,6 +98,7 @@ class BufferedIterator extends Collection implements Countable, Serializable
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->_current;
@@ -105,7 +109,7 @@ class BufferedIterator extends Collection implements Countable, Serializable
      *
      * @return void
      */
-    public function rewind()
+    public function rewind(): void
     {
         if ($this->_index === 0 && !$this->_started) {
             $this->_started = true;
@@ -118,11 +122,11 @@ class BufferedIterator extends Collection implements Countable, Serializable
     }
 
     /**
-     * Returns whether or not the iterator has more elements
+     * Returns whether the iterator has more elements
      *
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         if ($this->_buffer->offsetExists($this->_index)) {
             $current = $this->_buffer->offsetGet($this->_index);
@@ -153,7 +157,7 @@ class BufferedIterator extends Collection implements Countable, Serializable
      *
      * @return void
      */
-    public function next()
+    public function next(): void
     {
         $this->_index++;
 
@@ -171,7 +175,7 @@ class BufferedIterator extends Collection implements Countable, Serializable
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         if (!$this->_started) {
             $this->rewind();
@@ -190,7 +194,7 @@ class BufferedIterator extends Collection implements Countable, Serializable
      *
      * @return string
      */
-    public function serialize()
+    public function serialize(): string
     {
         if (!$this->_finished) {
             $this->count();
@@ -200,15 +204,47 @@ class BufferedIterator extends Collection implements Countable, Serializable
     }
 
     /**
+     * Magic method used for serializing the iterator instance.
+     *
+     * @return array
+     */
+    public function __serialize(): array
+    {
+        if (!$this->_finished) {
+            $this->count();
+        }
+
+        return iterator_to_array($this->_buffer);
+    }
+
+    /**
      * Unserializes the passed string and rebuilds the BufferedIterator instance
      *
-     * @param string $buffer The serialized buffer iterator
+     * @param string $collection The serialized buffer iterator
      * @return void
      */
-    public function unserialize($buffer)
+    public function unserialize($collection): void
     {
         $this->__construct([]);
-        $this->_buffer = unserialize($buffer);
+        $this->_buffer = unserialize($collection);
+        $this->_started = true;
+        $this->_finished = true;
+    }
+
+    /**
+     * Magic method used to rebuild the iterator instance.
+     *
+     * @param array $data Data array.
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->__construct([]);
+
+        foreach ($data as $value) {
+            $this->_buffer->push($value);
+        }
+
         $this->_started = true;
         $this->_finished = true;
     }

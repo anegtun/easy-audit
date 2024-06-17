@@ -1,28 +1,33 @@
 <?php
+declare(strict_types=1);
+
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://cakephp.org CakePHP(tm) Project
  * @since         0.1.0
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace Bake\Shell\Task;
 
 use Bake\Utility\CommonOptionsTrait;
+use Bake\Utility\Process;
 use Cake\Cache\Cache;
+use Cake\Console\ConsoleOptionParser;
 use Cake\Console\Shell;
 use Cake\Core\Configure;
 use Cake\Core\ConventionsTrait;
-use Cake\Filesystem\File;
 
 /**
  * Base class for Bake Tasks.
+ *
+ * @deprecated 2.0.0 Support for Tasks will be removed in Bake 3.0
  */
 class BakeTask extends Shell
 {
@@ -44,26 +49,12 @@ class BakeTask extends Shell
     public $pathFragment;
 
     /**
-     * Name of plugin
-     *
-     * @var string
-     */
-    public $plugin = null;
-
-    /**
-     * The db connection being used for baking
-     *
-     * @var string
-     */
-    public $connection = null;
-
-    /**
      * Disable caching and enable debug for baking.
      * This forces the most current database schema to be used.
      *
      * @return void
      */
-    public function startup()
+    public function startup(): void
     {
         Configure::write('debug', true);
         Cache::disable();
@@ -76,7 +67,7 @@ class BakeTask extends Shell
      *
      * @return void
      */
-    public function initialize()
+    public function initialize(): void
     {
         if (empty($this->connection) && !empty($this->params['connection'])) {
             $this->connection = $this->params['connection'];
@@ -90,7 +81,7 @@ class BakeTask extends Shell
      *
      * @return string The inflected prefix path.
      */
-    protected function _getPrefix()
+    protected function _getPrefix(): string
     {
         $prefix = $this->param('prefix');
         if (!$prefix) {
@@ -107,10 +98,10 @@ class BakeTask extends Shell
      *
      * @return string Path to output.
      */
-    public function getPath()
+    public function getPath(): string
     {
         $path = APP . $this->pathFragment;
-        if (isset($this->plugin)) {
+        if ($this->plugin) {
             $path = $this->_pluginPath($this->plugin) . 'src/' . $this->pathFragment;
         }
         $prefix = $this->_getPrefix();
@@ -125,7 +116,7 @@ class BakeTask extends Shell
      * Base execute method parses some parameters and sets some properties on the bake tasks.
      * call when overriding execute()
      *
-     * @return void
+     * @return int|null
      */
     public function main()
     {
@@ -134,13 +125,13 @@ class BakeTask extends Shell
             $this->plugin = implode('/', array_map([$this, '_camelize'], $parts));
             if (strpos($this->plugin, '\\')) {
                 $this->abort('Invalid plugin namespace separator, please use / instead of \ for plugins.');
-
-                return;
             }
         }
         if (isset($this->params['connection'])) {
             $this->connection = $this->params['connection'];
         }
+
+        return static::CODE_SUCCESS;
     }
 
     /**
@@ -150,38 +141,11 @@ class BakeTask extends Shell
      * @return void
      * @throws \RuntimeException if any errors occurred during the execution
      */
-    public function callProcess($command)
+    public function callProcess(string $command): void
     {
-        $descriptorSpec = [
-            0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w']
-        ];
-        $this->_io->verbose('Running ' . $command);
-        $process = proc_open(
-            $command,
-            $descriptorSpec,
-            $pipes
-        );
-        if (!is_resource($process)) {
-            $this->abort('Could not start subprocess.');
-
-            return;
-        }
-        fclose($pipes[0]);
-
-        $output = stream_get_contents($pipes[1]);
-        fclose($pipes[1]);
-
-        $error = stream_get_contents($pipes[2]);
-        fclose($pipes[2]);
-        $exit = proc_close($process);
-
-        if ($exit !== 0) {
-            throw new \RuntimeException($error);
-        }
-
-        $this->out($output);
+        $process = new Process($this->_io);
+        $out = $process->call($command);
+        $this->out($out);
     }
 
     /**
@@ -192,10 +156,14 @@ class BakeTask extends Shell
      * @param string $name The name to possibly split.
      * @return string The name without the plugin prefix.
      */
-    protected function _getName($name)
+    protected function _getName(string $name): string
     {
+        if (empty($name)) {
+            return $name;
+        }
+
         if (strpos($name, '.')) {
-            list($plugin, $name) = pluginSplit($name);
+            [$plugin, $name] = pluginSplit($name);
             $this->plugin = $this->params['plugin'] = $plugin;
         }
 
@@ -208,11 +176,10 @@ class BakeTask extends Shell
      * @param string $path Path to folder which contains 'empty' file.
      * @return void
      */
-    protected function _deleteEmptyFile($path)
+    protected function _deleteEmptyFile(string $path): void
     {
-        $File = new File($path);
-        if ($File->exists()) {
-            $File->delete();
+        if (file_exists($path)) {
+            unlink($path);
             $this->out(sprintf('<success>Deleted</success> `%s`', $path), 1, Shell::QUIET);
         }
     }
@@ -224,7 +191,7 @@ class BakeTask extends Shell
      *
      * @return \Cake\Console\ConsoleOptionParser
      */
-    public function getOptionParser()
+    public function getOptionParser(): ConsoleOptionParser
     {
         return $this->_setCommonOptions(parent::getOptionParser());
     }

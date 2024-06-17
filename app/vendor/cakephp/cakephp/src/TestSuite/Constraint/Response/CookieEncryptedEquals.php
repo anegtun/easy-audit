@@ -1,21 +1,22 @@
 <?php
+declare(strict_types=1);
+
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  * @since         3.7.0
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace Cake\TestSuite\Constraint\Response;
 
 use Cake\Http\Response;
 use Cake\Utility\CookieCryptTrait;
-use InvalidArgumentException;
 
 /**
  * CookieEncryptedEquals
@@ -25,6 +26,11 @@ use InvalidArgumentException;
 class CookieEncryptedEquals extends CookieEquals
 {
     use CookieCryptTrait;
+
+    /**
+     * @var \Cake\Http\Response
+     */
+    protected $response;
 
     /**
      * @var string
@@ -39,12 +45,12 @@ class CookieEncryptedEquals extends CookieEquals
     /**
      * Constructor.
      *
-     * @param Response $response Response
+     * @param \Cake\Http\Response|null $response A response instance.
      * @param string $cookieName Cookie name
      * @param string $mode Mode
      * @param string $key Key
      */
-    public function __construct(Response $response, $cookieName, $mode, $key)
+    public function __construct(?Response $response, string $cookieName, string $mode, string $key)
     {
         parent::__construct($response, $cookieName);
 
@@ -58,11 +64,11 @@ class CookieEncryptedEquals extends CookieEquals
      * @param mixed $other Expected content
      * @return bool
      */
-    public function matches($other)
+    public function matches($other): bool
     {
         $cookie = $this->response->getCookie($this->cookieName);
 
-        return $this->_decrypt($cookie['value'], $this->mode) === $other;
+        return $cookie !== null && $this->_decrypt($cookie['value'], $this->mode) === $other;
     }
 
     /**
@@ -70,7 +76,7 @@ class CookieEncryptedEquals extends CookieEquals
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         return sprintf('is encrypted in cookie \'%s\'', $this->cookieName);
     }
@@ -80,7 +86,7 @@ class CookieEncryptedEquals extends CookieEquals
      *
      * @return string
      */
-    protected function _getCookieEncryptionKey()
+    protected function _getCookieEncryptionKey(): string
     {
         return $this->key;
     }

@@ -1,6 +1,7 @@
 parameters:
-    autoload_files:
+    level: 6
+    checkMissingIterableValueType: false
+    paths:
+        - src/
+    bootstrapFiles:
         - tests/bootstrap.php
-    ignoreErrors:
-        - '#Call to an undefined method Cake\\Database\\Type::getDateTimeClassName\(\)#'
-        - '#Constant TESTS not found#'

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,40 +16,25 @@
  */
 namespace Cake\View;
 
-use Cake\Event\EventManager;
-use Cake\Http\Response;
-use Cake\Http\ServerRequest;
-
 /**
  * A view class that is used for AJAX responses.
- * Currently only switches the default layout and sets the response type - which just maps to
+ * Currently, only switches the default layout and sets the response type - which just maps to
  * text/html by default.
  */
 class AjaxView extends View
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected $layout = 'ajax';
 
     /**
-     * Constructor
+     * Get content type for this view.
      *
-     * @param \Cake\Http\ServerRequest|null $request The request object.
-     * @param \Cake\Http\Response|null $response The response object.
-     * @param \Cake\Event\EventManager|null $eventManager Event manager object.
-     * @param array $viewOptions View options.
+     * @return string
      */
-    public function __construct(
-        ServerRequest $request = null,
-        Response $response = null,
-        EventManager $eventManager = null,
-        array $viewOptions = []
-    ) {
-        if ($response && $response instanceof Response) {
-            $response = $response->withType('ajax');
-        }
-
-        parent::__construct($request, $response, $eventManager, $viewOptions);
+    public static function contentType(): string
+    {
+        return 'text/html';
     }
 }

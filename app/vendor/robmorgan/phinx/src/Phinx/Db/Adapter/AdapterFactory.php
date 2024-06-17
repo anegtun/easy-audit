@@ -1,32 +1,13 @@
 <?php
+
 /**
- * Phinx
- *
- * (The MIT license)
- * Copyright (c) 2015 Rob Morgan
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated * documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * @package    Phinx
- * @subpackage Phinx\Migration
+ * MIT License
+ * For full license information, please view the LICENSE file that was distributed with this source code.
  */
+
 namespace Phinx\Db\Adapter;
+
+use RuntimeException;
 
 /**
  * Adapter factory and registry.
@@ -38,7 +19,7 @@ namespace Phinx\Db\Adapter;
 class AdapterFactory
 {
     /**
-     * @var \Phinx\Db\Adapter\AdapterFactory
+     * @var \Phinx\Db\Adapter\AdapterFactory|null
      */
     protected static $instance;
 
@@ -59,7 +40,8 @@ class AdapterFactory
     /**
      * Class map of database adapters, indexed by PDO::ATTR_DRIVER_NAME.
      *
-     * @var array
+     * @var array<string, \Phinx\Db\Adapter\AdapterInterface|string>
+     * @phpstan-var array<string, \Phinx\Db\Adapter\AdapterInterface|class-string<\Phinx\Db\Adapter\AdapterInterface>>
      */
     protected $adapters = [
         'mysql' => 'Phinx\Db\Adapter\MysqlAdapter',
@@ -71,7 +53,7 @@ class AdapterFactory
     /**
      * Class map of adapters wrappers, indexed by name.
      *
-     * @var array
+     * @var array<string, \Phinx\Db\Adapter\WrapperInterface|string>
      */
     protected $wrappers = [
         'prefix' => 'Phinx\Db\Adapter\TablePrefixAdapter',
@@ -80,19 +62,19 @@ class AdapterFactory
     ];
 
     /**
-     * Add or replace an adapter with a fully qualified class name.
+     * Register an adapter class with a given name.
      *
+     * @param string $name Name
+     * @param object|string $class Class
      * @throws \RuntimeException
-     * @param  string $name
-     * @param  string $class
      * @return $this
      */
-    public function registerAdapter($name, $class)
+    public function registerAdapter(string $name, $class)
     {
         if (!is_subclass_of($class, 'Phinx\Db\Adapter\AdapterInterface')) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Adapter class "%s" must implement Phinx\\Db\\Adapter\\AdapterInterface',
-                $class
+                is_string($class) ? $class : get_class($class)
             ));
         }
         $this->adapters[$name] = $class;
@@ -103,14 +85,15 @@ class AdapterFactory
     /**
      * Get an adapter class by name.
      *
+     * @param string $name Name
      * @throws \RuntimeException
-     * @param  string $name
-     * @return string
+     * @return object|string
+     * @phpstan-return object|class-string<\Phinx\Db\Adapter\AdapterInterface>
      */
-    protected function getClass($name)
+    protected function getClass(string $name)
     {
         if (empty($this->adapters[$name])) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Adapter "%s" has not been registered',
                 $name
             ));
@@ -122,11 +105,11 @@ class AdapterFactory
     /**
      * Get an adapter instance by name.
      *
-     * @param  string $name
-     * @param  array  $options
+     * @param string $name Name
+     * @param array<string, mixed> $options Options
      * @return \Phinx\Db\Adapter\AdapterInterface
      */
-    public function getAdapter($name, array $options)
+    public function getAdapter(string $name, array $options): AdapterInterface
     {
         $class = $this->getClass($name);
 
@@ -136,17 +119,17 @@ class AdapterFactory
     /**
      * Add or replace a wrapper with a fully qualified class name.
      *
+     * @param string $name Name
+     * @param object|string $class Class
      * @throws \RuntimeException
-     * @param  string $name
-     * @param  string $class
      * @return $this
      */
-    public function registerWrapper($name, $class)
+    public function registerWrapper(string $name, $class)
     {
         if (!is_subclass_of($class, 'Phinx\Db\Adapter\WrapperInterface')) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Wrapper class "%s" must be implement Phinx\\Db\\Adapter\\WrapperInterface',
-                $class
+                is_string($class) ? $class : get_class($class)
             ));
         }
         $this->wrappers[$name] = $class;
@@ -157,14 +140,14 @@ class AdapterFactory
     /**
      * Get a wrapper class by name.
      *
+     * @param string $name Name
      * @throws \RuntimeException
-     * @param  string $name
-     * @return string
+     * @return \Phinx\Db\Adapter\WrapperInterface|string
      */
-    protected function getWrapperClass($name)
+    protected function getWrapperClass(string $name)
     {
         if (empty($this->wrappers[$name])) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Wrapper "%s" has not been registered',
                 $name
             ));
@@ -176,11 +159,11 @@ class AdapterFactory
     /**
      * Get a wrapper instance by name.
      *
-     * @param  string $name
-     * @param  \Phinx\Db\Adapter\AdapterInterface $adapter
-     * @return \Phinx\Db\Adapter\AdapterInterface
+     * @param string $name Name
+     * @param \Phinx\Db\Adapter\AdapterInterface $adapter Adapter
+     * @return \Phinx\Db\Adapter\AdapterWrapper
      */
-    public function getWrapper($name, AdapterInterface $adapter)
+    public function getWrapper(string $name, AdapterInterface $adapter): AdapterWrapper
     {
         $class = $this->getWrapperClass($name);
 

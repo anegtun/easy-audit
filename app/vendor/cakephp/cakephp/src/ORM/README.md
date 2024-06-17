@@ -27,8 +27,8 @@ specify a driver to use:
 use Cake\Datasource\ConnectionManager;
 
 ConnectionManager::setConfig('default', [
-	'className' => 'Cake\Database\Connection',
-	'driver' => 'Cake\Database\Driver\Mysql',
+	'className' => \Cake\Database\Connection::class,
+	'driver' => \Cake\Database\Driver\Mysql::class,
 	'database' => 'test',
 	'username' => 'root',
 	'password' => 'secret',
@@ -83,7 +83,7 @@ supports 4 association types out of the box:
 * belongsToMany - E.g. An article belongsToMany tags.
 
 You define associations in your table's `initialize()` method. See the
-[documentation](https://book.cakephp.org/3/en/orm/associations.html) for
+[documentation](https://book.cakephp.org/4/en/orm/associations.html) for
 complete examples.
 
 ## Reading Data
@@ -99,8 +99,8 @@ foreach ($articles->find() as $article) {
 }
 ```
 
-You can use the [query builder](https://book.cakephp.org/3/en/orm/query-builder.html) to create
-complex queries, and a [variety of methods](https://book.cakephp.org/3/en/orm/retrieving-data-and-resultsets.html)
+You can use the [query builder](https://book.cakephp.org/4/en/orm/query-builder.html) to create
+complex queries, and a [variety of methods](https://book.cakephp.org/4/en/orm/retrieving-data-and-resultsets.html)
 to access your data.
 
 ## Saving Data
@@ -134,7 +134,7 @@ $articles->save($article, [
 ```
 
 The above shows how you can easily marshal and save an entity and its
-associations in a simple & powerful way. Consult the [ORM documentation](https://book.cakephp.org/3/en/orm/saving-data.html)
+associations in a simple & powerful way. Consult the [ORM documentation](https://book.cakephp.org/4/en/orm/saving-data.html)
 for more in-depth examples.
 
 ## Deleting Data
@@ -151,6 +151,7 @@ $articles->delete($article);
 
 It is recommended to enable metadata cache for production systems to avoid performance issues.
 For e.g. file system strategy your bootstrap file could look like this:
+
 ```php
 use Cake\Cache\Engine\FileEngine;
 
@@ -159,9 +160,11 @@ $cacheConfig = [
    'duration' => '+1 year',
    'serialize' => true,
    'prefix'    => 'orm_',
-],
+];
 Cache::setConfig('_cake_model_', $cacheConfig);
 ```
+
+Cache configs are optional, so you must require ``cachephp/cache`` to add one.
 
 ## Creating Custom Table and Entity Classes
 
@@ -234,5 +237,5 @@ Configure::write('App.namespace', 'My\Log\SubNamespace');
 
 ## Additional Documentation
 
-Consult [the CakePHP ORM documentation](https://book.cakephp.org/3/en/orm.html)
+Consult [the CakePHP ORM documentation](https://book.cakephp.org/4/en/orm.html)
 for more in-depth documentation.

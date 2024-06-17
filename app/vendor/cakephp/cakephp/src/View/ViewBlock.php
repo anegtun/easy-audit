@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,7 +16,7 @@
  */
 namespace Cake\View;
 
-use Cake\Core\Exception\Exception;
+use Cake\Core\Exception\CakeException;
 
 /**
  * ViewBlock implements the concept of Blocks or Slots in the View layer.
@@ -29,33 +31,33 @@ class ViewBlock
      *
      * @var string
      */
-    const OVERRIDE = 'override';
+    public const OVERRIDE = 'override';
 
     /**
      * Append content
      *
      * @var string
      */
-    const APPEND = 'append';
+    public const APPEND = 'append';
 
     /**
      * Prepend content
      *
      * @var string
      */
-    const PREPEND = 'prepend';
+    public const PREPEND = 'prepend';
 
     /**
      * Block content. An array of blocks indexed by name.
      *
-     * @var string[]
+     * @var array<string>
      */
     protected $_blocks = [];
 
     /**
      * The active blocks being captured.
      *
-     * @var array
+     * @var array<string>
      */
     protected $_active = [];
 
@@ -80,13 +82,13 @@ class ViewBlock
      * @param string $mode If ViewBlock::OVERRIDE existing content will be overridden by new content.
      *   If ViewBlock::APPEND content will be appended to existing content.
      *   If ViewBlock::PREPEND it will be prepended.
-     * @throws \Cake\Core\Exception\Exception When starting a block twice
+     * @throws \Cake\Core\Exception\CakeException When starting a block twice
      * @return void
      */
-    public function start($name, $mode = ViewBlock::OVERRIDE)
+    public function start(string $name, string $mode = ViewBlock::OVERRIDE): void
     {
         if (array_key_exists($name, $this->_active)) {
-            throw new Exception(sprintf("A view block with the name '%s' is already/still open.", $name));
+            throw new CakeException(sprintf("A view block with the name '%s' is already/still open.", $name));
         }
         $this->_active[$name] = $mode;
         ob_start();
@@ -98,7 +100,7 @@ class ViewBlock
      * @return void
      * @see \Cake\View\ViewBlock::start()
      */
-    public function end()
+    public function end(): void
     {
         if ($this->_discardActiveBufferOnEnd) {
             $this->_discardActiveBufferOnEnd = false;
@@ -106,17 +108,20 @@ class ViewBlock
 
             return;
         }
-        if ($this->_active) {
-            $mode = end($this->_active);
-            $active = key($this->_active);
-            $content = ob_get_clean();
-            if ($mode === ViewBlock::OVERRIDE) {
-                $this->_blocks[$active] = (string)$content;
-            } else {
-                $this->concat($active, $content, $mode);
-            }
-            array_pop($this->_active);
+
+        if (!$this->_active) {
+            return;
         }
+
+        $mode = end($this->_active);
+        $active = key($this->_active);
+        $content = ob_get_clean();
+        if ($mode === ViewBlock::OVERRIDE) {
+            $this->_blocks[$active] = (string)$content;
+        } else {
+            $this->concat($active, $content, $mode);
+        }
+        array_pop($this->_active);
     }
 
     /**
@@ -134,7 +139,7 @@ class ViewBlock
      *   If ViewBlock::PREPEND it will be prepended.
      * @return void
      */
-    public function concat($name, $value = null, $mode = ViewBlock::APPEND)
+    public function concat(string $name, $value = null, $mode = ViewBlock::APPEND): void
     {
         if ($value === null) {
             $this->start($name, $mode);
@@ -161,7 +166,7 @@ class ViewBlock
      *   to string.
      * @return void
      */
-    public function set($name, $value)
+    public function set(string $name, $value): void
     {
         $this->_blocks[$name] = (string)$value;
     }
@@ -173,13 +178,9 @@ class ViewBlock
      * @param string $default Default string
      * @return string The block content or $default if the block does not exist.
      */
-    public function get($name, $default = '')
+    public function get(string $name, string $default = ''): string
     {
-        if (!isset($this->_blocks[$name])) {
-            return $default;
-        }
-
-        return $this->_blocks[$name];
+        return $this->_blocks[$name] ?? $default;
     }
 
     /**
@@ -188,7 +189,7 @@ class ViewBlock
      * @param string $name Name of the block
      * @return bool
      */
-    public function exists($name)
+    public function exists(string $name): bool
     {
         return isset($this->_blocks[$name]);
     }
@@ -196,9 +197,9 @@ class ViewBlock
     /**
      * Get the names of all the existing blocks.
      *
-     * @return string[] An array containing the blocks.
+     * @return array<string> An array containing the blocks.
      */
-    public function keys()
+    public function keys(): array
     {
         return array_keys($this->_blocks);
     }
@@ -208,7 +209,7 @@ class ViewBlock
      *
      * @return string|null Either null or the name of the last open block.
      */
-    public function active()
+    public function active(): ?string
     {
         end($this->_active);
 
@@ -218,9 +219,9 @@ class ViewBlock
     /**
      * Get the unclosed/active blocks. Key is name, value is mode.
      *
-     * @return string[] An array of unclosed blocks.
+     * @return array<string> An array of unclosed blocks.
      */
-    public function unclosed()
+    public function unclosed(): array
     {
         return $this->_active;
     }

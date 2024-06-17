@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * MissingEntityException file
  *
@@ -16,15 +18,15 @@
  */
 namespace Cake\ORM\Exception;
 
-use Cake\Core\Exception\Exception;
+use Cake\Core\Exception\CakeException;
 
 /**
  * Exception raised when an Entity could not be found.
  */
-class MissingEntityException extends Exception
+class MissingEntityException extends CakeException
 {
     /**
-     * @inheritDoc
+     * @var string
      */
     protected $_messageTemplate = 'Entity class %s could not be found.';
 }

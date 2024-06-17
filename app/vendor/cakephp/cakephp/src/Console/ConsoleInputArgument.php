@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -49,17 +51,17 @@ class ConsoleInputArgument
     /**
      * An array of valid choices for this argument.
      *
-     * @var string[]
+     * @var array<string>
      */
     protected $_choices;
 
     /**
      * Make a new Input Argument
      *
-     * @param string|array $name The long name of the option, or an array with all the properties.
+     * @param array<string, mixed>|string $name The long name of the option, or an array with all the properties.
      * @param string $help The help text for this option
      * @param bool $required Whether this argument is required. Missing required args will trigger exceptions
-     * @param string[] $choices Valid choices for this option.
+     * @param array<string> $choices Valid choices for this option.
      */
     public function __construct($name, $help = '', $required = false, $choices = [])
     {
@@ -68,6 +70,7 @@ class ConsoleInputArgument
                 $this->{'_' . $key} = $value;
             }
         } else {
+            /** @psalm-suppress PossiblyInvalidPropertyAssignmentValue */
             $this->_name = $name;
             $this->_help = $help;
             $this->_required = $required;
@@ -80,7 +83,7 @@ class ConsoleInputArgument
      *
      * @return string Value of this->_name.
      */
-    public function name()
+    public function name(): string
     {
         return $this->_name;
     }
@@ -91,9 +94,10 @@ class ConsoleInputArgument
      * @param \Cake\Console\ConsoleInputArgument $argument ConsoleInputArgument to compare to.
      * @return bool
      */
-    public function isEqualTo(ConsoleInputArgument $argument)
+    public function isEqualTo(ConsoleInputArgument $argument): bool
     {
-        return $this->usage() === $argument->usage();
+        return $this->name() === $argument->name() &&
+            $this->usage() === $argument->usage();
     }
 
     /**
@@ -102,7 +106,7 @@ class ConsoleInputArgument
      * @param int $width The width to make the name of the option.
      * @return string
      */
-    public function help($width = 0)
+    public function help(int $width = 0): string
     {
         $name = $this->_name;
         if (strlen($name) < $width) {
@@ -124,7 +128,7 @@ class ConsoleInputArgument
      *
      * @return string
      */
-    public function usage()
+    public function usage(): string
     {
         $name = $this->_name;
         if ($this->_choices) {
@@ -143,9 +147,9 @@ class ConsoleInputArgument
      *
      * @return bool
      */
-    public function isRequired()
+    public function isRequired(): bool
     {
-        return (bool)$this->_required;
+        return $this->_required;
     }
 
     /**
@@ -155,7 +159,7 @@ class ConsoleInputArgument
      * @return true
      * @throws \Cake\Console\Exception\ConsoleException
      */
-    public function validChoice($value)
+    public function validChoice(string $value): bool
     {
         if (empty($this->_choices)) {
             return true;
@@ -180,12 +184,12 @@ class ConsoleInputArgument
      * @param \SimpleXMLElement $parent The parent element.
      * @return \SimpleXMLElement The parent with this argument appended.
      */
-    public function xml(SimpleXMLElement $parent)
+    public function xml(SimpleXMLElement $parent): SimpleXMLElement
     {
         $option = $parent->addChild('argument');
         $option->addAttribute('name', $this->_name);
         $option->addAttribute('help', $this->_help);
-        $option->addAttribute('required', (int)$this->isRequired());
+        $option->addAttribute('required', (string)(int)$this->isRequired());
         $choices = $option->addChild('choices');
         foreach ($this->_choices as $valid) {
             $choices->addChild('choice', $valid);

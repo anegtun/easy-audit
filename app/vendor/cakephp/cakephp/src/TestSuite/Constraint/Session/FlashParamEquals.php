@@ -1,18 +1,22 @@
 <?php
+declare(strict_types=1);
+
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  * @since         3.7.0
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace Cake\TestSuite\Constraint\Session;
 
+use Cake\Http\Session;
+use Cake\Utility\Hash;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Constraint\Constraint;
 
@@ -46,15 +50,13 @@ class FlashParamEquals extends Constraint
     /**
      * Constructor
      *
-     * @param \Cake\Http\Session $session Session
+     * @param \Cake\Http\Session|null $session Session
      * @param string $key Flash key
      * @param string $param Param to check
-     * @param int $at Expected index
+     * @param int|null $at Expected index
      */
-    public function __construct($session, $key, $param, $at = null)
+    public function __construct(?Session $session, string $key, string $param, ?int $at = null)
     {
-        parent::__construct();
-
         if (!$session) {
             $message = 'There is no stored session data. Perhaps you need to run a request?';
             $message .= ' Additionally, ensure `$this->enableRetainFlashMessages()` has been enabled for the test.';
@@ -73,11 +75,16 @@ class FlashParamEquals extends Constraint
      * @param mixed $other Value to compare with
      * @return bool
      */
-    public function matches($other)
+    public function matches($other): bool
     {
-        $messages = (array)$this->session->read('Flash.' . $this->key);
+        // Server::run calls Session::close at the end of the request.
+        // Which means, that we cannot use Session object here to access the session data.
+        // Call to Session::read will start new session (and will erase the data).
+        /** @psalm-suppress InvalidScalarArgument */
+        $messages = (array)Hash::get($_SESSION, 'Flash.' . $this->key);
         if ($this->at) {
-            $messages = [$this->session->read('Flash.' . $this->key . '.' . $this->at)];
+            /** @psalm-suppress InvalidScalarArgument */
+            $messages = [Hash::get($_SESSION, 'Flash.' . $this->key . '.' . $this->at)];
         }
 
         foreach ($messages as $message) {
@@ -97,7 +104,7 @@ class FlashParamEquals extends Constraint
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         if ($this->at !== null) {
             return sprintf('is in \'%s\' %s #%d', $this->key, $this->param, $this->at);

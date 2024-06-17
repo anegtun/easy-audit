@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,7 +16,10 @@
  */
 namespace Cake\TestSuite\Stub;
 
-use Exception;
+use Cake\Error\ExceptionRendererInterface;
+use LogicException;
+use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 /**
  * Test Exception Renderer.
@@ -26,17 +31,35 @@ use Exception;
  * @see \Cake\TestSuite\IntegrationTestCase::disableErrorHandlerMiddleware()
  * @internal
  */
-class TestExceptionRenderer
+class TestExceptionRenderer implements ExceptionRendererInterface
 {
     /**
      * Simply rethrow the given exception
      *
-     * @param \Exception $exception Exception.
+     * @param \Throwable $exception Exception.
      * @return void
-     * @throws \Exception $exception Rethrows the passed exception.
+     * @throws \Throwable $exception Rethrows the passed exception.
      */
-    public function __construct(Exception $exception)
+    public function __construct(Throwable $exception)
     {
         throw $exception;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function render(): ResponseInterface
+    {
+        throw new LogicException('You cannot use this class to render exceptions.');
+    }
+
+    /**
+     * Part of upcoming interface requirements
+     *
+     * @param \Psr\Http\Message\ResponseInterface|string $output The output or response to send.
+     * @return void
+     */
+    public function write($output): void
+    {
     }
 }
