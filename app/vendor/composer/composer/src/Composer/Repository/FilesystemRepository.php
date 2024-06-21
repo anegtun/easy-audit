@@ -20,7 +20,6 @@ use Composer\Package\RootPackageInterface;
 use Composer\Package\AliasPackage;
 use Composer\Package\Dumper\ArrayDumper;
 use Composer\Installer\InstallationManager;
-use Composer\Pcre\Preg;
 use Composer\Util\Filesystem;
 use Composer\Util\Platform;
 
@@ -175,34 +174,6 @@ class FilesystemRepository extends WritableArrayRepository
     }
 
     /**
-     * As we load the file from vendor dir during bootstrap, we need to make sure it contains only expected code before executing it
-     *
-     * @internal
-     */
-    public static function safelyLoadInstalledVersions(string $path): bool
-    {
-        $installedVersionsData = @file_get_contents($path);
-        $pattern = <<<'REGEX'
-{(?(DEFINE)
-   (?<number>  -? \s*+ \d++ (?:\.\d++)? )
-   (?<boolean> true | false | null )
-   (?<strings> (?&string) (?: \s*+ \. \s*+ (?&string))*+ )
-   (?<string>  (?: " (?:[^"\\$]*+ | \\ ["\\0] )* " | ' (?:[^'\\]*+ | \\ ['\\] )* ' ) )
-   (?<array>   array\( \s*+ (?: (?:(?&number)|(?&strings)) \s*+ => \s*+ (?: (?:__DIR__ \s*+ \. \s*+)? (?&strings) | (?&value) ) \s*+, \s*+ )*+  \s*+ \) )
-   (?<value>   (?: (?&number) | (?&boolean) | (?&strings) | (?&array) ) )
-)
-^<\?php\s++return\s++(?&array)\s*+;$}ix
-REGEX;
-        if (is_string($installedVersionsData) && Preg::isMatch($pattern, trim($installedVersionsData))) {
-            \Composer\InstalledVersions::reload(eval('?>'.Preg::replace('{=>\s*+__DIR__\s*+\.\s*+([\'"])}', '=> '.var_export(dirname($path), true).' . $1', $installedVersionsData)));
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * @param array<mixed> $array
      */
     private function dumpToPhpCode(array $array = [], int $level = 0): string
@@ -212,7 +183,7 @@ REGEX;
 
         foreach ($array as $key => $value) {
             $lines .= str_repeat('    ', $level);
-            $lines .= is_int($key) ? $key . ' => ' : var_export($key, true) . ' => ';
+            $lines .= is_int($key) ? $key . ' => ' : '\'' . $key . '\' => ';
 
             if (is_array($value)) {
                 if (!empty($value)) {
@@ -226,14 +197,8 @@ REGEX;
                 } else {
                     $lines .= "__DIR__ . " . var_export('/' . $value, true) . ",\n";
                 }
-            } elseif (is_string($value)) {
-                $lines .= var_export($value, true) . ",\n";
-            } elseif (is_bool($value)) {
-                $lines .= ($value ? 'true' : 'false') . ",\n";
-            } elseif (is_null($value)) {
-                $lines .= "null,\n";
             } else {
-                throw new \UnexpectedValueException('Unexpected type '.gettype($value));
+                $lines .= var_export($value, true) . ",\n";
             }
         }
 

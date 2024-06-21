@@ -12,7 +12,6 @@ use function count;
 use function in_array;
 use function sprintf;
 use const T_CONST;
-use const T_EQUAL;
 use const T_FINAL;
 use const T_PRIVATE;
 use const T_PROTECTED;
@@ -63,13 +62,10 @@ class ClassConstantVisibilitySniff implements Sniff
 			return;
 		}
 
-		$equalSignPointer = TokenHelper::findNext($phpcsFile, T_EQUAL, $constantPointer + 1);
-		$namePointer = TokenHelper::findPreviousEffective($phpcsFile, $equalSignPointer - 1);
-
 		$message = sprintf(
 			'Constant %s::%s visibility missing.',
 			ClassHelper::getFullyQualifiedName($phpcsFile, $classPointer),
-			$tokens[$namePointer]['content']
+			$tokens[TokenHelper::findNextEffective($phpcsFile, $constantPointer + 1)]['content']
 		);
 
 		if ($this->fixable) {

@@ -13,9 +13,11 @@ final class CliHighlighter implements Highlighter
     public const HIGHLIGHT_FUNCTIONS = 'functions';
 
     /** @var array<string, string> */
-    private array $escapeSequences;
+    private $escapeSequences;
 
-    /** @param array<string, string> $escapeSequences */
+    /**
+     * @param array<string, string> $escapeSequences
+     */
     public function __construct(array $escapeSequences = [])
     {
         $this->escapeSequences = $escapeSequences + [
@@ -46,7 +48,7 @@ final class CliHighlighter implements Highlighter
         return $prefix . $value . "\x1b[0m";
     }
 
-    private function prefix(int $type): string|null
+    private function prefix(int $type): ?string
     {
         if (! isset(self::TOKEN_TYPE_TO_HIGHLIGHT[$type])) {
             return null;
@@ -62,7 +64,7 @@ final class CliHighlighter implements Highlighter
             PHP_EOL,
             $this->escapeSequences[self::HIGHLIGHT_ERROR],
             $value,
-            "\x1b[0m",
+            "\x1b[0m"
         );
     }
 

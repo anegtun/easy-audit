@@ -156,10 +156,6 @@ EOT
             return $this->rollback($output, $rollbackDir, $localFilename);
         }
 
-        if ($input->getArgument('command') === 'self' && $input->getArgument('version') === 'update') {
-            $input->setArgument('version', null);
-        }
-
         $latest = $versionsUtil->getLatest();
         $latestStable = $versionsUtil->getLatest('stable');
         try {
@@ -329,7 +325,7 @@ TAGSPUBKEY
 
             // PHP 8 automatically frees the key instance and deprecates the function
             if (PHP_VERSION_ID < 80000) {
-                // @phpstan-ignore function.deprecated
+                // @phpstan-ignore-next-line
                 openssl_free_key($pubkeyid);
             }
 

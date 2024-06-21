@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Files;
@@ -37,7 +37,7 @@ class LineEndingsSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array<int|string>
+     * @return array
      */
     public function register()
     {
@@ -68,7 +68,7 @@ class LineEndingsSniff implements Sniff
 
         if ($found === $this->eolChar) {
             // Ignore the rest of the file.
-            return $phpcsFile->numTokens;
+            return ($phpcsFile->numTokens + 1);
         }
 
         // Check for single line files without an EOL. This is a very special
@@ -79,7 +79,7 @@ class LineEndingsSniff implements Sniff
             if ($tokens[$lastToken]['line'] === 1
                 && $tokens[$lastToken]['content'] !== "\n"
             ) {
-                return $phpcsFile->numTokens;
+                return;
             }
         }
 
@@ -140,7 +140,7 @@ class LineEndingsSniff implements Sniff
         }//end if
 
         // Ignore the rest of the file.
-        return $phpcsFile->numTokens;
+        return ($phpcsFile->numTokens + 1);
 
     }//end process()
 

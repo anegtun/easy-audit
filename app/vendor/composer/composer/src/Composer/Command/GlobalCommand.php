@@ -33,13 +33,9 @@ class GlobalCommand extends BaseCommand
     {
         $application = $this->getApplication();
         if ($input->mustSuggestArgumentValuesFor('command-name')) {
-            $suggestions->suggestValues(array_values(array_filter(
-                array_map(static function (Command $command) {
-                    return $command->isHidden() ? null : $command->getName();
-                }, $application->all()), function (?string $cmd) {
-                    return $cmd !== null;
-                }
-            )));
+            $suggestions->suggestValues(array_values(array_filter(array_map(static function (Command $command) {
+                return $command->isHidden() ? null : $command->getName();
+            }, $application->all()))));
 
             return;
         }

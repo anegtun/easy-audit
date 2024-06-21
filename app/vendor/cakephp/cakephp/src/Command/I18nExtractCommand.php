@@ -133,7 +133,7 @@ class I18nExtractCommand extends Command
         /** @psalm-suppress UndefinedConstant */
         $defaultPaths = array_merge(
             [APP],
-            array_values(App::path('templates')),
+            App::path('templates'),
             ['D'] // This is required to break the loop below
         );
         $defaultPathIndex = 0;
@@ -217,7 +217,7 @@ class I18nExtractCommand extends Command
                 . 'locales' . DIRECTORY_SEPARATOR;
         } else {
             $message = "What is the path you would like to output?\n[Q]uit";
-            $localePaths = array_values(App::path('locales'));
+            $localePaths = App::path('locales');
             if (!$localePaths) {
                 $localePaths[] = ROOT . 'resources' . DIRECTORY_SEPARATOR . 'locales';
             }

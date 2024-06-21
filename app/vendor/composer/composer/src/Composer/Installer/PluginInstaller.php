@@ -43,11 +43,6 @@ class PluginInstaller extends LibraryInstaller
         return $packageType === 'composer-plugin' || $packageType === 'composer-installer';
     }
 
-    public function disablePlugins(): void
-    {
-        $this->getPluginManager()->disablePlugins();
-    }
-
     /**
      * @inheritDoc
      */

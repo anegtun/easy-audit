@@ -35,7 +35,7 @@ final class MatchAllStrictGroupsResult
 
     /**
      * @param 0|positive-int $count
-     * @param array<list<string>> $matches
+     * @param array<array<string>> $matches
      */
     public function __construct(int $count, array $matches)
     {

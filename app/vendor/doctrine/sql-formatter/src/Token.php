@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\SqlFormatter;
 
 use function in_array;
-use function str_contains;
+use function strpos;
 
 final class Token
 {
@@ -28,10 +28,16 @@ final class Token
     public const TOKEN_TYPE  = 0;
     public const TOKEN_VALUE = 1;
 
-    public function __construct(
-        private readonly int $type,
-        private readonly string $value,
-    ) {
+    /** @var int */
+    private $type;
+
+    /** @var string */
+    private $value;
+
+    public function __construct(int $type, string $value)
+    {
+        $this->type  = $type;
+        $this->value = $value;
     }
 
     public function value(): string
@@ -51,9 +57,9 @@ final class Token
 
     public function hasExtraWhitespace(): bool
     {
-        return str_contains($this->value(), ' ') ||
-            str_contains($this->value(), "\n") ||
-            str_contains($this->value(), "\t");
+        return strpos($this->value(), ' ') !== false ||
+            strpos($this->value(), "\n") !== false ||
+            strpos($this->value(), "\t") !== false;
     }
 
     public function withValue(string $value): self

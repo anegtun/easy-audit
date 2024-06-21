@@ -67,7 +67,7 @@ class MailPanel extends DebugPanel
 
             $configs[$name] = $transport;
         }
-        $reflection->setStaticPropertyValue('_config', $configs);
+        $property->setValue($configs);
     }
 
     /**

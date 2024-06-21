@@ -75,7 +75,7 @@ EOT
         $input->setArgument('binary', $binaries[$binary]);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $composer = $this->requireComposer();
         if ($input->getOption('list') || null === $input->getArgument('binary')) {

@@ -4,7 +4,7 @@
  *
  * @author    Florian Grandel <jerico.dev@gmail.com>
  * @copyright 2009-2014 Florian Grandel
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Functions;
@@ -20,17 +20,13 @@ class CallTimePassByReferenceSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array<int|string>
+     * @return array
      */
     public function register()
     {
         return [
             T_STRING,
             T_VARIABLE,
-            T_ANON_CLASS,
-            T_PARENT,
-            T_SELF,
-            T_STATIC,
         ];
 
     }//end register()
@@ -54,12 +50,12 @@ class CallTimePassByReferenceSniff implements Sniff
 
         $prev = $phpcsFile->findPrevious($findTokens, ($stackPtr - 1), null, true);
 
-        // Skip tokens that are the names of functions
+        // Skip tokens that are the names of functions or classes
         // within their definitions. For example: function myFunction...
         // "myFunction" is T_STRING but we should skip because it is not a
         // function or method *call*.
         $prevCode = $tokens[$prev]['code'];
-        if ($prevCode === T_FUNCTION) {
+        if ($prevCode === T_FUNCTION || $prevCode === T_CLASS) {
             return;
         }
 
@@ -73,7 +69,7 @@ class CallTimePassByReferenceSniff implements Sniff
             true
         );
 
-        if ($openBracket === false || $tokens[$openBracket]['code'] !== T_OPEN_PARENTHESIS) {
+        if ($tokens[$openBracket]['code'] !== T_OPEN_PARENTHESIS) {
             return;
         }
 
@@ -90,6 +86,10 @@ class CallTimePassByReferenceSniff implements Sniff
         ];
 
         while (($nextSeparator = $phpcsFile->findNext($find, ($nextSeparator + 1), $closeBracket)) !== false) {
+            if (isset($tokens[$nextSeparator]['nested_parenthesis']) === false) {
+                continue;
+            }
+
             if ($tokens[$nextSeparator]['code'] === T_OPEN_SHORT_ARRAY) {
                 $nextSeparator = $tokens[$nextSeparator]['bracket_closer'];
                 continue;

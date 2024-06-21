@@ -20,9 +20,4 @@ final class IgnoreAllPlatformRequirementFilter implements PlatformRequirementFil
     {
         return PlatformRepository::isPlatformPackage($req);
     }
-
-    public function isUpperBoundIgnored(string $req): bool
-    {
-        return $this->isIgnored($req);
-    }
 }

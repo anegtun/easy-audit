@@ -45,44 +45,44 @@ class EmitterStack extends SplStack implements EmitterInterface
     /**
      * Set an emitter on the stack by index.
      *
-     * @param int $offset
-     * @param EmitterInterface $value
+     * @param int $index
+     * @param EmitterInterface $emitter
      * @return void
      * @throws Exception\InvalidEmitterException If not an EmitterInterface instance.
      */
     #[ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet($index, $emitter)
     {
-        $this->validateEmitter($value);
-        parent::offsetSet($offset, $value);
+        $this->validateEmitter($emitter);
+        parent::offsetSet($index, $emitter);
     }
 
     /**
      * Push an emitter to the stack.
      *
-     * @param EmitterInterface $value
+     * @param EmitterInterface $emitter
      * @return void
      * @throws Exception\InvalidEmitterException If not an EmitterInterface instance.
      */
     #[ReturnTypeWillChange]
-    public function push($value)
+    public function push($emitter)
     {
-        $this->validateEmitter($value);
-        parent::push($value);
+        $this->validateEmitter($emitter);
+        parent::push($emitter);
     }
 
     /**
      * Unshift an emitter to the stack.
      *
-     * @param EmitterInterface $value
+     * @param EmitterInterface $emitter
      * @return void
      * @throws Exception\InvalidEmitterException If not an EmitterInterface instance.
      */
     #[ReturnTypeWillChange]
-    public function unshift($value)
+    public function unshift($emitter)
     {
-        $this->validateEmitter($value);
-        parent::unshift($value);
+        $this->validateEmitter($emitter);
+        parent::unshift($emitter);
     }
 
     /**

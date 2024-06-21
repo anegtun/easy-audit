@@ -238,11 +238,10 @@ class PhpFileCleaner
 
     /**
      * @param non-empty-string $regex
-     * @param null|array<mixed> $match
-     * @param-out array<int|string, string> $match
+     * @param null|array<int, string> $match
      */
-    private function match(string $regex, ?array &$match = null): bool
+    private function match(string $regex, array &$match = null): bool
     {
-        return Preg::isMatchStrictGroups($regex, $this->contents, $match, 0, $this->index);
+        return Preg::isMatch($regex, $this->contents, $match, 0, $this->index);
     }
 }

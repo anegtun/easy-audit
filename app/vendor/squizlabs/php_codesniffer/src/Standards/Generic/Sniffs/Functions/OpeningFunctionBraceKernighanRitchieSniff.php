@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Functions;
@@ -34,7 +34,7 @@ class OpeningFunctionBraceKernighanRitchieSniff implements Sniff
     /**
      * Registers the tokens that this sniff wants to listen for.
      *
-     * @return array<int|string>
+     * @return void
      */
     public function register()
     {
@@ -130,15 +130,17 @@ class OpeningFunctionBraceKernighanRitchieSniff implements Sniff
         $ignore[] = T_WHITESPACE;
         $next     = $phpcsFile->findNext($ignore, ($openingBrace + 1), null, true);
         if ($tokens[$next]['line'] === $tokens[$openingBrace]['line']) {
-            // Only throw this error when this is not an empty function.
-            if ($next !== $tokens[$stackPtr]['scope_closer']
-                && $tokens[$next]['code'] !== T_CLOSE_TAG
+            if ($next === $tokens[$stackPtr]['scope_closer']
+                || $tokens[$next]['code'] === T_CLOSE_TAG
             ) {
-                $error = 'Opening brace must be the last content on the line';
-                $fix   = $phpcsFile->addFixableError($error, $openingBrace, 'ContentAfterBrace');
-                if ($fix === true) {
-                    $phpcsFile->fixer->addNewline($openingBrace);
-                }
+                // Ignore empty functions.
+                return;
+            }
+
+            $error = 'Opening brace must be the last content on the line';
+            $fix   = $phpcsFile->addFixableError($error, $openingBrace, 'ContentAfterBrace');
+            if ($fix === true) {
+                $phpcsFile->fixer->addNewline($openingBrace);
             }
         }
 
@@ -166,7 +168,7 @@ class OpeningFunctionBraceKernighanRitchieSniff implements Sniff
         if ($length !== 1) {
             $error = 'Expected 1 space before opening brace; found %s';
             $data  = [$length];
-            $fix   = $phpcsFile->addFixableError($error, $openingBrace, 'SpaceBeforeBrace', $data);
+            $fix   = $phpcsFile->addFixableError($error, $closeBracket, 'SpaceBeforeBrace', $data);
             if ($fix === true) {
                 if ($length === 0 || $length === '\t') {
                     $phpcsFile->fixer->addContentBefore($openingBrace, ' ');

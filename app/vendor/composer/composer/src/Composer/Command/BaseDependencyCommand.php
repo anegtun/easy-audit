@@ -133,8 +133,6 @@ abstract class BaseDependencyCommand extends BaseCommand
         $renderTree = $input->getOption(self::OPTION_TREE);
         $recursive = $renderTree || $input->getOption(self::OPTION_RECURSIVE);
 
-        $return = $inverted ? 1 : 0;
-
         // Resolve dependencies
         $results = $installedRepo->getDependents($needles, $constraint, $inverted, $recursive);
         if (empty($results)) {
@@ -144,7 +142,6 @@ abstract class BaseDependencyCommand extends BaseCommand
                 $needle,
                 $extra
             ));
-            $return = $inverted ? 0 : 1;
         } elseif ($renderTree) {
             $this->initStyles($output);
             $root = $packages[0];
@@ -155,26 +152,10 @@ abstract class BaseDependencyCommand extends BaseCommand
         }
 
         if ($inverted && $input->hasArgument(self::ARGUMENT_CONSTRAINT)) {
-            $composerCommand = 'update';
-
-            foreach ($composer->getPackage()->getRequires() as $rootRequirement) {
-                if ($rootRequirement->getTarget() === $needle) {
-                    $composerCommand = 'require';
-                    break;
-                }
-            }
-
-            foreach ($composer->getPackage()->getDevRequires() as $rootRequirement) {
-                if ($rootRequirement->getTarget() === $needle) {
-                    $composerCommand = 'require --dev';
-                    break;
-                }
-            }
-
-            $this->getIO()->writeError('Not finding what you were looking for? Try calling `composer '.$composerCommand.' "'.$needle.':'.$textConstraint.'" --dry-run` to get another view on the problem.');
+            $this->getIO()->writeError('Not finding what you were looking for? Try calling `composer update "'.$input->getArgument(self::ARGUMENT_PACKAGE).':'.$input->getArgument(self::ARGUMENT_CONSTRAINT).'" --dry-run` to get another view on the problem.');
         }
 
-        return $return;
+        return 0;
     }
 
     /**

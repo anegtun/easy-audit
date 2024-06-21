@@ -37,7 +37,8 @@ final class RejectedPromise implements PromiseInterface
 
         $handler = set_rejection_handler(null);
         if ($handler === null) {
-            $message = 'Unhandled promise rejection with ' . $this->reason;
+            $message = 'Unhandled promise rejection with ' . \get_class($this->reason) . ': ' . $this->reason->getMessage() . ' in ' . $this->reason->getFile() . ':' . $this->reason->getLine() . PHP_EOL;
+            $message .= 'Stack trace:' . PHP_EOL . $this->reason->getTraceAsString();
 
             \error_log($message);
             return;
@@ -46,9 +47,8 @@ final class RejectedPromise implements PromiseInterface
         try {
             $handler($this->reason);
         } catch (\Throwable $e) {
-            \preg_match('/^([^:\s]++)(.*+)$/sm', (string) $e, $match);
-            \assert(isset($match[1], $match[2]));
-            $message = 'Fatal error: Uncaught ' . $match[1] . ' from unhandled promise rejection handler' . $match[2];
+            $message = 'Fatal error: Uncaught ' . \get_class($e) . ' from unhandled promise rejection handler: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() . PHP_EOL;
+            $message .= 'Stack trace:' . PHP_EOL . $e->getTraceAsString();
 
             \error_log($message);
             exit(255);
@@ -61,7 +61,7 @@ final class RejectedPromise implements PromiseInterface
      * @param ?(callable(\Throwable): (PromiseInterface<TRejected>|TRejected)) $onRejected
      * @return PromiseInterface<($onRejected is null ? never : TRejected)>
      */
-    public function then(?callable $onFulfilled = null, ?callable $onRejected = null): PromiseInterface
+    public function then(callable $onFulfilled = null, callable $onRejected = null): PromiseInterface
     {
         if (null === $onRejected) {
             return $this;

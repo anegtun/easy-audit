@@ -27,7 +27,6 @@ use Composer\Package\Version\VersionSelector;
 use Composer\Pcre\Preg;
 use Composer\Plugin\CommandEvent;
 use Composer\Plugin\PluginEvents;
-use Composer\Repository\ArrayRepository;
 use Composer\Repository\InstalledArrayRepository;
 use Composer\Repository\ComposerRepository;
 use Composer\Repository\CompositeRepository;
@@ -95,11 +94,10 @@ class ShowCommand extends BaseCommand
                 new InputOption('tree', 't', InputOption::VALUE_NONE, 'List the dependencies as a tree'),
                 new InputOption('latest', 'l', InputOption::VALUE_NONE, 'Show the latest version'),
                 new InputOption('outdated', 'o', InputOption::VALUE_NONE, 'Show the latest version but only for packages that are outdated'),
-                new InputOption('ignore', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Ignore specified package(s). Can contain wildcards (*). Use it with the --outdated option if you don\'t want to be informed about new versions of some packages.', null, $this->suggestInstalledPackage(false)),
+                new InputOption('ignore', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Ignore specified package(s). Use it with the --outdated option if you don\'t want to be informed about new versions of some packages.', null, $this->suggestInstalledPackage(false)),
                 new InputOption('major-only', 'M', InputOption::VALUE_NONE, 'Show only packages that have major SemVer-compatible updates. Use with the --latest or --outdated option.'),
                 new InputOption('minor-only', 'm', InputOption::VALUE_NONE, 'Show only packages that have minor SemVer-compatible updates. Use with the --latest or --outdated option.'),
                 new InputOption('patch-only', null, InputOption::VALUE_NONE, 'Show only packages that have patch SemVer-compatible updates. Use with the --latest or --outdated option.'),
-                new InputOption('sort-by-age', 'A', InputOption::VALUE_NONE, 'Displays the installed version\'s age, and sorts packages oldest first. Use with the --latest or --outdated option.'),
                 new InputOption('direct', 'D', InputOption::VALUE_NONE, 'Shows only packages that are directly required by the root package'),
                 new InputOption('strict', null, InputOption::VALUE_NONE, 'Return a non-zero exit code when there are outdated packages'),
                 new InputOption('format', 'f', InputOption::VALUE_REQUIRED, 'Format of the output: text or json', 'text', ['json', 'text']),
@@ -133,7 +131,7 @@ EOT
         };
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->versionParser = new VersionParser;
         if ($input->getOption('tree')) {
@@ -143,7 +141,7 @@ EOT
         $composer = $this->tryComposer();
         $io = $this->getIO();
 
-        if ($input->getOption('installed') && !$input->getOption('self')) {
+        if ($input->getOption('installed')) {
             $io->writeError('<warning>You are using the deprecated option "installed". Only installed packages are shown by default now. The --all option can be used to show all packages.</warning>');
         }
 
@@ -200,7 +198,7 @@ EOT
         $platformRepo = new PlatformRepository([], $platformOverrides);
         $lockedRepo = null;
 
-        if ($input->getOption('self') && !$input->getOption('installed') && !$input->getOption('locked')) {
+        if ($input->getOption('self')) {
             $package = clone $this->requireComposer()->getPackage();
             if ($input->getOption('name-only')) {
                 $io->write($package->getName());
@@ -244,9 +242,6 @@ EOT
             }
             $locker = $composer->getLocker();
             $lockedRepo = $locker->getLockedRepository(!$input->getOption('no-dev'));
-            if ($input->getOption('self')) {
-                $lockedRepo->addPackage(clone $composer->getPackage());
-            }
             $repos = $installedRepo = new InstalledRepository([$lockedRepo]);
         } else {
             // --installed / default case
@@ -254,30 +249,17 @@ EOT
                 $composer = $this->requireComposer();
             }
             $rootPkg = $composer->getPackage();
+            $repos = $installedRepo = new InstalledRepository([$composer->getRepositoryManager()->getLocalRepository()]);
 
-            $rootRepo = new InstalledArrayRepository();
-            if ($input->getOption('self')) {
-                $rootRepo = new RootPackageRepository(clone $rootPkg);
-            }
             if ($input->getOption('no-dev')) {
-                $packages = RepositoryUtils::filterRequiredPackages($composer->getRepositoryManager()->getLocalRepository()->getPackages(), $rootPkg);
-                $repos = $installedRepo = new InstalledRepository([$rootRepo, new InstalledArrayRepository(array_map(static function ($pkg): PackageInterface {
+                $packages = RepositoryUtils::filterRequiredPackages($installedRepo->getPackages(), $rootPkg);
+                $repos = $installedRepo = new InstalledRepository([new InstalledArrayRepository(array_map(static function ($pkg): PackageInterface {
                     return clone $pkg;
                 }, $packages))]);
-            } else {
-                $repos = $installedRepo = new InstalledRepository([$rootRepo, $composer->getRepositoryManager()->getLocalRepository()]);
             }
 
-            if (!$installedRepo->getPackages()) {
-                $hasNonPlatformReqs = static function (array $reqs): bool {
-                    return (bool) array_filter(array_keys($reqs), function (string $name) {
-                        return !PlatformRepository::isPlatformPackage($name);
-                    });
-                };
-
-                if ($hasNonPlatformReqs($rootPkg->getRequires()) || $hasNonPlatformReqs($rootPkg->getDevRequires())) {
-                    $io->writeError('<warning>No dependencies installed. Try running composer install or update.</warning>');
-                }
+            if (!$installedRepo->getPackages() && ($rootPkg->getRequires() || $rootPkg->getDevRequires())) {
+                $io->writeError('<warning>No dependencies installed. Try running composer install or update.</warning>');
             }
         }
 
@@ -299,12 +281,6 @@ EOT
         } elseif (null !== $packageFilter && !str_contains($packageFilter, '*')) {
             [$package, $versions] = $this->getPackage($installedRepo, $repos, $packageFilter, $input->getArgument('version'));
 
-            if (isset($package) && $input->getOption('direct')) {
-                if (!in_array($package->getName(), $this->getRootRequires(), true)) {
-                    throw new \InvalidArgumentException('Package "' . $package->getName() . '" is installed but not a direct dependent of the root package.');
-                }
-            }
-
             if (!isset($package)) {
                 $options = $input->getOptions();
                 $hint = '';
@@ -317,7 +293,7 @@ EOT
                 if (PlatformRepository::isPlatformPackage($packageFilter) && !$input->getOption('platform')) {
                     $hint .= ', try using --platform (-p) to show platform packages';
                 }
-                if (!$input->getOption('all') && !$input->getOption('available')) {
+                if (!$input->getOption('all')) {
                     $hint .= ', try using --available (-a) to show all available packages';
                 }
 
@@ -459,7 +435,7 @@ EOT
         $showMajorOnly = $input->getOption('major-only');
         $showMinorOnly = $input->getOption('minor-only');
         $showPatchOnly = $input->getOption('patch-only');
-        $ignoredPackagesRegex = BasePackage::packageNamesToRegexp(array_map('strtolower', $input->getOption('ignore')));
+        $ignoredPackages = array_map('strtolower', $input->getOption('ignore'));
         $indent = $showAllTypes ? '  ' : '';
         /** @var PackageInterface[] $latestPackages */
         $latestPackages = [];
@@ -474,11 +450,11 @@ EOT
             if (isset($packages[$type])) {
                 ksort($packages[$type]);
 
-                $nameLength = $versionLength = $latestLength = $releaseDateLength = 0;
+                $nameLength = $versionLength = $latestLength = 0;
 
                 if ($showLatest && $showVersion) {
                     foreach ($packages[$type] as $package) {
-                        if (is_object($package) && !Preg::isMatch($ignoredPackagesRegex, $package->getPrettyName())) {
+                        if (is_object($package)) {
                             $latestPackage = $this->findLatestPackage($package, $composer, $platformRepo, $showMajorOnly, $showMinorOnly, $showPatchOnly, $platformReqFilter);
                             if ($latestPackage === null) {
                                 continue;
@@ -493,19 +469,8 @@ EOT
                 $writeVersion = !$input->getOption('name-only') && !$input->getOption('path') && $showVersion;
                 $writeLatest = $writeVersion && $showLatest;
                 $writeDescription = !$input->getOption('name-only') && !$input->getOption('path');
-                $writeReleaseDate = $writeLatest && $input->getOption('sort-by-age');
 
                 $hasOutdatedPackages = false;
-
-                if ($input->getOption('sort-by-age')) {
-                    usort($packages[$type], function ($a, $b) {
-                        if (is_object($a) && is_object($b)) {
-                            return $a->getReleaseDate() <=> $b->getReleaseDate();
-                        }
-
-                        return 0;
-                    });
-                }
 
                 $viewData[$type] = [];
                 foreach ($packages[$type] as $package) {
@@ -520,7 +485,7 @@ EOT
                         $packageIsUpToDate = $latestPackage && $latestPackage->getFullPrettyVersion() === $package->getFullPrettyVersion() && (!$latestPackage instanceof CompletePackageInterface || !$latestPackage->isAbandoned());
                         // When using --major-only, and no bigger version than current major is found then it is considered up to date
                         $packageIsUpToDate = $packageIsUpToDate || ($latestPackage === null && $showMajorOnly);
-                        $packageIsIgnored = Preg::isMatch($ignoredPackagesRegex, $package->getPrettyName());
+                        $packageIsIgnored = \in_array($package->getPrettyName(), $ignoredPackages, true);
                         if ($input->getOption('outdated') && ($packageIsUpToDate || $packageIsIgnored)) {
                             continue;
                         }
@@ -535,30 +500,13 @@ EOT
                             $packageViewData['homepage'] = $package instanceof CompletePackageInterface ? $package->getHomepage() : null;
                             $packageViewData['source'] = PackageInfo::getViewSourceUrl($package);
                         }
-                        $nameLength = max($nameLength, strlen($packageViewData['name']));
+                        $nameLength = max($nameLength, strlen($package->getPrettyName()));
                         if ($writeVersion) {
                             $packageViewData['version'] = $package->getFullPrettyVersion();
-                            if ($format === 'text') {
-                                $packageViewData['version'] = ltrim($packageViewData['version'], 'v');
-                            }
-                            $versionLength = max($versionLength, strlen($packageViewData['version']));
-                        }
-                        if ($writeReleaseDate) {
-                            if ($package->getReleaseDate() !== null) {
-                                $packageViewData['release-age'] = str_replace(' ago', ' old', $this->getRelativeTime($package->getReleaseDate()));
-                                if (!str_contains($packageViewData['release-age'], ' old')) {
-                                    $packageViewData['release-age'] = 'from '.$packageViewData['release-age'];
-                                }
-                                $releaseDateLength = max($releaseDateLength, strlen($packageViewData['release-age']));
-                            } else {
-                                $packageViewData['release-age'] = '';
-                            }
+                            $versionLength = max($versionLength, strlen($package->getFullPrettyVersion()));
                         }
                         if ($writeLatest && $latestPackage) {
                             $packageViewData['latest'] = $latestPackage->getFullPrettyVersion();
-                            if ($format === 'text') {
-                                $packageViewData['latest'] = ltrim($packageViewData['latest'], 'v');
-                            }
                             $packageViewData['latest-status'] = $this->getUpdateStatus($latestPackage, $package);
                             $latestLength = max($latestLength, strlen($packageViewData['latest']));
                         } elseif ($writeLatest) {
@@ -604,9 +552,7 @@ EOT
                     'nameLength' => $nameLength,
                     'versionLength' => $versionLength,
                     'latestLength' => $latestLength,
-                    'releaseDateLength' => $releaseDateLength,
                     'writeLatest' => $writeLatest,
-                    'writeReleaseDate' => $writeReleaseDate,
                 ];
                 if ($input->getOption('strict') && $hasOutdatedPackages) {
                     $exitCode = 1;
@@ -642,14 +588,11 @@ EOT
                 $nameLength = $viewMetaData[$type]['nameLength'];
                 $versionLength = $viewMetaData[$type]['versionLength'];
                 $latestLength = $viewMetaData[$type]['latestLength'];
-                $releaseDateLength = $viewMetaData[$type]['releaseDateLength'];
                 $writeLatest = $viewMetaData[$type]['writeLatest'];
-                $writeReleaseDate = $viewMetaData[$type]['writeReleaseDate'];
 
                 $versionFits = $nameLength + $versionLength + 3 <= $width;
                 $latestFits = $nameLength + $versionLength + $latestLength + 3 <= $width;
-                $releaseDateFits = $nameLength + $versionLength + $latestLength + $releaseDateLength + 3 <= $width;
-                $descriptionFits = $nameLength + $versionLength + $latestLength + $releaseDateLength + 24 <= $width;
+                $descriptionFits = $nameLength + $versionLength + $latestLength + 24 <= $width;
 
                 if ($latestFits && !$io->isDecorated()) {
                     $latestLength += 2;
@@ -677,14 +620,14 @@ EOT
                     $io->writeError('');
                     $io->writeError('<info>Direct dependencies required in composer.json:</>');
                     if (\count($directDeps) > 0) {
-                        $this->printPackages($io, $directDeps, $indent, $writeVersion && $versionFits, $latestFits, $writeDescription && $descriptionFits, $width, $versionLength, $nameLength, $latestLength, $writeReleaseDate && $releaseDateFits, $releaseDateLength);
+                        $this->printPackages($io, $directDeps, $indent, $writeVersion && $versionFits, $latestFits, $writeDescription && $descriptionFits, $width, $versionLength, $nameLength, $latestLength);
                     } else {
                         $io->writeError('Everything up to date');
                     }
                     $io->writeError('');
                     $io->writeError('<info>Transitive dependencies not required in composer.json:</>');
                     if (\count($transitiveDeps) > 0) {
-                        $this->printPackages($io, $transitiveDeps, $indent, $writeVersion && $versionFits, $latestFits, $writeDescription && $descriptionFits, $width, $versionLength, $nameLength, $latestLength, $writeReleaseDate && $releaseDateFits, $releaseDateLength);
+                        $this->printPackages($io, $transitiveDeps, $indent, $writeVersion && $versionFits, $latestFits, $writeDescription && $descriptionFits, $width, $versionLength, $nameLength, $latestLength);
                     } else {
                         $io->writeError('Everything up to date');
                     }
@@ -692,7 +635,7 @@ EOT
                     if ($writeLatest && \count($packages) === 0) {
                         $io->writeError('All your direct dependencies are up to date');
                     } else {
-                        $this->printPackages($io, $packages, $indent, $writeVersion && $versionFits, $writeLatest && $latestFits, $writeDescription && $descriptionFits, $width, $versionLength, $nameLength, $latestLength, $writeReleaseDate && $releaseDateFits, $releaseDateLength);
+                        $this->printPackages($io, $packages, $indent, $writeVersion && $versionFits, $writeLatest && $latestFits, $writeDescription && $descriptionFits, $width, $versionLength, $nameLength, $latestLength);
                     }
                 }
 
@@ -708,12 +651,11 @@ EOT
     /**
      * @param array<array{name: string, direct-dependency?: bool, version?: string, latest?: string, latest-status?: string, description?: string|null, path?: string|null, source?: string|null, homepage?: string|null, warning?: string, abandoned?: bool|string}> $packages
      */
-    private function printPackages(IOInterface $io, array $packages, string $indent, bool $writeVersion, bool $writeLatest, bool $writeDescription, int $width, int $versionLength, int $nameLength, int $latestLength, bool $writeReleaseDate, int $releaseDateLength): void
+    private function printPackages(IOInterface $io, array $packages, string $indent, bool $writeVersion, bool $writeLatest, bool $writeDescription, int $width, int $versionLength, int $nameLength, int $latestLength): void
     {
-        $padName = $writeVersion || $writeLatest || $writeReleaseDate || $writeDescription;
-        $padVersion = $writeLatest || $writeReleaseDate || $writeDescription;
-        $padLatest = $writeDescription || $writeReleaseDate;
-        $padReleaseDate = $writeDescription;
+        $padName = $writeVersion || $writeLatest || $writeDescription;
+        $padVersion = $writeLatest || $writeDescription;
+        $padLatest = $writeDescription;
         foreach ($packages as $package) {
             $link = $package['source'] ?? $package['homepage'] ?? '';
             if ($link !== '') {
@@ -732,13 +674,10 @@ EOT
                     $latestVersion = str_replace(['up-to-date', 'semver-safe-update', 'update-possible'], ['=', '!', '~'], $updateStatus) . ' ' . $latestVersion;
                 }
                 $io->write(' <' . $style . '>' . str_pad($latestVersion, ($padLatest ? $latestLength : 0), ' ') . '</' . $style . '>', false);
-                if ($writeReleaseDate && isset($package['release-age'])) {
-                    $io->write(' '.str_pad($package['release-age'], ($padReleaseDate ? $releaseDateLength : 0), ' '), false);
-                }
             }
             if (isset($package['description']) && $writeDescription) {
                 $description = strtok($package['description'], "\r\n");
-                $remaining = $width - $nameLength - $versionLength - $releaseDateLength - 4;
+                $remaining = $width - $nameLength - $versionLength - 4;
                 if ($writeLatest) {
                     $remaining -= $latestLength;
                 }
@@ -867,20 +806,14 @@ EOT
      */
     protected function printMeta(CompletePackageInterface $package, array $versions, InstalledRepository $installedRepo, ?PackageInterface $latestPackage = null): void
     {
-        $isInstalledPackage = !PlatformRepository::isPlatformPackage($package->getName()) && $installedRepo->hasPackage($package);
-
         $io = $this->getIO();
         $io->write('<info>name</info>     : ' . $package->getPrettyName());
         $io->write('<info>descrip.</info> : ' . $package->getDescription());
         $io->write('<info>keywords</info> : ' . implode(', ', $package->getKeywords() ?: []));
         $this->printVersions($package, $versions, $installedRepo);
-        if ($isInstalledPackage && $package->getReleaseDate() !== null) {
-            $io->write('<info>released</info> : ' . $package->getReleaseDate()->format('Y-m-d') . ', ' . $this->getRelativeTime($package->getReleaseDate()));
-        }
         if ($latestPackage) {
             $style = $this->getVersionStyle($latestPackage, $package);
-            $releasedTime = $latestPackage->getReleaseDate() === null ? '' : ' released ' . $latestPackage->getReleaseDate()->format('Y-m-d') . ', ' . $this->getRelativeTime($latestPackage->getReleaseDate());
-            $io->write('<info>latest</info>   : <'.$style.'>' . $latestPackage->getPrettyVersion() . '</'.$style.'>' . $releasedTime);
+            $io->write('<info>latest</info>   : <'.$style.'>' . $latestPackage->getPrettyVersion() . '</'.$style.'>');
         } else {
             $latestPackage = $package;
         }
@@ -889,7 +822,7 @@ EOT
         $io->write('<info>homepage</info> : ' . $package->getHomepage());
         $io->write('<info>source</info>   : ' . sprintf('[%s] <comment>%s</comment> %s', $package->getSourceType(), $package->getSourceUrl(), $package->getSourceReference()));
         $io->write('<info>dist</info>     : ' . sprintf('[%s] <comment>%s</comment> %s', $package->getDistType(), $package->getDistUrl(), $package->getDistReference()));
-        if ($isInstalledPackage) {
+        if (!PlatformRepository::isPlatformPackage($package->getName()) && $installedRepo->hasPackage($package)) {
             $path = $this->requireComposer()->getInstallationManager()->getInstallPath($package);
             if (is_string($path)) {
                 $io->write('<info>path</info>     : ' . realpath($path));
@@ -1059,10 +992,6 @@ EOT
                 }
             } else {
                 $json['path'] = null;
-            }
-
-            if ($package->getReleaseDate() !== null) {
-                $json['released'] = $package->getReleaseDate()->format(DATE_ATOM);
             }
         }
 
@@ -1517,31 +1446,5 @@ EOT
         }
 
         return $this->repositorySet;
-    }
-
-    private function getRelativeTime(\DateTimeInterface $releaseDate): string
-    {
-        if ($releaseDate->format('Ymd') === date('Ymd')) {
-            return 'today';
-        }
-
-        $diff = $releaseDate->diff(new \DateTimeImmutable());
-        if ($diff->days < 7) {
-            return 'this week';
-        }
-
-        if ($diff->days < 14) {
-            return 'last week';
-        }
-
-        if ($diff->m < 1 && $diff->days < 31) {
-            return floor($diff->days / 7) . ' weeks ago';
-        }
-
-        if ($diff->y < 1) {
-            return $diff->m . ' month' . ($diff->m > 1 ? 's' : '') . ' ago';
-        }
-
-        return $diff->y . ' year' . ($diff->y > 1 ? 's' : '') . ' ago';
     }
 }

@@ -4,20 +4,17 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Filters;
 
-use FilesystemIterator;
-use PHP_CodeSniffer\Config;
+use PHP_CodeSniffer\Util;
 use PHP_CodeSniffer\Ruleset;
-use PHP_CodeSniffer\Util\Common;
-use RecursiveDirectoryIterator;
-use RecursiveFilterIterator;
+use PHP_CodeSniffer\Config;
 use ReturnTypeWillChange;
 
-class Filter extends RecursiveFilterIterator
+class Filter extends \RecursiveFilterIterator
 {
 
     /**
@@ -97,7 +94,7 @@ class Filter extends RecursiveFilterIterator
     public function accept()
     {
         $filePath = $this->current();
-        $realPath = Common::realpath($filePath);
+        $realPath = Util\Common::realpath($filePath);
 
         if ($realPath !== false) {
             // It's a real path somewhere, so record it
@@ -140,7 +137,7 @@ class Filter extends RecursiveFilterIterator
     {
         $filterClass = get_called_class();
         $children    = new $filterClass(
-            new RecursiveDirectoryIterator($this->current(), (RecursiveDirectoryIterator::SKIP_DOTS | FilesystemIterator::FOLLOW_SYMLINKS)),
+            new \RecursiveDirectoryIterator($this->current(), (\RecursiveDirectoryIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS)),
             $this->basedir,
             $this->config,
             $this->ruleset

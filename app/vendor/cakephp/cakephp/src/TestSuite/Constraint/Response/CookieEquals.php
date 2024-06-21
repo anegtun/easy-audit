@@ -55,7 +55,7 @@ class CookieEquals extends ResponseBase
      */
     public function matches($other): bool
     {
-        $cookie = $this->readCookie($this->cookieName);
+        $cookie = $this->response->getCookie($this->cookieName);
 
         return $cookie !== null && $cookie['value'] === $other;
     }

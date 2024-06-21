@@ -63,9 +63,7 @@ class ErrorHandler
                     }
 
                     return null;
-                }, array_slice(debug_backtrace(), 2)), function (?string $line) {
-                    return $line !== null;
-                }));
+                }, array_slice(debug_backtrace(), 2))));
             }
         }
 

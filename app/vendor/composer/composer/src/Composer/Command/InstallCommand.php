@@ -79,7 +79,7 @@ EOT
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = $this->getIO();
         if ($input->getOption('dev')) {

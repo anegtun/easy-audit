@@ -286,9 +286,6 @@ class GitHubDriver extends VcsDriver
                 case 'community_bridge':
                     $result[$key]['url'] = 'https://funding.communitybridge.org/projects/' . basename($item['url']);
                     break;
-                case 'buy_me_a_coffee':
-                    $result[$key]['url'] = 'https://www.buymeacoffee.com/' . basename($item['url']);
-                    break;
             }
         }
 

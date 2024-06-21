@@ -122,11 +122,9 @@ class LineLengthSniff implements Sniff
 
 		if ($this->ignoreImports) {
 			$usePointer = UseStatementHelper::getUseStatementPointer($phpcsFile, $pointer - 1);
-			if (
-				is_int($usePointer)
+			if (is_int($usePointer)
 				&& $tokens[$usePointer]['line'] === $tokens[$pointer]['line']
-				&& UseStatementHelper::isImportUse($phpcsFile, $usePointer)
-			) {
+				&& !UseStatementHelper::isTraitUse($phpcsFile, $usePointer)) {
 				return;
 			}
 		}

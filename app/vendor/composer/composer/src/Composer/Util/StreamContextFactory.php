@@ -76,8 +76,7 @@ final class StreamContextFactory
         // Add stream proxy options if there is a proxy
         if (!$forCurl) {
             $proxy = ProxyManager::getInstance()->getProxyForRequest($url);
-            $proxyOptions = $proxy->getContextOptions();
-            if ($proxyOptions !== null) {
+            if ($proxyOptions = $proxy->getContextOptions()) {
                 $isHttpsRequest = 0 === strpos($url, 'https://');
 
                 if ($proxy->isSecure()) {

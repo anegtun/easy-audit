@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting;
@@ -44,7 +44,7 @@ class SpaceAfterNotSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array<int|string>
+     * @return array
      */
     public function register()
     {
@@ -64,12 +64,8 @@ class SpaceAfterNotSniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $tokens         = $phpcsFile->getTokens();
-        $this->spacing  = (int) $this->spacing;
-        $pluralizeSpace = 's';
-        if ($this->spacing === 1) {
-            $pluralizeSpace = '';
-        }
+        $tokens        = $phpcsFile->getTokens();
+        $this->spacing = (int) $this->spacing;
 
         $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
         if ($nextNonEmpty === false) {
@@ -88,11 +84,8 @@ class SpaceAfterNotSniff implements Sniff
 
         $nextNonWhitespace = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
         if ($nextNonEmpty !== $nextNonWhitespace) {
-            $error = 'Expected %s space%s after NOT operator; comment found';
-            $data  = [
-                $this->spacing,
-                $pluralizeSpace,
-            ];
+            $error = 'Expected %s space(s) after NOT operator; comment found';
+            $data  = [$this->spacing];
             $phpcsFile->addError($error, $stackPtr, 'CommentFound', $data);
             return;
         }
@@ -108,10 +101,9 @@ class SpaceAfterNotSniff implements Sniff
             return;
         }
 
-        $error = 'Expected %s space%s after NOT operator; %s found';
+        $error = 'Expected %s space(s) after NOT operator; %s found';
         $data  = [
             $this->spacing,
-            $pluralizeSpace,
             $found,
         ];
 

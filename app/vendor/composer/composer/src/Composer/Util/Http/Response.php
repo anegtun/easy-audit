@@ -36,7 +36,7 @@ class Response
      */
     public function __construct(array $request, ?int $code, array $headers, ?string $body)
     {
-        if (!isset($request['url'])) {
+        if (!isset($request['url'])) { // @phpstan-ignore-line
             throw new \LogicException('url key missing from request array');
         }
         $this->request = $request;
@@ -101,7 +101,8 @@ class Response
      */
     public function collect(): void
     {
-        unset($this->request, $this->code, $this->headers, $this->body);
+        /** @phpstan-ignore-next-line */
+        $this->request = $this->code = $this->headers = $this->body = null;
     }
 
     /**
