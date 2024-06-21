@@ -1,5 +1,5 @@
 <?php
-$authUser = $this->request->getSession()->read('Auth.User');
+$authUser = $this->request->getAttribute('identity');
 $menu_option = empty($menu_option) ? '' : $menu_option;
 $submenu_option = empty($submenu_option) ? '' : $submenu_option;
 ?>
@@ -105,7 +105,7 @@ $submenu_option = empty($submenu_option) ? '' : $submenu_option;
             <div id="main-content" class="row" role="main"><section id="basic-page" class="page">
                 <aside id="left-menu" class="no-selectable">
                     <div class="content-wrapper">
-                        <?= $this->element('Layout/menu', ['menu_option'=>$menu_option, 'submenu_option'=>$submenu_option]) ?>
+                        <?= $this->element('layout/menu', ['menu_option'=>$menu_option, 'submenu_option'=>$submenu_option]) ?>
                     </div>
                 </aside>
 

@@ -7,7 +7,7 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('Users'), 'url'=>['action'=>'index']],
     ['label'=>$title]
 ]);
-$authUser = $this->request->getSession()->read('Auth.User');
+$authUser = $this->request->getAttribute('identity');
 ?>
 
 <div class="row">
@@ -45,7 +45,7 @@ $authUser = $this->request->getSession()->read('Auth.User');
     <div class="row">
         <fieldset>
             <legend><?= __('Audits') ?></legend>
-            <?= $this->element('Audits/list', ['audits' => $user->audits, 'hide_user' => true]) ?>
+            <?= $this->element('audits/list', ['audits' => $user->audits, 'hide_user' => true]) ?>
         </fieldset>
     </div>
 
