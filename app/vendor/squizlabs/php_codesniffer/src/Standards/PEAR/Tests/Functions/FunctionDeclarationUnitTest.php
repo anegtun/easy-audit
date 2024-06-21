@@ -4,19 +4,14 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\PEAR\Tests\Functions;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-/**
- * Unit test class for the FunctionDeclaration sniff.
- *
- * @covers \PHP_CodeSniffer\Standards\PEAR\Sniffs\Functions\FunctionDeclarationSniff
- */
-final class FunctionDeclarationUnitTest extends AbstractSniffUnitTest
+class FunctionDeclarationUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -30,11 +25,10 @@ final class FunctionDeclarationUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='')
+    public function getErrorList($testFile='FunctionDeclarationUnitTest.inc')
     {
-        switch ($testFile) {
-        case 'FunctionDeclarationUnitTest.1.inc':
-            return [
+        if ($testFile === 'FunctionDeclarationUnitTest.inc') {
+            $errors = [
                 3   => 1,
                 4   => 1,
                 5   => 1,
@@ -105,13 +99,9 @@ final class FunctionDeclarationUnitTest extends AbstractSniffUnitTest
                 371 => 1,
                 402 => 1,
                 406 => 1,
-                475 => 1,
-                483 => 1,
-                490 => 2,
             ];
-
-        case 'FunctionDeclarationUnitTest.js':
-            return [
+        } else {
+            $errors = [
                 3  => 1,
                 4  => 1,
                 5  => 1,
@@ -123,10 +113,9 @@ final class FunctionDeclarationUnitTest extends AbstractSniffUnitTest
                 41 => 1,
                 48 => 1,
             ];
+        }//end if
 
-        default:
-            return [];
-        }//end switch
+        return $errors;
 
     }//end getErrorList()
 

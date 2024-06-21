@@ -272,7 +272,3 @@ function testFinally()
         } finally {
         }
 }
-
-if ($something) {
-    echo 'hello';
-} else /* comment */ if ($somethingElse) echo 'hi';

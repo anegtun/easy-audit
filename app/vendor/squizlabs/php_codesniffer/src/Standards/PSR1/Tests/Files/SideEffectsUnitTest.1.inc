@@ -76,12 +76,4 @@ namespace {
 
 defined('APP_BASE_URL') or define('APP_BASE_URL', '/');
 
-readonly class Foo {
-    public function __construct(
-        private string $foo,
-        private string $bar,
-    ) {
-    }
-}
-
 ?>

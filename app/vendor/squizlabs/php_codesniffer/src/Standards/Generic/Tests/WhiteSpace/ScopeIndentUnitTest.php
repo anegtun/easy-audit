@@ -4,19 +4,14 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Tests\WhiteSpace;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-/**
- * Unit test class for the ScopeIndent sniff.
- *
- * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\WhiteSpace\ScopeIndentSniff
- */
-final class ScopeIndentUnitTest extends AbstractSniffUnitTest
+class ScopeIndentUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -50,7 +45,7 @@ final class ScopeIndentUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='')
+    public function getErrorList($testFile='ScopeIndentUnitTest.inc')
     {
         if ($testFile === 'ScopeIndentUnitTest.1.js') {
             return [
@@ -192,10 +187,10 @@ final class ScopeIndentUnitTest extends AbstractSniffUnitTest
             1527 => 1,
             1529 => 1,
             1530 => 1,
-            1625 => 1,
-            1626 => 1,
-            1627 => 1,
-            1628 => 1,
+            1590 => 1,
+            1591 => 1,
+            1592 => 1,
+            1593 => 1,
         ];
 
     }//end getErrorList()

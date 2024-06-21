@@ -4,7 +4,7 @@
  *
  * @author    Jack Bates <ms419@freezone.co.uk>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\VersionControl;
@@ -34,7 +34,7 @@ class SubversionPropertiesSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array<int|string>
+     * @return array
      */
     public function register()
     {
@@ -50,7 +50,7 @@ class SubversionPropertiesSniff implements Sniff
      * @param int                         $stackPtr  The position of the current token
      *                                               in the stack passed in $tokens.
      *
-     * @return int
+     * @return void
      */
     public function process(File $phpcsFile, $stackPtr)
     {
@@ -58,7 +58,7 @@ class SubversionPropertiesSniff implements Sniff
         $properties = $this->getProperties($path);
         if ($properties === null) {
             // Not under version control.
-            return $phpcsFile->numTokens;
+            return ($phpcsFile->numTokens + 1);
         }
 
         $allProperties = ($properties + $this->properties);
@@ -101,7 +101,7 @@ class SubversionPropertiesSniff implements Sniff
         }//end foreach
 
         // Ignore the rest of the file.
-        return $phpcsFile->numTokens;
+        return ($phpcsFile->numTokens + 1);
 
     }//end process()
 
@@ -113,7 +113,7 @@ class SubversionPropertiesSniff implements Sniff
      *
      * @param string $path The path to return Subversion properties on.
      *
-     * @return array|null
+     * @return array
      * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If Subversion properties file could
      *                                                      not be opened.
      */

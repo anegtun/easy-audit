@@ -208,7 +208,3 @@ function myFunction($a, $lot, $of, $params)
     : array { // phpcs:ignore Standard.Category.Sniff -- for reasons.
     return null;
 }
-
-function myFunction() {}
-function myFunction()      {} // Too many spaces with an empty function.
-function myFunction()	{} // Too many spaces (tab) with an empty function.

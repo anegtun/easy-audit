@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\PSR1\Sniffs\Files;
@@ -20,7 +20,7 @@ class SideEffectsSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array<int|string>
+     * @return array
      */
     public function register()
     {
@@ -36,7 +36,7 @@ class SideEffectsSniff implements Sniff
      * @param int                         $stackPtr  The position of the current token in
      *                                               the token stack.
      *
-     * @return int
+     * @return void
      */
     public function process(File $phpcsFile, $stackPtr)
     {
@@ -56,7 +56,7 @@ class SideEffectsSniff implements Sniff
         }
 
         // Ignore the rest of the file.
-        return $phpcsFile->numTokens;
+        return ($phpcsFile->numTokens + 1);
 
     }//end process()
 
@@ -103,8 +103,7 @@ class SideEffectsSniff implements Sniff
                 && (empty($tokens[$i]['sniffCodes']) === true
                 || isset($tokens[$i]['sniffCodes']['PSR1']) === true
                 || isset($tokens[$i]['sniffCodes']['PSR1.Files']) === true
-                || isset($tokens[$i]['sniffCodes']['PSR1.Files.SideEffects']) === true
-                || isset($tokens[$i]['sniffCodes']['PSR1.Files.SideEffects.FoundWithSymbols']) === true)
+                || isset($tokens[$i]['sniffCodes']['PSR1.Files.SideEffects']) === true)
             ) {
                 do {
                     $i = $phpcsFile->findNext(T_PHPCS_ENABLE, ($i + 1));
@@ -112,8 +111,7 @@ class SideEffectsSniff implements Sniff
                     && empty($tokens[$i]['sniffCodes']) === false
                     && isset($tokens[$i]['sniffCodes']['PSR1']) === false
                     && isset($tokens[$i]['sniffCodes']['PSR1.Files']) === false
-                    && isset($tokens[$i]['sniffCodes']['PSR1.Files.SideEffects']) === false
-                    && isset($tokens[$i]['sniffCodes']['PSR1.Files.SideEffects.FoundWithSymbols']) === false);
+                    && isset($tokens[$i]['sniffCodes']['PSR1.Files.SideEffects']) === false);
 
                 if ($i === false) {
                     // The entire rest of the file is disabled,
@@ -171,9 +169,7 @@ class SideEffectsSniff implements Sniff
             }
 
             // Ignore function/class prefixes.
-            if (isset(Tokens::$methodPrefixes[$tokens[$i]['code']]) === true
-                || $tokens[$i]['code'] === T_READONLY
-            ) {
+            if (isset(Tokens::$methodPrefixes[$tokens[$i]['code']]) === true) {
                 continue;
             }
 

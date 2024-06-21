@@ -4,19 +4,14 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Tests\Functions;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-/**
- * Unit test class for the FunctionCallArgumentSpacing sniff.
- *
- * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\Functions\FunctionCallArgumentSpacingSniff
- */
-final class FunctionCallArgumentSpacingUnitTest extends AbstractSniffUnitTest
+class FunctionCallArgumentSpacingUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -60,7 +55,6 @@ final class FunctionCallArgumentSpacingUnitTest extends AbstractSniffUnitTest
             154 => 2,
             155 => 1,
             162 => 2,
-            170 => 1,
         ];
 
     }//end getErrorList()

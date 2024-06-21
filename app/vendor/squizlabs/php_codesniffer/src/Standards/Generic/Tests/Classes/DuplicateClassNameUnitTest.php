@@ -4,19 +4,14 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Tests\Classes;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-/**
- * Unit test class for the DuplicateClassName sniff.
- *
- * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\Classes\DuplicateClassNameSniff
- */
-final class DuplicateClassNameUnitTest extends AbstractSniffUnitTest
+class DuplicateClassNameUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -55,7 +50,7 @@ final class DuplicateClassNameUnitTest extends AbstractSniffUnitTest
                 12 => 1,
                 13 => 1,
             ];
-
+            break;
         case 'DuplicateClassNameUnitTest.2.inc':
             return [
                 2 => 1,
@@ -63,18 +58,19 @@ final class DuplicateClassNameUnitTest extends AbstractSniffUnitTest
                 4 => 1,
                 5 => 1,
             ];
-
+            break;
         case 'DuplicateClassNameUnitTest.5.inc':
             return [
                 3 => 1,
                 7 => 1,
             ];
-
+            break;
         case 'DuplicateClassNameUnitTest.6.inc':
             return [10 => 1];
-
+            break;
         default:
             return [];
+            break;
         }//end switch
 
     }//end getWarningList()

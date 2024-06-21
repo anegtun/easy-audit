@@ -55,6 +55,3 @@ function mymodule_form_callback(SizeOf $sizeof) {
 }
 
 $size = $class?->sizeof($array);
-
-#[SizeOf(10)]
-function doSomething() {}

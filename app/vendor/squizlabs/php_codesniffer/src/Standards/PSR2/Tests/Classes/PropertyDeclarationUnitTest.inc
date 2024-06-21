@@ -80,8 +80,4 @@ class ReadOnlyProp {
     protected readonly ?string    $foo;
 
     readonly array $foo;
-
-    readonly public int $wrongOrder1;
-
-    readonly protected ?string $wrongOrder2;
 }

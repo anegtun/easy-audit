@@ -4,19 +4,14 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\PEAR\Tests\Functions;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-/**
- * Unit test class for the FunctionCallSignature sniff.
- *
- * @covers \PHP_CodeSniffer\Standards\PEAR\Sniffs\Functions\FunctionCallSignatureSniff
- */
-final class FunctionCallSignatureUnitTest extends AbstractSniffUnitTest
+class FunctionCallSignatureUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -30,7 +25,7 @@ final class FunctionCallSignatureUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='')
+    public function getErrorList($testFile='FunctionCallSignatureUnitTest.inc')
     {
         if ($testFile === 'FunctionCallSignatureUnitTest.js') {
             return [
@@ -139,8 +134,6 @@ final class FunctionCallSignatureUnitTest extends AbstractSniffUnitTest
             559 => 1,
             567 => 1,
             568 => 1,
-            573 => 1,
-            574 => 1,
         ];
 
     }//end getErrorList()

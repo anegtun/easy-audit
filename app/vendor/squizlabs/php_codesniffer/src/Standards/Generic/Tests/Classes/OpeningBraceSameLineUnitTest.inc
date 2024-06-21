@@ -93,8 +93,3 @@ class Test_Class_Bad_G
 enum Test_Enum
 {
 }
-
-class Test_Class_Good_D {}
-
-class Test_Class_Bad_H
-{}

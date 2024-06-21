@@ -4,7 +4,7 @@
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2019 Juliette Reinders Folmer. All rights reserved.
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Tests\Debug;
@@ -12,19 +12,14 @@ namespace PHP_CodeSniffer\Standards\Generic\Tests\Debug;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 use PHP_CodeSniffer\Config;
 
-/**
- * Unit test class for the ClosureLinter sniff.
- *
- * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\Debug\ClosureLinterSniff
- */
-final class ClosureLinterUnitTest extends AbstractSniffUnitTest
+class ClosureLinterUnitTest extends AbstractSniffUnitTest
 {
 
 
     /**
      * Should this test be skipped for some reason.
      *
-     * @return bool
+     * @return void
      */
     protected function shouldSkipTest()
     {
