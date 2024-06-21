@@ -4,19 +4,14 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Squiz\Tests\WhiteSpace;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-/**
- * Unit test class for the SemicolonSpacing sniff.
- *
- * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\SemicolonSpacingSniff
- */
-final class SemicolonSpacingUnitTest extends AbstractSniffUnitTest
+class SemicolonSpacingUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -30,7 +25,7 @@ final class SemicolonSpacingUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='')
+    public function getErrorList($testFile='SemicolonSpacingUnitTest.inc')
     {
         switch ($testFile) {
         case 'SemicolonSpacingUnitTest.inc':
@@ -48,7 +43,7 @@ final class SemicolonSpacingUnitTest extends AbstractSniffUnitTest
                 30 => 2,
                 36 => 1,
             ];
-
+            break;
         case 'SemicolonSpacingUnitTest.js':
             return [
                 3  => 1,
@@ -61,9 +56,10 @@ final class SemicolonSpacingUnitTest extends AbstractSniffUnitTest
                 22 => 1,
                 25 => 1,
             ];
-
+            break;
         default:
             return [];
+            break;
         }//end switch
 
     }//end getErrorList()

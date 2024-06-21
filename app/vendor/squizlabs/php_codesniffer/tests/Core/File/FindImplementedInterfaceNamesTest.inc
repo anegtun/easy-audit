@@ -1,25 +1,23 @@
 <?php
 
-/* testNotAClass */
-function notAClass() {}
+namespace PHP_CodeSniffer\Tests\Core\File;
 
-/* testPlainInterface */
+interface testFIINInterface2 {}
+
+/* testInterface */
 interface testFIINInterface {}
+
+/* testImplementedClass */
+class testFIINImplementedClass implements testFIINInterface {}
+
+/* testMultiImplementedClass */
+class testFIINMultiImplementedClass implements testFIINInterface, testFIINInterface2 {}
+
+/* testNamespacedClass */
+class testFIINNamespacedClass implements \PHP_CodeSniffer\Tests\Core\File\testFIINInterface {}
 
 /* testNonImplementedClass */
 class testFIINNonImplementedClass {}
-
-/* testClassImplementsSingle */
-class testFIINImplementedClass implements testFIINInterface {}
-
-/* testClassImplementsMultiple */
-class testFIINMultiImplementedClass implements testFIINInterface, testFIINInterface2 {}
-
-/* testImplementsFullyQualified */
-class testFIINNamespacedClass implements \PHP_CodeSniffer\Tests\Core\File\testFIINInterface {}
-
-/* testImplementsPartiallyQualified */
-class testFIINQualifiedClass implements Core\File\RelativeInterface {}
 
 /* testClassThatExtendsAndImplements */
 class testFECNClassThatExtendsAndImplements extends testFECNClass implements InterfaceA, \NameSpaced\Cat\InterfaceB {}
@@ -30,18 +28,8 @@ class testFECNClassThatImplementsAndExtends implements \InterfaceA, InterfaceB e
 /* testBackedEnumWithoutImplements */
 enum Suit:string {}
 
-/* testEnumImplementsSingle */
+/* testEnumImplements */
 enum Suit implements Colorful {}
 
-/* testBackedEnumImplementsMulti */
+/* testBackedEnumImplements */
 enum Suit: string implements Colorful, \Deck {}
-
-/* testAnonClassImplementsSingle */
-$anon = class() implements testFIINInterface {}
-
-/* testMissingImplementsName */
-class testMissingExtendsName implements { /* missing interface name */  } // Intentional parse error.
-
-// Intentional parse error. Has to be the last test in the file.
-/* testParseError */
-class testParseError implements testInterface

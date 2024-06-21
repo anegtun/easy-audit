@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Squiz\Sniffs\ControlStructures;
@@ -37,7 +37,7 @@ class ControlSignatureSniff implements Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
-     * @return array<int|string>
+     * @return int[]
      */
     public function register()
     {
@@ -105,15 +105,9 @@ class ControlSignatureSniff implements Sniff
         }
 
         if ($found !== $expected) {
-            $pluralizeSpace = 's';
-            if ($expected === 1) {
-                $pluralizeSpace = '';
-            }
-
-            $error = 'Expected %s space%s after %s keyword; %s found';
+            $error = 'Expected %s space(s) after %s keyword; %s found';
             $data  = [
                 $expected,
-                $pluralizeSpace,
                 strtoupper($tokens[$stackPtr]['content']),
                 $found,
             ];
@@ -126,7 +120,7 @@ class ControlSignatureSniff implements Sniff
                     $phpcsFile->fixer->replaceToken(($stackPtr + 1), str_repeat(' ', $expected));
                 }
             }
-        }//end if
+        }
 
         // Single space after closing parenthesis.
         if (isset($tokens[$stackPtr]['parenthesis_closer']) === true
@@ -152,15 +146,9 @@ class ControlSignatureSniff implements Sniff
             }
 
             if ($found !== $expected) {
-                $pluralizeSpace = 's';
-                if ($expected === 1) {
-                    $pluralizeSpace = '';
-                }
-
-                $error = 'Expected %s space%s after closing parenthesis; found %s';
+                $error = 'Expected %s space(s) after closing parenthesis; found %s';
                 $data  = [
                     $expected,
-                    $pluralizeSpace,
                     $found,
                 ];
 

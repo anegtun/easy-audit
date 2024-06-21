@@ -5,9 +5,7 @@
  * @author    Holger Kral <holger.kral@zend.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- *
- * @deprecated 3.9.0
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Zend\Sniffs\Debug;
@@ -25,7 +23,7 @@ class CodeAnalyzerSniff implements Sniff
     /**
      * Returns the token types that this sniff is interested in.
      *
-     * @return array<int|string>
+     * @return int[]
      */
     public function register()
     {
@@ -48,7 +46,7 @@ class CodeAnalyzerSniff implements Sniff
     {
         $analyzerPath = Config::getExecutablePath('zend_ca');
         if ($analyzerPath === null) {
-            return $phpcsFile->numTokens;
+            return;
         }
 
         $fileName = $phpcsFile->getFilename();
@@ -69,7 +67,7 @@ class CodeAnalyzerSniff implements Sniff
         // provide useful error reporting.
         if (is_numeric($exitCode) === true && $exitCode > 0) {
             if (is_array($output) === true) {
-                $msg = implode('\n', $output);
+                $msg = join('\n', $output);
             }
 
             throw new RuntimeException("Failed invoking ZendCodeAnalyzer, exitcode was [$exitCode], retval was [$retval], output was [$msg]");
@@ -92,7 +90,7 @@ class CodeAnalyzerSniff implements Sniff
         }
 
         // Ignore the rest of the file.
-        return $phpcsFile->numTokens;
+        return ($phpcsFile->numTokens + 1);
 
     }//end process()
 

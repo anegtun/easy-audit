@@ -4,21 +4,16 @@
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2019 Juliette Reinders Folmer. All rights reserved.
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Tests\Core\Ruleset;
 
+use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Ruleset;
-use PHP_CodeSniffer\Tests\ConfigDouble;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Tests for the \PHP_CodeSniffer\Ruleset class using a Linux-style absolute path to include a sniff.
- *
- * @covers \PHP_CodeSniffer\Ruleset
- */
-final class RuleInclusionAbsoluteLinuxTest extends TestCase
+class RuleInclusionAbsoluteLinuxTest extends TestCase
 {
 
     /**
@@ -46,12 +41,17 @@ final class RuleInclusionAbsoluteLinuxTest extends TestCase
     /**
      * Initialize the config and ruleset objects.
      *
-     * @before
-     *
      * @return void
      */
-    public function initializeConfigAndRuleset()
+    public function setUp()
     {
+        if ($GLOBALS['PHP_CODESNIFFER_PEAR'] === true) {
+            // PEAR installs test and sniff files into different locations
+            // so these tests will not pass as they directly reference files
+            // by relative location.
+            $this->markTestSkipped('Test cannot run from a PEAR install');
+        }
+
         $this->standard = __DIR__.'/'.basename(__FILE__, '.php').'.xml';
         $repoRootDir    = dirname(dirname(dirname(__DIR__)));
 
@@ -71,24 +71,22 @@ final class RuleInclusionAbsoluteLinuxTest extends TestCase
         }
 
         // Initialize the config and ruleset objects for the test.
-        $config        = new ConfigDouble(["--standard={$this->standard}"]);
+        $config        = new Config(["--standard={$this->standard}"]);
         $this->ruleset = new Ruleset($config);
 
-    }//end initializeConfigAndRuleset()
+    }//end setUp()
 
 
     /**
      * Reset ruleset file.
      *
-     * @after
-     *
      * @return void
      */
-    public function resetRuleset()
+    public function tearDown()
     {
         file_put_contents($this->standard, $this->contents);
 
-    }//end resetRuleset()
+    }//end tearDown()
 
 
     /**
@@ -100,6 +98,7 @@ final class RuleInclusionAbsoluteLinuxTest extends TestCase
     public function testLinuxStylePathRuleInclusion()
     {
         // Test that the sniff is correctly registered.
+        $this->assertObjectHasAttribute('sniffCodes', $this->ruleset);
         $this->assertCount(1, $this->ruleset->sniffCodes);
         $this->assertArrayHasKey('Generic.Formatting.SpaceAfterNot', $this->ruleset->sniffCodes);
         $this->assertSame(

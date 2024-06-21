@@ -4,18 +4,14 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Util;
 
-use FilesystemIterator;
 use PHP_CodeSniffer\Autoload;
 use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Ruleset;
-use RecursiveCallbackFilterIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 
 class Cache
 {
@@ -23,7 +19,7 @@ class Cache
     /**
      * The filesystem location of the cache file.
      *
-     * @var string
+     * @var void
      */
     private static $path = '';
 
@@ -99,11 +95,11 @@ class Cache
         // hash. This ensures that core PHPCS changes will also invalidate the cache.
         // Note that we ignore sniffs here, and any files that don't affect
         // the outcome of the run.
-        $di     = new RecursiveDirectoryIterator(
+        $di     = new \RecursiveDirectoryIterator(
             $installDir,
-            (FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::SKIP_DOTS)
+            (\FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::SKIP_DOTS)
         );
-        $filter = new RecursiveCallbackFilterIterator(
+        $filter = new \RecursiveCallbackFilterIterator(
             $di,
             function ($file, $key, $iterator) {
                 // Skip non-php files.
@@ -130,7 +126,7 @@ class Cache
             }
         );
 
-        $iterator = new RecursiveIteratorIterator($filter);
+        $iterator = new \RecursiveIteratorIterator($filter);
         foreach ($iterator as $file) {
             if (PHP_CODESNIFFER_VERBOSITY > 1) {
                 echo "\t\t=> core file: $file".PHP_EOL;

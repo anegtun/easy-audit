@@ -1,57 +1,25 @@
 <?php
 /**
- * Tests for the \PHP_CodeSniffer\Files\File::findImplementedInterfaceNames method.
+ * Tests for the \PHP_CodeSniffer\Files\File:findImplementedInterfaceNames method.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Tests\Core\File;
 
 use PHP_CodeSniffer\Tests\Core\AbstractMethodUnitTest;
 
-/**
- * Tests for the \PHP_CodeSniffer\Files\File::findImplementedInterfaceNames method.
- *
- * @covers \PHP_CodeSniffer\Files\File::findImplementedInterfaceNames
- */
-final class FindImplementedInterfaceNamesTest extends AbstractMethodUnitTest
+class FindImplementedInterfaceNamesTest extends AbstractMethodUnitTest
 {
-
-
-    /**
-     * Test getting a `false` result when a non-existent token is passed.
-     *
-     * @return void
-     */
-    public function testNonExistentToken()
-    {
-        $result = self::$phpcsFile->findImplementedInterfaceNames(100000);
-        $this->assertFalse($result);
-
-    }//end testNonExistentToken()
-
-
-    /**
-     * Test getting a `false` result when a token other than one of the supported tokens is passed.
-     *
-     * @return void
-     */
-    public function testNotAClass()
-    {
-        $token  = $this->getTargetToken('/* testNotAClass */', [T_FUNCTION]);
-        $result = self::$phpcsFile->findImplementedInterfaceNames($token);
-        $this->assertFalse($result);
-
-    }//end testNotAClass()
 
 
     /**
      * Test retrieving the name(s) of the interfaces being implemented by a class.
      *
-     * @param string              $identifier Comment which precedes the test case.
-     * @param array<string>|false $expected   Expected function output.
+     * @param string $identifier Comment which precedes the test case.
+     * @param bool   $expected   Expected function output.
      *
      * @dataProvider dataImplementedInterface
      *
@@ -71,88 +39,62 @@ final class FindImplementedInterfaceNamesTest extends AbstractMethodUnitTest
      *
      * @see testFindImplementedInterfaceNames()
      *
-     * @return array<string, array<string, string|array<string>>>
+     * @return array
      */
-    public static function dataImplementedInterface()
+    public function dataImplementedInterface()
     {
         return [
-            'interface declaration, no implements'                               => [
-                'identifier' => '/* testPlainInterface */',
-                'expected'   => false,
+            [
+                '/* testImplementedClass */',
+                ['testFIINInterface'],
             ],
-            'class does not implement'                                           => [
-                'identifier' => '/* testNonImplementedClass */',
-                'expected'   => false,
-            ],
-            'class implements single interface, unqualified'                     => [
-                'identifier' => '/* testClassImplementsSingle */',
-                'expected'   => [
-                    'testFIINInterface',
-                ],
-            ],
-            'class implements multiple interfaces'                               => [
-                'identifier' => '/* testClassImplementsMultiple */',
-                'expected'   => [
+            [
+                '/* testMultiImplementedClass */',
+                [
                     'testFIINInterface',
                     'testFIINInterface2',
                 ],
             ],
-            'class implements single interface, fully qualified'                 => [
-                'identifier' => '/* testImplementsFullyQualified */',
-                'expected'   => [
-                    '\PHP_CodeSniffer\Tests\Core\File\testFIINInterface',
-                ],
+            [
+                '/* testNamespacedClass */',
+                ['\PHP_CodeSniffer\Tests\Core\File\testFIINInterface'],
             ],
-            'class implements single interface, partially qualified'             => [
-                'identifier' => '/* testImplementsPartiallyQualified */',
-                'expected'   => [
-                    'Core\File\RelativeInterface',
-                ],
+            [
+                '/* testNonImplementedClass */',
+                false,
             ],
-            'class extends and implements'                                       => [
-                'identifier' => '/* testClassThatExtendsAndImplements */',
-                'expected'   => [
+            [
+                '/* testInterface */',
+                false,
+            ],
+            [
+                '/* testClassThatExtendsAndImplements */',
+                [
                     'InterfaceA',
                     '\NameSpaced\Cat\InterfaceB',
                 ],
             ],
-            'class implements and extends'                                       => [
-                'identifier' => '/* testClassThatImplementsAndExtends */',
-                'expected'   => [
+            [
+                '/* testClassThatImplementsAndExtends */',
+                [
                     '\InterfaceA',
                     'InterfaceB',
                 ],
             ],
-            'enum does not implement'                                            => [
-                'identifier' => '/* testBackedEnumWithoutImplements */',
-                'expected'   => false,
+            [
+                '/* testBackedEnumWithoutImplements */',
+                false,
             ],
-            'enum implements single interface, unqualified'                      => [
-                'identifier' => '/* testEnumImplementsSingle */',
-                'expected'   => [
-                    'Colorful',
-                ],
+            [
+                '/* testEnumImplements */',
+                ['Colorful'],
             ],
-            'enum implements multiple interfaces, unqualified + fully qualified' => [
-                'identifier' => '/* testBackedEnumImplementsMulti */',
-                'expected'   => [
+            [
+                '/* testBackedEnumImplements */',
+                [
                     'Colorful',
                     '\Deck',
                 ],
-            ],
-            'anon class implements single interface, unqualified'                => [
-                'identifier' => '/* testAnonClassImplementsSingle */',
-                'expected'   => [
-                    'testFIINInterface',
-                ],
-            ],
-            'parse error - implements keyword, but no interface name'            => [
-                'identifier' => '/* testMissingImplementsName */',
-                'expected'   => false,
-            ],
-            'parse error - live coding - no curly braces'                        => [
-                'identifier' => '/* testParseError */',
-                'expected'   => false,
             ],
         ];
 

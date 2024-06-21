@@ -4,19 +4,14 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Squiz\Tests\ControlStructures;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-/**
- * Unit test class for the ControlSignature sniff.
- *
- * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\ControlStructures\ControlSignatureSniff
- */
-final class ControlSignatureUnitTest extends AbstractSniffUnitTest
+class ControlSignatureUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -30,7 +25,7 @@ final class ControlSignatureUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='')
+    public function getErrorList($testFile='ControlSignatureUnitTest.inc')
     {
         $errors = [
             7   => 1,
@@ -82,8 +77,6 @@ final class ControlSignatureUnitTest extends AbstractSniffUnitTest
             $errors[279] = 1;
             $errors[283] = 1;
             $errors[306] = 3;
-            $errors[309] = 1;
-            $errors[315] = 1;
         }//end if
 
         return $errors;

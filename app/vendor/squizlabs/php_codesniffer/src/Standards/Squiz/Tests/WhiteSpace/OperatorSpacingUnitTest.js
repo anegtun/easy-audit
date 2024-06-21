@@ -101,4 +101,3 @@ var foo = bar.map(baz=> baz.length);
 
 // phpcs:set Squiz.WhiteSpace.OperatorSpacing ignoreSpacingBeforeAssignments false
 a  =  3;
-// phpcs:set Squiz.WhiteSpace.OperatorSpacing ignoreSpacingBeforeAssignments true

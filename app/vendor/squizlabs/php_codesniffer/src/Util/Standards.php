@@ -4,12 +4,11 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Util;
 
-use DirectoryIterator;
 use PHP_CodeSniffer\Config;
 
 class Standards
@@ -100,7 +99,7 @@ class Standards
                 continue;
             }
 
-            $di = new DirectoryIterator($standardsDir);
+            $di = new \DirectoryIterator($standardsDir);
             foreach ($di as $file) {
                 if ($file->isDir() === true && $file->isDot() === false) {
                     $filename = $file->getFilename();
@@ -191,7 +190,7 @@ class Standards
                 continue;
             }
 
-            $di = new DirectoryIterator($standardsDir);
+            $di = new \DirectoryIterator($standardsDir);
             $standardsInDir = [];
             foreach ($di as $file) {
                 if ($file->isDir() === true && $file->isDot() === false) {

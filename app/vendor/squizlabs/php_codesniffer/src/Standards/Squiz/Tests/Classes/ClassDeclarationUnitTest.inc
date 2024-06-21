@@ -119,12 +119,3 @@ class IncorrectCodeBeforeClosingBrace
 {
 
 echo phpinfo();}
-
-readonly
-class Test
-{
-}
-
-readonly    class Test
-{
-}

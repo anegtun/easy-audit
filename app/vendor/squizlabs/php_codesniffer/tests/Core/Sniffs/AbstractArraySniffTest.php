@@ -4,19 +4,14 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2020 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Tests\Core\Sniffs;
 
 use PHP_CodeSniffer\Tests\Core\AbstractMethodUnitTest;
 
-/**
- * Tests for the \PHP_CodeSniffer\Sniffs\AbstractArraySniff.
- *
- * @covers \PHP_CodeSniffer\Sniffs\AbstractArraySniff
- */
-final class AbstractArraySniffTest extends AbstractMethodUnitTest
+class AbstractArraySniffTest extends AbstractMethodUnitTest
 {
 
     /**
@@ -36,16 +31,14 @@ final class AbstractArraySniffTest extends AbstractMethodUnitTest
      * The test case file for a unit test class has to be in the same directory
      * directory and use the same file name as the test class, using the .inc extension.
      *
-     * @beforeClass
-     *
      * @return void
      */
-    public static function initializeFile()
+    public static function setUpBeforeClass()
     {
         self::$sniff = new AbstractArraySniffTestable();
-        parent::initializeFile();
+        parent::setUpBeforeClass();
 
-    }//end initializeFile()
+    }//end setUpBeforeClass()
 
 
     /**

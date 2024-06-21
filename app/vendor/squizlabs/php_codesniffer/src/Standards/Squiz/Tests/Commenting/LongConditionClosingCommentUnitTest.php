@@ -4,19 +4,14 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Squiz\Tests\Commenting;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-/**
- * Unit test class for the LongConditionClosingComment sniff.
- *
- * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\LongConditionClosingCommentSniff
- */
-final class LongConditionClosingCommentUnitTest extends AbstractSniffUnitTest
+class LongConditionClosingCommentUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -30,7 +25,7 @@ final class LongConditionClosingCommentUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='')
+    public function getErrorList($testFile='LongConditionClosingCommentUnitTest.inc')
     {
         switch ($testFile) {
         case 'LongConditionClosingCommentUnitTest.inc':
@@ -65,7 +60,7 @@ final class LongConditionClosingCommentUnitTest extends AbstractSniffUnitTest
                 1008 => 1,
                 1032 => 1,
             ];
-
+            break;
         case 'LongConditionClosingCommentUnitTest.js':
             return [
                 47  => 1,
@@ -81,9 +76,10 @@ final class LongConditionClosingCommentUnitTest extends AbstractSniffUnitTest
                 439 => 1,
                 444 => 1,
             ];
-
+            break;
         default:
             return [];
+            break;
         }//end switch
 
     }//end getErrorList()

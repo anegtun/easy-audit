@@ -4,7 +4,7 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Zend\Tests\Debug;
@@ -12,19 +12,14 @@ namespace PHP_CodeSniffer\Standards\Zend\Tests\Debug;
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 use PHP_CodeSniffer\Config;
 
-/**
- * Unit test class for the CodeAnalyzer sniff.
- *
- * @covers \PHP_CodeSniffer\Standards\Zend\Sniffs\Debug\CodeAnalyzerSniff
- */
-final class CodeAnalyzerUnitTest extends AbstractSniffUnitTest
+class CodeAnalyzerUnitTest extends AbstractSniffUnitTest
 {
 
 
     /**
      * Should this test be skipped for some reason.
      *
-     * @return bool
+     * @return void
      */
     protected function shouldSkipTest()
     {

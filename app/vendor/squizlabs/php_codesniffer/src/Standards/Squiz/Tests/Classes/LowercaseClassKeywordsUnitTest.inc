@@ -5,12 +5,10 @@ Interface MyInterface {}
 Trait MyTrait {}
 Enum MyEnum IMPLEMENTS Colorful {}
 
-ReadOnly class MyClass
+class MyClass
 {
     Var $myVar = null;
     Const myConst = true;
 }
 
 $a = new CLASS() {};
-
-$anon = new ReadOnly class() {};

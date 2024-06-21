@@ -31,7 +31,7 @@ class MyClass
  * Some info about the class here
  *
  */
-readonly class MyClass
+class MyClass
 {
     /**
      * Some info about the function here.

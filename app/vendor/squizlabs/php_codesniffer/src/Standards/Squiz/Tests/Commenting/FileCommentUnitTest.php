@@ -4,19 +4,14 @@
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Squiz\Tests\Commenting;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-/**
- * Unit test class for the FileComment sniff.
- *
- * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\FileCommentSniff
- */
-final class FileCommentUnitTest extends AbstractSniffUnitTest
+class FileCommentUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -30,7 +25,7 @@ final class FileCommentUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='')
+    public function getErrorList($testFile='FileCommentUnitTest.inc')
     {
         switch ($testFile) {
         case 'FileCommentUnitTest.1.inc':
@@ -51,7 +46,6 @@ final class FileCommentUnitTest extends AbstractSniffUnitTest
         case 'FileCommentUnitTest.6.inc':
         case 'FileCommentUnitTest.7.inc':
         case 'FileCommentUnitTest.9.inc':
-        case 'FileCommentUnitTest.10.inc':
             return [1 => 1];
 
         case 'FileCommentUnitTest.5.inc':

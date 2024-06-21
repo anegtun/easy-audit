@@ -41,10 +41,3 @@ $callToNamespacedFunction = namespace\STR_REPEAT($a, 2); // Could potentially be
 $filePath = new \File($path);
 
 $count = $object?->Count();
-
-class AttributesShouldBeIgnored
-{
-    #[Putenv('FOO', 'foo')]
-    public function foo(): void
-    {}
-}

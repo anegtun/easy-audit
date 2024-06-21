@@ -39,10 +39,7 @@ class TestMemberProperties
     var static $varG = true;
 
     /* testPublicStatic */
-    public // comment
-    // phpcs:ignore Stnd.Cat.Sniff -- For reasons.
-    static
-    $varH = true;
+    public static $varH = true;
 
     /* testProtectedStatic */
     static protected $varI = true;
@@ -213,19 +210,18 @@ $anon = class() {
 
     /* testPHP8UnionTypesIllegalTypes */
     // Intentional fatal error - types which are not allowed for properties, but that's not the concern of the method.
-    // Note: static is also not allowed as a type, but using static for a property type is not supported by the tokenizer.
-    public callable|void $unionTypesIllegalTypes;
+    public callable|static|void $unionTypesIllegalTypes;
 
     /* testPHP8UnionTypesNullable */
     // Intentional fatal error - nullability is not allowed with union types, but that's not the concern of the method.
     public ?int|float $unionTypesNullable;
 
     /* testPHP8PseudoTypeNull */
-    // PHP 8.0 - 8.1: Intentional fatal error - null pseudotype is only allowed in union types, but that's not the concern of the method.
+    // Intentional fatal error - null pseudotype is only allowed in union types, but that's not the concern of the method.
     public null $pseudoTypeNull;
 
     /* testPHP8PseudoTypeFalse */
-    // PHP 8.0 - 8.1: Intentional fatal error - false pseudotype is only allowed in union types, but that's not the concern of the method.
+    // Intentional fatal error - false pseudotype is only allowed in union types, but that's not the concern of the method.
     public false $pseudoTypeFalse;
 
     /* testPHP8PseudoTypeFalseAndBool */
@@ -248,7 +244,7 @@ $anon = class() {
     public readonly int $readonly;
 
     /* testPHP81ReadonlyWithNullableType */
-    public readonly ?array $readonlyWithNullableType;
+    public readonly ?array $array;
 
     /* testPHP81ReadonlyWithUnionType */
     public readonly string|int $readonlyWithUnionType;
@@ -258,16 +254,6 @@ $anon = class() {
 
     /* testPHP81OnlyReadonlyWithUnionType */
     readonly string|int $onlyReadonly;
-
-    /* testPHP81OnlyReadonlyWithUnionTypeMultiple */
-    readonly \InterfaceA|\Sub\InterfaceB|false
-        $onlyReadonly;
-
-    /* testPHP81ReadonlyAndStatic */
-    readonly private static ?string $readonlyAndStatic;
-
-    /* testPHP81ReadonlyMixedCase */
-    public ReadONLY static $readonlyMixedCase;
 };
 
 $anon = class {
@@ -312,45 +298,7 @@ $anon = class() {
     // Intentional fatal error - types which are not allowed for intersection type, but that's not the concern of the method.
     public int&string $illegalIntersectionType;
 
-    /* testPHP81NullableIntersectionType */
+    /* testPHP81NulltableIntersectionType */
     // Intentional fatal error - nullability is not allowed with intersection type, but that's not the concern of the method.
     public ?Foo&Bar $nullableIntersectionType;
 };
-
-$anon = class() {
-    /* testPHP82PseudoTypeTrue */
-    public true $pseudoTypeTrue;
-
-    /* testPHP82NullablePseudoTypeTrue */
-    static protected ?true $pseudoTypeNullableTrue;
-
-    /* testPHP82PseudoTypeTrueInUnion */
-    private int|string|true $pseudoTypeTrueInUnion;
-
-    /* testPHP82PseudoTypeFalseAndTrue */
-    // Intentional fatal error - Type contains both true and false, bool should be used instead, but that's not the concern of the method.
-    readonly true|FALSE $pseudoTypeFalseAndTrue;
-};
-
-class WhitespaceAndCommentsInTypes {
-    /* testUnionTypeWithWhitespaceAndComment */
-    public int | /*comment*/ string $hasWhitespaceAndComment;
-
-    /* testIntersectionTypeWithWhitespaceAndComment */
-    public \Foo /*comment*/ & Bar $hasWhitespaceAndComment;
-}
-
-trait DNFTypes {
-    /* testPHP82DNFTypeStatic */
-    public static (Foo&\Bar)|bool $propA;
-
-    /* testPHP82DNFTypeReadonlyA */
-    protected readonly float|(Partially\Qualified&Traversable) $propB;
-
-    /* testPHP82DNFTypeReadonlyB */
-    private readonly (namespace\Foo&Bar)|string $propC;
-
-    /* testPHP82DNFTypeIllegalNullable */
-    // Intentional fatal error - nullable operator cannot be combined with DNF.
-    var ?(A&\Pck\B)|bool $propD;
-}
