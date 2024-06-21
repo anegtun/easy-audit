@@ -1,8 +1,0 @@
-.editorconfig
-.travis.yml
-
-app/composer.lock
-app/composer.phar
-app/logs/*.log
-app/tmp/cache
-app/webroot/uploads
