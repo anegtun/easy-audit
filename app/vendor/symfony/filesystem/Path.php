@@ -42,9 +42,12 @@ final class Path
      *
      * @var array<string, string>
      */
-    private static array $buffer = [];
+    private static $buffer = [];
 
-    private static int $bufferSize = 0;
+    /**
+     * @var int
+     */
+    private static $bufferSize = 0;
 
     /**
      * Canonicalizes the given path.
@@ -254,7 +257,7 @@ final class Path
      * @param string|null $extension if specified, only that extension is cut
      *                               off (may contain leading dot)
      */
-    public static function getFilenameWithoutExtension(string $path, ?string $extension = null): string
+    public static function getFilenameWithoutExtension(string $path, string $extension = null): string
     {
         if ('' === $path) {
             return '';
@@ -365,7 +368,7 @@ final class Path
         }
 
         // Strip scheme
-        if (false !== ($schemeSeparatorPosition = strpos($path, '://')) && 1 !== $schemeSeparatorPosition) {
+        if (false !== $schemeSeparatorPosition = strpos($path, '://')) {
             $path = substr($path, $schemeSeparatorPosition + 3);
         }
 

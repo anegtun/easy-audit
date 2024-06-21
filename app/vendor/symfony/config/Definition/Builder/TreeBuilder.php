@@ -20,17 +20,10 @@ use Symfony\Component\Config\Definition\NodeInterface;
  */
 class TreeBuilder implements NodeParentInterface
 {
-    /**
-     * @var NodeInterface|null
-     */
     protected $tree;
-
-    /**
-     * @var NodeDefinition
-     */
     protected $root;
 
-    public function __construct(string $name, string $type = 'array', ?NodeBuilder $builder = null)
+    public function __construct(string $name, string $type = 'array', NodeBuilder $builder = null)
     {
         $builder ??= new NodeBuilder();
         $this->root = $builder->node($name, $type)->setParent($this);
@@ -51,7 +44,11 @@ class TreeBuilder implements NodeParentInterface
      */
     public function buildTree(): NodeInterface
     {
-        return $this->tree ??= $this->root->getNode(true);
+        if (null !== $this->tree) {
+            return $this->tree;
+        }
+
+        return $this->tree = $this->root->getNode(true);
     }
 
     /**
