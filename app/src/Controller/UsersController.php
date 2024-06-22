@@ -33,7 +33,7 @@ class UsersController extends AppController {
     }
 
     public function detail($id = null) {
-        $user = empty($id) ? $this->Users->newEntity() : $this->Users->get($id, ['contain' => [
+        $user = empty($id) ? $this->Users->newEntity([]) : $this->Users->get($id, ['contain' => [
             'Audits' => [ 'Customers', 'FormTemplates', 'sort' => ['date'=>'DESC'] ]
         ]]);
         $roles = $this->Roles->getAll();
@@ -45,7 +45,7 @@ class UsersController extends AppController {
         if(empty($data['password'])) {
             unset($data['password']);
         }
-        $user = empty($data['id']) ? $this->Users->newEntity() : $this->Users->get($data['id']);
+        $user = empty($data['id']) ? $this->Users->newEntity([]) : $this->Users->get($data['id']);
         if ($this->request->is('post') || $this->request->is('put')) {
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {

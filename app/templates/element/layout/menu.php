@@ -1,5 +1,5 @@
 <?php
-$authUser = $this->request->getSession()->read('Auth.User');
+$authUser = $this->request->getAttribute('identity');
 ?>
 
 <ul class="nav nav-pills nav-stacked" id="left-menu-content" role="navigation">
