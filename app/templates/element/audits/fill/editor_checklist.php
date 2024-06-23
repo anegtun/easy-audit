@@ -62,7 +62,7 @@ foreach($audit->field_values as $fv) {
                             <?= $f->text ?>
                         </label>
 
-                        <?= $this->element("Audits/field/type_{$f->type}", ['template'=>$template, 'field'=>$f, 'value'=>$value]) ?>
+                        <?= $this->element("audits/field/type_{$f->type}", ['template'=>$template, 'field'=>$f, 'value'=>$value]) ?>
 
                         <div class="audit-observations" data-has-observations="<?= $hasImgsOrObs ? true : false ?>">
                             <a class="audit-observations-open" href="#"><?= __('+ add observations') ?></a>

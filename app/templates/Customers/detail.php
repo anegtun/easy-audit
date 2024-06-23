@@ -7,7 +7,7 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('Customers'), 'url'=>['action'=>'index']],
     ['label'=>$title]
 ]);
-$authUser = $this->request->getSession()->read('Auth.User');
+$authUser = $this->request->getAttribute('identity');
 $isAdmin = $authUser['role'] === 'admin';
 ?>
 
@@ -98,7 +98,7 @@ $isAdmin = $authUser['role'] === 'admin';
     <div class="row">
         <fieldset>
             <legend><?= __('Audits') ?></legend>
-            <?= $this->element('Audits/list', ['audits' => $customer->audits]) ?>
+            <?= $this->element('audits/list', ['audits' => $customer->audits]) ?>
         </fieldset>
     </div>
 

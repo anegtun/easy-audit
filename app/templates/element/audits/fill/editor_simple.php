@@ -16,7 +16,7 @@ foreach($audit->field_values as $fv) {
                 <?php if($f->form_section_id === $s->id) : ?>
                     <div class="form-group audit-field-simple">
                         <label><?= $f->text ?></label>
-                        <?= $this->element("Audits/field/type_{$f->type}", [
+                        <?= $this->element("audits/field/type_{$f->type}", [
                             'template' => $template,
                             'field' => $f,
                             'value' => $audit->getFieldValue($f)

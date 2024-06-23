@@ -27,7 +27,7 @@ $this->Html->script('audit-fill', ['block' => 'script']);
     <div class="tab-content">
         <?php foreach($audit->templates as $i => $t) : ?>
             <div id="form<?= $t->id ?>" class="tab-pane fade <?= $i==0 ? "in active" : "" ?>">
-                <?= $this->element("Audits/fill/editor_{$t->form->type}", ['audit'=>$audit, 'template'=>$t]) ?>
+                <?= $this->element("audits/fill/editor_{$t->form->type}", ['audit'=>$audit, 'template'=>$t]) ?>
             </div>
         <?php endforeach ?>
     </div>
@@ -55,4 +55,4 @@ $this->Html->script('audit-fill', ['block' => 'script']);
     </div>
 <?php endforeach ?>
 
-<?= $this->element('Audits/modals/send', ['audit' => $audit]) ?>
+<?= $this->element('audits/modals/send', ['audit' => $audit]) ?>

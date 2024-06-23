@@ -11,7 +11,7 @@ $this->Html->script('audit-list', ['block' => 'script']);
     <div class="button-group">
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-new-audit"><?= __('New audit') ?></button>
     </div>
-    <?= $this->element('Audits/list', ['audits' => $audits]) ?>
+    <?= $this->element('audits/list', ['audits' => $audits]) ?>
 </div>
 
 <div id="modal-new-audit" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">

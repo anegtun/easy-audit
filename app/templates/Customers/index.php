@@ -5,7 +5,7 @@ $this->set('headerBreadcrumbs', [
     ['label'=>__('Config')],
     ['label'=>__('Customers')]
 ]);
-$authUser = $this->request->getSession()->read('Auth.User');
+$authUser = $this->request->getAttribute('identity');
 $isAdmin = $authUser['role'] === 'admin';
 ?>
 

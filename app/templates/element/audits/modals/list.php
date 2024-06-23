@@ -8,7 +8,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <?= $this->element('Audits/list', ['audits' => $audits]) ?>
+                <?= $this->element('audits/list', ['audits' => $audits]) ?>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= __('Close') ?></button>

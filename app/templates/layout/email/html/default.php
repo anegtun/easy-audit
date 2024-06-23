@@ -40,7 +40,7 @@ $companyInfo = $this->EasyAuditConfig->company();
             <?= $companyInfo->address ?>
         </div>
         <div class="disclaimer">
-            <?= $this->element('Layout/email_disclaimer') ?>
+            <?= $this->element('layout/email_disclaimer') ?>
         </div>
     </footer>
 </body>

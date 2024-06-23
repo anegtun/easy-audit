@@ -15,7 +15,6 @@ class AuditsController extends AppController {
         $this->AuditMeasureValues = TableRegistry::getTableLocator()->get('AuditMeasureValues');
         $this->Customers = TableRegistry::getTableLocator()->get('Customers');
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
-        $this->FormTemplateSections = TableRegistry::getTableLocator()->get('FormTemplateSections');
         $this->FormOptionsetValues = TableRegistry::getTableLocator()->get('FormOptionsetValues');
         $this->Users = TableRegistry::getTableLocator()->get('Users');
         $this->loadComponent('AuditFile');
@@ -82,11 +81,12 @@ class AuditsController extends AppController {
 
     public function create() {
         if ($this->request->is('post') || $this->request->is('put')) {
+            $user = $this->Authentication->getIdentity();
             $data = $this->request->getData();
-            $audit = $this->Audits->patchEntity($this->Audits->newEntity(), $data);
+            $audit = $this->Audits->patchEntity($this->Audits->newEntity([]), $data);
             $audit->date = $this->parseDate($data['date']);
-            $audit->auditor_user_id = $this->Auth->user('id');
-            $audit->templates = $this->FormTemplates->find('all')->where(['id IN' => $data['form_template_id']])->toArray();
+            $audit->auditor_user_id = $user->id;
+            $audit->templates = empty($data['form_template_id']) ? [] : $audit->templates = $this->FormTemplates->find('all')->where(['id IN' => $data['form_template_id']])->toArray();
             $audit = $this->Audits->save($audit);
 
             $cloned = false;
