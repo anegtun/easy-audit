@@ -139,12 +139,12 @@ $is_editable = !$has_audits;
 
 
 
-<?= $this->element('Forms/modals/section', ['modal_id' => 'modal-section']) ?>
-<?= $this->element('Forms/modals/rename', ['modal_id' => 'modal-rename', 'form' => $form]) ?>
-<?= $this->element('Forms/modals/clone', ['modal_id' => 'modal-clone-form']) ?>
+<?= $this->element('forms/modals/section', ['modal_id' => 'modal-section']) ?>
+<?= $this->element('forms/modals/rename', ['modal_id' => 'modal-rename', 'form' => $form]) ?>
+<?= $this->element('forms/modals/clone', ['modal_id' => 'modal-clone-form']) ?>
 
-<?= $this->element('FormTemplates/modals/new_template', ['modal_id' => 'modal-new-template']) ?>
-<?= $this->element('FormTemplates/modals/clone', ['modal_id' => 'modal-clone-template']) ?>
+<?= $this->element('form_templates/modals/new_template', ['modal_id' => 'modal-new-template']) ?>
+<?= $this->element('form_templates/modals/clone', ['modal_id' => 'modal-clone-template']) ?>
 
-<?= $this->element('Audits/modals/list', ['modal_id' => 'modal-audits', 'audits' => $audits]) ?>
-<?= $this->element('Customers/modals/list', ['modal_id' => 'modal-customers', 'customers' => $customers]) ?>
+<?= $this->element('audits/modals/list', ['modal_id' => 'modal-audits', 'audits' => $audits]) ?>
+<?= $this->element('customers/modals/list', ['modal_id' => 'modal-customers', 'customers' => $customers]) ?>

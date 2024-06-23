@@ -44,4 +44,4 @@ $this->Html->script('form-clone', ['block' => 'script']);
 
 
 
-<?= $this->element('Forms/modals/new_form', ['modal_id' => 'modal-new-form']) ?>
+<?= $this->element('forms/modals/new_form', ['modal_id' => 'modal-new-form']) ?>

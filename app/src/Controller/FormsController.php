@@ -38,7 +38,7 @@ class FormsController extends AppController {
     }
 
     public function create() {
-        $form = $this->Forms->newEntity();
+        $form = $this->Forms->newEntity([]);
         if ($this->request->is('post') || $this->request->is('put')) {
             $form = $this->Forms->patchEntity($form, $this->request->getData());
             $form = $this->Forms->save($form);
@@ -86,7 +86,7 @@ class FormsController extends AppController {
         $formId = $formData['form_id'];
         if ($this->request->is('post') || $this->request->is('put')) {
             if(empty($formData['id'])) {
-                $section = $this->Forms->FormSections->newEntity();
+                $section = $this->Forms->FormSections->newEntity([]);
                 $section = $this->Forms->FormSections->patchEntity($section, $formData);
             } else {
                 $section = $this->Forms->FormSections->get($formData['id']);
@@ -166,10 +166,7 @@ class FormsController extends AppController {
             }
             $this->Forms->save($old_form);
 
-            $new_form = $this->Forms->newEntity();
-            $new_form->name = $data['name'];
-            $new_form->public_name = $data['public_name'];
-            $new_form->type = $old_form->type;
+            $new_form = $this->Forms->newEntity(['name' => $data['name'], 'public_name' => $data['public_name'], 'type' => $old_form->type]);
             $new_form = $this->Forms->save($new_form);
 
             $sections_id_map = $this->Forms->FormSections->clone($data['id'], $new_form->id);
@@ -177,10 +174,11 @@ class FormsController extends AppController {
             if(!empty($data['templates'])) {
                 foreach($data['templates'] as $oldTemplateId) {
                     $old_template = $this->Forms->FormTemplates->get($oldTemplateId);
-                    $new_template = $this->Forms->FormTemplates->newEntity();
-                    $new_template->form_id = $new_form->id;
-                    $new_template->name = $old_template->name;
-                    $new_template->disabled = $old_template->disabled;
+                    $new_template = $this->Forms->FormTemplates->newEntity([
+                        'form_id' => $new_form->id,
+                        'name' => $old_template->name,
+                        'disabled' => $old_template->disabled
+                    ]);
                     $new_template = $this->Forms->FormTemplates->save($new_template);
                     $this->Forms->FormTemplates->FormTemplateFields->clone($old_template->id, $new_template->id, $sections_id_map);
                 }

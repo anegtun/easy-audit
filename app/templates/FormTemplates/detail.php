@@ -51,7 +51,7 @@ $is_editable = !$has_audits && !$is_disabled;
         </div>
     <?php endif ?>
 
-    <?= $this->element("FormTemplates/detail/editor_{$template->form->type}", ['is_editable'=>$is_editable]) ?>
+    <?= $this->element("form_templates/detail/editor_{$template->form->type}", ['is_editable'=>$is_editable]) ?>
 </div>
 
 
@@ -68,8 +68,8 @@ $is_editable = !$has_audits && !$is_disabled;
 
 
 
-<?= $this->element('FormTemplates/modals/rename', ['modal_id' => 'modal-rename']) ?>
-<?= $this->element('FormTemplates/modals/clone', ['modal_id' => 'modal-clone-template']) ?>
+<?= $this->element('form_templates/modals/rename', ['modal_id' => 'modal-rename']) ?>
+<?= $this->element('form_templates/modals/clone', ['modal_id' => 'modal-clone-template']) ?>
 
-<?= $this->element('Audits/modals/list', ['modal_id' => 'modal-audits', 'audits' => $template->audits]) ?>
-<?= $this->element('Customers/modals/list', ['modal_id' => 'modal-customers', 'customers' => $template->customers]) ?>
+<?= $this->element('audits/modals/list', ['modal_id' => 'modal-audits', 'audits' => $template->audits]) ?>
+<?= $this->element('customers/modals/list', ['modal_id' => 'modal-customers', 'customers' => $template->customers]) ?>

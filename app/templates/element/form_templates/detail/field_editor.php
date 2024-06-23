@@ -31,6 +31,6 @@
 
 
 
-<?= $this->element("FormTemplates/modals/field", [
+<?= $this->element("form_templates/modals/field", [
     'allowed_field_types' => empty($allowed_field_types) ? null : $allowed_field_types
 ]) ?>
