@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -16,6 +18,7 @@ namespace Cake\Collection\Iterator;
 
 use Cake\Collection\Collection;
 use DateTimeInterface;
+use Traversable;
 
 /**
  * An iterator that will return the passed items in order. The order is given by
@@ -48,7 +51,7 @@ class SortIterator extends Collection
      * element. Please note that the callback function could be called more than once
      * per element.
      *
-     * @param array|\Traversable $items The values to sort
+     * @param iterable $items The values to sort
      * @param callable|string $callback A function used to return the actual value to
      * be compared. It can also be a string representing the path to use to fetch a
      * column or property in each element
@@ -56,7 +59,7 @@ class SortIterator extends Collection
      * @param int $type the type of comparison to perform, either SORT_STRING
      * SORT_NUMERIC or SORT_NATURAL
      */
-    public function __construct($items, $callback, $dir = \SORT_DESC, $type = \SORT_NUMERIC)
+    public function __construct(iterable $items, $callback, int $dir = \SORT_DESC, int $type = \SORT_NUMERIC)
     {
         if (!is_array($items)) {
             $items = iterator_to_array((new Collection($items))->unwrap(), false);
@@ -83,9 +86,9 @@ class SortIterator extends Collection
     /**
      * {@inheritDoc}
      *
-     * @return \Iterator
+     * @return \Traversable
      */
-    public function unwrap()
+    public function unwrap(): Traversable
     {
         return $this->getInnerIterator();
     }

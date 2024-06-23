@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Send mail using mail() function
  *
@@ -16,9 +18,9 @@
  */
 namespace Cake\Mailer\Transport;
 
+use Cake\Core\Exception\CakeException;
 use Cake\Mailer\AbstractTransport;
-use Cake\Mailer\Email;
-use Cake\Network\Exception\SocketException;
+use Cake\Mailer\Message;
 
 /**
  * Send mail using mail() function
@@ -26,30 +28,39 @@ use Cake\Network\Exception\SocketException;
 class MailTransport extends AbstractTransport
 {
     /**
-     * Send mail
-     *
-     * @param \Cake\Mailer\Email $email Cake Email
-     * @return array
+     * @inheritDoc
      */
-    public function send(Email $email)
+    public function send(Message $message): array
     {
-        $eol = PHP_EOL;
-        if (isset($this->_config['eol'])) {
-            $eol = $this->_config['eol'];
-        }
-        $headers = $email->getHeaders(['from', 'sender', 'replyTo', 'readReceipt', 'returnPath', 'to', 'cc', 'bcc']);
-        $to = $headers['To'];
-        unset($headers['To']);
-        foreach ($headers as $key => $header) {
-            $headers[$key] = str_replace(["\r", "\n"], '', $header);
-        }
-        $headers = $this->_headersToString($headers, $eol);
-        $subject = str_replace(["\r", "\n"], '', $email->getSubject());
-        $to = str_replace(["\r", "\n"], '', $to);
+        $this->checkRecipient($message);
 
-        $message = implode($eol, $email->message());
+        // https://github.com/cakephp/cakephp/issues/2209
+        // https://bugs.php.net/bug.php?id=47983
+        $subject = str_replace("\r\n", '', $message->getSubject());
 
-        $params = isset($this->_config['additionalParameters']) ? $this->_config['additionalParameters'] : null;
+        $to = $message->getHeaders(['to'])['To'];
+        $to = str_replace("\r\n", '', $to);
+
+        $eol = $this->getConfig('eol', version_compare(PHP_VERSION, '8.0', '>=') ? "\r\n" : "\n");
+        $headers = $message->getHeadersString(
+            [
+                'from',
+                'sender',
+                'replyTo',
+                'readReceipt',
+                'returnPath',
+                'cc',
+                'bcc',
+            ],
+            $eol,
+            function ($val) {
+                return str_replace("\r\n", '', $val);
+            }
+        );
+
+        $message = $message->getBodyString($eol);
+
+        $params = $this->getConfig('additionalParameters', '');
         $this->_mail($to, $subject, $message, $headers, $params);
 
         $headers .= $eol . 'To: ' . $to;
@@ -65,18 +76,23 @@ class MailTransport extends AbstractTransport
      * @param string $subject email's subject
      * @param string $message email's body
      * @param string $headers email's custom headers
-     * @param string|null $params additional params for sending email
+     * @param string $params additional params for sending email
      * @throws \Cake\Network\Exception\SocketException if mail could not be sent
      * @return void
      */
-    protected function _mail($to, $subject, $message, $headers, $params = null)
-    {
-        //@codingStandardsIgnoreStart
+    protected function _mail(
+        string $to,
+        string $subject,
+        string $message,
+        string $headers = '',
+        string $params = ''
+    ): void {
+        // phpcs:disable
         if (!@mail($to, $subject, $message, $headers, $params)) {
             $error = error_get_last();
-            $msg = 'Could not send email: ' . (isset($error['message']) ? $error['message'] : 'unknown');
-            throw new SocketException($msg);
+            $msg = 'Could not send email: ' . ($error['message'] ?? 'unknown');
+            throw new CakeException($msg);
         }
-        //@codingStandardsIgnoreEnd
+        // phpcs:enable
     }
 }

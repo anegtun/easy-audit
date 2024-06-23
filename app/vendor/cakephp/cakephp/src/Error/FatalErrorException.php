@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -12,12 +14,13 @@
  */
 namespace Cake\Error;
 
-use Cake\Core\Exception\Exception;
+use Cake\Core\Exception\CakeException;
+use Throwable;
 
 /**
  * Represents a fatal error
  */
-class FatalErrorException extends Exception
+class FatalErrorException extends CakeException
 {
     /**
      * Constructor
@@ -26,10 +29,15 @@ class FatalErrorException extends Exception
      * @param int|null $code Code.
      * @param string|null $file File name.
      * @param int|null $line Line number.
-     * @param \Exception|null $previous The previous exception.
+     * @param \Throwable|null $previous The previous exception.
      */
-    public function __construct($message, $code = null, $file = null, $line = null, $previous = null)
-    {
+    public function __construct(
+        string $message,
+        ?int $code = null,
+        ?string $file = null,
+        ?int $line = null,
+        ?Throwable $previous = null
+    ) {
         parent::__construct($message, $code, $previous);
         if ($file) {
             $this->file = $file;

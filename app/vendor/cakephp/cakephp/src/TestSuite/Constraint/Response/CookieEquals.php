@@ -1,15 +1,17 @@
 <?php
+declare(strict_types=1);
+
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  * @since         3.7.0
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace Cake\TestSuite\Constraint\Response;
 
@@ -23,6 +25,11 @@ use Cake\Http\Response;
 class CookieEquals extends ResponseBase
 {
     /**
+     * @var \Cake\Http\Response
+     */
+    protected $response;
+
+    /**
      * @var string
      */
     protected $cookieName;
@@ -30,10 +37,10 @@ class CookieEquals extends ResponseBase
     /**
      * Constructor.
      *
-     * @param Response $response Response
+     * @param \Cake\Http\Response|null $response A response instance.
      * @param string $cookieName Cookie name
      */
-    public function __construct(Response $response, $cookieName)
+    public function __construct(?Response $response, string $cookieName)
     {
         parent::__construct($response);
 
@@ -46,11 +53,11 @@ class CookieEquals extends ResponseBase
      * @param mixed $other Expected content
      * @return bool
      */
-    public function matches($other)
+    public function matches($other): bool
     {
         $cookie = $this->response->getCookie($this->cookieName);
 
-        return $cookie['value'] === $other;
+        return $cookie !== null && $cookie['value'] === $other;
     }
 
     /**
@@ -58,7 +65,7 @@ class CookieEquals extends ResponseBase
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         return sprintf('is in cookie \'%s\'', $this->cookieName);
     }

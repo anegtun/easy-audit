@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -16,59 +18,71 @@ namespace Cake\ORM\Locator;
 
 use Cake\Core\App;
 use Cake\Datasource\ConnectionManager;
+use Cake\Datasource\Locator\AbstractLocator;
+use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\AssociationCollection;
+use Cake\ORM\Exception\MissingTableClassException;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
 use RuntimeException;
+use function Cake\Core\pluginSplit;
 
 /**
  * Provides a default registry/factory for Table objects.
  */
-class TableLocator implements LocatorInterface
+class TableLocator extends AbstractLocator implements LocatorInterface
 {
     /**
      * Contains a list of locations where table classes should be looked for.
      *
-     * @var array
+     * @var array<string>
      */
     protected $locations = [];
 
     /**
      * Configuration for aliases.
      *
-     * @var array
+     * @var array<string, array|null>
      */
     protected $_config = [];
 
     /**
      * Instances that belong to the registry.
      *
-     * @var \Cake\ORM\Table[]
+     * @var array<string, \Cake\ORM\Table>
      */
-    protected $_instances = [];
+    protected $instances = [];
 
     /**
      * Contains a list of Table objects that were created out of the
      * built-in Table class. The list is indexed by table alias
      *
-     * @var \Cake\ORM\Table[]
+     * @var array<\Cake\ORM\Table>
      */
     protected $_fallbacked = [];
 
     /**
-     * Contains a list of options that were passed to get() method.
+     * Fallback class to use
      *
-     * @var array
+     * @var string
+     * @psalm-var class-string<\Cake\ORM\Table>
      */
-    protected $_options = [];
+    protected $fallbackClassName = Table::class;
+
+    /**
+     * Whether fallback class should be used if a table class could not be found.
+     *
+     * @var bool
+     */
+    protected $allowFallbackClass = true;
 
     /**
      * Constructor.
      *
-     * @param array|null $locations Locations where tables should be looked for.
+     * @param array<string>|null $locations Locations where tables should be looked for.
      *   If none provided, the default `Model\Table` under your app's namespace is used.
      */
-    public function __construct(array $locations = null)
+    public function __construct(?array $locations = null)
     {
         if ($locations === null) {
             $locations = [
@@ -82,13 +96,41 @@ class TableLocator implements LocatorInterface
     }
 
     /**
-     * Stores a list of options to be used when instantiating an object
-     * with a matching alias.
+     * Set if fallback class should be used.
      *
-     * @param string|array $alias Name of the alias or array to completely overwrite current config.
-     * @param array|null $options list of options for the alias
+     * Controls whether a fallback class should be used to create a table
+     * instance if a concrete class for alias used in `get()` could not be found.
+     *
+     * @param bool $allow Flag to enable or disable fallback
      * @return $this
-     * @throws \RuntimeException When you attempt to configure an existing table instance.
+     */
+    public function allowFallbackClass(bool $allow)
+    {
+        $this->allowFallbackClass = $allow;
+
+        return $this;
+    }
+
+    /**
+     * Set fallback class name.
+     *
+     * The class that should be used to create a table instance if a concrete
+     * class for alias used in `get()` could not be found. Defaults to
+     * `Cake\ORM\Table`.
+     *
+     * @param string $className Fallback class name
+     * @return $this
+     * @psalm-param class-string<\Cake\ORM\Table> $className
+     */
+    public function setFallbackClassName($className)
+    {
+        $this->fallbackClassName = $className;
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function setConfig($alias, $options = null)
     {
@@ -98,7 +140,7 @@ class TableLocator implements LocatorInterface
             return $this;
         }
 
-        if (isset($this->_instances[$alias])) {
+        if (isset($this->instances[$alias])) {
             throw new RuntimeException(sprintf(
                 'You cannot configure "%s", it has already been constructed.',
                 $alias
@@ -111,52 +153,15 @@ class TableLocator implements LocatorInterface
     }
 
     /**
-     * Returns configuration for an alias or the full configuration array for all aliases.
-     *
-     * @param string|null $alias Alias to get config for, null for complete config.
-     * @return array The config data.
+     * @inheritDoc
      */
-    public function getConfig($alias = null)
+    public function getConfig(?string $alias = null): array
     {
         if ($alias === null) {
             return $this->_config;
         }
 
-        return isset($this->_config[$alias]) ? $this->_config[$alias] : [];
-    }
-
-    /**
-     * Stores a list of options to be used when instantiating an object
-     * with a matching alias.
-     *
-     * The options that can be stored are those that are recognized by `get()`
-     * If second argument is omitted, it will return the current settings
-     * for $alias.
-     *
-     * If no arguments are passed it will return the full configuration array for
-     * all aliases
-     *
-     * @deprecated 3.4.0 Use setConfig()/getConfig() instead.
-     * @param string|array|null $alias Name of the alias
-     * @param array|null $options list of options for the alias
-     * @return array The config data.
-     * @throws \RuntimeException When you attempt to configure an existing table instance.
-     */
-    public function config($alias = null, $options = null)
-    {
-        deprecationWarning(
-            'TableLocator::config() is deprecated. ' .
-            'Use getConfig()/setConfig() instead.'
-        );
-        if ($alias !== null) {
-            if (is_string($alias) && $options === null) {
-                return $this->getConfig($alias);
-            }
-
-            $this->setConfig($alias, $options);
-        }
-
-        return $this->getConfig($alias);
+        return $this->_config[$alias] ?? [];
     }
 
     /**
@@ -167,7 +172,7 @@ class TableLocator implements LocatorInterface
      * This is important because table associations are resolved at runtime
      * and cyclic references need to be handled correctly.
      *
-     * The options that can be passed are the same as in Cake\ORM\Table::__construct(), but the
+     * The options that can be passed are the same as in {@link \Cake\ORM\Table::__construct()}, but the
      * `className` key is also recognized.
      *
      * ### Options
@@ -177,57 +182,66 @@ class TableLocator implements LocatorInterface
      *   `App\Model\Table\UsersTable` being used. If this class does not exist,
      *   then the default `Cake\ORM\Table` class will be used. By setting the `className`
      *   option you can define the specific class to use. The className option supports
-     *   plugin short class references {@link Cake\Core\App::shortName()}.
+     *   plugin short class references {@link \Cake\Core\App::shortName()}.
      * - `table` Define the table name to use. If undefined, this option will default to the underscored
      *   version of the alias name.
      * - `connection` Inject the specific connection object to use. If this option and `connectionName` are undefined,
      *   The table class' `defaultConnectionName()` method will be invoked to fetch the connection name.
      * - `connectionName` Define the connection name to use. The named connection will be fetched from
-     *   Cake\Datasource\ConnectionManager.
+     *   {@link \Cake\Datasource\ConnectionManager}.
      *
      * *Note* If your `$alias` uses plugin syntax only the name part will be used as
      * key in the registry. This means that if two plugins, or a plugin and app provide
      * the same alias, the registry will only store the first instance.
      *
-     * @param string $alias The alias name you want to get.
-     * @param array $options The options you want to build the table with.
+     * @param string $alias The alias name you want to get. Should be in CamelCase format.
+     * @param array<string, mixed> $options The options you want to build the table with.
      *   If a table has already been loaded the options will be ignored.
      * @return \Cake\ORM\Table
      * @throws \RuntimeException When you try to configure an alias that already exists.
      */
-    public function get($alias, array $options = [])
+    public function get(string $alias, array $options = []): Table
     {
-        if (isset($this->_instances[$alias])) {
-            if (!empty($options) && $this->_options[$alias] !== $options) {
-                throw new RuntimeException(sprintf(
-                    'You cannot configure "%s", it already exists in the registry.',
-                    $alias
-                ));
-            }
+        /** @var \Cake\ORM\Table */
+        return parent::get($alias, $options);
+    }
 
-            return $this->_instances[$alias];
+    /**
+     * @inheritDoc
+     */
+    protected function createInstance(string $alias, array $options)
+    {
+        if (strpos($alias, '\\') === false) {
+            [, $classAlias] = pluginSplit($alias);
+            $options = ['alias' => $classAlias] + $options;
+        } elseif (!isset($options['alias'])) {
+            $options['className'] = $alias;
         }
-
-        $this->_options[$alias] = $options;
-        list(, $classAlias) = pluginSplit($alias);
-        $options = ['alias' => $classAlias] + $options;
 
         if (isset($this->_config[$alias])) {
             $options += $this->_config[$alias];
         }
 
+        $allowFallbackClass = $options['allowFallbackClass'] ?? $this->allowFallbackClass;
         $className = $this->_getClassName($alias, $options);
         if ($className) {
             $options['className'] = $className;
-        } else {
+        } elseif ($allowFallbackClass) {
             if (empty($options['className'])) {
-                $options['className'] = Inflector::camelize($alias);
+                $options['className'] = $alias;
             }
             if (!isset($options['table']) && strpos($options['className'], '\\') === false) {
-                list(, $table) = pluginSplit($options['className']);
+                [, $table] = pluginSplit($options['className']);
                 $options['table'] = Inflector::underscore($table);
             }
-            $options['className'] = 'Cake\ORM\Table';
+            $options['className'] = $this->fallbackClassName;
+        } else {
+            $message = $options['className'] ?? $alias;
+            $message = '`' . $message . '`';
+            if (strpos($message, '\\') === false) {
+                $message = 'for alias ' . $message;
+            }
+            throw new MissingTableClassException([$message]);
         }
 
         if (empty($options['connection'])) {
@@ -246,26 +260,26 @@ class TableLocator implements LocatorInterface
         }
 
         $options['registryAlias'] = $alias;
-        $this->_instances[$alias] = $this->_create($options);
+        $instance = $this->_create($options);
 
-        if ($options['className'] === 'Cake\ORM\Table') {
-            $this->_fallbacked[$alias] = $this->_instances[$alias];
+        if ($options['className'] === $this->fallbackClassName) {
+            $this->_fallbacked[$alias] = $instance;
         }
 
-        return $this->_instances[$alias];
+        return $instance;
     }
 
     /**
      * Gets the table class name.
      *
-     * @param string $alias The alias name you want to get.
-     * @param array $options Table options array.
-     * @return string|false
+     * @param string $alias The alias name you want to get. Should be in CamelCase format.
+     * @param array<string, mixed> $options Table options array.
+     * @return string|null
      */
-    protected function _getClassName($alias, array $options = [])
+    protected function _getClassName(string $alias, array $options = []): ?string
     {
         if (empty($options['className'])) {
-            $options['className'] = Inflector::camelize($alias);
+            $options['className'] = $alias;
         }
 
         if (strpos($options['className'], '\\') !== false && class_exists($options['className'])) {
@@ -274,50 +288,48 @@ class TableLocator implements LocatorInterface
 
         foreach ($this->locations as $location) {
             $class = App::className($options['className'], $location, 'Table');
-            if ($class !== false) {
+            if ($class !== null) {
                 return $class;
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
      * Wrapper for creating table instances
      *
-     * @param array $options The alias to check for.
+     * @param array<string, mixed> $options The alias to check for.
      * @return \Cake\ORM\Table
      */
-    protected function _create(array $options)
+    protected function _create(array $options): Table
     {
+        /** @var \Cake\ORM\Table */
         return new $options['className']($options);
     }
 
     /**
-     * {@inheritDoc}
+     * Set a Table instance.
+     *
+     * @param string $alias The alias to set.
+     * @param \Cake\ORM\Table $repository The Table to set.
+     * @return \Cake\ORM\Table
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
-    public function exists($alias)
+    public function set(string $alias, RepositoryInterface $repository): Table
     {
-        return isset($this->_instances[$alias]);
+        return $this->instances[$alias] = $repository;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function set($alias, Table $object)
+    public function clear(): void
     {
-        return $this->_instances[$alias] = $object;
-    }
+        parent::clear();
 
-    /**
-     * {@inheritDoc}
-     */
-    public function clear()
-    {
-        $this->_instances = [];
-        $this->_config = [];
         $this->_fallbacked = [];
-        $this->_options = [];
+        $this->_config = [];
     }
 
     /**
@@ -326,23 +338,21 @@ class TableLocator implements LocatorInterface
      * debugging common mistakes when setting up associations or created new table
      * classes.
      *
-     * @return \Cake\ORM\Table[]
+     * @return array<\Cake\ORM\Table>
      */
-    public function genericInstances()
+    public function genericInstances(): array
     {
         return $this->_fallbacked;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function remove($alias)
+    public function remove(string $alias): void
     {
-        unset(
-            $this->_instances[$alias],
-            $this->_config[$alias],
-            $this->_fallbacked[$alias]
-        );
+        parent::remove($alias);
+
+        unset($this->_fallbacked[$alias]);
     }
 
     /**
@@ -352,7 +362,7 @@ class TableLocator implements LocatorInterface
      * @return $this
      * @since 3.8.0
      */
-    public function addLocation($location)
+    public function addLocation(string $location)
     {
         $location = str_replace('\\', '/', $location);
         $this->locations[] = trim($location, '/');

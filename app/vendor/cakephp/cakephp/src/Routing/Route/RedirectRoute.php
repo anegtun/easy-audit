@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,7 +16,7 @@
  */
 namespace Cake\Routing\Route;
 
-use Cake\Routing\Exception\RedirectException;
+use Cake\Http\Exception\RedirectException;
 use Cake\Routing\Router;
 
 /**
@@ -28,17 +30,9 @@ use Cake\Routing\Router;
 class RedirectRoute extends Route
 {
     /**
-     * A Response object
+     * The location to redirect to.
      *
-     * @var \Cake\Http\Response
-     * @deprecated 3.2.0 This property is unused.
-     */
-    public $response;
-
-    /**
-     * The location to redirect to. Either a string or a CakePHP array URL.
-     *
-     * @var array|string
+     * @var array
      */
     public $redirect;
 
@@ -46,16 +40,16 @@ class RedirectRoute extends Route
      * Constructor
      *
      * @param string $template Template string with parameter placeholders
-     * @param array|string $defaults Defaults for the route.
-     * @param array $options Array of additional options for the Route
+     * @param array $defaults Defaults for the route. Either a redirect=>value array or a CakePHP array URL.
+     * @param array<string, mixed> $options Array of additional options for the Route
      */
-    public function __construct($template, $defaults = [], array $options = [])
+    public function __construct(string $template, array $defaults = [], array $options = [])
     {
         parent::__construct($template, $defaults, $options);
-        if (is_array($defaults) && isset($defaults['redirect'])) {
-            $defaults = $defaults['redirect'];
+        if (isset($defaults['redirect'])) {
+            $defaults = (array)$defaults['redirect'];
         }
-        $this->redirect = (array)$defaults;
+        $this->redirect = $defaults;
     }
 
     /**
@@ -64,18 +58,18 @@ class RedirectRoute extends Route
      *
      * @param string $url The URL to parse.
      * @param string $method The HTTP method being used.
-     * @return bool|null False on failure. An exception is raised on a successful match.
-     * @throws \Cake\Routing\Exception\RedirectException An exception is raised on successful match.
+     * @return array|null Null on failure. An exception is raised on a successful match. Array return type is unused.
+     * @throws \Cake\Http\Exception\RedirectException An exception is raised on successful match.
      *   This is used to halt route matching and signal to the middleware that a redirect should happen.
      */
-    public function parse($url, $method = '')
+    public function parse(string $url, string $method = ''): ?array
     {
         $params = parent::parse($url, $method);
         if (!$params) {
-            return false;
+            return null;
         }
         $redirect = $this->redirect;
-        if (count($this->redirect) === 1 && !isset($this->redirect['controller'])) {
+        if ($this->redirect && count($this->redirect) === 1 && !isset($this->redirect['controller'])) {
             $redirect = $this->redirect[0];
         }
         if (isset($this->options['persist']) && is_array($redirect)) {
@@ -101,11 +95,11 @@ class RedirectRoute extends Route
      *
      * @param array $url Array of parameters to convert to a string.
      * @param array $context Array of request context parameters.
-     * @return bool Always false.
+     * @return string|null Always null, string return result unused.
      */
-    public function match(array $url, array $context = [])
+    public function match(array $url, array $context = []): ?string
     {
-        return false;
+        return null;
     }
 
     /**
@@ -114,7 +108,7 @@ class RedirectRoute extends Route
      * @param int $status The status code for this route
      * @return $this
      */
-    public function setStatus($status)
+    public function setStatus(int $status)
     {
         $this->options['status'] = $status;
 

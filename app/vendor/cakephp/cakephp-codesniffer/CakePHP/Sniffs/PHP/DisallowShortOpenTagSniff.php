@@ -1,34 +1,30 @@
 <?php
 /**
- * PHP Version 5
- *
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://pear.php.net/package/PHP_CodeSniffer_CakePHP
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://github.com/cakephp/cakephp-codesniffer
  * @since         CakePHP CodeSniffer 0.1.14
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-/**
- * Disallow short open tags
- *
- * But permit short-open echo tags (<?=) [T_OPEN_TAG_WITH_ECHO] as they are part of PHP 5.4+
- *
- */
 namespace CakePHP\Sniffs\PHP;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
+/**
+ * Disallow short open tags
+ *
+ * But permit short-open echo tags (<?=) [T_OPEN_TAG_WITH_ECHO] as they are part of PHP 5.4+
+ */
 class DisallowShortOpenTagSniff implements Sniff
 {
-
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -46,7 +42,7 @@ class DisallowShortOpenTagSniff implements Sniff
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function process(File $phpcsFile, $stackPtr)
     {

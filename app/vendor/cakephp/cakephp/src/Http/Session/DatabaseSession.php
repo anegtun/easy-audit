@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Database Session save handler. Allows saving session information into a model.
  *
@@ -16,7 +18,6 @@
  */
 namespace Cake\Http\Session;
 
-use Cake\ORM\Entity;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use SessionHandlerInterface;
 
@@ -45,7 +46,7 @@ class DatabaseSession implements SessionHandlerInterface
      * Constructor. Looks at Session configuration information and
      * sets up the session model.
      *
-     * @param array $config The configuration for this engine. It requires the 'model'
+     * @param array<string, mixed> $config The configuration for this engine. It requires the 'model'
      * key to be present corresponding to the Table to use for managing the sessions.
      */
     public function __construct(array $config = [])
@@ -56,7 +57,7 @@ class DatabaseSession implements SessionHandlerInterface
         $tableLocator = $this->getTableLocator();
 
         if (empty($config['model'])) {
-            $config = $tableLocator->exists('Sessions') ? [] : ['table' => 'sessions'];
+            $config = $tableLocator->exists('Sessions') ? [] : ['table' => 'sessions', 'allowFallbackClass' => true];
             $this->_table = $tableLocator->get('Sessions', $config);
         } else {
             $this->_table = $tableLocator->get($config['model']);
@@ -73,7 +74,7 @@ class DatabaseSession implements SessionHandlerInterface
      * @param int $timeout The timeout duration.
      * @return $this
      */
-    public function setTimeout($timeout)
+    public function setTimeout(int $timeout)
     {
         $this->_timeout = $timeout;
 
@@ -83,11 +84,11 @@ class DatabaseSession implements SessionHandlerInterface
     /**
      * Method called on open of a database session.
      *
-     * @param string $savePath The path where to store/retrieve the session.
+     * @param string $path The path where to store/retrieve the session.
      * @param string $name The session name.
      * @return bool Success
      */
-    public function open($savePath, $name)
+    public function open($path, $name): bool
     {
         return true;
     }
@@ -97,7 +98,7 @@ class DatabaseSession implements SessionHandlerInterface
      *
      * @return bool Success
      */
-    public function close()
+    public function close(): bool
     {
         return true;
     }
@@ -105,15 +106,18 @@ class DatabaseSession implements SessionHandlerInterface
     /**
      * Method used to read from a database session.
      *
-     * @param string|int $id ID that uniquely identifies session in database.
-     * @return string Session data or empty string if it does not exist.
+     * @param string $id ID that uniquely identifies session in database.
+     * @return string|false Session data or false if it does not exist.
      */
+    #[\ReturnTypeWillChange]
     public function read($id)
     {
+        /** @var string $pkField */
+        $pkField = $this->_table->getPrimaryKey();
         $result = $this->_table
             ->find('all')
             ->select(['data'])
-            ->where([$this->_table->getPrimaryKey() => $id])
+            ->where([$pkField => $id])
             ->disableHydration()
             ->first();
 
@@ -137,35 +141,38 @@ class DatabaseSession implements SessionHandlerInterface
     /**
      * Helper function called on write for database sessions.
      *
-     * @param string|int $id ID that uniquely identifies session in database.
-     * @param mixed $data The data to be saved.
+     * @param string $id ID that uniquely identifies session in database.
+     * @param string $data The data to be saved.
      * @return bool True for successful write, false otherwise.
      */
-    public function write($id, $data)
+    public function write($id, $data): bool
     {
         if (!$id) {
             return false;
         }
-        $expires = time() + $this->_timeout;
-        $record = compact('data', 'expires');
-        $record[$this->_table->getPrimaryKey()] = $id;
-        $result = $this->_table->save(new Entity($record));
 
-        return (bool)$result;
+        /** @var string $pkField */
+        $pkField = $this->_table->getPrimaryKey();
+        $session = $this->_table->newEntity([
+            $pkField => $id,
+            'data' => $data,
+            'expires' => time() + $this->_timeout,
+        ], ['accessibleFields' => [$pkField => true]]);
+
+        return (bool)$this->_table->save($session);
     }
 
     /**
      * Method called on the destruction of a database session.
      *
-     * @param string|int $id ID that uniquely identifies session in database.
+     * @param string $id ID that uniquely identifies session in database.
      * @return bool True for successful delete, false otherwise.
      */
-    public function destroy($id)
+    public function destroy($id): bool
     {
-        $this->_table->delete(new Entity(
-            [$this->_table->getPrimaryKey() => $id],
-            ['markNew' => false]
-        ));
+        /** @var string $pkField */
+        $pkField = $this->_table->getPrimaryKey();
+        $this->_table->deleteAll([$pkField => $id]);
 
         return true;
     }
@@ -174,12 +181,11 @@ class DatabaseSession implements SessionHandlerInterface
      * Helper function called on gc for database sessions.
      *
      * @param int $maxlifetime Sessions that have not updated for the last maxlifetime seconds will be removed.
-     * @return bool True on success, false on failure.
+     * @return int|false The number of deleted sessions on success, or false on failure.
      */
+    #[\ReturnTypeWillChange]
     public function gc($maxlifetime)
     {
-        $this->_table->deleteAll(['expires <' => time()]);
-
-        return true;
+        return $this->_table->deleteAll(['expires <' => time()]);
     }
 }

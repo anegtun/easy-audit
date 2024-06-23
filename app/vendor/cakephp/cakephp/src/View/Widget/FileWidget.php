@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,32 +16,27 @@
  */
 namespace Cake\View\Widget;
 
+use Cake\Core\Configure;
 use Cake\View\Form\ContextInterface;
 
 /**
  * Input widget class for generating a file upload control.
  *
- * This class is intended as an internal implementation detail
- * of Cake\View\Helper\FormHelper and is not intended for direct use.
+ * This class is usually used internally by `Cake\View\Helper\FormHelper`,
+ * it but can be used to generate standalone file upload controls.
  */
-class FileWidget implements WidgetInterface
+class FileWidget extends BasicWidget
 {
     /**
-     * Templates
+     * Data defaults.
      *
-     * @var \Cake\View\StringTemplate
+     * @var array<string, mixed>
      */
-    protected $_templates;
-
-    /**
-     * Constructor
-     *
-     * @param \Cake\View\StringTemplate $templates Templates list.
-     */
-    public function __construct($templates)
-    {
-        $this->_templates = $templates;
-    }
+    protected $defaults = [
+        'name' => '',
+        'escape' => true,
+        'templateVars' => [],
+    ];
 
     /**
      * Render a file upload form widget.
@@ -53,17 +50,14 @@ class FileWidget implements WidgetInterface
      * Unlike other input objects the `val` property will be specifically
      * ignored.
      *
-     * @param array $data The data to build a file input with.
+     * @param array<string, mixed> $data The data to build a file input with.
      * @param \Cake\View\Form\ContextInterface $context The current form context.
      * @return string HTML elements.
      */
-    public function render(array $data, ContextInterface $context)
+    public function render(array $data, ContextInterface $context): string
     {
-        $data += [
-            'name' => '',
-            'escape' => true,
-            'templateVars' => [],
-        ];
+        $data += $this->mergeDefaults($data, $context);
+
         unset($data['val']);
 
         return $this->_templates->format('file', [
@@ -77,10 +71,16 @@ class FileWidget implements WidgetInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function secureFields(array $data)
+    public function secureFields(array $data): array
     {
+        // PSR7 UploadedFileInterface objects are used.
+        if (Configure::read('App.uploadedFilesAsObjects', true)) {
+            return [$data['name']];
+        }
+
+        // Backwards compatibility for array files.
         $fields = [];
         foreach (['name', 'type', 'tmp_name', 'error', 'size'] as $suffix) {
             $fields[] = $data['name'] . '[' . $suffix . ']';

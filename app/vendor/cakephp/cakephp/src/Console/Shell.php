@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -17,8 +19,9 @@ namespace Cake\Console;
 use Cake\Console\Exception\ConsoleException;
 use Cake\Console\Exception\StopException;
 use Cake\Core\App;
+use Cake\Core\Exception\CakeException;
 use Cake\Datasource\ModelAwareTrait;
-use Cake\Filesystem\File;
+use Cake\Filesystem\Filesystem;
 use Cake\Log\LogTrait;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\Locator\LocatorInterface;
@@ -28,14 +31,17 @@ use Cake\Utility\Text;
 use ReflectionException;
 use ReflectionMethod;
 use RuntimeException;
+use function Cake\Core\namespaceSplit;
 
 /**
  * Base class for command-line utilities for automating programmer chores.
  *
  * Is the equivalent of Cake\Controller\Controller on the command line.
  *
- * @method int|bool|null main(...$args)
+ * @deprecated 3.6.0 ShellDispatcher and Shell will be removed in 5.0
+ * @method int|bool|null|void main(...$args) Main entry method for the shell.
  */
+#[\AllowDynamicProperties]
 class Shell
 {
     use LocatorAwareTrait;
@@ -48,35 +54,35 @@ class Shell
      *
      * @var int
      */
-    const CODE_ERROR = 1;
+    public const CODE_ERROR = 1;
 
     /**
      * Default success code
      *
      * @var int
      */
-    const CODE_SUCCESS = 0;
+    public const CODE_SUCCESS = 0;
 
     /**
      * Output constant making verbose shells.
      *
      * @var int
      */
-    const VERBOSE = ConsoleIo::VERBOSE;
+    public const VERBOSE = ConsoleIo::VERBOSE;
 
     /**
      * Output constant for making normal shells.
      *
      * @var int
      */
-    const NORMAL = ConsoleIo::NORMAL;
+    public const NORMAL = ConsoleIo::NORMAL;
 
     /**
      * Output constants for making quiet shells.
      *
      * @var int
      */
-    const QUIET = ConsoleIo::QUIET;
+    public const QUIET = ConsoleIo::QUIET;
 
     /**
      * An instance of ConsoleOptionParser that has been configured for this class.
@@ -102,7 +108,7 @@ class Shell
     /**
      * The command (method/task) that is being run.
      *
-     * @var string
+     * @var string|null
      */
     public $command;
 
@@ -132,14 +138,14 @@ class Shell
      * Contains tasks to load and instantiate
      *
      * @var array|bool
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#Shell::$tasks
+     * @link https://book.cakephp.org/4/en/console-commands/shells.html#shell-tasks
      */
     public $tasks = [];
 
     /**
      * Contains the loaded tasks
      *
-     * @var array
+     * @var array<string>
      */
     public $taskNames = [];
 
@@ -153,7 +159,7 @@ class Shell
     /**
      * Normalized map of tasks.
      *
-     * @var array
+     * @var array<string, array>
      */
     protected $_taskMap = [];
 
@@ -176,12 +182,12 @@ class Shell
      *
      * @param \Cake\Console\ConsoleIo|null $io An io instance.
      * @param \Cake\ORM\Locator\LocatorInterface|null $locator Table locator instance.
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#Shell
+     * @link https://book.cakephp.org/4/en/console-commands/shells.html
      */
-    public function __construct(ConsoleIo $io = null, LocatorInterface $locator = null)
+    public function __construct(?ConsoleIo $io = null, ?LocatorInterface $locator = null)
     {
         if (!$this->name) {
-            list(, $class) = namespaceSplit(get_class($this));
+            [, $class] = namespaceSplit(static::class);
             $this->name = str_replace(['Shell', 'Task'], '', $class);
         }
         $this->_io = $io ?: new ConsoleIo();
@@ -206,9 +212,9 @@ class Shell
      * @param string $name The name of the root command.
      * @return $this
      */
-    public function setRootName($name)
+    public function setRootName(string $name)
     {
-        $this->rootName = (string)$name;
+        $this->rootName = $name;
 
         return $this;
     }
@@ -218,7 +224,7 @@ class Shell
      *
      * @return \Cake\Console\ConsoleIo The current ConsoleIo object.
      */
-    public function getIo()
+    public function getIo(): ConsoleIo
     {
         return $this->_io;
     }
@@ -229,29 +235,9 @@ class Shell
      * @param \Cake\Console\ConsoleIo $io The ConsoleIo object to use.
      * @return void
      */
-    public function setIo(ConsoleIo $io)
+    public function setIo(ConsoleIo $io): void
     {
         $this->_io = $io;
-    }
-
-    /**
-     * Get/Set the io object for this shell.
-     *
-     * @deprecated 3.5.0 Use getIo()/setIo() instead.
-     * @param \Cake\Console\ConsoleIo|null $io The ConsoleIo object to use.
-     * @return \Cake\Console\ConsoleIo The current ConsoleIo object.
-     */
-    public function io(ConsoleIo $io = null)
-    {
-        deprecationWarning(
-            'Shell::io() is deprecated. ' .
-            'Use Shell::setIo()/getIo() instead.'
-        );
-        if ($io !== null) {
-            $this->_io = $io;
-        }
-
-        return $this->_io;
     }
 
     /**
@@ -260,9 +246,9 @@ class Shell
      * allows configuration of tasks prior to shell execution
      *
      * @return void
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#Cake\Console\ConsoleOptionParser::initialize
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#Cake\Console\ConsoleOptionParser::initialize
      */
-    public function initialize()
+    public function initialize(): void
     {
         $this->loadTasks();
     }
@@ -275,9 +261,9 @@ class Shell
      * or otherwise modify the pre-command flow.
      *
      * @return void
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#Cake\Console\ConsoleOptionParser::startup
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#Cake\Console\ConsoleOptionParser::startup
      */
-    public function startup()
+    public function startup(): void
     {
         if (!$this->param('requested')) {
             $this->_welcome();
@@ -289,21 +275,21 @@ class Shell
      *
      * @return void
      */
-    protected function _welcome()
+    protected function _welcome(): void
     {
     }
 
     /**
      * Loads tasks defined in public $tasks
      *
-     * @return bool
+     * @return true
      */
-    public function loadTasks()
+    public function loadTasks(): bool
     {
-        if ($this->tasks === true || empty($this->tasks) || empty($this->Tasks)) {
+        if ($this->tasks === true || empty($this->tasks)) {
             return true;
         }
-        $this->_taskMap = $this->Tasks->normalizeArray((array)$this->tasks);
+        $this->_taskMap = $this->Tasks->normalizeArray($this->tasks);
         $this->taskNames = array_merge($this->taskNames, array_keys($this->_taskMap));
 
         $this->_validateTasks();
@@ -317,11 +303,11 @@ class Shell
      * @throws \RuntimeException
      * @return void
      */
-    protected function _validateTasks()
+    protected function _validateTasks(): void
     {
         foreach ($this->_taskMap as $taskName => $task) {
             $class = App::className($task['class'], 'Shell/Task', 'Task');
-            if (!class_exists($class)) {
+            if ($class === null) {
                 throw new RuntimeException(sprintf(
                     'Task `%s` not found. Maybe you made a typo or a plugin is missing or not loaded?',
                     $taskName
@@ -335,9 +321,9 @@ class Shell
      *
      * @param string $task The task name to check.
      * @return bool Success
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#shell-tasks
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#shell-tasks
      */
-    public function hasTask($task)
+    public function hasTask(string $task): bool
     {
         return isset($this->_taskMap[Inflector::camelize($task)]);
     }
@@ -347,9 +333,9 @@ class Shell
      *
      * @param string $name The method name to check.
      * @return bool
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#shell-tasks
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#shell-tasks
      */
-    public function hasMethod($name)
+    public function hasMethod(string $name): bool
     {
         try {
             $method = new ReflectionMethod($this, $name);
@@ -357,7 +343,7 @@ class Shell
                 return false;
             }
 
-            return $method->getDeclaringClass()->name !== 'Cake\Console\Shell';
+            return $method->getDeclaringClass()->name !== self::class;
         } catch (ReflectionException $e) {
             return false;
         }
@@ -386,9 +372,10 @@ class Shell
      * ```
      *
      * With an array having two key / value pairs:
+     *
      *  - `command` can accept either a string or an array. Represents the command to dispatch
      *  - `extra` can accept an array of extra parameters to pass on to the dispatcher. This
-     *  parameters will be available in the `param` property of the called `Shell`
+     *    parameters will be available in the `param` property of the called `Shell`
      *
      * `return $this->dispatchShell([
      *      'command' => 'schema create DbAcl',
@@ -402,17 +389,15 @@ class Shell
      *      'extra' => ['param' => 'value']
      * ]);`
      *
-     * @return int The cli command exit code. 0 is success.
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#invoking-other-shells-from-your-shell
+     * @return int The CLI command exit code. 0 is success.
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#invoking-other-shells-from-your-shell
      */
-    public function dispatchShell()
+    public function dispatchShell(): int
     {
-        list($args, $extra) = $this->parseDispatchArguments(func_get_args());
+        [$args, $extra] = $this->parseDispatchArguments(func_get_args());
 
-        if (!isset($extra['requested'])) {
-            $extra['requested'] = true;
-        }
-
+        $extra['requested'] = $extra['requested'] ?? true;
+        /** @psalm-suppress DeprecatedClass */
         $dispatcher = new ShellDispatcher($args, false);
 
         return $dispatcher->dispatch($extra);
@@ -426,7 +411,7 @@ class Shell
      * @return array First value has to be an array of the command arguments.
      * Second value has to be an array of extra parameter to pass on to the dispatcher
      */
-    public function parseDispatchArguments($args)
+    public function parseDispatchArguments(array $args): array
     {
         $extra = [];
 
@@ -475,33 +460,32 @@ class Shell
      * @param array $extra Extra parameters that you can manually pass to the Shell
      * to be dispatched.
      * Built-in extra parameter is :
+     *
      * - `requested` : if used, will prevent the Shell welcome message to be displayed
      * @return int|bool|null
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#the-cakephp-console
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#the-cakephp-console
      */
-    public function runCommand($argv, $autoMethod = false, $extra = [])
+    public function runCommand(array $argv, bool $autoMethod = false, array $extra = [])
     {
         $command = isset($argv[0]) ? Inflector::underscore($argv[0]) : null;
         $this->OptionParser = $this->getOptionParser();
         try {
-            list($this->params, $this->args) = $this->OptionParser->parse($argv);
+            [$this->params, $this->args] = $this->OptionParser->parse($argv, $this->_io);
         } catch (ConsoleException $e) {
             $this->err('Error: ' . $e->getMessage());
 
             return false;
         }
 
-        if (!empty($extra) && is_array($extra)) {
-            $this->params = array_merge($this->params, $extra);
-        }
+        $this->params = array_merge($this->params, $extra);
         $this->_setOutputLevel();
         $this->command = $command;
-        if (!empty($this->params['help'])) {
+        if ($command && !empty($this->params['help'])) {
             return $this->_displayHelp($command);
         }
 
         $subcommands = $this->OptionParser->subcommands();
-        $method = Inflector::camelize($command);
+        $method = Inflector::camelize((string)$command);
         $isMethod = $this->hasMethod($method);
 
         if ($isMethod && $autoMethod && count($subcommands) === 0) {
@@ -517,7 +501,7 @@ class Shell
             return $this->$method(...$this->args);
         }
 
-        if ($this->hasTask($command) && isset($subcommands[$command])) {
+        if ($command && $this->hasTask($command) && isset($subcommands[$command])) {
             $this->startup();
             array_shift($argv);
 
@@ -532,7 +516,11 @@ class Shell
         }
 
         $this->err('No subcommand provided. Choose one of the available subcommands.', 2);
-        $this->_io->err($this->OptionParser->help($command));
+        try {
+            $this->_io->err($this->OptionParser->help($command));
+        } catch (ConsoleException $e) {
+            $this->err('Error: ' . $e->getMessage());
+        }
 
         return false;
     }
@@ -545,7 +533,7 @@ class Shell
      *
      * @return void
      */
-    protected function _setOutputLevel()
+    protected function _setOutputLevel(): void
     {
         $this->_io->setLoggers(ConsoleIo::NORMAL);
         if (!empty($this->params['quiet'])) {
@@ -561,10 +549,10 @@ class Shell
     /**
      * Display the help in the correct format
      *
-     * @param string $command The command to get help for.
-     * @return int|bool The number of bytes returned from writing to stdout.
+     * @param string|null $command The command to get help for.
+     * @return int|null The number of bytes returned from writing to stdout.
      */
-    protected function _displayHelp($command)
+    protected function _displayHelp(?string $command = null)
     {
         $format = 'text';
         if (!empty($this->args[0]) && $this->args[0] === 'xml') {
@@ -575,7 +563,9 @@ class Shell
         }
 
         $subcommands = $this->OptionParser->subcommands();
-        $command = isset($subcommands[$command]) ? $command : null;
+        if ($command !== null) {
+            $command = isset($subcommands[$command]) ? $command : null;
+        }
 
         return $this->out($this->OptionParser->help($command, $format));
     }
@@ -586,9 +576,9 @@ class Shell
      * By overriding this method you can configure the ConsoleOptionParser before returning it.
      *
      * @return \Cake\Console\ConsoleOptionParser
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#configuring-options-and-generating-help
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#configuring-options-and-generating-help
      */
-    public function getOptionParser()
+    public function getOptionParser(): ConsoleOptionParser
     {
         $name = ($this->plugin ? $this->plugin . '.' : '') . $this->name;
         $parser = new ConsoleOptionParser($name);
@@ -603,13 +593,13 @@ class Shell
      * @param string $name The task to get.
      * @return \Cake\Console\Shell Object of Task
      */
-    public function __get($name)
+    public function __get(string $name)
     {
-        if (empty($this->{$name}) && in_array($name, $this->taskNames)) {
+        if (empty($this->{$name}) && in_array($name, $this->taskNames, true)) {
             $properties = $this->_taskMap[$name];
             $this->{$name} = $this->Tasks->load($properties['class'], $properties['config']);
-            $this->{$name}->args =& $this->args;
-            $this->{$name}->params =& $this->params;
+            $this->{$name}->args = &$this->args;
+            $this->{$name}->params = &$this->params;
             $this->{$name}->initialize();
             $this->{$name}->loadTasks();
         }
@@ -623,25 +613,21 @@ class Shell
      * @param string $name The name of the parameter to get.
      * @return string|bool|null Value. Will return null if it doesn't exist.
      */
-    public function param($name)
+    public function param(string $name)
     {
-        if (!isset($this->params[$name])) {
-            return null;
-        }
-
-        return $this->params[$name];
+        return $this->params[$name] ?? null;
     }
 
     /**
      * Prompts the user for input, and returns it.
      *
      * @param string $prompt Prompt text.
-     * @param string|array|null $options Array or string of options.
+     * @param array<string>|string|null $options Array or string of options.
      * @param string|null $default Default input value.
      * @return string|null Either the default value, or the user-provided input.
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#Shell::in
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#Shell::in
      */
-    public function in($prompt, $options = null, $default = null)
+    public function in(string $prompt, $options = null, ?string $default = null): ?string
     {
         if (!$this->interactive) {
             return $default;
@@ -664,12 +650,12 @@ class Shell
      * - `indent` Indent the text with the string provided. Defaults to null.
      *
      * @param string $text Text the text to format.
-     * @param int|array $options Array of options to use, or an integer to wrap the text to.
+     * @param array<string, mixed>|int $options Array of options to use, or an integer to wrap the text to.
      * @return string Wrapped / indented text
      * @see \Cake\Utility\Text::wrap()
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#Shell::wrapText
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#Shell::wrapText
      */
-    public function wrapText($text, $options = [])
+    public function wrapText(string $text, $options = []): string
     {
         return Text::wrap($text, $options);
     }
@@ -677,11 +663,11 @@ class Shell
     /**
      * Output at the verbose level.
      *
-     * @param string|string[] $message A string or an array of strings to output
+     * @param array<string>|string $message A string or an array of strings to output
      * @param int $newlines Number of newlines to append
-     * @return int|bool The number of bytes returned from writing to stdout.
+     * @return int|null The number of bytes returned from writing to stdout.
      */
-    public function verbose($message, $newlines = 1)
+    public function verbose($message, int $newlines = 1): ?int
     {
         return $this->_io->verbose($message, $newlines);
     }
@@ -689,11 +675,11 @@ class Shell
     /**
      * Output at all levels.
      *
-     * @param string|string[] $message A string or an array of strings to output
+     * @param array<string>|string $message A string or an array of strings to output
      * @param int $newlines Number of newlines to append
-     * @return int|bool The number of bytes returned from writing to stdout.
+     * @return int|null The number of bytes returned from writing to stdout.
      */
-    public function quiet($message, $newlines = 1)
+    public function quiet($message, int $newlines = 1): ?int
     {
         return $this->_io->quiet($message, $newlines);
     }
@@ -709,13 +695,13 @@ class Shell
      * present in most shells. Using Shell::QUIET for a message means it will always display.
      * While using Shell::VERBOSE means it will only display when verbose output is toggled.
      *
-     * @param string|string[]|null $message A string or an array of strings to output
+     * @param array<string>|string $message A string or an array of strings to output
      * @param int $newlines Number of newlines to append
      * @param int $level The message's output level, see above.
-     * @return int|bool The number of bytes returned from writing to stdout.
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#Shell::out
+     * @return int|null The number of bytes returned from writing to stdout.
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#Shell::out
      */
-    public function out($message = null, $newlines = 1, $level = Shell::NORMAL)
+    public function out($message, int $newlines = 1, int $level = Shell::NORMAL): ?int
     {
         return $this->_io->out($message, $newlines, $level);
     }
@@ -724,79 +710,54 @@ class Shell
      * Outputs a single or multiple error messages to stderr. If no parameters
      * are passed outputs just a newline.
      *
-     * @param string|string[]|null $message A string or an array of strings to output
+     * @param array<string>|string $message A string or an array of strings to output
      * @param int $newlines Number of newlines to append
-     * @return int|bool The number of bytes returned from writing to stderr.
+     * @return int The number of bytes returned from writing to stderr.
      */
-    public function err($message = null, $newlines = 1)
+    public function err($message, int $newlines = 1): int
     {
         return $this->_io->error($message, $newlines);
     }
 
     /**
-     * Convenience method for out() that wraps message between <info /> tag
+     * Convenience method for out() that wraps message between <info> tag
      *
-     * @param string|string[]|null $message A string or an array of strings to output
+     * @param array<string>|string $message A string or an array of strings to output
      * @param int $newlines Number of newlines to append
      * @param int $level The message's output level, see above.
-     * @return int|bool The number of bytes returned from writing to stdout.
-     * @see https://book.cakephp.org/3/en/console-and-shells.html#Shell::out
+     * @return int|null The number of bytes returned from writing to stdout.
+     * @see https://book.cakephp.org/4/en/console-and-shells.html#Shell::out
      */
-    public function info($message = null, $newlines = 1, $level = Shell::NORMAL)
+    public function info($message, int $newlines = 1, int $level = Shell::NORMAL): ?int
     {
         return $this->_io->info($message, $newlines, $level);
     }
 
     /**
-     * Convenience method for err() that wraps message between <warning /> tag
+     * Convenience method for err() that wraps message between <warning> tag
      *
-     * @param string|string[]|null $message A string or an array of strings to output
+     * @param array<string>|string $message A string or an array of strings to output
      * @param int $newlines Number of newlines to append
-     * @return int|bool The number of bytes returned from writing to stderr.
-     * @see https://book.cakephp.org/3/en/console-and-shells.html#Shell::err
+     * @return int The number of bytes returned from writing to stderr.
+     * @see https://book.cakephp.org/4/en/console-and-shells.html#Shell::err
      */
-    public function warn($message = null, $newlines = 1)
+    public function warn($message, int $newlines = 1): int
     {
         return $this->_io->warning($message, $newlines);
     }
 
     /**
-     * Convenience method for out() that wraps message between <success /> tag
+     * Convenience method for out() that wraps message between <success> tag
      *
-     * @param string|string[]|null $message A string or an array of strings to output
+     * @param array<string>|string $message A string or an array of strings to output
      * @param int $newlines Number of newlines to append
      * @param int $level The message's output level, see above.
-     * @return int|bool The number of bytes returned from writing to stdout.
-     * @see https://book.cakephp.org/3/en/console-and-shells.html#Shell::out
+     * @return int|null The number of bytes returned from writing to stdout.
+     * @see https://book.cakephp.org/4/en/console-and-shells.html#Shell::out
      */
-    public function success($message = null, $newlines = 1, $level = Shell::NORMAL)
+    public function success($message, int $newlines = 1, int $level = Shell::NORMAL): ?int
     {
         return $this->_io->success($message, $newlines, $level);
-    }
-
-    /**
-     * Wraps a message with a given message type, e.g. <warning>
-     *
-     * @param string $messageType The message type, e.g. "warning".
-     * @param string|array $message The message to wrap.
-     * @return array|string The message wrapped with the given message type.
-     * @deprecated 3.6.0 Will be removed in 4.0.0 as it is no longer in use.
-     */
-    protected function wrapMessageWithType($messageType, $message)
-    {
-        deprecationWarning(
-            'Shell::wrapMessageWithType() is deprecated. ' .
-            'Use output methods on ConsoleIo instead.'
-        );
-        if (is_array($message)) {
-            foreach ($message as $k => $v) {
-                $message[$k] = "<$messageType>" . $v . "</$messageType>";
-            }
-        } else {
-            $message = "<$messageType>" . $message . "</$messageType>";
-        }
-
-        return $message;
     }
 
     /**
@@ -804,9 +765,9 @@ class Shell
      *
      * @param int $multiplier Number of times the linefeed sequence should be repeated
      * @return string
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#Shell::nl
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#Shell::nl
      */
-    public function nl($multiplier = 1)
+    public function nl(int $multiplier = 1): string
     {
         return $this->_io->nl($multiplier);
     }
@@ -817,9 +778,9 @@ class Shell
      * @param int $newlines Number of newlines to pre- and append
      * @param int $width Width of the line, defaults to 63
      * @return void
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#Shell::hr
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#Shell::hr
      */
-    public function hr($newlines = 0, $width = 63)
+    public function hr(int $newlines = 0, int $width = 63): void
     {
         $this->_io->hr($newlines, $width);
     }
@@ -832,47 +793,22 @@ class Shell
      * @param int $exitCode The exit code for the shell task.
      * @throws \Cake\Console\Exception\StopException
      * @return void
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#styling-output
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#styling-output
+     * @psalm-return never-return
      */
-    public function abort($message, $exitCode = self::CODE_ERROR)
+    public function abort(string $message, int $exitCode = self::CODE_ERROR): void
     {
         $this->_io->err('<error>' . $message . '</error>');
         throw new StopException($message, $exitCode);
     }
 
     /**
-     * Displays a formatted error message
-     * and exits the application with status code 1
-     *
-     * @param string $title Title of the error
-     * @param string|null $message An optional error message
-     * @param int $exitCode The exit code for the shell task.
-     * @throws \Cake\Console\Exception\StopException
-     * @return int Error code
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#styling-output
-     * @deprecated 3.2.0 Use Shell::abort() instead.
-     */
-    public function error($title, $message = null, $exitCode = self::CODE_ERROR)
-    {
-        deprecationWarning('Shell::error() is deprecated. `Use Shell::abort() instead.');
-        $this->_io->err(sprintf('<error>Error:</error> %s', $title));
-
-        if (!empty($message)) {
-            $this->_io->err($message);
-        }
-
-        $this->_stop($exitCode);
-
-        return $exitCode;
-    }
-
-    /**
      * Clear the console
      *
      * @return void
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#console-output
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#console-output
      */
-    public function clear()
+    public function clear(): void
     {
         if (!empty($this->params['noclear'])) {
             return;
@@ -891,9 +827,9 @@ class Shell
      * @param string $path Where to put the file.
      * @param string $contents Content to put in the file.
      * @return bool Success
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#creating-files
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#creating-files
      */
-    public function createFile($path, $contents)
+    public function createFile(string $path, string $contents): bool
     {
         $path = str_replace(DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $path);
 
@@ -929,22 +865,18 @@ class Shell
             $this->out(sprintf('Creating file %s', $path));
         }
 
-        $File = new File($path, true);
-
         try {
-            if ($File->exists() && $File->writable()) {
-                $File->write($contents);
-                $this->_io->out(sprintf('<success>Wrote</success> `%s`', $path));
+            $fs = new Filesystem();
+            $fs->dumpFile($path, $contents);
 
-                return true;
-            }
-
+            $this->_io->out(sprintf('<success>Wrote</success> `%s`', $path));
+        } catch (CakeException $e) {
             $this->_io->err(sprintf('<error>Could not write to `%s`</error>.', $path), 2);
 
             return false;
-        } finally {
-            $File->close();
         }
+
+        return true;
     }
 
     /**
@@ -952,11 +884,11 @@ class Shell
      *
      * @param string $file Absolute file path
      * @return string short path
-     * @link https://book.cakephp.org/3/en/console-and-shells.html#Shell::shortPath
+     * @link https://book.cakephp.org/4/en/console-and-shells.html#Shell::shortPath
      */
-    public function shortPath($file)
+    public function shortPath(string $file): string
     {
-        $shortPath = str_replace(ROOT, null, $file);
+        $shortPath = str_replace(ROOT, '', $file);
         $shortPath = str_replace('..' . DIRECTORY_SEPARATOR, '', $shortPath);
         $shortPath = str_replace(DIRECTORY_SEPARATOR, '/', $shortPath);
 
@@ -970,23 +902,23 @@ class Shell
      * object has not already been loaded, it will be loaded and constructed.
      *
      * @param string $name The name of the helper to render
-     * @param array $settings Configuration data for the helper.
+     * @param array<string, mixed> $config Configuration data for the helper.
      * @return \Cake\Console\Helper The created helper instance.
      */
-    public function helper($name, array $settings = [])
+    public function helper(string $name, array $config = []): Helper
     {
-        return $this->_io->helper($name, $settings);
+        return $this->_io->helper($name, $config);
     }
 
     /**
      * Stop execution of the current script.
      * Raises a StopException to try and halt the execution.
      *
-     * @param int|string $status see https://secure.php.net/exit for values
+     * @param int $status see https://secure.php.net/exit for values
      * @throws \Cake\Console\Exception\StopException
      * @return void
      */
-    protected function _stop($status = self::CODE_SUCCESS)
+    protected function _stop(int $status = self::CODE_SUCCESS): void
     {
         throw new StopException('Halting error reached', $status);
     }
@@ -995,9 +927,9 @@ class Shell
      * Returns an array that can be used to describe the internal state of this
      * object.
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function __debugInfo()
+    public function __debugInfo(): array
     {
         return [
             'name' => $this->name,

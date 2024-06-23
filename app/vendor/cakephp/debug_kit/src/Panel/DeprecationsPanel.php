@@ -1,30 +1,29 @@
 <?php
+declare(strict_types=1);
+
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://cakephp.org CakePHP(tm) Project
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace DebugKit\Panel;
 
-use Cake\Event\Event;
+use Cake\Event\EventInterface;
 use Cake\Utility\Hash;
-use Composer\Json\JsonFile;
 use DebugKit\DebugInclude;
 use DebugKit\DebugPanel;
 
 /**
  * Provides a list of deprecated methods for the current request
- *
  */
 class DeprecationsPanel extends DebugPanel
 {
-
     /**
      * The list of depreated errors.
      *
@@ -60,10 +59,6 @@ class DeprecationsPanel extends DebugPanel
         foreach ($errors as $error) {
             $file = $error['file'];
             $line = $error['line'];
-            if (isset($error['context']['frame'])) {
-                $file = $error['context']['frame']['file'];
-                $line = $error['context']['frame']['line'];
-            }
 
             $errorData = [
                 'file' => $file,
@@ -94,14 +89,8 @@ class DeprecationsPanel extends DebugPanel
             }
         }
 
-        ksort($return['app']);
-        ksort($return['cake']);
         ksort($return['plugins']);
         ksort($return['vendor']);
-
-        foreach ($return['plugins'] as &$plugin) {
-            ksort($plugin);
-        }
 
         return $return;
     }
@@ -139,7 +128,7 @@ class DeprecationsPanel extends DebugPanel
             $data = $this->_prepare();
         }
 
-        return array_reduce($data, function ($carry, $item) {
+        return (string)array_reduce($data, function ($carry, $item) {
             if (empty($item)) {
                 return $carry;
             }
@@ -160,10 +149,10 @@ class DeprecationsPanel extends DebugPanel
     /**
      * Shutdown callback
      *
-     * @param \Cake\Event\Event $event Event
+     * @param \Cake\Event\EventInterface $event Event
      * @return void
      */
-    public function shutdown(Event $event)
+    public function shutdown(EventInterface $event)
     {
         $this->_data = $this->_prepare();
     }

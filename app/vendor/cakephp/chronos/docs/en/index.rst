@@ -4,7 +4,7 @@ Chronos
 Chronos provides a zero-dependency collection of extensions to the ``DateTime``
 object. In addition to convenience methods, Chronos provides:
 
-* ``Date`` objects for representing calendar dates.
+* ``ChronosDate`` objects for representing calendar dates.
 * Immutable date and datetime objects.
 * A pluggable translation system. Only English translations are included in the
   library. However, ``cakephp/i18n`` can be used for full language support.
@@ -16,7 +16,7 @@ To install Chronos, you should use ``composer``. From your
 application's ROOT directory (where composer.json file is located) run the
 following::
 
-    php composer.phar require cakephp/chronos "@stable"
+    php composer.phar require "cakephp/chronos:^2.0"
 
 Overview
 --------
@@ -26,11 +26,9 @@ Chronos provides 5 classes that cover mutable and immutable date/time variants
 and extensions to ``DateInterval``.
 
 * ``Cake\Chronos\Chronos`` is an immutable *date and time* object.
-* ``Cake\Chronos\Date`` is a immutable *date* object.
+* ``Cake\Chronos\ChronosDate`` is a immutable *date* object.
 * ``Cake\Chronos\MutableDateTime`` is a mutable *date and time* object.
 * ``Cake\Chronos\MutableDate`` is a mutable *date* object.
-* ``Cake\Chronos\ChronosInterval`` is an extension to the ``DateInterval``
-  object.
 
 Lastly, if you want to typehint against Chronos-provided date/time objects you
 should use ``Cake\Chronos\ChronosInterface``. All of the date and time objects
@@ -96,20 +94,28 @@ Date Objects
 
 PHP only provides a single DateTime object. Representing calendar dates can be
 a bit awkward with this class as it includes timezones, and time components that
-don't really belong in the concept of a 'day'. Chronos provides a ``Date``
-object that allows you to represent dates. The time and timezone for these
-objects is always fixed to ``00:00:00 UTC`` and all formatting/difference
-methods operate at the day resolution::
+don't really belong in the concept of a 'day'. Chronos provides a ``ChronosDate``
+object that allows you to represent dates. The time for date objects is always
+fixed to ``00:00:00``, and the timezone is set to the server local timezone. All
+formatting/difference methods operate at the day resolution::
 
-    use Cake\Chronos\Date;
+    use Cake\Chronos\ChronosDate;
 
-    $today = Date::today();
+    $today = ChronosDate::today();
 
     // Changes to the time/timezone are ignored.
     $today->modify('+1 hours');
 
     // Outputs '2015-12-20'
     echo $today;
+
+Although ``ChronosDate`` uses a fixed time zone internally, you can specify which
+time zone to use for current time such as ``now()`` or ``today()``::
+
+    use Cake\Chronos\ChronosDate;
+
+    // Takes the current date from Asia/Tokyo time zone
+    $today = ChronosDate::today('Asia/Tokyo');
 
 Modifier Methods
 ----------------
@@ -265,19 +271,19 @@ Extracting Date Components
 
 Getting parts of a date object can be done by directly accessing properties::
 
-    $time = new Chronos('2015-12-31 23:59:58');
+    $time = new Chronos('2015-12-31 23:59:58.123');
     $time->year;    // 2015
     $time->month;   // 12
     $time->day;     // 31
     $time->hour     // 23
     $time->minute   // 59
     $time->second   // 58
+    $time->micro    // 123
 
 Other properties that can be accessed are:
 
 - timezone
 - timezoneName
-- micro
 - dayOfWeek
 - dayOfMonth
 - dayOfYear
@@ -294,7 +300,7 @@ process you can include the following::
 
     Chronos::setTestNow(Chronos::now());
     MutableDateTime::setTestNow(MutableDateTime::now());
-    Date::setTestNow(Date::now());
+    ChronosDate::setTestNow(ChronosDate::now());
     MutableDate::setTestNow(MutableDate::now());
 
 This will fix the current time of all objects to be the point at which the test

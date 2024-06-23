@@ -1,29 +1,34 @@
 <?php
+declare(strict_types=1);
+
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://cakephp.org CakePHP(tm) Project
  * @since         3.5.0
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace Cake\Console;
 
-use Cake\Command\HelpCommand;
 use Cake\Command\VersionCommand;
+use Cake\Console\Command\HelpCommand;
+use Cake\Console\Exception\MissingOptionException;
 use Cake\Console\Exception\StopException;
 use Cake\Core\ConsoleApplicationInterface;
-use Cake\Core\HttpApplicationInterface;
+use Cake\Core\ContainerApplicationInterface;
 use Cake\Core\PluginApplicationInterface;
 use Cake\Event\EventDispatcherInterface;
 use Cake\Event\EventDispatcherTrait;
 use Cake\Event\EventManager;
+use Cake\Event\EventManagerInterface;
 use Cake\Routing\Router;
+use Cake\Routing\RoutingApplicationInterface;
 use Cake\Utility\Inflector;
 use InvalidArgumentException;
 use RuntimeException;
@@ -33,14 +38,7 @@ use RuntimeException;
  */
 class CommandRunner implements EventDispatcherInterface
 {
-    /**
-     * Alias methods away so we can implement proxying methods.
-     */
-    use EventDispatcherTrait {
-        eventManager as private _eventManager;
-        getEventManager as private _getEventManager;
-        setEventManager as private _setEventManager;
-    }
+    use EventDispatcherTrait;
 
     /**
      * The application console commands are being run for.
@@ -52,7 +50,7 @@ class CommandRunner implements EventDispatcherInterface
     /**
      * The application console commands are being run for.
      *
-     * @var \Cake\Console\CommandFactoryInterface
+     * @var \Cake\Console\CommandFactoryInterface|null
      */
     protected $factory;
 
@@ -66,7 +64,7 @@ class CommandRunner implements EventDispatcherInterface
     /**
      * Alias mappings.
      *
-     * @var array
+     * @var array<string>
      */
     protected $aliases = [];
 
@@ -77,11 +75,14 @@ class CommandRunner implements EventDispatcherInterface
      * @param string $root The root command name to be removed from argv.
      * @param \Cake\Console\CommandFactoryInterface|null $factory Command factory instance.
      */
-    public function __construct(ConsoleApplicationInterface $app, $root = 'cake', CommandFactoryInterface $factory = null)
-    {
+    public function __construct(
+        ConsoleApplicationInterface $app,
+        string $root = 'cake',
+        ?CommandFactoryInterface $factory = null
+    ) {
         $this->app = $app;
         $this->root = $root;
-        $this->factory = $factory ?: new CommandFactory();
+        $this->factory = $factory;
         $this->aliases = [
             '--version' => 'version',
             '--help' => 'help',
@@ -102,7 +103,7 @@ class CommandRunner implements EventDispatcherInterface
      * $runner->setAliases(['--version' => 'version']);
      * ```
      *
-     * @param string[] $aliases The map of aliases to replace.
+     * @param array<string> $aliases The map of aliases to replace.
      * @return $this
      */
     public function setAliases(array $aliases)
@@ -127,64 +128,69 @@ class CommandRunner implements EventDispatcherInterface
      * @return int The exit code of the command.
      * @throws \RuntimeException
      */
-    public function run(array $argv, ConsoleIo $io = null)
+    public function run(array $argv, ?ConsoleIo $io = null): int
     {
         $this->bootstrap();
 
         $commands = new CommandCollection([
-            'version' => VersionCommand::class,
             'help' => HelpCommand::class,
         ]);
+        if (class_exists(VersionCommand::class)) {
+            $commands->add('version', VersionCommand::class);
+        }
         $commands = $this->app->console($commands);
-        $this->checkCollection($commands, 'console');
 
         if ($this->app instanceof PluginApplicationInterface) {
             $commands = $this->app->pluginConsole($commands);
         }
-        $this->checkCollection($commands, 'pluginConsole');
         $this->dispatchEvent('Console.buildCommands', ['commands' => $commands]);
         $this->loadRoutes();
 
         if (empty($argv)) {
-            throw new RuntimeException("Cannot run any commands. No arguments received.");
+            throw new RuntimeException('Cannot run any commands. No arguments received.');
         }
         // Remove the root executable segment
         array_shift($argv);
 
         $io = $io ?: new ConsoleIo();
 
-        list($name, $argv) = $this->longestCommandName($commands, $argv);
-        $name = $this->resolveName($commands, $io, $name);
+        try {
+            [$name, $argv] = $this->longestCommandName($commands, $argv);
+            $name = $this->resolveName($commands, $io, $name);
+        } catch (MissingOptionException $e) {
+            $io->error($e->getFullMessage());
 
-        $result = Command::CODE_ERROR;
-        $shell = $this->getShell($io, $commands, $name);
+            return CommandInterface::CODE_ERROR;
+        }
+
+        $result = CommandInterface::CODE_ERROR;
+        $shell = $this->getCommand($io, $commands, $name);
         if ($shell instanceof Shell) {
             $result = $this->runShell($shell, $argv);
         }
-        if ($shell instanceof Command) {
+        if ($shell instanceof CommandInterface) {
             $result = $this->runCommand($shell, $argv, $io);
         }
 
         if ($result === null || $result === true) {
-            return Command::CODE_SUCCESS;
+            return CommandInterface::CODE_SUCCESS;
         }
         if (is_int($result) && $result >= 0 && $result <= 255) {
             return $result;
         }
 
-        return Command::CODE_ERROR;
+        return CommandInterface::CODE_ERROR;
     }
 
     /**
      * Application bootstrap wrapper.
      *
-     * Calls `bootstrap()` and `events()` if application implements `EventApplicationInterface`.
-     * After the application is bootstrapped and events are attached, plugins are bootstrapped
-     * and have their events attached.
+     * Calls the application's `bootstrap()` hook. After the application the
+     * plugins are bootstrapped.
      *
      * @return void
      */
-    protected function bootstrap()
+    protected function bootstrap(): void
     {
         $this->app->bootstrap();
         if ($this->app instanceof PluginApplicationInterface) {
@@ -193,31 +199,11 @@ class CommandRunner implements EventDispatcherInterface
     }
 
     /**
-     * Check the created CommandCollection
-     *
-     * @param mixed $commands The CommandCollection to check, could be anything though.
-     * @param string $method The method that was used.
-     * @return void
-     * @throws \RuntimeException
-     * @deprecated 3.6.0 This method should be replaced with return types in 4.x
-     */
-    protected function checkCollection($commands, $method)
-    {
-        if (!($commands instanceof CommandCollection)) {
-            $type = getTypeName($commands);
-            throw new RuntimeException(
-                "The application's `{$method}` method did not return a CommandCollection." .
-                " Got '{$type}' instead."
-            );
-        }
-    }
-
-    /**
      * Get the application's event manager or the global one.
      *
      * @return \Cake\Event\EventManagerInterface
      */
-    public function getEventManager()
+    public function getEventManager(): EventManagerInterface
     {
         if ($this->app instanceof PluginApplicationInterface) {
             return $this->app->getEventManager();
@@ -232,33 +218,14 @@ class CommandRunner implements EventDispatcherInterface
      * If the application does not support events and this method is used as
      * a setter, an exception will be raised.
      *
-     * @param \Cake\Event\EventManager|null $events The event manager to set.
-     * @return \Cake\Event\EventManager|$this
-     * @deprecated 3.6.0 Will be removed in 4.0
-     */
-    public function eventManager(EventManager $events = null)
-    {
-        deprecationWarning('eventManager() is deprecated. Use getEventManager()/setEventManager() instead.');
-        if ($events === null) {
-            return $this->getEventManager();
-        }
-
-        return $this->setEventManager($events);
-    }
-
-    /**
-     * Get/set the application's event manager.
-     *
-     * If the application does not support events and this method is used as
-     * a setter, an exception will be raised.
-     *
-     * @param \Cake\Event\EventManager $events The event manager to set.
+     * @param \Cake\Event\EventManagerInterface $eventManager The event manager to set.
      * @return $this
+     * @throws \InvalidArgumentException
      */
-    public function setEventManager(EventManager $events)
+    public function setEventManager(EventManagerInterface $eventManager)
     {
         if ($this->app instanceof PluginApplicationInterface) {
-            $this->app->setEventManager($events);
+            $this->app->setEventManager($eventManager);
 
             return $this;
         }
@@ -272,18 +239,18 @@ class CommandRunner implements EventDispatcherInterface
      * @param \Cake\Console\ConsoleIo $io The IO wrapper for the created shell class.
      * @param \Cake\Console\CommandCollection $commands The command collection to find the shell in.
      * @param string $name The command name to find
-     * @return \Cake\Console\Shell|\Cake\Console\Command
+     * @return \Cake\Console\CommandInterface|\Cake\Console\Shell
      */
-    protected function getShell(ConsoleIo $io, CommandCollection $commands, $name)
+    protected function getCommand(ConsoleIo $io, CommandCollection $commands, string $name)
     {
         $instance = $commands->get($name);
         if (is_string($instance)) {
-            $instance = $this->createShell($instance, $io);
+            $instance = $this->createCommand($instance, $io);
         }
         if ($instance instanceof Shell) {
             $instance->setRootName($this->root);
         }
-        if ($instance instanceof Command) {
+        if ($instance instanceof CommandInterface) {
             $instance->setName("{$this->root} {$name}");
         }
         if ($instance instanceof CommandCollectionAwareInterface) {
@@ -303,7 +270,7 @@ class CommandRunner implements EventDispatcherInterface
      * @param array $argv The CLI arguments.
      * @return array An array of the resolved name and modified argv.
      */
-    protected function longestCommandName($commands, $argv)
+    protected function longestCommandName(CommandCollection $commands, array $argv): array
     {
         for ($i = 3; $i > 1; $i--) {
             $parts = array_slice($argv, 0, $i);
@@ -329,23 +296,24 @@ class CommandRunner implements EventDispatcherInterface
      * @param \Cake\Console\ConsoleIo $io ConsoleIo object for errors.
      * @param string|null $name The name from the CLI args.
      * @return string The resolved name.
+     * @throws \Cake\Console\Exception\MissingOptionException
      */
-    protected function resolveName($commands, $io, $name)
+    protected function resolveName(CommandCollection $commands, ConsoleIo $io, ?string $name): string
     {
         if (!$name) {
             $io->err('<error>No command provided. Choose one of the available commands.</error>', 2);
             $name = 'help';
         }
-        if (isset($this->aliases[$name])) {
-            $name = $this->aliases[$name];
-        }
+        $name = $this->aliases[$name] ?? $name;
         if (!$commands->has($name)) {
             $name = Inflector::underscore($name);
         }
         if (!$commands->has($name)) {
-            throw new RuntimeException(
-                "Unknown command `{$this->root} {$name}`." .
-                " Run `{$this->root} --help` to get the list of valid commands."
+            throw new MissingOptionException(
+                "Unknown command `{$this->root} {$name}`. " .
+                "Run `{$this->root} --help` to get the list of commands.",
+                $name,
+                $commands->keys()
             );
         }
 
@@ -355,12 +323,12 @@ class CommandRunner implements EventDispatcherInterface
     /**
      * Execute a Command class.
      *
-     * @param \Cake\Console\Command $command The command to run.
+     * @param \Cake\Console\CommandInterface $command The command to run.
      * @param array $argv The CLI arguments to invoke.
      * @param \Cake\Console\ConsoleIo $io The console io
      * @return int|null Exit code
      */
-    protected function runCommand(Command $command, array $argv, ConsoleIo $io)
+    protected function runCommand(CommandInterface $command, array $argv, ConsoleIo $io): ?int
     {
         try {
             return $command->run($argv, $io);
@@ -383,9 +351,7 @@ class CommandRunner implements EventDispatcherInterface
 
             return $shell->runCommand($argv, true);
         } catch (StopException $e) {
-            $code = $e->getCode();
-
-            return $code === null ? $code : (int)$code;
+            return $e->getCode();
         }
     }
 
@@ -394,10 +360,18 @@ class CommandRunner implements EventDispatcherInterface
      *
      * @param string $className Shell class name.
      * @param \Cake\Console\ConsoleIo $io The IO wrapper for the created shell class.
-     * @return \Cake\Console\Shell|\Cake\Console\Command
+     * @return \Cake\Console\CommandInterface|\Cake\Console\Shell
      */
-    protected function createShell($className, ConsoleIo $io)
+    protected function createCommand(string $className, ConsoleIo $io)
     {
+        if (!$this->factory) {
+            $container = null;
+            if ($this->app instanceof ContainerApplicationInterface) {
+                $container = $this->app->getContainer();
+            }
+            $this->factory = new CommandFactory($container);
+        }
+
         $shell = $this->factory->create($className);
         if ($shell instanceof Shell) {
             $shell->setIo($io);
@@ -413,13 +387,14 @@ class CommandRunner implements EventDispatcherInterface
      *
      * @return void
      */
-    protected function loadRoutes()
+    protected function loadRoutes(): void
     {
+        if (!($this->app instanceof RoutingApplicationInterface)) {
+            return;
+        }
         $builder = Router::createRouteBuilder('/');
 
-        if ($this->app instanceof HttpApplicationInterface) {
-            $this->app->routes($builder);
-        }
+        $this->app->routes($builder);
         if ($this->app instanceof PluginApplicationInterface) {
             $this->app->pluginRoutes($builder);
         }

@@ -5,24 +5,26 @@ use App\Controller\AppController;
 use App\Model\Roles;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Event\Event;
+use Cake\Event\EventInterface;
 
 class UsersController extends AppController {
     
-    public function initialize() {
+    public function initialize(): void {
         parent::initialize();
         $this->Roles = new Roles();
     }
 
-    public function beforeFilter(Event $event) {
-        $this->Auth->allow(['hash']);
+    public function beforeFilter(EventInterface $event) {
+        parent::beforeFilter($event);
+        $this->Authentication->allowUnauthenticated(['login','logout', 'hash']);
     }
 
-    public function isAuthorized($user) {
+    /*public function isAuthorized($user) {
         if (in_array($this->request->getParam('action'), ['login','logout','hash'])) {
             return true;
         }
         return $user['role'] === 'admin';
-    }
+    }*/
 
     public function index() {
         $users = $this->Users->find('all')->order(['username'=>'ASC']);
@@ -31,7 +33,7 @@ class UsersController extends AppController {
     }
 
     public function detail($id = null) {
-        $user = empty($id) ? $this->Users->newEntity() : $this->Users->get($id, ['contain' => [
+        $user = empty($id) ? $this->Users->newEntity([]) : $this->Users->get($id, ['contain' => [
             'Audits' => [ 'Customers', 'FormTemplates', 'sort' => ['date'=>'DESC'] ]
         ]]);
         $roles = $this->Roles->getAll();
@@ -43,7 +45,7 @@ class UsersController extends AppController {
         if(empty($data['password'])) {
             unset($data['password']);
         }
-        $user = empty($data['id']) ? $this->Users->newEntity() : $this->Users->get($data['id']);
+        $user = empty($data['id']) ? $this->Users->newEntity([]) : $this->Users->get($data['id']);
         if ($this->request->is('post') || $this->request->is('put')) {
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {
@@ -68,21 +70,22 @@ class UsersController extends AppController {
         }
         return $this->redirect(['action'=>'index']);
     }
-
+    
     public function login() {
+        $user = $this->Authentication->getResult();
+        if ($user->isValid()) {
+            return $this->redirect(['controller'=>'Main', 'action'=>'index']);
+        }
+
         if ($this->request->is('post')) {
-            $user = $this->Auth->identify();
-            if ($user) {
-                $this->Auth->setUser($user);
-                return $this->redirect($this->Auth->redirectUrl());
-            }
             $this->Flash->error(__('Invalid username or password, try again'));
         }
         $this->viewBuilder()->setLayout('login');
     }
 
     public function logout() {
-        return $this->redirect($this->Auth->logout());
+        $this->Authentication->logout();
+        return $this->redirect(['action'=>'login']);
     }
 
     public function hash() {

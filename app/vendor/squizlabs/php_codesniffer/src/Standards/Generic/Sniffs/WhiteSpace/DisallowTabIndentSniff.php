@@ -9,8 +9,8 @@
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\WhiteSpace;
 
-use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 class DisallowTabIndentSniff implements Sniff
 {
@@ -41,7 +41,10 @@ class DisallowTabIndentSniff implements Sniff
      */
     public function register()
     {
-        return [T_OPEN_TAG];
+        return [
+            T_OPEN_TAG,
+            T_OPEN_TAG_WITH_ECHO,
+        ];
 
     }//end register()
 
@@ -73,6 +76,8 @@ class DisallowTabIndentSniff implements Sniff
             T_DOC_COMMENT_WHITESPACE => true,
             T_DOC_COMMENT_STRING     => true,
             T_COMMENT                => true,
+            T_END_HEREDOC            => true,
+            T_END_NOWDOC             => true,
         ];
 
         for ($i = 0; $i < $phpcsFile->numTokens; $i++) {

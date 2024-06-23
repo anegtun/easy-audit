@@ -5,7 +5,7 @@ use Cake\ORM\Table;
 
 class FormsTable extends Table {
     
-    public function initialize(array $config) {
+    public function initialize(array $config): void {
         $this->setTable('easy_audit_forms');
 
         $this->hasMany('FormSections')

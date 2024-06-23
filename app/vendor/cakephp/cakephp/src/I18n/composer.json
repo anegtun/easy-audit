@@ -28,11 +28,10 @@
         "source": "https://github.com/cakephp/i18n"
     },
     "require": {
-        "php": ">=5.6.0,<8.0.0",
+        "php": ">=7.4.0",
         "ext-intl": "*",
-        "cakephp/core": "^3.6.0",
-        "cakephp/chronos": "^1.0.0",
-        "aura/intl": "^3.0.0"
+        "cakephp/core": "^4.0",
+        "cakephp/chronos": "^2.0.0"
     },
     "suggest": {
         "cakephp/cache": "Require this if you want automatic caching of translators"

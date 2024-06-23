@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,12 +16,12 @@
  */
 namespace Cake\Mailer\Exception;
 
-use Cake\Core\Exception\Exception;
+use Cake\Core\Exception\CakeException;
 
 /**
  * Used when a mailer cannot be found.
  */
-class MissingMailerException extends Exception
+class MissingMailerException extends CakeException
 {
     /**
      * @inheritDoc

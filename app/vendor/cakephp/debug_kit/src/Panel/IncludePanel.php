@@ -1,30 +1,29 @@
 <?php
+declare(strict_types=1);
+
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://cakephp.org CakePHP(tm) Project
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace DebugKit\Panel;
 
-use Cake\Event\Event;
+use Cake\Event\EventInterface;
 use Cake\Utility\Hash;
-use Composer\Json\JsonFile;
 use DebugKit\DebugInclude;
 use DebugKit\DebugPanel;
 
 /**
  * Provides a list of included files for the current request
- *
  */
 class IncludePanel extends DebugPanel
 {
-
     /**
      * instance of DebugInclude
      *
@@ -53,7 +52,11 @@ class IncludePanel extends DebugPanel
             $pluginName = $this->_debug->getPluginName($file);
 
             if ($pluginName) {
-                $return['plugins'][$pluginName][$this->_debug->getFileType($file)][] = $this->_debug->niceFileName($file, 'plugin', $pluginName);
+                $return['plugins'][$pluginName][$this->_debug->getFileType($file)][] = $this->_debug->niceFileName(
+                    $file,
+                    'plugin',
+                    $pluginName
+                );
             } elseif ($this->_debug->isAppFile($file)) {
                 $return['app'][$this->_debug->getFileType($file)][] = $this->_debug->niceFileName($file, 'app');
             } elseif ($this->_debug->isCakeFile($file)) {
@@ -100,16 +103,16 @@ class IncludePanel extends DebugPanel
             return !empty($v);
         }, ARRAY_FILTER_USE_BOTH);
 
-        return count(Hash::flatten($data));
+        return (string)count(Hash::flatten($data));
     }
 
     /**
      * Shutdown callback
      *
-     * @param \Cake\Event\Event $event Event
+     * @param \Cake\Event\EventInterface $event Event
      * @return void
      */
-    public function shutdown(Event $event)
+    public function shutdown(EventInterface $event)
     {
         $this->_data = $this->_prepare();
     }

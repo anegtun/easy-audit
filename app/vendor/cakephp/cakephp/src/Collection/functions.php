@@ -1,4 +1,7 @@
 <?php
+// phpcs:ignoreFile
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -12,18 +15,22 @@
  * @since         2.0.0
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-use Cake\Collection\Collection;
+namespace Cake\Collection;
 
-if (!function_exists('collection')) {
-    /**
-     * Returns a new Cake\Collection\Collection object wrapping the passed argument.
-     *
-     * @param \Traversable|array $items The items from which the collection will be built.
-     * @return \Cake\Collection\Collection
-     */
-    function collection($items)
-    {
-        return new Collection($items);
-    }
+/**
+ * Returns a new {@link \Cake\Collection\Collection} object wrapping the passed argument.
+ *
+ * @param iterable $items The items from which the collection will be built.
+ * @return \Cake\Collection\Collection
+ */
+function collection(iterable $items): CollectionInterface
+{
+    return new Collection($items);
+}
 
+/**
+ * Include global functions.
+ */
+if (!getenv('CAKE_DISABLE_GLOBAL_FUNCS')) {
+    include 'functions_global.php';
 }

@@ -9,7 +9,7 @@ use Cake\ORM\TableRegistry;
 
 class FormTemplatesController extends AppController {
     
-    public function initialize() {
+    public function initialize(): void {
         parent::initialize();
         $this->FormTemplateFieldTypes = new FormTemplateFieldTypes();
         $this->FormTypes = new FormTypes();
@@ -40,7 +40,7 @@ class FormTemplatesController extends AppController {
     }
 
     public function create() {
-        $template = $this->FormTemplates->newEntity();
+        $template = $this->FormTemplates->newEntity([]);
         if ($this->request->is('post') || $this->request->is('put')) {
             $template = $this->FormTemplates->patchEntity($template, $this->request->getData());
             $template = $this->FormTemplates->save($template);
@@ -92,10 +92,7 @@ class FormTemplatesController extends AppController {
             }
             $this->FormTemplates->save($old_template);
 
-            $new_template = $this->FormTemplates->newEntity();
-            $new_template->name = $data['name'];
-            $new_template->form_id = $old_template->form_id;
-
+            $new_template = $this->FormTemplates->newEntity(['name' => $data['name'], 'form_id' => $old_template->form_id]);
             $new_template = $this->FormTemplates->save($new_template);
 
             $this->FormTemplates->FormTemplateFields->clone($data['id'], $new_template->id);
@@ -119,7 +116,7 @@ class FormTemplatesController extends AppController {
         $templateId = $formData['form_template_id'];
         if ($this->request->is('post') || $this->request->is('put')) {
             if(empty($formData['id'])) {
-                $field = $this->FormTemplates->FormTemplateFields->newEntity();
+                $field = $this->FormTemplates->FormTemplateFields->newEntity([]);
                 $field = $this->FormTemplates->FormTemplateFields->patchEntity($field, $formData);
             } else {
                 $field = $this->FormTemplates->FormTemplateFields->get($formData['id']);

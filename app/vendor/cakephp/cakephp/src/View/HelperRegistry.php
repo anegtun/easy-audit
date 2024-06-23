@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -23,6 +25,8 @@ use Cake\View\Exception\MissingHelperException;
 /**
  * HelperRegistry is used as a registry for loaded helpers and handles loading
  * and constructing helper class objects.
+ *
+ * @extends \Cake\Core\ObjectRegistry<\Cake\View\Helper>
  */
 class HelperRegistry extends ObjectRegistry implements EventDispatcherInterface
 {
@@ -56,7 +60,7 @@ class HelperRegistry extends ObjectRegistry implements EventDispatcherInterface
      * @throws \Cake\View\Exception\MissingHelperException When a helper could not be found.
      *    App helpers are searched, and then plugin helpers.
      */
-    public function __isset($helper)
+    public function __isset(string $helper): bool
     {
         if (isset($this->_loaded[$helper])) {
             return true;
@@ -64,9 +68,10 @@ class HelperRegistry extends ObjectRegistry implements EventDispatcherInterface
 
         try {
             $this->load($helper);
-        } catch (Exception\MissingHelperException $exception) {
-            if ($this->_View->getPlugin()) {
-                $this->load($this->_View->getPlugin() . '.' . $helper);
+        } catch (MissingHelperException $exception) {
+            $plugin = $this->_View->getPlugin();
+            if (!empty($plugin)) {
+                $this->load($plugin . '.' . $helper);
 
                 return true;
             }
@@ -83,13 +88,14 @@ class HelperRegistry extends ObjectRegistry implements EventDispatcherInterface
      * Provide public read access to the loaded objects
      *
      * @param string $name Name of property to read
-     * @return mixed
+     * @return \Cake\View\Helper|null
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         if (isset($this->_loaded[$name])) {
             return $this->_loaded[$name];
         }
+        /** @psalm-suppress NoValue */
         if (isset($this->{$name})) {
             return $this->_loaded[$name];
         }
@@ -103,9 +109,10 @@ class HelperRegistry extends ObjectRegistry implements EventDispatcherInterface
      * Part of the template method for Cake\Core\ObjectRegistry::load()
      *
      * @param string $class Partial classname to resolve.
-     * @return string|false Either the correct classname or false.
+     * @return string|null Either the correct class name or null.
+     * @psalm-return class-string|null
      */
-    protected function _resolveClassName($class)
+    protected function _resolveClassName(string $class): ?string
     {
         return App::className($class, 'View/Helper', 'Helper');
     }
@@ -121,7 +128,7 @@ class HelperRegistry extends ObjectRegistry implements EventDispatcherInterface
      * @return void
      * @throws \Cake\View\Exception\MissingHelperException
      */
-    protected function _throwMissingClassError($class, $plugin)
+    protected function _throwMissingClassError(string $class, ?string $plugin): void
     {
         throw new MissingHelperException([
             'class' => $class . 'Helper',
@@ -137,14 +144,16 @@ class HelperRegistry extends ObjectRegistry implements EventDispatcherInterface
      *
      * @param string $class The class to create.
      * @param string $alias The alias of the loaded helper.
-     * @param array $settings An array of settings to use for the helper.
+     * @param array<string, mixed> $config An array of settings to use for the helper.
      * @return \Cake\View\Helper The constructed helper class.
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
-    protected function _create($class, $alias, $settings)
+    protected function _create($class, string $alias, array $config): Helper
     {
-        $instance = new $class($this->_View, $settings);
+        /** @var \Cake\View\Helper $instance */
+        $instance = new $class($this->_View, $config);
 
-        $enable = isset($settings['enabled']) ? $settings['enabled'] : true;
+        $enable = $config['enabled'] ?? true;
         if ($enable) {
             $this->getEventManager()->on($instance);
         }

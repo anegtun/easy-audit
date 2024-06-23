@@ -9,8 +9,8 @@
 
 namespace PHP_CodeSniffer\Standards\PEAR\Sniffs\NamingConventions;
 
-use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ValidClassNameSniff implements Sniff
 {
@@ -27,6 +27,7 @@ class ValidClassNameSniff implements Sniff
             T_CLASS,
             T_INTERFACE,
             T_TRAIT,
+            T_ENUM,
         ];
 
     }//end register()
@@ -61,7 +62,7 @@ class ValidClassNameSniff implements Sniff
         $nameBits  = explode('_', $name);
         $firstBit  = array_shift($nameBits);
         foreach ($nameBits as $bit) {
-            if ($bit === '' || $bit{0} !== strtoupper($bit{0})) {
+            if ($bit === '' || $bit[0] !== strtoupper($bit[0])) {
                 $validName = false;
                 break;
             }
@@ -76,10 +77,10 @@ class ValidClassNameSniff implements Sniff
                 $error = '%s name is not valid';
                 $phpcsFile->addError($error, $stackPtr, 'Invalid', $errorData);
             } else {
-                $newName = strtoupper($firstBit{0}).substr($firstBit, 1).'_';
+                $newName = strtoupper($firstBit[0]).substr($firstBit, 1).'_';
                 foreach ($nameBits as $bit) {
                     if ($bit !== '') {
-                        $newName .= strtoupper($bit{0}).substr($bit, 1).'_';
+                        $newName .= strtoupper($bit[0]).substr($bit, 1).'_';
                     }
                 }
 

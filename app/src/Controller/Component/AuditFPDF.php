@@ -1,12 +1,12 @@
 <?php
 namespace App\Controller\Component;
 
-require_once(ROOT . DS . 'vendor' . DS  . 'fpdf' . DS . 'fpdf.php');
+require_once(ROOT . DS . 'vendor' . DS  . 'fpdf' . DS . 'fpdf' . DS . 'src' . DS . 'Fpdf' . DS . 'Fpdf.php');
 
 use Cake\Core\Configure;
-use FPDF;
+use Fpdf\Fpdf;
 
-class AuditFPDF extends FPDF {
+class AuditFPDF extends Fpdf {
 
     public $audit;
 

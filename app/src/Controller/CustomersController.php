@@ -7,7 +7,7 @@ use Cake\ORM\TableRegistry;
 
 class CustomersController extends AppController {
     
-    public function initialize() {
+    public function initialize(): void {
         parent::initialize();
         $this->FormTemplates = TableRegistry::getTableLocator()->get('FormTemplates');
         $this->loadComponent('EmailParser');
@@ -26,7 +26,7 @@ class CustomersController extends AppController {
     }
 
     public function detail($id=null) {
-        $customer = empty($id) ? $this->Customers->newEntity() : $this->getCustomer($id);
+        $customer = empty($id) ? $this->Customers->newEntity([]) : $this->getCustomer($id);
         if(!empty($id)) {
             $templates = $this->FormTemplates->find('all')
                 ->contain(['Forms'])
@@ -42,7 +42,7 @@ class CustomersController extends AppController {
     }
 
     public function save() {
-        $customer = $this->Customers->newEntity();
+        $customer = $this->Customers->newEntity([]);
         if ($this->request->is('post') || $this->request->is('put')) {
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
             $customer->emails = implode(', ', $this->EmailParser->parse($customer->emails));

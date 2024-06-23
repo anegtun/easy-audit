@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,7 +16,9 @@
  */
 namespace Cake\ORM\Locator;
 
-use Cake\ORM\TableRegistry;
+use Cake\Datasource\FactoryLocator;
+use Cake\ORM\Table;
+use UnexpectedValueException;
 
 /**
  * Contains method for setting and accessing LocatorInterface instance
@@ -22,32 +26,18 @@ use Cake\ORM\TableRegistry;
 trait LocatorAwareTrait
 {
     /**
-     * Table locator instance
+     * This object's default table alias.
      *
-     * @var \Cake\ORM\Locator\LocatorInterface
+     * @var string|null
      */
-    protected $_tableLocator;
+    protected $defaultTable = null;
 
     /**
-     * Sets the table locator.
-     * If no parameters are passed, it will return the currently used locator.
+     * Table locator instance
      *
-     * @param \Cake\ORM\Locator\LocatorInterface|null $tableLocator LocatorInterface instance.
-     * @return \Cake\ORM\Locator\LocatorInterface
-     * @deprecated 3.5.0 Use getTableLocator()/setTableLocator() instead.
+     * @var \Cake\ORM\Locator\LocatorInterface|null
      */
-    public function tableLocator(LocatorInterface $tableLocator = null)
-    {
-        deprecationWarning(
-            get_called_class() . '::tableLocator() is deprecated. ' .
-            'Use getTableLocator()/setTableLocator() instead.'
-        );
-        if ($tableLocator !== null) {
-            $this->setTableLocator($tableLocator);
-        }
-
-        return $this->getTableLocator();
-    }
+    protected $_tableLocator;
 
     /**
      * Sets the table locator.
@@ -67,12 +57,38 @@ trait LocatorAwareTrait
      *
      * @return \Cake\ORM\Locator\LocatorInterface
      */
-    public function getTableLocator()
+    public function getTableLocator(): LocatorInterface
     {
         if ($this->_tableLocator === null) {
-            $this->_tableLocator = TableRegistry::getTableLocator();
+            /** @psalm-suppress InvalidPropertyAssignmentValue */
+            $this->_tableLocator = FactoryLocator::get('Table');
         }
 
+        /** @var \Cake\ORM\Locator\LocatorInterface */
         return $this->_tableLocator;
+    }
+
+    /**
+     * Convenience method to get a table instance.
+     *
+     * @param string|null $alias The alias name you want to get. Should be in CamelCase format.
+     *  If `null` then the value of $defaultTable property is used.
+     * @param array<string, mixed> $options The options you want to build the table with.
+     *   If a table has already been loaded the registry options will be ignored.
+     * @return \Cake\ORM\Table
+     * @throws \Cake\Core\Exception\CakeException If `$alias` argument and `$defaultTable` property both are `null`.
+     * @see \Cake\ORM\TableLocator::get()
+     * @since 4.3.0
+     */
+    public function fetchTable(?string $alias = null, array $options = []): Table
+    {
+        $alias = $alias ?? $this->defaultTable;
+        if (empty($alias)) {
+            throw new UnexpectedValueException(
+                'You must provide an `$alias` or set the `$defaultTable` property to a non empty string.'
+            );
+        }
+
+        return $this->getTableLocator()->get($alias, $options);
     }
 }

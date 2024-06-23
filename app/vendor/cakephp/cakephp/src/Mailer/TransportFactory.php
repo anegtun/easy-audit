@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -27,19 +29,20 @@ class TransportFactory
     /**
      * Transport Registry used for creating and using transport instances.
      *
-     * @var \Cake\Mailer\TransportRegistry
+     * @var \Cake\Mailer\TransportRegistry|null
      */
     protected static $_registry;
 
     /**
      * An array mapping url schemes to fully qualified Transport class names
      *
-     * @var string[]
+     * @var array<string, string>
+     * @psalm-var array<string, class-string>
      */
     protected static $_dsnClassMap = [
-        'debug' => 'Cake\Mailer\Transport\DebugTransport',
-        'mail' => 'Cake\Mailer\Transport\MailTransport',
-        'smtp' => 'Cake\Mailer\Transport\SmtpTransport',
+        'debug' => Transport\DebugTransport::class,
+        'mail' => Transport\MailTransport::class,
+        'smtp' => Transport\SmtpTransport::class,
     ];
 
     /**
@@ -47,9 +50,9 @@ class TransportFactory
      *
      * @return \Cake\Mailer\TransportRegistry
      */
-    public static function getRegistry()
+    public static function getRegistry(): TransportRegistry
     {
-        if (!static::$_registry) {
+        if (static::$_registry === null) {
             static::$_registry = new TransportRegistry();
         }
 
@@ -64,7 +67,7 @@ class TransportFactory
      * @param \Cake\Mailer\TransportRegistry $registry Injectable registry object.
      * @return void
      */
-    public static function setRegistry(TransportRegistry $registry)
+    public static function setRegistry(TransportRegistry $registry): void
     {
         static::$_registry = $registry;
     }
@@ -76,7 +79,7 @@ class TransportFactory
      * @return void
      * @throws \InvalidArgumentException When a tranport cannot be created.
      */
-    protected static function _buildTransport($name)
+    protected static function _buildTransport(string $name): void
     {
         if (!isset(static::$_config[$name])) {
             throw new InvalidArgumentException(
@@ -90,6 +93,7 @@ class TransportFactory
             );
         }
 
+        /** @phpstan-ignore-next-line */
         static::getRegistry()->load($name, static::$_config[$name]);
     }
 
@@ -99,7 +103,7 @@ class TransportFactory
      * @param string $name Config name.
      * @return \Cake\Mailer\AbstractTransport
      */
-    public static function get($name)
+    public static function get(string $name): AbstractTransport
     {
         $registry = static::getRegistry();
 

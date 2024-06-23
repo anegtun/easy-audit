@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -19,6 +21,7 @@ use Cake\Event\EventListenerInterface;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 use Cake\ORM\Locator\LocatorAwareTrait;
+use Cake\ORM\Query;
 
 /**
  * Base Authentication class with common methods and properties.
@@ -40,10 +43,8 @@ abstract class BaseAuthenticate implements EventListenerInterface
      * - `passwordHasher` Password hasher class. Can be a string specifying class name
      *    or an array containing `className` key, any other keys will be passed as
      *    config to the class. Defaults to 'Default'.
-     * - Options `scope` and `contain` have been deprecated since 3.1. Use custom
-     *   finder instead to modify the query to fetch user record.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_defaultConfig = [
         'fields' => [
@@ -51,9 +52,7 @@ abstract class BaseAuthenticate implements EventListenerInterface
             'password' => 'password',
         ],
         'userModel' => 'Users',
-        'scope' => [],
         'finder' => 'all',
-        'contain' => null,
         'passwordHasher' => 'Default',
     ];
 
@@ -72,7 +71,7 @@ abstract class BaseAuthenticate implements EventListenerInterface
     protected $_passwordHasher;
 
     /**
-     * Whether or not the user authenticated by this class
+     * Whether the user authenticated by this class
      * requires their password to be rehashed with another algorithm.
      *
      * @var bool
@@ -83,19 +82,12 @@ abstract class BaseAuthenticate implements EventListenerInterface
      * Constructor
      *
      * @param \Cake\Controller\ComponentRegistry $registry The Component registry used on this request.
-     * @param array $config Array of config to use.
+     * @param array<string, mixed> $config Array of config to use.
      */
     public function __construct(ComponentRegistry $registry, array $config = [])
     {
         $this->_registry = $registry;
         $this->setConfig($config);
-
-        if ($this->getConfig('scope') || $this->getConfig('contain')) {
-            deprecationWarning(
-                'The `scope` and `contain` options for Authentication are deprecated. ' .
-                'Use the `finder` option instead to define additional conditions.'
-            );
-        }
     }
 
     /**
@@ -107,9 +99,9 @@ abstract class BaseAuthenticate implements EventListenerInterface
      * @param string $username The username/identifier.
      * @param string|null $password The password, if not provided password checking is skipped
      *   and result of find is returned.
-     * @return array|false Either false on failure, or an array of user data.
+     * @return array<string, mixed>|false Either false on failure, or an array of user data.
      */
-    protected function _findUser($username, $password = null)
+    protected function _findUser(string $username, ?string $password = null)
     {
         $result = $this->_query($username)->first();
 
@@ -146,7 +138,7 @@ abstract class BaseAuthenticate implements EventListenerInterface
             }
 
             $this->_needsPasswordRehash = $hasher->needsRehash($hashedPassword);
-            $result->unsetProperty($passwordField);
+            $result->unset($passwordField);
         }
         $hidden = $result->getHidden();
         if ($password === null && in_array($passwordField, $hidden, true)) {
@@ -164,7 +156,7 @@ abstract class BaseAuthenticate implements EventListenerInterface
      * @param string $username The username/identifier.
      * @return \Cake\ORM\Query
      */
-    protected function _query($username)
+    protected function _query(string $username): Query
     {
         $config = $this->_config;
         $table = $this->getTableLocator()->get($config['userModel']);
@@ -173,22 +165,13 @@ abstract class BaseAuthenticate implements EventListenerInterface
             'conditions' => [$table->aliasField($config['fields']['username']) => $username],
         ];
 
-        if (!empty($config['scope'])) {
-            $options['conditions'] = array_merge($options['conditions'], $config['scope']);
-        }
-        if (!empty($config['contain'])) {
-            $options['contain'] = $config['contain'];
-        }
-
         $finder = $config['finder'];
         if (is_array($finder)) {
             $options += current($finder);
             $finder = key($finder);
         }
 
-        if (!isset($options['username'])) {
-            $options['username'] = $username;
-        }
+        $options['username'] = $options['username'] ?? $username;
 
         return $table->find($finder, $options);
     }
@@ -200,7 +183,7 @@ abstract class BaseAuthenticate implements EventListenerInterface
      * @throws \RuntimeException If password hasher class not found or
      *   it does not extend AbstractPasswordHasher
      */
-    public function passwordHasher()
+    public function passwordHasher(): AbstractPasswordHasher
     {
         if ($this->_passwordHasher !== null) {
             return $this->_passwordHasher;
@@ -212,12 +195,12 @@ abstract class BaseAuthenticate implements EventListenerInterface
     }
 
     /**
-     * Returns whether or not the password stored in the repository for the logged in user
+     * Returns whether the password stored in the repository for the logged in user
      * requires to be rehashed with another algorithm
      *
      * @return bool
      */
-    public function needsPasswordRehash()
+    public function needsPasswordRehash(): bool
     {
         return $this->_needsPasswordRehash;
     }
@@ -227,7 +210,7 @@ abstract class BaseAuthenticate implements EventListenerInterface
      *
      * @param \Cake\Http\ServerRequest $request Request to get authentication information from.
      * @param \Cake\Http\Response $response A response object that can have headers added.
-     * @return array|false Either false on failure, or an array of user data on success.
+     * @return array<string, mixed>|false Either false on failure, or an array of user data on success.
      */
     abstract public function authenticate(ServerRequest $request, Response $response);
 
@@ -236,7 +219,7 @@ abstract class BaseAuthenticate implements EventListenerInterface
      * systems like basic and digest auth.
      *
      * @param \Cake\Http\ServerRequest $request Request object.
-     * @return array|false Either false or an array of user information
+     * @return array<string, mixed>|false Either false or an array of user information
      */
     public function getUser(ServerRequest $request)
     {
@@ -248,7 +231,7 @@ abstract class BaseAuthenticate implements EventListenerInterface
      * can be:
      *
      * - Null - No action taken, AuthComponent should return appropriate response.
-     * - Cake\Http\Response - A response object, which will cause AuthComponent to
+     * - \Cake\Http\Response - A response object, which will cause AuthComponent to
      *   simply return that response.
      *
      * @param \Cake\Http\ServerRequest $request A request object.
@@ -266,16 +249,16 @@ abstract class BaseAuthenticate implements EventListenerInterface
      *
      * - `Auth.afterIdentify` - Fired after a user has been identified using one of
      *   configured authenticate class. The callback function should have signature
-     *   like `afterIdentify(Event $event, array $user)` when `$user` is the
+     *   like `afterIdentify(EventInterface $event, array $user)` when `$user` is the
      *   identified user record.
      *
      * - `Auth.logout` - Fired when AuthComponent::logout() is called. The callback
-     *   function should have signature like `logout(Event $event, array $user)`
+     *   function should have signature like `logout(EventInterface $event, array $user)`
      *   where `$user` is the user about to be logged out.
      *
-     * @return array List of events this class listens to. Defaults to `[]`.
+     * @return array<string, mixed> List of events this class listens to. Defaults to `[]`.
      */
-    public function implementedEvents()
+    public function implementedEvents(): array
     {
         return [];
     }

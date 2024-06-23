@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -23,30 +25,30 @@ class Arguments
     /**
      * Positional argument name map
      *
-     * @var string[]
+     * @var array<int, string>
      */
     protected $argNames;
 
     /**
      * Positional arguments.
      *
-     * @var string[]
+     * @var array<int, string>
      */
     protected $args;
 
     /**
      * Named options
      *
-     * @var array
+     * @var array<string, string|int|bool|null>
      */
     protected $options;
 
     /**
      * Constructor
      *
-     * @param string[] $args Positional arguments
-     * @param array $options Named arguments
-     * @param string[] $argNames List of argument names. Order is expected to be
+     * @param array<int, string> $args Positional arguments
+     * @param array<string, string|int|bool|null> $options Named arguments
+     * @param array<int, string> $argNames List of argument names. Order is expected to be
      *  the same as $args.
      */
     public function __construct(array $args, array $options, array $argNames)
@@ -59,9 +61,9 @@ class Arguments
     /**
      * Get all positional arguments.
      *
-     * @return string[]
+     * @return array<int, string>
      */
-    public function getArguments()
+    public function getArguments(): array
     {
         return $this->args;
     }
@@ -72,7 +74,7 @@ class Arguments
      * @param int $index The argument index to access.
      * @return string|null The argument value or null
      */
-    public function getArgumentAt($index)
+    public function getArgumentAt(int $index): ?string
     {
         if ($this->hasArgumentAt($index)) {
             return $this->args[$index];
@@ -87,7 +89,7 @@ class Arguments
      * @param int $index The argument index to check.
      * @return bool
      */
-    public function hasArgumentAt($index)
+    public function hasArgumentAt(int $index): bool
     {
         return isset($this->args[$index]);
     }
@@ -98,7 +100,7 @@ class Arguments
      * @param string $name The argument name to check.
      * @return bool
      */
-    public function hasArgument($name)
+    public function hasArgument(string $name): bool
     {
         $offset = array_search($name, $this->argNames, true);
         if ($offset === false) {
@@ -114,7 +116,7 @@ class Arguments
      * @param string $name The argument name to check.
      * @return string|null
      */
-    public function getArgument($name)
+    public function getArgument(string $name): ?string
     {
         $offset = array_search($name, $this->argNames, true);
         if ($offset === false || !isset($this->args[$offset])) {
@@ -127,9 +129,9 @@ class Arguments
     /**
      * Get an array of all the options
      *
-     * @return array
+     * @return array<string, string|int|bool|null>
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }
@@ -140,13 +142,9 @@ class Arguments
      * @param string $name The name of the option to check.
      * @return string|int|bool|null The option value or null.
      */
-    public function getOption($name)
+    public function getOption(string $name)
     {
-        if (isset($this->options[$name])) {
-            return $this->options[$name];
-        }
-
-        return null;
+        return $this->options[$name] ?? null;
     }
 
     /**
@@ -155,7 +153,7 @@ class Arguments
      * @param string $name The name of the option to check.
      * @return bool
      */
-    public function hasOption($name)
+    public function hasOption(string $name): bool
     {
         return isset($this->options[$name]);
     }

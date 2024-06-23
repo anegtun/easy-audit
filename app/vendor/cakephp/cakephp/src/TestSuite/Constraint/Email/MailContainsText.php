@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,7 +16,7 @@
  */
 namespace Cake\TestSuite\Constraint\Email;
 
-use Cake\Mailer\Email;
+use Cake\Mailer\Message;
 
 /**
  * MailContainsText
@@ -26,19 +28,19 @@ class MailContainsText extends MailContains
     /**
      * @inheritDoc
      */
-    protected $type = Email::MESSAGE_TEXT;
+    protected $type = Message::MESSAGE_TEXT;
 
     /**
      * Assertion message string
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         if ($this->at) {
-            return sprintf('is in the text message of email #%d', $this->at);
+            return sprintf('is in the text message of email #%d', $this->at) . $this->getAssertedMessages();
         }
 
-        return 'is in the text message of an email';
+        return 'is in the text message of an email' . $this->getAssertedMessages();
     }
 }

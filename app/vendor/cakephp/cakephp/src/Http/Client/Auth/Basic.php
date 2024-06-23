@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -18,7 +20,7 @@ use Cake\Http\Client\Request;
 /**
  * Basic authentication adapter for Cake\Http\Client
  *
- * Generally not directly constructed, but instead used by Cake\Http\Client
+ * Generally not directly constructed, but instead used by {@link \Cake\Http\Client}
  * when $options['auth']['type'] is 'basic'
  */
 class Basic
@@ -31,7 +33,7 @@ class Basic
      * @return \Cake\Http\Client\Request The updated request.
      * @see https://www.ietf.org/rfc/rfc2617.txt
      */
-    public function authentication(Request $request, array $credentials)
+    public function authentication(Request $request, array $credentials): Request
     {
         if (isset($credentials['username'], $credentials['password'])) {
             $value = $this->_generateHeader($credentials['username'], $credentials['password']);
@@ -50,7 +52,7 @@ class Basic
      * @return \Cake\Http\Client\Request The updated request.
      * @see https://www.ietf.org/rfc/rfc2617.txt
      */
-    public function proxyAuthentication(Request $request, array $credentials)
+    public function proxyAuthentication(Request $request, array $credentials): Request
     {
         if (isset($credentials['username'], $credentials['password'])) {
             $value = $this->_generateHeader($credentials['username'], $credentials['password']);
@@ -68,11 +70,8 @@ class Basic
      * @param string $pass Password.
      * @return string
      */
-    protected function _generateHeader($user, $pass)
+    protected function _generateHeader(string $user, string $pass): string
     {
         return 'Basic ' . base64_encode($user . ':' . $pass);
     }
 }
-
-// @deprecated 3.4.0 Add backwards compat alias.
-class_alias('Cake\Http\Client\Auth\Basic', 'Cake\Network\Http\Auth\Basic');

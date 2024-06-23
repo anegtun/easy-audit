@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
@@ -10,7 +11,7 @@
  *
  * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  * @link          https://cakephp.org CakePHP(tm) Project
- * @since         3.9.0
+ * @since         4.0.0
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 namespace Cake\TestSuite\Constraint\Email;
@@ -28,11 +29,11 @@ class MailContainsAttachment extends MailContains
      * @param mixed $other Constraint check
      * @return bool
      */
-    public function matches($other)
+    public function matches($other): bool
     {
-        list($expectedFilename, $expectedFileInfo) = $other;
+        [$expectedFilename, $expectedFileInfo] = $other;
 
-        $messages = $this->getEmails();
+        $messages = $this->getMessages();
         foreach ($messages as $message) {
             foreach ($message->getAttachments() as $filename => $fileInfo) {
                 if ($filename === $expectedFilename && empty($expectedFileInfo)) {
@@ -52,7 +53,7 @@ class MailContainsAttachment extends MailContains
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         if ($this->at) {
             return sprintf('is an attachment of email #%d', $this->at);
@@ -67,9 +68,9 @@ class MailContainsAttachment extends MailContains
      * @param mixed $other Value
      * @return string
      */
-    protected function failureDescription($other)
+    protected function failureDescription($other): string
     {
-        list($expectedFilename) = $other;
+        [$expectedFilename] = $other;
 
         return '\'' . $expectedFilename . '\' ' . $this->toString();
     }

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * MIT License
+ * For full license information, please view the LICENSE file that was distributed with this source code.
+ */
+
 namespace Phinx\Util;
 
 class Literal
@@ -7,12 +12,12 @@ class Literal
     /**
      * @var string The literal's value
      */
-    private $value;
+    protected $value;
 
     /**
      * @param string $value The literal's value
      */
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value = $value;
     }
@@ -20,17 +25,16 @@ class Literal
     /**
      * @return string Returns the literal's value
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->value;
     }
 
     /**
      * @param string $value The literal's value
-     *
      * @return self
      */
-    public static function from($value)
+    public static function from(string $value): Literal
     {
         return new self($value);
     }

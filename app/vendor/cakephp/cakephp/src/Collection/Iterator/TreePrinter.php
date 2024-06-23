@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,14 +16,18 @@
  */
 namespace Cake\Collection\Iterator;
 
+use Cake\Collection\CollectionInterface;
 use Cake\Collection\CollectionTrait;
+use RecursiveIterator;
 use RecursiveIteratorIterator;
 
 /**
  * Iterator for flattening elements in a tree structure while adding some
  * visual markers for their relative position in the tree
+ *
+ * @template-extends \RecursiveIteratorIterator<\RecursiveIterator>
  */
-class TreePrinter extends RecursiveIteratorIterator
+class TreePrinter extends RecursiveIteratorIterator implements CollectionInterface
 {
     use CollectionTrait;
 
@@ -57,16 +63,21 @@ class TreePrinter extends RecursiveIteratorIterator
      * Constructor
      *
      * @param \RecursiveIterator $items The iterator to flatten.
-     * @param string|callable $valuePath The property to extract or a callable to return
+     * @param callable|string $valuePath The property to extract or a callable to return
      * the display value.
-     * @param string|callable $keyPath The property to use as iteration key or a
+     * @param callable|string $keyPath The property to use as iteration key or a
      * callable returning the key value.
      * @param string $spacer The string to use for prefixing the values according to
      * their depth in the tree.
      * @param int $mode Iterator mode.
      */
-    public function __construct($items, $valuePath, $keyPath, $spacer, $mode = RecursiveIteratorIterator::SELF_FIRST)
-    {
+    public function __construct(
+        RecursiveIterator $items,
+        $valuePath,
+        $keyPath,
+        string $spacer,
+        int $mode = RecursiveIteratorIterator::SELF_FIRST
+    ) {
         parent::__construct($items, $mode);
         $this->_value = $this->_propertyExtractor($valuePath);
         $this->_key = $this->_propertyExtractor($keyPath);
@@ -78,6 +89,7 @@ class TreePrinter extends RecursiveIteratorIterator
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         $extractor = $this->_key;
@@ -90,7 +102,7 @@ class TreePrinter extends RecursiveIteratorIterator
      *
      * @return string
      */
-    public function current()
+    public function current(): string
     {
         $extractor = $this->_value;
         $current = $this->_fetchCurrent();
@@ -104,7 +116,7 @@ class TreePrinter extends RecursiveIteratorIterator
      *
      * @return void
      */
-    public function next()
+    public function next(): void
     {
         parent::next();
         $this->_current = null;

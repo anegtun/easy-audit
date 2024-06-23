@@ -1,16 +1,16 @@
 <?php
 /**
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://cakephp.org CakePHP(tm) Project
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
-namespace Debugkit\Test\Fixture;
+namespace DebugKit\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
 
@@ -44,7 +44,7 @@ class RequestsFixture extends TestFixture
         'requested_at' => ['type' => 'datetime', 'null' => false],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id']],
-        ]
+        ],
     ];
 
     /**
@@ -52,15 +52,7 @@ class RequestsFixture extends TestFixture
      *
      * @var array
      */
-    public $records = [
-        [
-            'id' => 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-            'url' => '/tasks/add',
-            'content_type' => 'text/html',
-            'status_code' => 200,
-            'requested_at' => '2014-08-21 7:41:12'
-        ]
-    ];
+    public $records = [];
 
     /**
      * Constructor

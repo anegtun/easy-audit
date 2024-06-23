@@ -18,11 +18,12 @@ class AuditInitializationComponent extends Component {
         foreach($fields as $f) {
             $defaultVal = $this->findDefaultValue($f);
             if($defaultVal) {
-                $value = $this->AuditFieldValues->newEntity();
-                $value->audit_id = $audit_id;
-                $value->form_template_id = $f->form_template_id;
-                $value->form_template_field_id = $f->id;
-                $value->optionset_value_id = $defaultVal->id;
+                $value = $this->AuditFieldValues->newEntity([
+                    'audit_id' => $audit_id,
+                    'form_template_id' => $f->form_template_id,
+                    'form_template_field_id' => $f->id,
+                    'optionset_value_id' => $defaultVal->id
+                ]);
                 $this->AuditFieldValues->save($value);
             }
         }

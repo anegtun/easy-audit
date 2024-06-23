@@ -9,8 +9,8 @@
 
 namespace PHP_CodeSniffer\Standards\Squiz\Sniffs\Classes;
 
-use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 class ClassFileNameSniff implements Sniff
 {
@@ -27,6 +27,7 @@ class ClassFileNameSniff implements Sniff
             T_CLASS,
             T_INTERFACE,
             T_TRAIT,
+            T_ENUM,
         ];
 
     }//end register()

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,7 +16,6 @@
  */
 namespace Cake\Console;
 
-use Cake\Console\Exception\ConsoleException;
 use Cake\Utility\Text;
 use SimpleXMLElement;
 
@@ -72,15 +73,10 @@ class HelpFormatter
      *
      * @param string $alias The alias
      * @return void
-     * @throws \Cake\Console\Exception\ConsoleException When alias is not a string.
      */
-    public function setAlias($alias)
+    public function setAlias(string $alias): void
     {
-        if (is_string($alias)) {
-            $this->_alias = $alias;
-        } else {
-            throw new ConsoleException('Alias must be of type string.');
-        }
+        $this->_alias = $alias;
     }
 
     /**
@@ -89,7 +85,7 @@ class HelpFormatter
      * @param int $width The width of the help output.
      * @return string
      */
-    public function text($width = 72)
+    public function text(int $width = 72): string
     {
         $parser = $this->_parser;
         $out = [];
@@ -114,12 +110,15 @@ class HelpFormatter
                 ]);
             }
             $out[] = '';
-            $out[] = sprintf('To see help on a subcommand use <info>`' . $this->_alias . ' %s [subcommand] --help`</info>', $parser->getCommand());
+            $out[] = sprintf(
+                'To see help on a subcommand use <info>`' . $this->_alias . ' %s [subcommand] --help`</info>',
+                $parser->getCommand()
+            );
             $out[] = '';
         }
 
         $options = $parser->options();
-        if (!empty($options)) {
+        if ($options) {
             $max = $this->_getMaxLength($options) + 8;
             $out[] = '<info>Options:</info>';
             $out[] = '';
@@ -163,7 +162,7 @@ class HelpFormatter
      *
      * @return string
      */
-    protected function _generateUsage()
+    protected function _generateUsage(): string
     {
         $usage = [$this->_alias . ' ' . $this->_parser->getCommand()];
         $subcommands = $this->_parser->subcommands();
@@ -193,26 +192,26 @@ class HelpFormatter
     /**
      * Iterate over a collection and find the longest named thing.
      *
-     * @param array $collection The collection to find a max length of.
+     * @param array<\Cake\Console\ConsoleInputOption|\Cake\Console\ConsoleInputArgument|\Cake\Console\ConsoleInputSubcommand> $collection The collection to find a max length of.
      * @return int
      */
-    protected function _getMaxLength($collection)
+    protected function _getMaxLength(array $collection): int
     {
         $max = 0;
         foreach ($collection as $item) {
-            $max = (strlen($item->name()) > $max) ? strlen($item->name()) : $max;
+            $max = strlen($item->name()) > $max ? strlen($item->name()) : $max;
         }
 
         return $max;
     }
 
     /**
-     * Get the help as an xml string.
+     * Get the help as an XML string.
      *
      * @param bool $string Return the SimpleXml object or a string. Defaults to true.
-     * @return string|\SimpleXMLElement See $string
+     * @return \SimpleXMLElement|string See $string
      */
-    public function xml($string = true)
+    public function xml(bool $string = true)
     {
         $parser = $this->_parser;
         $xml = new SimpleXMLElement('<shell></shell>');
@@ -233,6 +232,6 @@ class HelpFormatter
         }
         $xml->addChild('epilog', $parser->getEpilog());
 
-        return $string ? $xml->asXML() : $xml;
+        return $string ? (string)$xml->asXML() : $xml;
     }
 }

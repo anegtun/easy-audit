@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -15,6 +17,8 @@
 namespace Cake\View\Widget;
 
 use Cake\View\Form\ContextInterface;
+use Cake\View\StringTemplate;
+use function Cake\Core\h;
 
 /**
  * Button input class
@@ -23,8 +27,25 @@ use Cake\View\Form\ContextInterface;
  * If you need to make basic submit inputs with type=submit,
  * use the Basic input widget.
  */
-class ButtonWidget extends BasicWidget
+class ButtonWidget implements WidgetInterface
 {
+    /**
+     * StringTemplate instance.
+     *
+     * @var \Cake\View\StringTemplate
+     */
+    protected $_templates;
+
+    /**
+     * Constructor.
+     *
+     * @param \Cake\View\StringTemplate $templates Templates list.
+     */
+    public function __construct(StringTemplate $templates)
+    {
+        $this->_templates = $templates;
+    }
+
     /**
      * Render a button.
      *
@@ -32,28 +53,42 @@ class ButtonWidget extends BasicWidget
      *
      * - `text` The text of the button. Unlike all other form controls, buttons
      *   do not escape their contents by default.
-     * - `escape` Set to true to enable escaping on all attributes.
+     * - `escapeTitle` Set to false to disable escaping of button text.
+     * - `escape` Set to false to disable escaping of attributes.
      * - `type` The button type defaults to 'submit'.
      *
      * Any other keys provided in $data will be converted into HTML attributes.
      *
-     * @param array $data The data to build a button with.
+     * @param array<string, mixed> $data The data to build a button with.
      * @param \Cake\View\Form\ContextInterface $context The current form context.
      * @return string
      */
-    public function render(array $data, ContextInterface $context)
+    public function render(array $data, ContextInterface $context): string
     {
         $data += [
             'text' => '',
             'type' => 'submit',
-            'escape' => false,
+            'escapeTitle' => true,
+            'escape' => true,
             'templateVars' => [],
         ];
 
         return $this->_templates->format('button', [
-            'text' => $data['escape'] ? h($data['text']) : $data['text'],
+            'text' => $data['escapeTitle'] ? h($data['text']) : $data['text'],
             'templateVars' => $data['templateVars'],
-            'attrs' => $this->_templates->formatAttributes($data, ['text']),
+            'attrs' => $this->_templates->formatAttributes($data, ['text', 'escapeTitle']),
         ]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function secureFields(array $data): array
+    {
+        if (!isset($data['name']) || $data['name'] === '') {
+            return [];
+        }
+
+        return [$data['name']];
     }
 }

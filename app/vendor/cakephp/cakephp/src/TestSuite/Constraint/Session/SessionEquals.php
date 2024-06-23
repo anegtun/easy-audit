@@ -1,19 +1,21 @@
 <?php
+declare(strict_types=1);
+
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  * @since         3.7.0
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace Cake\TestSuite\Constraint\Session;
 
-use PHPUnit\Framework\AssertionFailedError;
+use Cake\Utility\Hash;
 use PHPUnit\Framework\Constraint\Constraint;
 
 /**
@@ -24,35 +26,17 @@ use PHPUnit\Framework\Constraint\Constraint;
 class SessionEquals extends Constraint
 {
     /**
-     * @var \Cake\Http\Session
-     */
-    protected $session;
-
-    /**
      * @var string
      */
     protected $path;
 
     /**
-     * @var mixed
-     */
-    protected $value;
-
-    /**
      * Constructor
      *
-     * @param \Cake\Http\Session $session Session
      * @param string $path Session Path
      */
-    public function __construct($session, $path)
+    public function __construct(string $path)
     {
-        parent::__construct();
-
-        if (!$session) {
-            throw new AssertionFailedError('There is no stored session data. Perhaps you need to run a request?');
-        }
-
-        $this->session = $session;
         $this->path = $path;
     }
 
@@ -62,9 +46,13 @@ class SessionEquals extends Constraint
      * @param mixed $other Value to compare with
      * @return bool
      */
-    public function matches($other)
+    public function matches($other): bool
     {
-        return $this->session->read($this->path) === $other;
+        // Server::run calls Session::close at the end of the request.
+        // Which means, that we cannot use Session object here to access the session data.
+        // Call to Session::read will start new session (and will erase the data).
+        /** @psalm-suppress InvalidScalarArgument */
+        return Hash::get($_SESSION, $this->path) === $other;
     }
 
     /**
@@ -72,7 +60,7 @@ class SessionEquals extends Constraint
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         return sprintf('is in session path \'%s\'', $this->path);
     }

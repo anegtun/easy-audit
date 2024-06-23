@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -15,55 +17,59 @@
 namespace Cake\I18n;
 
 use Cake\Chronos\ChronosInterface;
-use DateTimeInterface;
+use Cake\Chronos\DifferenceFormatterInterface;
 
 /**
  * Helper class for formatting relative dates & times.
  *
  * @internal
  */
-class RelativeTimeFormatter
+class RelativeTimeFormatter implements DifferenceFormatterInterface
 {
     /**
      * Get the difference in a human readable format.
      *
      * @param \Cake\Chronos\ChronosInterface $date The datetime to start with.
      * @param \Cake\Chronos\ChronosInterface|null $other The datetime to compare against.
-     * @param bool $absolute removes time difference modifiers ago, after, etc
-     * @return string The difference between the two days in a human readable format
+     * @param bool $absolute Removes time difference modifiers ago, after, etc.
+     * @return string The difference between the two days in a human readable format.
      * @see \Cake\Chronos\ChronosInterface::diffForHumans
      */
-    public function diffForHumans(ChronosInterface $date, ChronosInterface $other = null, $absolute = false)
-    {
+    public function diffForHumans(
+        ChronosInterface $date,
+        ?ChronosInterface $other = null,
+        bool $absolute = false
+    ): string {
         $isNow = $other === null;
         if ($isNow) {
             $other = $date->now($date->getTimezone());
         }
+        /** @psalm-suppress PossiblyNullArgument */
         $diffInterval = $date->diff($other);
 
         switch (true) {
-            case ($diffInterval->y > 0):
+            case $diffInterval->y > 0:
                 $count = $diffInterval->y;
                 $message = __dn('cake', '{0} year', '{0} years', $count, $count);
                 break;
-            case ($diffInterval->m > 0):
+            case $diffInterval->m > 0:
                 $count = $diffInterval->m;
                 $message = __dn('cake', '{0} month', '{0} months', $count, $count);
                 break;
-            case ($diffInterval->d > 0):
+            case $diffInterval->d > 0:
                 $count = $diffInterval->d;
-                if ($count >= ChronosInterface::DAYS_PER_WEEK) {
-                    $count = (int)($count / ChronosInterface::DAYS_PER_WEEK);
+                if ($count >= I18nDateTimeInterface::DAYS_PER_WEEK) {
+                    $count = (int)($count / I18nDateTimeInterface::DAYS_PER_WEEK);
                     $message = __dn('cake', '{0} week', '{0} weeks', $count, $count);
                 } else {
                     $message = __dn('cake', '{0} day', '{0} days', $count, $count);
                 }
                 break;
-            case ($diffInterval->h > 0):
+            case $diffInterval->h > 0:
                 $count = $diffInterval->h;
                 $message = __dn('cake', '{0} hour', '{0} hours', $count, $count);
                 break;
-            case ($diffInterval->i > 0):
+            case $diffInterval->i > 0:
                 $count = $diffInterval->i;
                 $message = __dn('cake', '{0} minute', '{0} minutes', $count, $count);
                 break;
@@ -86,16 +92,16 @@ class RelativeTimeFormatter
     /**
      * Format a into a relative timestring.
      *
-     * @param \DateTimeInterface $time The time instance to format.
-     * @param array $options Array of options.
+     * @param \Cake\I18n\I18nDateTimeInterface $time The time instance to format.
+     * @param array<string, mixed> $options Array of options.
      * @return string Relative time string.
      * @see \Cake\I18n\Time::timeAgoInWords()
      */
-    public function timeAgoInWords(DateTimeInterface $time, array $options = [])
+    public function timeAgoInWords(I18nDateTimeInterface $time, array $options = []): string
     {
         $options = $this->_options($options, FrozenTime::class);
-        if ($options['timezone'] && $time instanceof ChronosInterface) {
-            $time = $time->timezone($options['timezone']);
+        if ($options['timezone']) {
+            $time = $time->setTimezone($options['timezone']);
         }
 
         $now = $options['from']->format('U');
@@ -119,7 +125,7 @@ class RelativeTimeFormatter
         }
 
         $diffData = $this->_diffData($futureTime, $pastTime, $backwards, $options);
-        list($fNum, $fWord, $years, $months, $weeks, $days, $hours, $minutes, $seconds) = array_values($diffData);
+        [$fNum, $fWord, $years, $months, $weeks, $days, $hours, $minutes, $seconds] = array_values($diffData);
 
         $relativeDate = [];
         if ($fNum >= 1 && $years > 0) {
@@ -180,29 +186,47 @@ class RelativeTimeFormatter
     /**
      * Calculate the data needed to format a relative difference string.
      *
-     * @param int|string $futureTime The timestamp from the future.
-     * @param int|string $pastTime The timestamp from the past.
-     * @param bool $backwards Whether or not the difference was backwards.
-     * @param array $options An array of options.
+     * @param string|int $futureTime The timestamp from the future.
+     * @param string|int $pastTime The timestamp from the past.
+     * @param bool $backwards Whether the difference was backwards.
+     * @param array<string, mixed> $options An array of options.
      * @return array An array of values.
      */
-    protected function _diffData($futureTime, $pastTime, $backwards, $options)
+    protected function _diffData($futureTime, $pastTime, bool $backwards, $options): array
     {
-        $diff = (int)$futureTime - (int)$pastTime;
+        $futureTime = (int)$futureTime;
+        $pastTime = (int)$pastTime;
+        $diff = $futureTime - $pastTime;
 
         // If more than a week, then take into account the length of months
         if ($diff >= 604800) {
-            list($future['H'], $future['i'], $future['s'], $future['d'], $future['m'], $future['Y']) = explode('/', date('H/i/s/d/m/Y', $futureTime));
+            $future = [];
+            [
+                $future['H'],
+                $future['i'],
+                $future['s'],
+                $future['d'],
+                $future['m'],
+                $future['Y'],
+            ] = explode('/', date('H/i/s/d/m/Y', $futureTime));
 
-            list($past['H'], $past['i'], $past['s'], $past['d'], $past['m'], $past['Y']) = explode('/', date('H/i/s/d/m/Y', $pastTime));
+            $past = [];
+            [
+                $past['H'],
+                $past['i'],
+                $past['s'],
+                $past['d'],
+                $past['m'],
+                $past['Y'],
+            ] = explode('/', date('H/i/s/d/m/Y', $pastTime));
             $weeks = $days = $hours = $minutes = $seconds = 0;
 
             $years = (int)$future['Y'] - (int)$past['Y'];
-            $months = (int)$future['m'] + ((12 * $years) - (int)$past['m']);
+            $months = (int)$future['m'] + (12 * $years) - (int)$past['m'];
 
             if ($months >= 12) {
                 $years = floor($months / 12);
-                $months -= ($years * 12);
+                $months -= $years * 12;
             }
             if ((int)$future['m'] < (int)$past['m'] && (int)$future['Y'] - (int)$past['Y'] === 1) {
                 $years--;
@@ -215,17 +239,17 @@ class RelativeTimeFormatter
                 $daysInFutureMonth = (int)date('t', mktime(0, 0, 0, (int)$future['m'] - 1, 1, (int)$future['Y']));
 
                 if (!$backwards) {
-                    $days = ($daysInPastMonth - (int)$past['d']) + (int)$future['d'];
+                    $days = $daysInPastMonth - (int)$past['d'] + (int)$future['d'];
                 } else {
-                    $days = ($daysInFutureMonth - (int)$past['d']) + (int)$future['d'];
+                    $days = $daysInFutureMonth - (int)$past['d'] + (int)$future['d'];
                 }
 
-                if ($future['m'] != $past['m']) {
+                if ($future['m'] !== $past['m']) {
                     $months--;
                 }
             }
 
-            if (!$months && $years >= 1 && $diff < ($years * 31536000)) {
+            if (!$months && $years >= 1 && $diff < $years * 31536000) {
                 $months = 11;
                 $years--;
             }
@@ -237,19 +261,19 @@ class RelativeTimeFormatter
 
             if ($days >= 7) {
                 $weeks = floor($days / 7);
-                $days -= ($weeks * 7);
+                $days -= $weeks * 7;
             }
         } else {
             $years = $months = $weeks = 0;
             $days = floor($diff / 86400);
 
-            $diff -= ($days * 86400);
+            $diff -= $days * 86400;
 
             $hours = floor($diff / 3600);
-            $diff -= ($hours * 3600);
+            $diff -= $hours * 3600;
 
             $minutes = floor($diff / 60);
-            $diff -= ($minutes * 60);
+            $diff -= $minutes * 60;
             $seconds = $diff;
         }
 
@@ -268,24 +292,38 @@ class RelativeTimeFormatter
             $fWord = $options['accuracy']['minute'];
         }
 
-        $fNum = str_replace(['year', 'month', 'week', 'day', 'hour', 'minute', 'second'], [1, 2, 3, 4, 5, 6, 7], $fWord);
+        $fNum = str_replace(
+            ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'],
+            ['1', '2', '3', '4', '5', '6', '7'],
+            $fWord
+        );
 
-        return [$fNum, $fWord, $years, $months, $weeks, $days, $hours, $minutes, $seconds];
+        return [
+            $fNum,
+            $fWord,
+            (int)$years,
+            (int)$months,
+            (int)$weeks,
+            (int)$days,
+            (int)$hours,
+            (int)$minutes,
+            (int)$seconds,
+        ];
     }
 
     /**
      * Format a into a relative date string.
      *
-     * @param \DateTimeInterface $date The date to format.
-     * @param array $options Array of options.
+     * @param \Cake\I18n\I18nDateTimeInterface $date The date to format.
+     * @param array<string, mixed> $options Array of options.
      * @return string Relative date string.
      * @see \Cake\I18n\Date::timeAgoInWords()
      */
-    public function dateAgoInWords(DateTimeInterface $date, array $options = [])
+    public function dateAgoInWords(I18nDateTimeInterface $date, array $options = []): string
     {
         $options = $this->_options($options, FrozenDate::class);
-        if ($options['timezone'] && $date instanceof ChronosInterface) {
-            $date = $date->timezone($options['timezone']);
+        if ($options['timezone']) {
+            $date = $date->setTimezone($options['timezone']);
         }
 
         $now = $options['from']->format('U');
@@ -309,7 +347,7 @@ class RelativeTimeFormatter
         }
 
         $diffData = $this->_diffData($futureTime, $pastTime, $backwards, $options);
-        list($fNum, $fWord, $years, $months, $weeks, $days) = array_values($diffData);
+        [$fNum, $fWord, $years, $months, $weeks, $days] = array_values($diffData);
 
         $relativeDate = [];
         if ($fNum >= 1 && $years > 0) {
@@ -355,11 +393,12 @@ class RelativeTimeFormatter
     /**
      * Build the options for relative date formatting.
      *
-     * @param array $options The options provided by the user.
+     * @param array<string, mixed> $options The options provided by the user.
      * @param string $class The class name to use for defaults.
-     * @return array Options with defaults applied.
+     * @return array<string, mixed> Options with defaults applied.
+     * @psalm-param class-string<\Cake\I18n\FrozenDate>|class-string<\Cake\I18n\FrozenTime> $class
      */
-    protected function _options($options, $class)
+    protected function _options(array $options, string $class): array
     {
         $options += [
             'from' => $class::now(),

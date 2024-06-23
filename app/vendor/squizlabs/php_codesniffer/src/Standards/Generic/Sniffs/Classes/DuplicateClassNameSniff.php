@@ -9,8 +9,8 @@
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\Classes;
 
-use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 
 class DuplicateClassNameSniff implements Sniff
 {
@@ -53,6 +53,7 @@ class DuplicateClassNameSniff implements Sniff
             T_CLASS,
             T_INTERFACE,
             T_TRAIT,
+            T_ENUM,
             T_NAMESPACE,
             T_CLOSE_TAG,
         ];

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -21,6 +23,8 @@ use RecursiveIterator;
  * An iterator that can be used as an argument for other iterators that require
  * a RecursiveIterator but do not want children. This iterator will
  * always behave as having no nested items.
+ *
+ * @template-implements \RecursiveIterator<mixed, mixed>
  */
 class NoChildrenIterator extends Collection implements RecursiveIterator
 {
@@ -29,18 +33,18 @@ class NoChildrenIterator extends Collection implements RecursiveIterator
      *
      * @return bool
      */
-    public function hasChildren()
+    public function hasChildren(): bool
     {
         return false;
     }
 
     /**
-     * Returns null as there are no children for this iteration level
+     * Returns a self instance without any elements.
      *
-     * @return null
+     * @return \RecursiveIterator
      */
-    public function getChildren()
+    public function getChildren(): RecursiveIterator
     {
-        return null;
+        return new static([]);
     }
 }

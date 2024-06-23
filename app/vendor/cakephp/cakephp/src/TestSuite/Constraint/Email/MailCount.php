@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -27,9 +29,9 @@ class MailCount extends MailConstraintBase
      * @param mixed $other Constraint check
      * @return bool
      */
-    public function matches($other)
+    public function matches($other): bool
     {
-        return count($this->getEmails()) === $other;
+        return count($this->getMessages()) === $other;
     }
 
     /**
@@ -37,7 +39,7 @@ class MailCount extends MailConstraintBase
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         return 'emails were sent';
     }

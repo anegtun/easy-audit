@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -22,7 +24,7 @@ namespace Cake\TestSuite\Constraint\Email;
 class MailSentFrom extends MailSentWith
 {
     /**
-     * @inheritDoc
+     * @var string
      */
     protected $method = 'from';
 
@@ -31,7 +33,7 @@ class MailSentFrom extends MailSentWith
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         if ($this->at) {
             return sprintf('sent email #%d', $this->at);

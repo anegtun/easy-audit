@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -18,16 +20,18 @@ use Cake\Console\Exception\MissingShellException;
 use Cake\Console\Exception\StopException;
 use Cake\Core\App;
 use Cake\Core\Configure;
-use Cake\Core\Exception\Exception;
 use Cake\Core\Plugin;
 use Cake\Log\Log;
 use Cake\Shell\Task\CommandTask;
 use Cake\Utility\Inflector;
+use function Cake\Core\pluginSplit;
 
 /**
- * Shell dispatcher handles dispatching cli commands.
+ * Shell dispatcher handles dispatching CLI commands.
  *
  * Consult /bin/cake.php for how this class is used in practice.
+ *
+ * @deprecated 3.6.0 ShellDispatcher and Shell will be removed in 5.0
  */
 class ShellDispatcher
 {
@@ -41,7 +45,7 @@ class ShellDispatcher
     /**
      * List of connected aliases.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected static $_aliases = [];
 
@@ -54,10 +58,10 @@ class ShellDispatcher
      * @param array $args the argv from PHP
      * @param bool $bootstrap Should the environment be bootstrapped.
      */
-    public function __construct($args = [], $bootstrap = true)
+    public function __construct(array $args = [], bool $bootstrap = true)
     {
         set_time_limit(0);
-        $this->args = (array)$args;
+        $this->args = $args;
 
         $this->addShortPluginAliases();
 
@@ -91,16 +95,16 @@ class ShellDispatcher
      *
      * @param string $short The new short name for the shell.
      * @param string|null $original The original full name for the shell.
-     * @return string|false The aliased class name, or false if the alias does not exist
+     * @return string|null The aliased class name, or null if the alias does not exist
      */
-    public static function alias($short, $original = null)
+    public static function alias(string $short, ?string $original = null): ?string
     {
         $short = Inflector::camelize($short);
         if ($original) {
             static::$_aliases[$short] = $original;
         }
 
-        return isset(static::$_aliases[$short]) ? static::$_aliases[$short] : false;
+        return static::$_aliases[$short] ?? null;
     }
 
     /**
@@ -108,7 +112,7 @@ class ShellDispatcher
      *
      * @return void
      */
-    public static function resetAliases()
+    public static function resetAliases(): void
     {
         static::$_aliases = [];
     }
@@ -120,7 +124,7 @@ class ShellDispatcher
      * @param array $extra Extra parameters
      * @return int The exit code of the shell process.
      */
-    public static function run($argv, $extra = [])
+    public static function run(array $argv, array $extra = []): int
     {
         $dispatcher = new ShellDispatcher($argv);
 
@@ -131,14 +135,11 @@ class ShellDispatcher
      * Defines current working environment.
      *
      * @return void
-     * @throws \Cake\Core\Exception\Exception
+     * @throws \Cake\Core\Exception\CakeException
      */
-    protected function _initEnvironment()
+    protected function _initEnvironment(): void
     {
-        if (!$this->_bootstrap()) {
-            $message = "Unable to load CakePHP core.\nMake sure Cake exists in " . CAKE_CORE_INCLUDE_PATH;
-            throw new Exception($message);
-        }
+        $this->_bootstrap();
 
         if (function_exists('ini_set')) {
             ini_set('html_errors', '0');
@@ -152,15 +153,13 @@ class ShellDispatcher
     /**
      * Initializes the environment and loads the CakePHP core.
      *
-     * @return bool Success.
+     * @return void
      */
     protected function _bootstrap()
     {
         if (!Configure::read('App.fullBaseUrl')) {
             Configure::write('App.fullBaseUrl', 'http://localhost');
         }
-
-        return true;
     }
 
     /**
@@ -172,10 +171,11 @@ class ShellDispatcher
      * @param array $extra Extra parameters that you can manually pass to the Shell
      * to be dispatched.
      * Built-in extra parameter is :
+     *
      * - `requested` : if used, will prevent the Shell welcome message to be displayed
-     * @return int The cli command exit code. 0 is success.
+     * @return int The CLI command exit code. 0 is success.
      */
-    public function dispatch($extra = [])
+    public function dispatch(array $extra = []): int
     {
         try {
             $result = $this->_dispatch($extra);
@@ -183,12 +183,14 @@ class ShellDispatcher
             return $e->getCode();
         }
         if ($result === null || $result === true) {
+            /** @psalm-suppress DeprecatedClass */
             return Shell::CODE_SUCCESS;
         }
         if (is_int($result)) {
             return $result;
         }
 
+        /** @psalm-suppress DeprecatedClass */
         return Shell::CODE_ERROR;
     }
 
@@ -198,35 +200,36 @@ class ShellDispatcher
      * @param array $extra Extra parameters that you can manually pass to the Shell
      * to be dispatched.
      * Built-in extra parameter is :
+     *
      * - `requested` : if used, will prevent the Shell welcome message to be displayed
-     * @return bool|int|null
+     * @return int|bool|null
      * @throws \Cake\Console\Exception\MissingShellMethodException
      */
-    protected function _dispatch($extra = [])
+    protected function _dispatch(array $extra = [])
     {
-        $shell = $this->shiftArgs();
+        $shellName = $this->shiftArgs();
 
-        if (!$shell) {
+        if (!$shellName) {
             $this->help();
 
             return false;
         }
-        if (in_array($shell, ['help', '--help', '-h'])) {
+        if (in_array($shellName, ['help', '--help', '-h'], true)) {
             $this->help();
 
             return true;
         }
-        if (in_array($shell, ['version', '--version'])) {
+        if (in_array($shellName, ['version', '--version'], true)) {
             $this->version();
 
             return true;
         }
 
-        $Shell = $this->findShell($shell);
+        $shell = $this->findShell($shellName);
 
-        $Shell->initialize();
+        $shell->initialize();
 
-        return $Shell->runCommand($this->args, true, $extra);
+        return $shell->runCommand($this->args, true, $extra);
     }
 
     /**
@@ -237,7 +240,7 @@ class ShellDispatcher
      *
      * @return array the resultant list of aliases
      */
-    public function addShortPluginAliases()
+    public function addShortPluginAliases(): array
     {
         $plugins = Plugin::loaded();
 
@@ -275,7 +278,6 @@ class ShellDispatcher
 
             $other = static::alias($shell);
             if ($other) {
-                $other = $aliases[$shell];
                 if ($other !== $plugin) {
                     Log::write(
                         'debug',
@@ -314,7 +316,7 @@ class ShellDispatcher
      * @return \Cake\Console\Shell A shell instance.
      * @throws \Cake\Console\Exception\MissingShellException when errors are encountered.
      */
-    public function findShell($shell)
+    public function findShell(string $shell): Shell
     {
         $className = $this->_shellExists($shell);
         if (!$className) {
@@ -337,7 +339,7 @@ class ShellDispatcher
      * @param string $shell Optionally the name of a plugin or alias
      * @return string Shell name with plugin prefix
      */
-    protected function _handleAlias($shell)
+    protected function _handleAlias(string $shell): string
     {
         $aliased = static::alias($shell);
         if ($aliased) {
@@ -353,16 +355,16 @@ class ShellDispatcher
      * Check if a shell class exists for the given name.
      *
      * @param string $shell The shell name to look for.
-     * @return string|false Either the classname or false.
+     * @return string|null Either the classname or null.
      */
-    protected function _shellExists($shell)
+    protected function _shellExists(string $shell): ?string
     {
         $class = App::className($shell, 'Shell', 'Shell');
-        if (class_exists($class)) {
+        if ($class) {
             return $class;
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -372,11 +374,12 @@ class ShellDispatcher
      * @param string $shortName The plugin-prefixed shell name
      * @return \Cake\Console\Shell A shell instance.
      */
-    protected function _createShell($className, $shortName)
+    protected function _createShell(string $className, string $shortName): Shell
     {
-        list($plugin) = pluginSplit($shortName);
+        [$plugin] = pluginSplit($shortName);
+        /** @var \Cake\Console\Shell $instance */
         $instance = new $className();
-        $instance->plugin = trim($plugin, '.');
+        $instance->plugin = trim((string)$plugin, '.');
 
         return $instance;
     }
@@ -396,10 +399,13 @@ class ShellDispatcher
      *
      * @return void
      */
-    public function help()
+    public function help(): void
     {
-        $this->args = array_merge(['command_list'], $this->args);
-        $this->dispatch();
+        trigger_error(
+            'Console help cannot be generated from Shell classes anymore. ' .
+            'Upgrade your application to use Cake\Console\CommandRunner instead.',
+            E_USER_WARNING
+        );
     }
 
     /**
@@ -407,9 +413,12 @@ class ShellDispatcher
      *
      * @return void
      */
-    public function version()
+    public function version(): void
     {
-        $this->args = array_merge(['command_list', '--version'], $this->args);
-        $this->dispatch();
+        trigger_error(
+            'Version information cannot be generated from Shell classes anymore. ' .
+            'Upgrade your application to use Cake\Console\CommandRunner instead.',
+            E_USER_WARNING
+        );
     }
 }

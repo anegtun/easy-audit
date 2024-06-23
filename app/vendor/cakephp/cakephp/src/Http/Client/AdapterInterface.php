@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -13,16 +15,19 @@
  */
 namespace Cake\Http\Client;
 
-use Cake\Http\Client\Request;
+use Psr\Http\Message\RequestInterface;
 
+/**
+ * Http client adapter interface.
+ */
 interface AdapterInterface
 {
     /**
      * Send a request and get a response back.
      *
-     * @param \Cake\Http\Client\Request $request The request object to send.
-     * @param array $options Array of options for the stream.
-     * @return \Cake\Http\Client\Response[] Array of populated Response objects
+     * @param \Psr\Http\Message\RequestInterface $request The request object to send.
+     * @param array<string, mixed> $options Array of options for the stream.
+     * @return array<\Cake\Http\Client\Response> Array of populated Response objects
      */
-    public function send(Request $request, array $options);
+    public function send(RequestInterface $request, array $options): array;
 }

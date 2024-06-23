@@ -5,7 +5,7 @@ use Cake\ORM\Table;
 
 class AuditMeasureValuesTable extends Table {
 
-    public function initialize(array $config) {
+    public function initialize(array $config): void {
         $this->setTable('easy_audit_audit_measure_values');
 
         $this->belongsTo('Audits')
@@ -16,14 +16,15 @@ class AuditMeasureValuesTable extends Table {
     public function clone($template_id, $source_audit_id, $target_audit_id) {
         $values = $this->find()->where(['form_template_id' => $template_id, 'audit_id' => $source_audit_id]);
         foreach($values as $v) {
-            $new_value = $this->newEntity();
-            $new_value->audit_id = $target_audit_id;
-            $new_value->form_template_id = $v->form_template_id;
-            $new_value->item = $v->item;
-            $new_value->unit = $v->unit;
-            $new_value->expected = $v->expected;
-            $new_value->actual = $v->actual;
-            $new_value->threshold = $v->threshold;
+            $new_value = $this->newEntity([
+                'audit_id' => $target_audit_id,
+                'form_template_id' => $v->form_template_id,
+                'item' => $v->item,
+                'unit' => $v->unit,
+                'expected' => $v->expected,
+                'actual' => $v->actual,
+                'threshold' => $v->threshold
+            ]);
             $new_value = $this->save($new_value);
         }
         return true;
@@ -33,14 +34,15 @@ class AuditMeasureValuesTable extends Table {
         $this->deleteAll(['audit_id' => $audit_id, 'form_template_id' => $template_id]);
         foreach($values as $v) {
             if(!empty($v['item']) || !empty($v['expected']) || !empty($v['actual']) || !empty($v['threshold'])) {
-                $field_value = $this->newEntity();
-                $field_value->audit_id = $audit_id;
-                $field_value->form_template_id = $template_id;
-                $field_value->item = $v['item'];
-                $field_value->unit = $v['unit'];
-                $field_value->expected = $v['expected'];
-                $field_value->actual = $v['actual'];
-                $field_value->threshold = $v['threshold'];
+                $field_value = $this->newEntity([
+                    'audit_id' => $audit_id,
+                    'form_template_id' => $template_id,
+                    'item' => $v['item'],
+                    'unit' => $v['unit'],
+                    'expected' => $v['expected'],
+                    'actual' => $v['actual'],
+                    'threshold' => $v['threshold']
+                ]);
                 $this->save($field_value);
             }
         }

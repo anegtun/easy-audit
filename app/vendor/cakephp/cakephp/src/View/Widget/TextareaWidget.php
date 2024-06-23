@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -15,15 +17,29 @@
 namespace Cake\View\Widget;
 
 use Cake\View\Form\ContextInterface;
+use function Cake\Core\h;
 
 /**
  * Input widget class for generating a textarea control.
  *
- * This class is intended as an internal implementation detail
- * of Cake\View\Helper\FormHelper and is not intended for direct use.
+ * This class is usually used internally by `Cake\View\Helper\FormHelper`,
+ * it but can be used to generate standalone text areas.
  */
 class TextareaWidget extends BasicWidget
 {
+    /**
+     * Data defaults.
+     *
+     * @var array<string, mixed>
+     */
+    protected $defaults = [
+        'val' => '',
+        'name' => '',
+        'escape' => true,
+        'rows' => 5,
+        'templateVars' => [],
+    ];
+
     /**
      * Render a text area form widget.
      *
@@ -35,19 +51,20 @@ class TextareaWidget extends BasicWidget
      *
      * All other keys will be converted into HTML attributes.
      *
-     * @param array $data The data to build a textarea with.
+     * @param array<string, mixed> $data The data to build a textarea with.
      * @param \Cake\View\Form\ContextInterface $context The current form context.
      * @return string HTML elements.
      */
-    public function render(array $data, ContextInterface $context)
+    public function render(array $data, ContextInterface $context): string
     {
-        $data += [
-            'val' => '',
-            'name' => '',
-            'escape' => true,
-            'rows' => 5,
-            'templateVars' => [],
-        ];
+        $data += $this->mergeDefaults($data, $context);
+
+        if (
+            !array_key_exists('maxlength', $data)
+            && isset($data['fieldName'])
+        ) {
+            $data = $this->setMaxLength($data, $context, $data['fieldName']);
+        }
 
         return $this->_templates->format('textarea', [
             'name' => $data['name'],

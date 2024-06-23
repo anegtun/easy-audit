@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -12,16 +14,12 @@
  */
 namespace Cake\Network\Exception;
 
-use Cake\Core\Exception\Exception;
+use Cake\Core\Exception\CakeException;
 
 /**
  * Exception class for Socket. This exception will be thrown from Socket, Email, HttpSocket
  * SmtpTransport, MailTransport and HttpResponse when it encounters an error.
  */
-class SocketException extends Exception
+class SocketException extends CakeException
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected $_defaultCode = 0;
 }

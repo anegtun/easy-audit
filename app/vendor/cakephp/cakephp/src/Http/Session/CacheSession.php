@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Cache Session save handler. Allows saving session information into Cache.
  *
@@ -30,14 +32,14 @@ class CacheSession implements SessionHandlerInterface
     /**
      * Options for this session engine
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_options = [];
 
     /**
      * Constructor.
      *
-     * @param array $config The configuration to use for this engine
+     * @param array<string, mixed> $config The configuration to use for this engine
      * It requires the key 'config' which is the name of the Cache config to use for
      * storing the session
      * @throws \InvalidArgumentException if the 'config' key is not provided
@@ -53,11 +55,11 @@ class CacheSession implements SessionHandlerInterface
     /**
      * Method called on open of a database session.
      *
-     * @param string $savePath The path where to store/retrieve the session.
+     * @param string $path The path where to store/retrieve the session.
      * @param string $name The session name.
      * @return bool Success
      */
-    public function open($savePath, $name)
+    public function open($path, $name): bool
     {
         return true;
     }
@@ -67,7 +69,7 @@ class CacheSession implements SessionHandlerInterface
      *
      * @return bool Success
      */
-    public function close()
+    public function close(): bool
     {
         return true;
     }
@@ -76,13 +78,14 @@ class CacheSession implements SessionHandlerInterface
      * Method used to read from a cache session.
      *
      * @param string $id ID that uniquely identifies session in cache.
-     * @return string Session data or empty string if it does not exist.
+     * @return string|false Session data or false if it does not exist.
      */
+    #[\ReturnTypeWillChange]
     public function read($id)
     {
         $value = Cache::read($id, $this->_options['config']);
 
-        if (empty($value)) {
+        if ($value === null) {
             return '';
         }
 
@@ -96,13 +99,13 @@ class CacheSession implements SessionHandlerInterface
      * @param string $data The data to be saved.
      * @return bool True for successful write, false otherwise.
      */
-    public function write($id, $data)
+    public function write($id, $data): bool
     {
         if (!$id) {
             return false;
         }
 
-        return (bool)Cache::write($id, $data, $this->_options['config']);
+        return Cache::write($id, $data, $this->_options['config']);
     }
 
     /**
@@ -111,7 +114,7 @@ class CacheSession implements SessionHandlerInterface
      * @param string $id ID that uniquely identifies session in cache.
      * @return bool Always true.
      */
-    public function destroy($id)
+    public function destroy($id): bool
     {
         Cache::delete($id, $this->_options['config']);
 
@@ -119,15 +122,14 @@ class CacheSession implements SessionHandlerInterface
     }
 
     /**
-     * Helper function called on gc for cache sessions.
+     * No-op method. Always returns 0 since cache engine don't have garbage collection.
      *
      * @param int $maxlifetime Sessions that have not updated for the last maxlifetime seconds will be removed.
-     * @return bool Always true.
+     * @return int|false
      */
+    #[\ReturnTypeWillChange]
     public function gc($maxlifetime)
     {
-        Cache::gc($this->_options['config'], time() - $maxlifetime);
-
-        return true;
+        return 0;
     }
 }

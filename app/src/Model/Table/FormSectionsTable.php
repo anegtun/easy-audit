@@ -6,7 +6,7 @@ use Cake\ORM\Table;
 
 class FormSectionsTable extends Table {
     
-    public function initialize(array $config) {
+    public function initialize(array $config): void {
         $this->setTable('easy_audit_form_sections');
 
         $this->belongsTo('Forms')
@@ -18,11 +18,12 @@ class FormSectionsTable extends Table {
         $sections = $this->find()->where(['form_id' => $source_form_id]);
         $sections_id_map = [];
         foreach($sections as $s) {
-            $new_section = $this->newEntity();
-            $new_section->form_id = $target_form_id;
-            $new_section->position = $s->position;
-            $new_section->name = $s->name;
-            $new_section->weigth = $s->weigth;
+            $new_section = $this->newEntity([
+                'form_id' => $target_form_id,
+                'position' => $s->position,
+                'name' => $s->name,
+                'weigth' => $s->weigth
+            ]);
             $new_section = $this->save($new_section);
             $sections_id_map[$s->id] = $new_section->id;
         }

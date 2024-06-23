@@ -1,17 +1,20 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  * @copyright     Copyright (c) Brian Nesbitt <brian@nesbot.com>
- * @link          http://cakephp.org CakePHP(tm) Project
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @link          https://cakephp.org CakePHP(tm) Project
+ * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace Cake\Chronos;
 
+use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;
 
@@ -28,10 +31,11 @@ use DateTimeZone;
  * @property-read int $hour
  * @property-read int $minute
  * @property-read int $second
- * @property-read int $timestamp seconds since the Unix Epoch
- * @property-read DateTimeZone $timezone the current timezone
- * @property-read DateTimeZone $tz alias of timezone
  * @property-read int $micro
+ * @property-read int $microsecond
+ * @property-read int $timestamp seconds since the Unix Epoch
+ * @property-read \DateTimeZone $timezone the current timezone
+ * @property-read \DateTimeZone $tz alias of timezone
  * @property-read int $dayOfWeek 1 (for Monday) through 7 (for Sunday)
  * @property-read int $dayOfYear 0 through 365
  * @property-read int $weekOfMonth 1 through 5
@@ -64,7 +68,7 @@ class Chronos extends DateTimeImmutable implements ChronosInterface
      * There is a single test now for all date/time classes provided by Chronos.
      * This aims to emulate stubbing out 'now' which is a single global fact.
      *
-     * @var \Cake\Chronos\ChronosInterface
+     * @var \Cake\Chronos\ChronosInterface|null
      */
     protected static $testNow;
 
@@ -81,19 +85,29 @@ class Chronos extends DateTimeImmutable implements ChronosInterface
      * Please see the testing aids section (specifically static::setTestNow())
      * for more on the possibility of this constructor returning a test instance.
      *
-     * @param string|null $time Fixed or relative time
+     * @param \DateTimeInterface|string|int|null $time Fixed or relative time
      * @param \DateTimeZone|string|null $tz The timezone for the instance
      */
     public function __construct($time = 'now', $tz = null)
     {
+        if (is_int($time)) {
+            parent::__construct('@' . $time);
+
+            return;
+        }
+
         if ($tz !== null) {
             $tz = $tz instanceof DateTimeZone ? $tz : new DateTimeZone($tz);
+        }
+
+        if ($time instanceof \DateTimeInterface) {
+            $time = $time->format('Y-m-d H:i:s.u');
         }
 
         static::$_lastErrors = [];
         $testNow = static::getTestNow();
         if ($testNow === null) {
-            parent::__construct($time === null ? 'now' : $time, $tz);
+            parent::__construct($time ?? 'now', $tz);
 
             return;
         }
@@ -106,13 +120,13 @@ class Chronos extends DateTimeImmutable implements ChronosInterface
         }
 
         $testNow = clone $testNow;
-        if ($relative) {
-            $testNow = $testNow->modify($time);
+        $relativetime = static::isTimeExpression($time);
+        if (!$relativetime && $tz !== $testNow->getTimezone()) {
+            $testNow = $testNow->setTimezone($tz ?? date_default_timezone_get());
         }
 
-        $relativeTime = static::isTimeExpression($time);
-        if (!$relativeTime && $tz !== $testNow->getTimezone()) {
-            $testNow = $testNow->setTimezone($tz === null ? date_default_timezone_get() : $tz);
+        if ($relative) {
+            $testNow = $testNow->modify($time);
         }
 
         $time = $testNow->format('Y-m-d H:i:s.u');
@@ -124,19 +138,21 @@ class Chronos extends DateTimeImmutable implements ChronosInterface
      *
      * @return \Cake\Chronos\MutableDateTime
      */
-    public function toMutable()
+    public function toMutable(): MutableDateTime
     {
+        trigger_error('2.5 Mutable classes will be removed in 3.0', E_USER_DEPRECATED);
+
         return MutableDateTime::instance($this);
     }
 
     /**
      * Get a copy of the instance
      *
-     * @return $this
+     * @return static
      */
-    public function copy()
+    public function copy(): ChronosInterface
     {
-        return $this;
+        return clone $this;
     }
 
     /**
@@ -157,7 +173,7 @@ class Chronos extends DateTimeImmutable implements ChronosInterface
      * @param \Cake\Chronos\ChronosInterface|string|null $testNow The instance to use for all future instances.
      * @return void
      */
-    public static function setTestNow($testNow = null)
+    public static function setTestNow($testNow = null): void
     {
         static::$testNow = is_string($testNow) ? static::parse($testNow) : $testNow;
     }
@@ -166,9 +182,9 @@ class Chronos extends DateTimeImmutable implements ChronosInterface
      * Get the ChronosInterface instance (real or mock) to be returned when a "now"
      * instance is created.
      *
-     * @return \Cake\Chronos\ChronosInterface The current instance used for testing
+     * @return \Cake\Chronos\ChronosInterface|null The current instance used for testing
      */
-    public static function getTestNow()
+    public static function getTestNow(): ?ChronosInterface
     {
         return static::$testNow;
     }
@@ -179,9 +195,73 @@ class Chronos extends DateTimeImmutable implements ChronosInterface
      *
      * @return bool True if there is a test instance, otherwise false
      */
-    public static function hasTestNow()
+    public static function hasTestNow(): bool
     {
         return static::$testNow !== null;
+    }
+
+    /**
+     * Create a new DateInterval instance from specified values.
+     *
+     * @param int|null $years The year to use.
+     * @param int|null $months The month to use.
+     * @param int|null $weeks The week to use.
+     * @param int|null $days The day to use.
+     * @param int|null $hours The hours to use.
+     * @param int|null $minutes The minutes to use.
+     * @param int|null $seconds The seconds to use.
+     * @param int|null $microseconds The microseconds to use.
+     * @return \DateInterval
+     */
+    public static function createInterval(
+        ?int $years = null,
+        ?int $months = null,
+        ?int $weeks = null,
+        ?int $days = null,
+        ?int $hours = null,
+        ?int $minutes = null,
+        ?int $seconds = null,
+        ?int $microseconds = null
+    ): DateInterval {
+        $spec = 'P';
+
+        if ($years) {
+            $spec .= $years . 'Y';
+        }
+        if ($months) {
+            $spec .= $months . 'M';
+        }
+        if ($weeks) {
+            $spec .= $weeks . 'W';
+        }
+        if ($days) {
+            $spec .= $days . 'D';
+        }
+
+        if ($hours || $minutes || $seconds) {
+            $spec .= 'T';
+            if ($hours) {
+                $spec .= $hours . 'H';
+            }
+            if ($minutes) {
+                $spec .= $minutes . 'M';
+            }
+            if ($seconds) {
+                $spec .= $seconds . 'S';
+            }
+        }
+
+        if ($microseconds && $spec === 'P') {
+            $spec .= 'T0S';
+        }
+
+        $instance = new DateInterval($spec);
+
+        if ($microseconds) {
+            $instance->f = $microseconds / 1000000;
+        }
+
+        return $instance;
     }
 
     /**
@@ -189,7 +269,7 @@ class Chronos extends DateTimeImmutable implements ChronosInterface
      *
      * @return array
      */
-    public function __debugInfo()
+    public function __debugInfo(): array
     {
         $properties = [
             'hasFixedNow' => static::hasTestNow(),
@@ -198,5 +278,28 @@ class Chronos extends DateTimeImmutable implements ChronosInterface
         ];
 
         return $properties;
+    }
+
+    /**
+     * Deprecation helper to compare types
+     *
+     * Future versions of Chronos will not support comparing date/datetimes to each other.
+     *
+     * @param object $first The first object.
+     * @param object|null $second The second object
+     * @return void
+     * @internal
+     */
+    public static function checkTypes(object $first, $second): void
+    {
+        $firstClass = get_class($first);
+        $secondClass = $second !== null ? get_class($second) : null;
+        if ($second !== null && $firstClass !== $secondClass) {
+            trigger_error(
+                "2.5 Comparing {$firstClass} and {$secondClass} is deprecated. " .
+                'In 3.0 this functionality will be removed.',
+                E_USER_DEPRECATED
+            );
+        }
     }
 }

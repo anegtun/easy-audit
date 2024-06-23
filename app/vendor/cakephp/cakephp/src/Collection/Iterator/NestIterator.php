@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -21,24 +23,26 @@ use Traversable;
 /**
  * A type of collection that is aware of nested items and exposes methods to
  * check or retrieve them
+ *
+ * @template-implements \RecursiveIterator<mixed, mixed>
  */
 class NestIterator extends Collection implements RecursiveIterator
 {
     /**
      * The name of the property that contains the nested items for each element
      *
-     * @var string|callable
+     * @var callable|string
      */
     protected $_nestKey;
 
     /**
      * Constructor
      *
-     * @param array|\Traversable $items Collection items.
-     * @param string|callable $nestKey the property that contains the nested items
+     * @param iterable $items Collection items.
+     * @param callable|string $nestKey the property that contains the nested items
      * If a callable is passed, it should return the childrens for the passed item
      */
-    public function __construct($items, $nestKey)
+    public function __construct(iterable $items, $nestKey)
     {
         parent::__construct($items);
         $this->_nestKey = $nestKey;
@@ -49,7 +53,7 @@ class NestIterator extends Collection implements RecursiveIterator
      *
      * @return \RecursiveIterator
      */
-    public function getChildren()
+    public function getChildren(): RecursiveIterator
     {
         $property = $this->_propertyExtractor($this->_nestKey);
 
@@ -62,7 +66,7 @@ class NestIterator extends Collection implements RecursiveIterator
      *
      * @return bool
      */
-    public function hasChildren()
+    public function hasChildren(): bool
     {
         $property = $this->_propertyExtractor($this->_nestKey);
         $children = $property($this->current());
