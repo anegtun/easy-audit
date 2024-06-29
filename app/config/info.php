@@ -1,6 +1,6 @@
 <?php
 return [
-    'easy-audit.version' => '2.0.0',
+    'easy-audit.version' => '2.0.1',
     'easy-audit.site.title' => 'EasyAudit',
     'easy-audit.main-url' => 'https://mywebsite.com/',
     'easy-audit.company.name' => 'MY COMPANY',

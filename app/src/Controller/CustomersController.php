@@ -104,14 +104,7 @@ class CustomersController extends AppController {
     }
 
     public function templates($id) {
-        $customer = $this->getCustomer($id);
-        $result = [];
-        foreach($customer->templates as $t) {
-            if(!$t->disabled) {
-                $result[] = ['id' => $t->id, 'name' => $t->name, 'form_name' => $t->form->name];
-            }
-        }
-        $this->set($result);
+        $this->set('customer', $this->getCustomer($id));
     }
 
     private function getCustomer($id) {
