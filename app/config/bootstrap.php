@@ -84,6 +84,7 @@ try {
 }
 
 // Custom config
+Configure::load('version', 'default');
 Configure::load('info', 'default');
 
 /*
