@@ -84,8 +84,8 @@ try {
 }
 
 // Custom config
-Configure::load('version', 'default');
-Configure::load('info', 'default');
+Configure::load('easy_audit_info', 'default');
+Configure::load('easy_audit_version', 'default');
 
 /*
  * Load an environment local configuration file to provide overrides to your configuration.
