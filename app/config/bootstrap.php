@@ -84,7 +84,7 @@ try {
 }
 
 // Custom config
-Configure::load('easy_audit_info', 'default');
+Configure::load('easy_audit_company', 'default');
 Configure::load('easy_audit_version', 'default');
 
 /*
